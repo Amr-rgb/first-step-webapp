@@ -31,9 +31,9 @@ export function RelatedBlogs({ locale, currentBlogId }: RelatedBlogsProps) {
 
   if (isLoading) {
     return (
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 items-center gap-5">
+      <div className="w-full grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 items-center gap-5">
         {Array(3)
-          .fill(0)
+          .fill(1)
           .map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-48 w-full rounded-lg" />
@@ -54,9 +54,19 @@ export function RelatedBlogs({ locale, currentBlogId }: RelatedBlogsProps) {
     return <p className="text-gray-500">{t("noRelatedBlogs")}</p>;
   }
 
+  // Show 4 items on large screens, 3 on medium, and 2 on small
+  const maxItems =
+    typeof window !== "undefined"
+      ? window.innerWidth >= 1024
+        ? 4
+        : window.innerWidth >= 768
+        ? 3
+        : 2
+      : 3;
+
   return (
     <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 items-center gap-5">
-      {relatedBlogs.map((blog) => (
+      {relatedBlogs.slice(0, maxItems).map((blog) => (
         <BlogCard key={blog.id} blog={blog} />
       ))}
     </div>
