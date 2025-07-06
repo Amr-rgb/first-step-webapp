@@ -1,10 +1,11 @@
 "use client";
 
 import { use } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import AdminBlogCard from "@/components/general/blog/AdminBlogCard";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 export default function CenterBlogsPage({
   params,
@@ -13,6 +14,7 @@ export default function CenterBlogsPage({
 }) {
   const t = useTranslations("dashboard.admin.blog.center");
   const { centerId } = use(params);
+  const queryClient = useQueryClient();
   const {
     data: blogs,
     isLoading,
@@ -21,6 +23,42 @@ export default function CenterBlogsPage({
     queryKey: ["centerBlogs", centerId],
     queryFn: () => adminService.getOneCenterBlogs(centerId),
   });
+
+  const { mutate: approveBlog, isPending: isApproving } = useMutation({
+    mutationFn: (blogId: string) => adminService.approveCenterBlog(blogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["centerBlogs", centerId] });
+      toast.success(t("blogApproved"));
+    },
+    onError: (error) => {
+      console.error("Error approving blog:", error);
+      toast.error(t("approvalError"));
+    },
+  });
+
+  const { mutate: rejectBlog, isPending: isRejecting } = useMutation({
+    mutationFn: (blogId: string) => adminService.rejectCenterBlog(blogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["centerBlogs", centerId] });
+      toast.success(t("blogRejected"));
+    },
+    onError: (error) => {
+      console.error("Error rejecting blog:", error);
+      toast.error(t("rejectionError"));
+    },
+  });
+
+  const handleAccept = (blogId: string) => {
+    approveBlog(blogId);
+  };
+
+  const handleReject = (blogId: string) => {
+    if (confirm(t("confirmReject"))) {
+      rejectBlog(blogId);
+    }
+  };
+
+  const isLoadingAction = isApproving || isRejecting;
 
   if (isLoading) return <div>{t("loading")}</div>;
   if (error) return <div className="text-red-500">{t("error")}</div>;
@@ -32,6 +70,7 @@ export default function CenterBlogsPage({
     description: blog.description,
     image: blog.blog_image_url,
     published_at: blog.created_at.split(" ")[0],
+    reading_time: blog.reading_time,
     status: blog.status,
   });
 
@@ -53,9 +92,9 @@ export default function CenterBlogsPage({
                 <AdminBlogCard
                   key={blog.id}
                   blog={blog}
-                  onAccept={() => alert(`${t("acceptBlog")}: ${blog.title}`)}
-                  onReject={() => alert(`${t("rejectBlog")}: ${blog.title}`)}
-                  loading={false}
+                  onAccept={() => handleAccept(blog.id)}
+                  onReject={() => handleReject(blog.id)}
+                  loading={isLoadingAction}
                 />
               ))}
           </div>

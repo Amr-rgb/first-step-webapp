@@ -1015,9 +1015,13 @@
           "rejectedBlogs": "Rejected Blogs",
           "acceptBlog": "Accept blog",
           "rejectBlog": "Reject blog",
-          "readTime": "3 min read",
           "imageAlt": "Blog cover image",
-          "editBlog": "Edit Blog"
+          "editBlog": "Edit Blog",
+          "blogApproved": "Blog approved successfully",
+          "approvalError": "Failed to approve blog",
+          "blogRejected": "Blog rejected successfully",
+          "rejectionError": "Failed to reject blog",
+          "confirmReject": "Are you sure you want to reject this blog?"
         },
         "form": {
           "coverImage": "Cover Image",

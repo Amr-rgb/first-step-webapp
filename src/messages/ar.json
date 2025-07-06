@@ -1010,9 +1010,13 @@
           "rejectedBlogs": "مدونات مرفوضة",
           "acceptBlog": "قبول المدونة",
           "rejectBlog": "رفض المدونة",
-          "readTime": "٣ دقائق قراءة",
           "imageAlt": "صورة الغلاف",
-          "editBlog": "تعديل المدونة"
+          "editBlog": "تعديل المدونة",
+          "blogApproved": "تمت الموافقة على المدونة بنجاح",
+          "approvalError": "فشل في الموافقة على المدونة",
+          "blogRejected": "تم رفض المدونة بنجاح",
+          "rejectionError": "فشل في رفض المدونة",
+          "confirmReject": "هل أنت متأكد من رفض هذه المدونة؟"
         },
         "form": {
           "coverImage": "صورة الغلاف",
