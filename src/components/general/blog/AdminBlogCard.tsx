@@ -64,26 +64,31 @@ const AdminBlogCard = ({
       </div>
 
       {/* Action buttons for pending blogs */}
-      {blog.status === "pending" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40 rounded-2xl gap-y-2">
-          <Button
-            variant="secondary"
-            className="w-40"
-            onClick={onAccept}
-            disabled={loading}
-          >
-            {t("acceptBlog")}
-          </Button>
-          <Button
-            variant="destructive"
-            className="w-40"
-            onClick={onReject}
-            disabled={loading}
-          >
-            {t("rejectBlog")}
-          </Button>
-        </div>
-      )}
+      {blog.status === "pending" ||
+        (blog.status === "rejected" && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40 rounded-2xl gap-y-2">
+            {onAccept ? (
+              <Button
+                variant="secondary"
+                className="w-40"
+                onClick={onAccept}
+                disabled={loading}
+              >
+                {t("acceptBlog")}
+              </Button>
+            ) : null}
+            {onReject ? (
+              <Button
+                variant="destructive"
+                className="w-40"
+                onClick={onReject}
+                disabled={loading}
+              >
+                {t("rejectBlog")}
+              </Button>
+            ) : null}
+          </div>
+        ))}
     </div>
   );
 };

@@ -1020,8 +1020,7 @@
           "blogApproved": "Blog approved successfully",
           "approvalError": "Failed to approve blog",
           "blogRejected": "Blog rejected successfully",
-          "rejectionError": "Failed to reject blog",
-          "confirmReject": "Are you sure you want to reject this blog?"
+          "rejectionError": "Failed to reject blog"
         },
         "form": {
           "coverImage": "Cover Image",

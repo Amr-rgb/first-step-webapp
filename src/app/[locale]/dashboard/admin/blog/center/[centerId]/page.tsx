@@ -53,9 +53,7 @@ export default function CenterBlogsPage({
   };
 
   const handleReject = (blogId: string) => {
-    if (confirm(t("confirmReject"))) {
-      rejectBlog(blogId);
-    }
+    rejectBlog(blogId);
   };
 
   const isLoadingAction = isApproving || isRejecting;
@@ -121,7 +119,12 @@ export default function CenterBlogsPage({
               .map(mapBlogToCard)
               .filter((blog: any) => blog.status === "rejected")
               .map((blog: any) => (
-                <AdminBlogCard key={blog.id} blog={blog} />
+                <AdminBlogCard
+                  key={blog.id}
+                  blog={blog}
+                  onAccept={() => handleAccept(blog.id)}
+                  loading={isLoadingAction}
+                />
               ))}
           </div>
         </div>

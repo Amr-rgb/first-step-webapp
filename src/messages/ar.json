@@ -1015,8 +1015,7 @@
           "blogApproved": "تمت الموافقة على المدونة بنجاح",
           "approvalError": "فشل في الموافقة على المدونة",
           "blogRejected": "تم رفض المدونة بنجاح",
-          "rejectionError": "فشل في رفض المدونة",
-          "confirmReject": "هل أنت متأكد من رفض هذه المدونة؟"
+          "rejectionError": "فشل في رفض المدونة"
         },
         "form": {
           "coverImage": "صورة الغلاف",
