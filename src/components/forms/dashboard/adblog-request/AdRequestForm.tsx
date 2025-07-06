@@ -18,6 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService, centerService } from "@/services/dashboardApi";
 import { toast } from "sonner";
 
@@ -43,7 +44,7 @@ const AdRequestForm = ({
   const [preview, setPreview] = useState<string | null>(
     (typeof initialData?.image === "string" && initialData?.image) || null
   );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
   const adRequestSchema = createAdRequestSchema(locale as "ar" | "en");
 
   const methods = useForm<AdRequestFormData>({
@@ -64,20 +65,18 @@ const AdRequestForm = ({
     mode: "onChange",
   });
 
-  const onSubmit = async (data: AdRequestFormData) => {
-    try {
-      setIsSubmitting(true);
+  // Format dates to YYYY-MM-DD
+  const formatDate = (date: Date) => {
+    return date.toISOString().split("T")[0];
+  };
 
-      // Format dates to YYYY-MM-DD
-      const formatDate = (date: Date) => {
-        return date.toISOString().split("T")[0];
-      };
-
+  const createAdMutation = useMutation({
+    mutationFn: async (data: AdRequestFormData) => {
       const createAd = isAdmin
         ? adminService.createAdvertisement
         : centerService.requestAd;
 
-      await createAd({
+      return createAd({
         titleAr: data.title.ar,
         titleEn: data.title.en,
         descriptionAr: data.description.ar,
@@ -86,24 +85,37 @@ const AdRequestForm = ({
         publish_date: formatDate(data.start_date),
         end_date: formatDate(data.end_date),
       });
-
+    },
+    onSuccess: () => {
       toast(t("success.title"), {
         description: t("success.description"),
       });
       methods.reset();
       setPreview(null);
-    } catch (error) {
+      // Invalidate the ads query to refetch the list
+      isAdmin
+        ? queryClient.invalidateQueries({
+            queryKey: ["adminAdvertisements"],
+          })
+        : queryClient.invalidateQueries({
+            queryKey: ["ads"],
+          });
+    },
+    onError: (error) => {
       toast(t("error.title"), {
         description: t("error.description"),
       });
       console.error("Error submitting ad request:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: AdRequestFormData) => {
+    createAdMutation.mutate(data);
   };
 
   const formData = methods.watch();
   const isValid = methods.formState.isValid;
+  const isSubmitting = createAdMutation.isPending;
 
   return (
     <FormProvider {...methods}>
@@ -341,7 +353,7 @@ const AdRequestForm = ({
           {children(
             methods.getValues(),
             methods.formState.isValid,
-            methods.formState.isSubmitting,
+            isSubmitting,
             Object.keys(methods.formState.dirtyFields)
           )}
         </div>
