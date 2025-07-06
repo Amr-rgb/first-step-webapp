@@ -120,9 +120,9 @@ const AdDetailsWrapper = ({
       case "accepted":
         return (
           <>
-            <Button asChild size={"sm"}>
+            {/* <Button asChild size={"sm"}>
               <Link href={`${adId}/edit`}>{t("editAd")}</Link>
-            </Button>
+            </Button> */}
             <Button
               onClick={deleteHandler}
               size={"sm"}
@@ -163,14 +163,14 @@ const AdDetailsWrapper = ({
             <Button onClick={acceptHandler} size={"sm"}>
               {t("acceptAd")}
             </Button>
-            <Button
+            {/* <Button
               asChild
               size={"sm"}
               variant={"outline"}
               className="!border-light-gray text-mid-gray"
             >
               <Link href={`${adId}/edit`}>{t("editAd")}</Link>
-            </Button>
+            </Button> */}
           </>
         );
       default:
