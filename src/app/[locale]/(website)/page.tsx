@@ -4,6 +4,7 @@ import Headline from "@/components/general/Headline";
 import VisionMission from "@/components/general/VisionMission";
 import Values from "@/components/general/Values";
 import FeaturesSection from "@/components/general/FeaturesSection";
+import SubscriptionSection from "@/components/general/SubscriptionSection";
 import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
 import FAQs from "@/components/general/FAQs";
 import Contact from "@/components/general/contact/Contact";
@@ -47,6 +48,7 @@ export default async function HomePage({
       <Advertisment slides={adSlides} />
       <Headline />
       <FeaturesSection />
+      <SubscriptionSection />
       <VisionMission />
       <Values locale={locale} />
       <BlogsWrapper locale={locale} number={4} />

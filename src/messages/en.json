@@ -1519,6 +1519,38 @@
         "title": "Advertising Space Within the Site",
         "description": "Ability to publish ads or posts to enhance the nursery's visibility."
       }
+    },
+    "Subscription": {
+      "title": "Plans and Subscriptions",
+      "banner": {
+        "title": "Subscribe for Free!",
+        "subtitle": "Enjoy all First Step features for one month",
+        "limitedOffer": "Limited time offer (ending soon)",
+        "cta": "Subscribe Now"
+      },
+      "plans": {
+        "popular": "Most Popular",
+        "select": "Select Plan",
+        "currency": "SAR",
+        "annual": {
+          "title": "Annual",
+          "period": "per year"
+        },
+        "semiAnnual": {
+          "title": "Semi-Annual",
+          "period": "every 6 months"
+        },
+        "quarterly": {
+          "title": "Quarterly",
+          "period": "every 3 months"
+        },
+        "features": {
+          "allFeatures": "All features included",
+          "support": "24/7 support",
+          "updates": "Free updates",
+          "discount": "Save {discount} with annual billing"
+        }
+      }
     }
   }
 }
