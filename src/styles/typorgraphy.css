@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "Arshid";
+  src: url("/assets/fonts/sar.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.sar {
+  font-family: "Arshid", sans-serif;
+  font-weight: 400;
+}
+
 @layer base {
   /* Title styles */
   h1,
