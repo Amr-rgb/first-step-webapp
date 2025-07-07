@@ -496,7 +496,7 @@ export const authService = {
 
       formData.append("nursery_name", payload.nursery_name);
       formData.append("location", payload.location);
-      formData.append("city", payload.city);
+      formData.append("city_id", payload.city);
       formData.append("neighborhood", payload.neighborhood);
 
       formData.append("provides_food", payload.provides_food ? "1" : "0");
@@ -649,6 +649,15 @@ export const authService = {
       const response = await apiClient.post("/auth/google", {
         token,
       });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCities: async () => {
+    try {
+      const response = await apiClient.get("/cities");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

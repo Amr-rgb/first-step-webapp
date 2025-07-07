@@ -48,7 +48,7 @@ const prepareCenterFormData = (
   if (payload.nursery_name)
     formData.append("nursery_name", payload.nursery_name);
   if (payload.location) formData.append("location", payload.location);
-  if (payload.city) formData.append("city", payload.city);
+  if (payload.city) formData.append("city_id", payload.city);
   if (payload.neighborhood)
     formData.append("neighborhood", payload.neighborhood);
 
