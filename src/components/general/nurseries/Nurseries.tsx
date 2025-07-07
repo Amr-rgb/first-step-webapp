@@ -54,7 +54,7 @@ const Nurseries = ({
         />
       </div>
       <FilterButtons selected={selectedFilter} onSelect={setSelectedFilter} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-10 xl:px-24">
         {filteredNurseries.map((nursery, index) => (
           <NurseryCard nursery={nursery} key={index} />
         ))}
