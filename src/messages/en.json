@@ -1532,12 +1532,14 @@
       "title": "Plans and Subscriptions",
       "banner": {
         "title": "Subscribe for Free!",
-        "subtitle": "Enjoy all First Step features for one month",
-        "limitedOffer": "Limited time offer (ending soon)",
+        "subtitle": "Enjoy all First Step features",
+        "month": "for one month",
+        "limitedOffer": "Limited time offer",
         "cta": "Subscribe Now"
       },
       "plans": {
         "popular": "Most Popular",
+        "commission": "+ 12% commission on every booking through the site",
         "select": "Select Plan",
         "currency": "SAR",
         "annual": {

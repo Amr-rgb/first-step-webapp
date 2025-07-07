@@ -56,28 +56,34 @@ const SubscriptionSection = () => {
         </h2>
 
         {/* Promo Banner */}
-        <div className="relative bg-primary-blue rounded-2xl p-8 md:p-12 mb-16 overflow-hidden flex flex-col gap-5 md:flex-row items-center justify-between">
-          <div className="relative z-10 max-w-3xl flex flex-col items-center text-center md:items-start md:text-left md:rtl:text-right">
-            <h3 className="font-bold text-white mb-4">{t("banner.title")}</h3>
-            <p className="text-xl text-blue-100 mb-6">{t("banner.subtitle")}</p>
-            <p className="text-warning font-medium mb-6 flex items-center">
-              <span className="animate-pulse">•</span>
-              <span className="mr-2">{t("banner.limitedOffer")}</span>
-            </p>
-            <Button
-              size="sm"
-              className="bg-white hover:bg-white/90 text-primary rounded-xl w-full"
-            >
-              {t("banner.cta")}
-            </Button>
+        <div className="relative rounded-3xl overflow-hidden">
+          <div className="z-20 relative flex flex-col items-center gap-y-8 text-center py-14.5 px-10 bg-[linear-gradient(to_right,_#2B399000_0%,_#2B3990FF_30%,_#2B3990FF_70%,_#2B399000_100%)]">
+            <div className="flex flex-col items-center gap-y-3.5">
+              <p className="font-medium text-white">{t("banner.title")}</p>
+              <p className="heading-3 text-white">
+                <span>{t("banner.subtitle")}</span>{" "}
+                <span className="text-warning">{t("banner.month")}</span>
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center gap-y-3.5">
+              <Button
+                size="sm"
+                className="bg-white hover:bg-white/90 text-primary rounded-xl w-full"
+              >
+                {t("banner.cta")}
+              </Button>
+              <p className="text-warning font-medium flex items-center">
+                {t("banner.limitedOffer")}
+              </p>
+            </div>
           </div>
 
-          {/* Decorative elements */}
           <Image
-            src="/assets/illustrations/gifts.png"
-            width={280}
-            height={280}
-            alt="gift"
+            src="/assets/backgrounds/surprise.jpg"
+            alt="background"
+            className="z-10 absolute top-0 left-0 w-full h-full object-cover object-center"
+            fill
           />
         </div>
 
@@ -88,7 +94,7 @@ const SubscriptionSection = () => {
               key={plan.id}
               className={`relative xl:px-10 py-10 lg:py-20 ${
                 plan.popular
-                  ? "mt-20 bg-primary-blue text-white rounded-5xl"
+                  ? "mt-28 bg-primary-blue text-white rounded-5xl"
                   : "bg-white text-primary-blue rounded-xl shadow-[0_2px_80px_0_rgba(34,34,34,0.08)]"
               }`}
             >
@@ -109,9 +115,7 @@ const SubscriptionSection = () => {
 
                 <h3>{plan.name}</h3>
 
-                <p className="font-medium">
-                  + 12 % عمولة على كل حجز من خلال الموقع
-                </p>
+                <p className="font-medium">{t("plans.commission")}</p>
 
                 <Button
                   size="sm"
