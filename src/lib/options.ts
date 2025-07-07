@@ -35,3 +35,13 @@ export const RESERVATION_STATUS_IDS = [
   "waitingForConfirmation",
   "rejected",
 ] as const;
+
+export const ADDITIONAL_FEATURES_IDS = [
+  "emergency-contact",
+  "special-needs", 
+  "food-service",
+] as const;
+
+export const BRANCH_TYPES = [
+  "main-branch",
+] as const;

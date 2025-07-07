@@ -617,6 +617,14 @@
       "phone": "Voice",
       "sms": "Text",
       "video": "Video"
+    },
+    "additionalFeatures": {
+      "emergency-contact": "Emergency Contact",
+      "special-needs": "Special Needs",
+      "food-service": "Food Service"
+    },
+    "branchTypes": {
+      "main-branch": "Main Branch"
     }
   },
   "headline": {

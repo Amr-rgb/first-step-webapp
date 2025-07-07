@@ -613,6 +613,14 @@
       "phone": "تواصل صوتي",
       "sms": "تواصل نصي",
       "video": "تواصل فيديو"
+    },
+    "additionalFeatures": {
+      "emergency-contact": "اتصال طوارئ",
+      "special-needs": "احتياجات خاصة",
+      "food-service": "وجبات طعام"
+    },
+    "branchTypes": {
+      "main-branch": "الفرع الرئيسي"
     }
   },
   "headline": {
