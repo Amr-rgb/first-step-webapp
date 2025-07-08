@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { parentService } from "@/services/dashboardApi";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -83,6 +85,15 @@ const ReservationForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  const {
+    data: realChildren,
+    isLoading: isChildrenLoading,
+    error: childrenError,
+  } = useQuery<Array<any>>({
+    queryKey: ["parent-children"] as const,
+    queryFn: parentService.getParentChildren,
+  });
+
   const handleChildSelect = (id: string) => {
     setSelectedChildren((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
@@ -141,28 +152,42 @@ const ReservationForm = ({
 
   return (
     <form onSubmit={handleSubmit} dir={dir} className="space-y-8">
-      {/* Program Type Selection */}
-      <div>
-        <div className="flex flex-wrap gap-4 justify-center mb-6">
-          {programs[locale].map((p) => (
+      {/* Program Type Selection - Horizontal, Solid Gray Border by Default, Dashed Blue Border When Selected */}
+      <div className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6">
+        {programs[locale].map((p) => {
+          const selected = program === p.id;
+          return (
             <button
               key={p.id}
               type="button"
-              className={`px-6 py-3 rounded-full border transition font-bold text-base focus:outline-none ${
-                program === p.id
-                  ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow"
-                  : "bg-white text-gray-700 border-[#DADADA]"
-              } ${
-                p.id === "hourly" && program === "hourly"
-                  ? "relative after:content-['\"عرض بالساعة\"'] after:absolute after:-top-6 after:left-1/2 after:-translate-x-1/2 after:bg-[#4D5EDB] after:text-white after:rounded-lg after:px-4 after:py-1 after:text-xs after:font-bold"
-                  : ""
-              }`}
+              className={`flex-1 flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2
+                ${
+                  selected
+                    ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                    : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none"
+                }
+              `}
               onClick={() => setProgram(p.id)}
+              tabIndex={0}
             >
-              {p.name} <span className="font-normal">/ {p.price}</span>
+              <span
+                className={`text-lg font-extrabold mb-1 ${
+                  selected ? "text-white" : "text-[#4D5EDB]"
+                }`}
+              >
+                {p.price}
+              </span>
+              <span className="w-full h-px bg-[#DADADA] mb-1" />
+              <span
+                className={`text-base font-bold ${
+                  selected ? "text-white" : "text-[#22336C]"
+                }`}
+              >
+                {p.name}
+              </span>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {/* Time Selection */}
@@ -240,29 +265,48 @@ const ReservationForm = ({
         </div>
       </div>
 
-      {/* Child Selection (Avatars) */}
+      {/* Child Selection (Rectangles, Grayscale by Default, Color on Select) */}
       <div>
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "اختر طفل أو أكثر" : "Select One or More Children"}
         </label>
-        <div className="flex gap-4 justify-center overflow-x-auto pb-2">
-          {mockChildren.map((child) => {
-            const selected = selectedChildren.includes(child.id);
+        <div
+          className="flex gap-4 justify-start overflow-x-auto pb-2 custom-scrollbar"
+          style={{
+            maxWidth: "500px",
+            margin: "0 auto",
+            paddingLeft: 8,
+            paddingRight: 8,
+          }}
+        >
+          {(realChildren && realChildren.length > 0
+            ? realChildren
+            : mockChildren
+          ).map((child, idx) => {
             return (
               <button
                 type="button"
                 key={child.id}
-                onClick={() => handleChildSelect(child.id)}
-                className={`flex flex-col items-center p-2 rounded-xl border-2 transition min-w-[90px] ${
-                  selected
-                    ? "border-[#4D5EDB] bg-[#F3F6FF] shadow"
-                    : "border-transparent bg-white"
-                } focus:outline-none`}
+                onClick={() => handleChildSelect(child.id.toString())}
+                className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
+                  ${
+                    selectedChildren.includes(child.id.toString())
+                      ? "border-[#4D5EDB] shadow"
+                      : "border-gray-300"
+                  } focus:outline-none bg-white hover:shadow-lg`}
+                style={{ flex: "0 0 auto", marginRight: 12 }}
               >
                 <div
-                  className={`rounded-full border-4 ${
-                    selected ? "border-[#4D5EDB]" : "border-gray-200"
-                  } overflow-hidden w-16 h-16 flex items-center justify-center bg-white`}
+                  className={`w-16 h-16 flex items-center justify-center ${
+                    selectedChildren.includes(child.id.toString())
+                      ? "mb-0 mt-0"
+                      : "mb-2 mt-2"
+                  } transition-all duration-200`}
+                  style={{
+                    marginTop: selectedChildren.includes(child.id.toString())
+                      ? 0
+                      : undefined,
+                  }}
                 >
                   <Image
                     src={
@@ -270,15 +314,33 @@ const ReservationForm = ({
                         ? "/assets/illustrations/boy.png"
                         : "/assets/illustrations/girl.png"
                     }
-                    alt={child.nameEn}
+                    alt={child.child_name || child.nameEn}
                     width={64}
                     height={64}
+                    style={{
+                      objectFit: "contain",
+                      filter: selectedChildren.includes(child.id.toString())
+                        ? "none"
+                        : "grayscale(100%) brightness(0.8)",
+                      transform: selectedChildren.includes(child.id.toString())
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                      transition: "all 0.2s",
+                    }}
                   />
                 </div>
-                <span className="mt-2 font-bold text-sm text-[#22336C] text-center">
-                  {locale === "ar" ? child.name : child.nameEn}
+                <span
+                  className={`font-bold text-sm text-center mt-2 ${
+                    selectedChildren.includes(child.id.toString())
+                      ? "text-[#22336C]"
+                      : "text-gray-600"
+                  }`}
+                >
+                  {child.child_name ||
+                    child.name ||
+                    (locale === "ar" ? child.name : child.nameEn)}
                 </span>
-                {selected && (
+                {selectedChildren.includes(child.id.toString()) && (
                   <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
                     ✓
                   </span>
@@ -347,6 +409,31 @@ const ReservationForm = ({
           ? "قم بتأكيد الحجز الآن"
           : "Confirm Booking Now"}
       </button>
+      {/* Custom Scrollbar Styles - must be inside the component */}
+      <style jsx global>{`
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #4d5edb #f7f8fa;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 6px;
+          background: #f7f8fa;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #4d5edb;
+          border-radius: 6px;
+          min-width: 40px;
+          transition: background 0.2s;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #22336c;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f7f8fa;
+          border-radius: 6px;
+        }
+      `}</style>
     </form>
   );
 };
