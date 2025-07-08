@@ -6,6 +6,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { parentService } from "@/services/dashboardApi";
+import { motion } from "framer-motion";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -114,7 +115,12 @@ const ReservationForm = ({
 
   if (submitSuccess) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, type: 'spring', stiffness: 60 }}
+        className="bg-white rounded-xl shadow-lg p-8 text-center"
+      >
         <div className="mb-6">
           <svg
             className="mx-auto h-16 w-16 text-green-500"
@@ -146,14 +152,26 @@ const ReservationForm = ({
         >
           {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
         </button>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} dir={dir} className="space-y-8">
-      {/* Program Type Selection - Horizontal, Solid Gray Border by Default, Dashed Blue Border When Selected */}
-      <div className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6">
+    <motion.form
+      onSubmit={handleSubmit}
+      dir={dir}
+      className="space-y-8"
+      initial={{ opacity: 0, y: 32 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, type: 'spring', stiffness: 60 }}
+    >
+      {/* Program Type Selection */}
+      <motion.div
+        className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4, type: 'spring', stiffness: 60 }}
+      >
         {programs[locale].map((p) => {
           const selected = program === p.id;
           return (
@@ -188,10 +206,14 @@ const ReservationForm = ({
             </button>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Time Selection */}
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.4, type: 'spring', stiffness: 60 }}
+      >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "عدد الساعات" : "Number of Hours"}
         </label>
@@ -230,10 +252,14 @@ const ReservationForm = ({
             </select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Date Picker */}
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4, type: 'spring', stiffness: 60 }}
+      >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "تاريخ الحجز" : "Booking Date"}
         </label>
@@ -263,10 +289,14 @@ const ReservationForm = ({
             </svg>
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Child Selection (Rectangles, Grayscale by Default, Color on Select) */}
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25, duration: 0.4, type: 'spring', stiffness: 60 }}
+      >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "اختر طفل أو أكثر" : "Select One or More Children"}
         </label>
@@ -284,7 +314,15 @@ const ReservationForm = ({
             : mockChildren
           ).map((child, idx) => {
             return (
-              <button
+              <motion.button
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: idx * 0.08,
+                  duration: 0.4,
+                  type: "spring",
+                  stiffness: 60,
+                }}
                 type="button"
                 key={child.id}
                 onClick={() => handleChildSelect(child.id.toString())}
@@ -345,14 +383,19 @@ const ReservationForm = ({
                     ✓
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Booking Summary Section */}
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow p-6 mb-4">
+      <motion.div
+        className="max-w-md mx-auto bg-white rounded-xl shadow p-6 mb-4"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25, duration: 0.4, type: 'spring', stiffness: 60 }}
+      >
         <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
           {locale === "ar" ? "تفاصيل الحجز" : "Booking Summary"}
         </h3>
@@ -386,20 +429,28 @@ const ReservationForm = ({
             450 {locale === "ar" ? "ر.س" : "SAR"}
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Notice Paragraph */}
-      <div className="text-xs text-gray-400 text-center max-w-lg mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.4, type: 'spring', stiffness: 60 }}
+        className="text-xs text-gray-400 text-center max-w-lg mx-auto"
+      >
         {locale === "ar"
           ? "تأكيد الحجز يعني الموافقة على الشروط والأحكام وسياسة الخصوصية الخاصة بنا."
           : "Confirming the booking means you accept the terms and conditions and our privacy policy."}
-      </div>
+      </motion.div>
 
       {/* Submit Button */}
-      <button
+      <motion.button
         type="submit"
         disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
         className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35, duration: 0.4, type: 'spring', stiffness: 60 }}
       >
         {isSubmitting
           ? locale === "ar"
@@ -408,7 +459,7 @@ const ReservationForm = ({
           : locale === "ar"
           ? "قم بتأكيد الحجز الآن"
           : "Confirm Booking Now"}
-      </button>
+      </motion.button>
       {/* Custom Scrollbar Styles - must be inside the component */}
       <style jsx global>{`
         .custom-scrollbar {
@@ -434,7 +485,7 @@ const ReservationForm = ({
           border-radius: 6px;
         }
       `}</style>
-    </form>
+    </motion.form>
   );
 };
 
