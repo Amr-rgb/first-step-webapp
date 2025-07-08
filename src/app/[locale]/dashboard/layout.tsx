@@ -1,12 +1,9 @@
 "use client";
-import { use, useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { use, useState } from "react";
 import Header from "@/components/dashboard/Header";
 import MainSidebar from "@/components/dashboard/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SecondarySidebar from "@/components/dashboard/SecondarySidebar";
-import { useAuthStore } from "@/store/authStore";
 import {
   useSecondarySidebarOpen,
   useSetSecondarySidebarOpen,
@@ -20,9 +17,6 @@ export default function DashboardLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = use(params);
-  const { user } = useAuthStore();
-  const router = useRouter();
-  const pathname = usePathname();
 
   // Sidebar open state (for main sidebar only)
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -31,41 +25,8 @@ export default function DashboardLayout({
   const secondarySidebarOpen = useSecondarySidebarOpen();
   const setSecondarySidebarOpen = useSetSecondarySidebarOpen();
 
-  useEffect(() => {
-    console.log("DashboardLayout useEffect - user:", user);
-    if (!user) {
-      toast.error("You are not authorized to view this page.");
-      router.push(`/${locale}`); // Redirect to home page
-      return;
-    }
-    const role = user.role;
-    console.log("DashboardLayout useEffect - role:", role);
-    const allowedRoles = ["admin", "center", "branch_admin", "parent"];
-    const parentDashboard = `/${locale}/dashboard/parent`;
-    const adminDashboard = `/${locale}/dashboard/admin`;
-    const centerDashboard = `/${locale}/dashboard/center`;
-
-    // Prevent users with no role from accessing the dashboard
-    if (!role || !allowedRoles.includes(role)) {
-      toast.error("You are not authorized to view this page.");
-      router.push(`/${locale}`); // Redirect to home page
-      return;
-    }
-
-    if (role === "parent" && !pathname.startsWith(parentDashboard)) {
-      toast.error("You are not authorized to view this page.");
-      router.push(parentDashboard);
-    } else if (
-      (role === "center" || role === "branch_admin") &&
-      !pathname.startsWith(centerDashboard)
-    ) {
-      toast.error("You are not authorized to view this page.");
-      router.push(centerDashboard);
-    } else if (role === "admin" && !pathname.startsWith(adminDashboard)) {
-      toast.error("You are not authorized to view this page.");
-      router.push(adminDashboard);
-    }
-  }, [user, pathname, router, locale]);
+  // Authentication is now handled by middleware
+  // No need for client-side guards
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
