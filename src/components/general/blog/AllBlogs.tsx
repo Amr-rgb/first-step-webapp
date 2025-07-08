@@ -1,9 +1,10 @@
 import { Blog } from "@/types";
 import BlogCard from "./BlogCard";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 const AllBlogs = ({ blogs }: { blogs: Blog[] }) => {
   const t = useTranslations("blog");
+  const locale = useLocale();
 
   return (
     <section className="container mx-auto px-4">
@@ -21,7 +22,7 @@ const AllBlogs = ({ blogs }: { blogs: Blog[] }) => {
         {/* blogs */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 items-center gap-10">
           {blogs.map((blog) => (
-            <BlogCard key={blog.id} blog={blog} />
+            <BlogCard key={blog.id} blog={blog} locale={locale} />
           ))}
         </div>
       </div>

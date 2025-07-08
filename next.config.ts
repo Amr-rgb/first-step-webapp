@@ -4,7 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["images.unsplash.com", "back.firststep-app.com"],
+    domains: ["images.unsplash.com", "back.firststep-app.com","development.firststep-app.com"],
   },
 };
 

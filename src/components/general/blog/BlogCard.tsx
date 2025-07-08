@@ -2,7 +2,13 @@ import Image from "next/image";
 import { Icons } from "../icons";
 import { Blog } from "@/types";
 
-const BlogCard = ({ blog }: { blog: Blog }) => {
+const BlogCard = ({
+  blog,
+  locale = "ar",
+}: {
+  blog: Blog;
+  locale?: "ar" | "en";
+}) => {
   return (
     <div className="bg-white shadow-card min-w-60 p-2 pb-4 flex flex-col items-start gap-y-2 rounded-2xl text-left rtl:text-right">
       <div className="w-full h-40 rounded-xl overflow-hidden relative">
@@ -14,9 +20,11 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
         />
       </div>
 
-      <span className="text-primary font-bold">{blog.title}</span>
+      <span className="text-primary font-bold">{blog.title[locale]}</span>
 
-      <p className="text-gray text-sm line-clamp-3">{blog.description}</p>
+      <p className="text-gray text-sm line-clamp-3">
+        {blog.description[locale]}
+      </p>
 
       <div className="w-full flex items-end justify-between text-sm">
         <div className="flex flex-col gap-y-2">
