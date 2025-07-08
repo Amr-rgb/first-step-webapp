@@ -195,7 +195,11 @@ const DashboardSideBar = () => {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Button asChild className="bg-transparent shadow-none">
+                      <Button
+                        asChild
+                        variant={isActive ? "default" : "defaultNoGradient"}
+                        className="bg-transparent shadow-none"
+                      >
                         <Link
                           href={item.url}
                           className={cn(
@@ -210,7 +214,10 @@ const DashboardSideBar = () => {
                               <div
                                 className={cn(
                                   "rounded-[.5rem] w-fit",
-                                  isActive ? "bg-white" : "bg-primary",
+                                  isActive ? "bg-white" : "",
+                                  !isActive && state === "expanded"
+                                    ? "blue-gradient"
+                                    : "",
                                   state === "collapsed"
                                     ? "bg-transparent"
                                     : "p-2"
