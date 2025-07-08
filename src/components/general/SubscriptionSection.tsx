@@ -69,6 +69,7 @@ const SubscriptionSection = () => {
             <div className="flex flex-col items-center gap-y-3.5">
               <Button
                 size="sm"
+                variant="defaultNoGradient"
                 className="bg-white hover:bg-white/90 text-primary rounded-xl w-full"
               >
                 {t("banner.cta")}
@@ -117,17 +118,22 @@ const SubscriptionSection = () => {
 
                 <p className="font-medium">{t("plans.commission")}</p>
 
-                <Button
-                  size="sm"
-                  className={cn(
-                    "w-full rounded-xl",
-                    plan.popular
-                      ? "bg-white text-primary-blue hover:bg-white/90"
-                      : ""
-                  )}
-                >
-                  {plan.buttonText}
-                </Button>
+                {plan.popular ? (
+                  <Button
+                    size="sm"
+                    variant="defaultNoGradient"
+                    className="w-full rounded-xl bg-white text-primary-blue hover:bg-white/90"
+                  >
+                    {plan.buttonText}
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="w-full rounded-xl hover:bg-white/90"
+                  >
+                    {plan.buttonText}
+                  </Button>
+                )}
               </div>
             </div>
           ))}

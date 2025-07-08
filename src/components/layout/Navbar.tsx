@@ -48,6 +48,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           <Button
             asChild
             size={"sm"}
+            variant="defaultNoGradient"
             className="bg-secondary-mint-green rounded-[8px]"
           >
             <Link href={"/sign-up/parent"}>{t("buttons.join-parent")}</Link>
@@ -55,6 +56,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           <Button
             asChild
             size={"sm"}
+            variant="defaultNoGradient"
             className="bg-secondary-burgundy rounded-[8px]"
           >
             <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>
