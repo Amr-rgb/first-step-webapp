@@ -64,7 +64,15 @@
       "terms": { "title": "Terms and Conditions", "path": "/terms" }
     },
     "contactTitle": "Contact us",
-    "newsletter": { "title": "Our Newsletter", "button": "Join Now" },
+    "newsletter": {
+      "title": "Our Newsletter",
+      "button": "Join Now",
+      "successTitle": "Subscription Successful!",
+      "successMessage": "Thank you for subscribing to our newsletter.",
+      "errorTitle": "Subscription Failed",
+      "errorMessage": "An error occurred while subscribing. Please try again.",
+      "success": "Thank you for subscribing!"
+    },
     "appDownloadTitle": "Download App Now",
     "followTitle": "Follow us"
   },
@@ -1491,6 +1499,7 @@
       }
     }
   },
+
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm"

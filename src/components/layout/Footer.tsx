@@ -1,10 +1,16 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { websiteService } from "@/services/api";
 import { Icons } from "../general/icons";
-import { useTranslations } from "next-intl";
+import { Loader2 } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -36,6 +42,21 @@ export default Footer;
 
 const TopLeftSection = () => {
   const t = useTranslations("footer");
+  const [email, setEmail] = useState("");
+
+  const subscribeMutation = useMutation({
+    mutationFn: (email: string) => websiteService.subscribeToNewsletter(email),
+    onSuccess: () => {
+      toast.success(t("newsletter.successTitle"), {
+        description: t("newsletter.successMessage"),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(t("newsletter.errorTitle"), {
+        description: error.message || t("newsletter.errorMessage"),
+      });
+    },
+  });
 
   return (
     <div className="relative order-2 flex-1/2 xl:flex-4/12 bg-primary-blue text-white flex flex-col items-center md:items-end justify-between pt-10 pb-5 rtl:md:pr-10 ltr:md:pl-10">
@@ -47,23 +68,53 @@ const TopLeftSection = () => {
         </p>
 
         <div className="flex flex-col items-center sm:flex-row w-full gap-3">
-          <Button
-            size={"sm"}
-            variant={"secondary"}
-            className="bg-primary hover:bg-primary-blue-700 text-white border !border-white order-2"
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await subscribeMutation.mutateAsync(email);
+              setEmail("");
+            }}
+            className="w-full flex flex-col sm:flex-row gap-3"
           >
-            {t("newsletter.button")}
-          </Button>
-          <div className="relative grow w-full sm:w-auto order-1 sm:order-1 flex bg-white rounded-lg">
-            <Input
-              className="text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
-              type="email"
-              placeholder="Email"
-            />
-            <div className="absolute inset-y-0 left-4 rtl:left-auto rtl:right-4 flex items-center">
-              <Icons.mail className="stroke-gray-500" />
+            <div className="relative grow w-full sm:w-auto order-1 sm:order-1 flex bg-white rounded-lg">
+              <Input
+                className="text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={subscribeMutation.isPending}
+              />
+              <div className="absolute inset-y-0 left-4 rtl:left-auto rtl:right-4 flex items-center">
+                <Icons.mail className="stroke-gray-500" />
+              </div>
             </div>
-          </div>
+            <Button
+              type="submit"
+              size={"sm"}
+              variant={"secondary"}
+              className="bg-primary hover:bg-primary-blue-700 text-white border rounded-xl !border-white order-2"
+              disabled={!email || subscribeMutation.isPending}
+            >
+              {subscribeMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                t("newsletter.button")
+              )}
+            </Button>
+          </form>
+          {/* {subscribeMutation.isError && (
+            <p className="text-red-500 text-sm mt-1">
+              {subscribeMutation.error?.message ||
+                "Failed to subscribe. Please try again."}
+            </p>
+          )}
+          {subscribeMutation.isSuccess && (
+            <p className="text-green-500 text-sm mt-1">
+              {t("newsletter.success")}
+            </p>
+          )} */}
         </div>
 
         <div className="text-center rtl:md:text-right ltr:md:text-left w-full md:w-auto">
@@ -178,10 +229,10 @@ const TopRightSection = () => {
 
 const BottomLeftSection = () => {
   return (
-    <div className="order-2 relative flex-1/2 xl:flex-4/12 flex bg-secondary-mint-green text-white pt-2.5 pb-5  text-center md:text-left">
-      <div className="-z-50 absolute top-0 bottom-0 right-[-500%] left-[-500%] rtl:md:right-0 ltr:md:left-0 bg-secondary-mint-green" />
+    <div className="order-2 relative flex-1/2 xl:flex-4/12 flex bg-primary-blue text-white pt-2.5 pb-5  text-center md:text-left">
+      <div className="-z-50 absolute top-0 bottom-0 right-[-500%] left-[-500%] rtl:md:right-0 ltr:md:left-0 bg-primary-blue" />
 
-      <p className="mt-auto w-full text-gray font-medium ltr:md:text-right">
+      <p className="mt-auto w-full text-white font-medium ltr:md:text-right">
         © 2025 First Step. All rights reserved.
       </p>
     </div>
@@ -225,8 +276,8 @@ const BottomRightSection = () => {
   ];
 
   return (
-    <div className="md:order-1 relative flex-1/2 xl:flex-8/12 bg-secondary-mint-green text-gray pt-2.5 pb-5 flex justify-center md:justify-start items-center">
-      <div className="-z-50 absolute top-0 bottom-0 right-[-500%] left-[-500%] rtl:md:left-0 ltr:md:right-0 bg-secondary-mint-green" />
+    <div className="md:order-1 relative flex-1/2 xl:flex-8/12 bg-primary-blue text-white pt-2.5 pb-5 flex justify-center md:justify-start items-center">
+      <div className="-z-50 absolute top-0 bottom-0 right-[-500%] left-[-500%] rtl:md:left-0 ltr:md:right-0 bg-primary-blue" />
 
       <div className="flex flex-col gap-3 items-center md:items-start">
         <span className="font-bold">{t("followTitle")}</span>
@@ -239,7 +290,7 @@ const BottomRightSection = () => {
               className="group flex items-center justify-center"
               aria-label={item.title}
             >
-              <item.icon className="text-gray group-hover:text-primary duration-150 size-6" />
+              <item.icon className="text-white group-hover:text-secondary-mint-green duration-150 size-6" />
             </a>
           ))}
         </div>

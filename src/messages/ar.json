@@ -61,7 +61,15 @@
       "terms": { "title": "الشروط والأحكام", "path": "/terms" }
     },
     "contactTitle": "تواصل معنا",
-    "newsletter": { "title": "نشرة أخبارنا", "button": "سجل الآن" },
+    "newsletter": {
+      "title": "اشترك في نشرتنا البريدية",
+      "button": "سجل الآن",
+      "successTitle": "تم الاشتراك بنجاح!",
+      "successMessage": "شكراً لك على الاشتراك في نشرتنا البريدية.",
+      "errorTitle": "فشل الاشتراك",
+      "errorMessage": "حدث خطأ أثناء محاولة الاشتراك. يرجى المحاولة مرة أخرى.",
+      "success": "شكراً لك على الاشتراك!"
+    },
     "appDownloadTitle": "حمل التطبيق الآن",
     "followTitle": "تابعونا هنا"
   },
