@@ -118,7 +118,7 @@ const ReservationForm = ({
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, type: 'spring', stiffness: 60 }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
         className="bg-white rounded-xl shadow-lg p-8 text-center"
       >
         <div className="mb-6">
@@ -163,14 +163,19 @@ const ReservationForm = ({
       className="space-y-8"
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, type: 'spring', stiffness: 60 }}
+      transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
     >
       {/* Program Type Selection */}
       <motion.div
         className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.1,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         {programs[locale].map((p) => {
           const selected = program === p.id;
@@ -212,44 +217,68 @@ const ReservationForm = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.15,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "عدد الساعات" : "Number of Hours"}
         </label>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <div className="flex flex-col items-center">
-            <span className="mb-1 text-sm text-gray-600">
-              {locale === "ar" ? "من" : "From"}
-            </span>
-            <select
-              className="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB]"
-              value={fromTime}
-              onChange={(e) => setFromTime(e.target.value)}
-            >
-              {timeOptions.map((t) => (
-                <option key={t} value={t}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto px-2 pb-2">
+            {timeOptions.map((t, idx) => {
+              const isSelected = t === fromTime || t === toTime;
+              const isInRange =
+                fromTime &&
+                toTime &&
+                timeOptions.indexOf(t) > timeOptions.indexOf(fromTime) &&
+                timeOptions.indexOf(t) < timeOptions.indexOf(toTime);
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  className={`px-3 py-1 rounded-full border-2 text-sm font-bold transition
+                    ${
+                      isSelected
+                        ? "bg-[#4D5EDB] text-white border-[#4D5EDB]"
+                        : isInRange
+                        ? "bg-[#E6E9F8] text-[#22336C] border-[#B6BEE6]"
+                        : "bg-white text-[#22336C] border-gray-300"
+                    }
+                    focus:outline-none focus:ring-2 focus:ring-[#4D5EDB]`}
+                  style={{ minWidth: 56 }}
+                  onClick={() => {
+                    if (!fromTime || (fromTime && toTime)) {
+                      setFromTime(t);
+                      setToTime("");
+                    } else if (fromTime && !toTime) {
+                      if (
+                        timeOptions.indexOf(t) > timeOptions.indexOf(fromTime)
+                      ) {
+                        setToTime(t);
+                      } else {
+                        setFromTime(t);
+                      }
+                    }
+                  }}
+                  aria-pressed={isSelected || isInRange}
+                >
                   {t}
-                </option>
-              ))}
-            </select>
+                </button>
+              );
+            })}
           </div>
-          <span className="font-bold text-lg">-</span>
-          <div className="flex flex-col items-center">
-            <span className="mb-1 text-sm text-gray-600">
-              {locale === "ar" ? "إلى" : "To"}
-            </span>
-            <select
-              className="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB]"
-              value={toTime}
-              onChange={(e) => setToTime(e.target.value)}
-            >
-              {timeOptions.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+          <div className="text-xs text-gray-500 mt-1">
+            {fromTime && toTime
+              ? `${locale === "ar" ? "من" : "From"} ${fromTime} ${
+                  locale === "ar" ? "إلى" : "to"
+                } ${toTime}`
+              : locale === "ar"
+              ? "اختر وقت البداية ثم النهاية"
+              : "Select start time then end time"}
           </div>
         </div>
       </motion.div>
@@ -258,7 +287,12 @@ const ReservationForm = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.2,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "تاريخ الحجز" : "Booking Date"}
@@ -295,7 +329,12 @@ const ReservationForm = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.25,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
           {locale === "ar" ? "اختر طفل أو أكثر" : "Select One or More Children"}
@@ -309,83 +348,101 @@ const ReservationForm = ({
             paddingRight: 8,
           }}
         >
-          {(realChildren && realChildren.length > 0
-            ? realChildren
-            : mockChildren
-          ).map((child, idx) => {
-            return (
-              <motion.button
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: idx * 0.08,
-                  duration: 0.4,
-                  type: "spring",
-                  stiffness: 60,
-                }}
-                type="button"
-                key={child.id}
-                onClick={() => handleChildSelect(child.id.toString())}
-                className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
-                  ${
-                    selectedChildren.includes(child.id.toString())
-                      ? "border-[#4D5EDB] shadow"
-                      : "border-gray-300"
-                  } focus:outline-none bg-white hover:shadow-lg`}
-                style={{ flex: "0 0 auto", marginRight: 12 }}
-              >
-                <div
-                  className={`w-16 h-16 flex items-center justify-center ${
-                    selectedChildren.includes(child.id.toString())
-                      ? "mb-0 mt-0"
-                      : "mb-2 mt-2"
-                  } transition-all duration-200`}
-                  style={{
-                    marginTop: selectedChildren.includes(child.id.toString())
-                      ? 0
-                      : undefined,
-                  }}
+          {isChildrenLoading
+            ? Array.from({ length: 4 }).map((_, idx) => (
+                <motion.div
+                  key={idx}
+                  className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: idx * 0.1, duration: 0.5 }}
                 >
-                  <Image
-                    src={
-                      child.gender === "boy"
-                        ? "/assets/illustrations/boy.png"
-                        : "/assets/illustrations/girl.png"
-                    }
-                    alt={child.child_name || child.nameEn}
-                    width={64}
-                    height={64}
-                    style={{
-                      objectFit: "contain",
-                      filter: selectedChildren.includes(child.id.toString())
-                        ? "none"
-                        : "grayscale(100%) brightness(0.8)",
-                      transform: selectedChildren.includes(child.id.toString())
-                        ? "scale(1.1)"
-                        : "scale(1)",
-                      transition: "all 0.2s",
+                  <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
+                  <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
+                  <div className="w-8 h-3 bg-gray-300 rounded" />
+                </motion.div>
+              ))
+            : (realChildren && realChildren.length > 0
+                ? realChildren
+                : mockChildren
+              ).map((child, idx) => {
+                return (
+                  <motion.button
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: idx * 0.08,
+                      duration: 0.4,
+                      type: "spring",
+                      stiffness: 60,
                     }}
-                  />
-                </div>
-                <span
-                  className={`font-bold text-sm text-center mt-2 ${
-                    selectedChildren.includes(child.id.toString())
-                      ? "text-[#22336C]"
-                      : "text-gray-600"
-                  }`}
-                >
-                  {child.child_name ||
-                    child.name ||
-                    (locale === "ar" ? child.name : child.nameEn)}
-                </span>
-                {selectedChildren.includes(child.id.toString()) && (
-                  <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
-                    ✓
-                  </span>
-                )}
-              </motion.button>
-            );
-          })}
+                    type="button"
+                    key={child.id}
+                    onClick={() => handleChildSelect(child.id.toString())}
+                    className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
+                    ${
+                      selectedChildren.includes(child.id.toString())
+                        ? "border-[#4D5EDB] shadow"
+                        : "border-gray-300"
+                    } focus:outline-none bg-white hover:shadow-lg`}
+                    style={{ flex: "0 0 auto", marginRight: 12 }}
+                  >
+                    <div
+                      className={`w-16 h-16 flex items-center justify-center ${
+                        selectedChildren.includes(child.id.toString())
+                          ? "mb-0 mt-0"
+                          : "mb-2 mt-2"
+                      } transition-all duration-200`}
+                      style={{
+                        marginTop: selectedChildren.includes(
+                          child.id.toString()
+                        )
+                          ? 0
+                          : undefined,
+                      }}
+                    >
+                      <Image
+                        src={
+                          child.gender === "boy"
+                            ? "/assets/illustrations/boy.png"
+                            : "/assets/illustrations/girl.png"
+                        }
+                        alt={child.child_name || child.nameEn}
+                        width={64}
+                        height={64}
+                        style={{
+                          objectFit: "contain",
+                          filter: selectedChildren.includes(child.id.toString())
+                            ? "none"
+                            : "grayscale(100%) brightness(0.8)",
+                          transform: selectedChildren.includes(
+                            child.id.toString()
+                          )
+                            ? "scale(1.1)"
+                            : "scale(1)",
+                          transition: "all 0.2s",
+                        }}
+                      />
+                    </div>
+                    <span
+                      className={`font-bold text-sm text-center mt-2 ${
+                        selectedChildren.includes(child.id.toString())
+                          ? "text-[#22336C]"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {child.child_name ||
+                        child.name ||
+                        (locale === "ar" ? child.name : child.nameEn)}
+                    </span>
+                    {selectedChildren.includes(child.id.toString()) && (
+                      <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
+                        ✓
+                      </span>
+                    )}
+                  </motion.button>
+                );
+              })}
         </div>
       </motion.div>
 
@@ -394,7 +451,12 @@ const ReservationForm = ({
         className="max-w-md mx-auto bg-white rounded-xl shadow p-6 mb-4"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.25,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
           {locale === "ar" ? "تفاصيل الحجز" : "Booking Summary"}
@@ -435,7 +497,12 @@ const ReservationForm = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
         className="text-xs text-gray-400 text-center max-w-lg mx-auto"
       >
         {locale === "ar"
@@ -450,7 +517,12 @@ const ReservationForm = ({
         className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35, duration: 0.4, type: 'spring', stiffness: 60 }}
+        transition={{
+          delay: 0.35,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
       >
         {isSubmitting
           ? locale === "ar"
