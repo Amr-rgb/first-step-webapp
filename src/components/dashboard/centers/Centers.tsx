@@ -2,19 +2,14 @@
 
 import CenterCard from "./CenterCard";
 import { useCenters } from "@/hooks/useBranches";
+import { useTranslations } from "next-intl";
 
 const Centers = () => {
-  const {
-    data: centers,
-    isLoading,
-    error,
-    refetch
-  } = useCenters()
+  const { data: centers, isLoading, error } = useCenters();
+  const t = useTranslations("dashboard.admin.center");
 
-  console.log(error)
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>حدث خطأ أثناء تحميل الحضانات</div>;
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div>{t("error.load")}</div>;
 
   return (
     <div className="flex flex-col gap-4">

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormControl,
@@ -27,8 +28,8 @@ const BlogRequestForm = () => {
   const t = useTranslations("dashboard.center.ad-or-blog-request.blog.form");
   const [preview1, setPreview1] = useState<string | null>(null);
   const [preview2, setPreview2] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const blogRequestSchema = createBlogRequestSchema(locale as "ar" | "en");
 
@@ -44,17 +45,17 @@ const BlogRequestForm = () => {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: BlogRequestFormData) => {
-    try {
-      setIsSubmitting(true);
-      await centerService.requestBlog({
+  const createBlogMutation = useMutation({
+    mutationFn: async (data: BlogRequestFormData) => {
+      return centerService.requestBlog({
         title: data.title,
         description: data.description,
         content: data.content,
         cover: data.mainImage?.[0] as File,
         blog_image: data.cardImage?.[0] as File,
       });
-
+    },
+    onSuccess: () => {
       toast(t("success.title"), {
         description: t("success.description"),
       });
@@ -64,17 +65,27 @@ const BlogRequestForm = () => {
       setPreview1(null);
       setPreview2(null);
 
+      // Invalidate the blogs query to refetch the list
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+
       // Navigate back
       router.back();
-    } catch (error) {
+    },
+    onError: (error) => {
       toast(t("error.title"), {
         description: t("error.description"),
       });
       console.error("Error submitting blog request:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: BlogRequestFormData) => {
+    createBlogMutation.mutate(data);
   };
+
+  const formData = methods.watch();
+  const isFormValid = methods.formState.isValid;
+  const isSubmitting = createBlogMutation.isPending;
 
   return (
     <FormProvider {...methods}>
@@ -109,7 +120,7 @@ const BlogRequestForm = () => {
                   <label
                     htmlFor="image-upload1"
                     className={clsx(
-                      "w-full aspect-[1440/680] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
+                      "w-full aspect-[1440/610] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
                       preview1 && "p-2"
                     )}
                   >
@@ -118,7 +129,7 @@ const BlogRequestForm = () => {
                         src={preview1}
                         alt="Preview"
                         width={1440}
-                        height={600}
+                        height={610}
                         className="rounded-md object-cover h-full w-full"
                       />
                     ) : (

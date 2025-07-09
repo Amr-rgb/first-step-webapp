@@ -10,19 +10,21 @@ interface CentersProps {
   selected: Center[];
   setSelected: React.Dispatch<React.SetStateAction<Center[]>>;
   selectedBranchMap: Record<number, number>;
-  setSelectedBranchMap: React.Dispatch<React.SetStateAction<Record<number, number>>>;
+  setSelectedBranchMap: React.Dispatch<
+    React.SetStateAction<Record<number, number>>
+  >;
 }
 
-const Centers: React.FC<CentersProps> = ({ 
-  selected, 
+const Centers: React.FC<CentersProps> = ({
+  selected,
   setSelected,
   selectedBranchMap,
-  setSelectedBranchMap
+  setSelectedBranchMap,
 }) => {
   const columns = useCentersColumns(selectedBranchMap, setSelectedBranchMap);
 
   const { data: centersData, isLoading } = useQuery({
-    queryKey: ["centers"],
+    queryKey: ["notifications-centers"],
     queryFn: adminService.getCenters,
   });
 
@@ -30,17 +32,18 @@ const Centers: React.FC<CentersProps> = ({
   const transformedData: Center[] = React.useMemo(() => {
     if (!centersData) return [];
 
-    return centersData.data.map((center: any) => ({
+    return centersData.map((center: any) => ({
       id: center.user_id,
       centerName: center.nursery_name,
       phone: center.phone,
       email: center.user?.email,
-      branches: center.branches?.map((branch: any) => ({
-        id: branch.user_id,
-        name: branch.name,
-        phone: branch.phone,
-        email: branch.email_admin_branch,
-      })) || [],
+      branches:
+        center.branches?.map((branch: any) => ({
+          id: branch.user_id,
+          name: branch.name,
+          phone: branch.phone,
+          email: branch.email_admin_branch,
+        })) || [],
     }));
   }, [centersData]);
 

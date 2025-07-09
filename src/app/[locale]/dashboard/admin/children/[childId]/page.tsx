@@ -28,7 +28,7 @@ export default function ChildDetailsPage({
     name: data.user?.name || "",
     phone: data.user?.phone || "",
     email: data.user?.email || "",
-    kinship: data.Kinship || "",
+    kinship: data.kinship || "",
     childName: data.child_name,
     birthDate: new Date(data.birthday_date),
     fatherName: data.parent_name,

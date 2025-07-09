@@ -8,6 +8,7 @@ import { Providers } from "../providers";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
+import CookieSync from "@/components/auth/CookieSync";
 
 const tajawal = Tajawal({
   weight: ["400", "500", "700", "800"],
@@ -43,6 +44,7 @@ export default async function RootLayout({
       >
         <GoogleAnalytics />
         <NextIntlClientProvider>
+          <CookieSync />
           <Providers>{children}</Providers>
           <Toaster />
         </NextIntlClientProvider>

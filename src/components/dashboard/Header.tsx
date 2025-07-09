@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Bell, Settings, Search } from "lucide-react";
+import { Bell, Settings, Search, Maximize2, Minimize2 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type BreadcrumbItem = {
   title: string;
@@ -25,7 +26,17 @@ type RouteConfig = {
   children?: RouteConfig[];
 };
 
-export default function Header() {
+type HeaderProps = {
+  onToggleFullscreen: () => void;
+  sidebarOpen: boolean;
+  secondarySidebarOpen: boolean;
+};
+
+export default function Header({
+  onToggleFullscreen,
+  sidebarOpen,
+  secondarySidebarOpen,
+}: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
   const t = useTranslations("dashboard.header");
@@ -100,12 +111,15 @@ export default function Header() {
   // Generate breadcrumbs based on current path
   const breadcrumbs = useMemo<BreadcrumbItem[]>(() => {
     const result: BreadcrumbItem[] = [];
-    const segments = pathname.split('/').filter(Boolean);
-    
+    const segments = pathname.split("/").filter(Boolean);
+
     // Skip the locale segment if present
-    const localeIndex = segments.findIndex(s => s === 'ar' || s === 'en' || s === 'ku');
-    const pathSegments = localeIndex >= 0 ? segments.slice(localeIndex + 1) : segments;
-    
+    const localeIndex = segments.findIndex(
+      (s) => s === "ar" || s === "en" || s === "ku"
+    );
+    const pathSegments =
+      localeIndex >= 0 ? segments.slice(localeIndex + 1) : segments;
+
     // If we're at the root dashboard, return empty array
     if (pathSegments.length <= 1) {
       return [];
@@ -113,17 +127,17 @@ export default function Header() {
 
     // Find the matching route
     let currentRoutes = routes;
-    let currentPath = '';
-    
+    let currentPath = "";
+
     for (let i = 1; i < pathSegments.length; i++) {
       const segment = pathSegments[i];
       const isLast = i === pathSegments.length - 1;
       currentPath += `/${segment}`;
-      
+
       // Find matching route
-      const route = currentRoutes.find(r => {
+      const route = currentRoutes.find((r) => {
         // Handle dynamic segments
-        if (r.path.startsWith('[') && r.path.endsWith(']')) {
+        if (r.path.startsWith("[") && r.path.endsWith("]")) {
           return true;
         }
         return r.path === segment;
@@ -131,7 +145,7 @@ export default function Header() {
 
       if (route) {
         let title: string;
-        
+
         // Try to get translation from the specific route first, then fallback to common
         try {
           title = t(`routes.${route.titleKey}`);
@@ -144,7 +158,7 @@ export default function Header() {
         }
 
         // For dynamic segments, use the actual segment value in the title
-        if (route.path.startsWith('[') && route.path.endsWith(']')) {
+        if (route.path.startsWith("[") && route.path.endsWith("]")) {
           title = `${title} #${segment}`;
         }
 
@@ -158,7 +172,7 @@ export default function Header() {
           currentRoutes = route.children;
         } else if (!isLast) {
           // If no more children but we still have segments, add remaining segments
-          const remainingPath = pathSegments.slice(i + 1).join('/');
+          const remainingPath = pathSegments.slice(i + 1).join("/");
           result.push({
             title: remainingPath,
             url: `/${pathSegments[0]}${currentPath}/${remainingPath}`,
@@ -179,35 +193,43 @@ export default function Header() {
 
   return (
     <header className="flex items-center justify-between px-6 py-4.5">
-      {/* Breadcrumbs */}
-      <Breadcrumb className="w-full flex">
-        <BreadcrumbList>
-          {breadcrumbs.map((item, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && <BreadcrumbSeparator />}
-              <BreadcrumbItem>
-                {index === breadcrumbs.length - 1 ? (
-                  <BreadcrumbPage className="line-clamp-1" title={item.title}>
-                    {item.title}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link href={item.url} className="line-clamp-1" title={item.title}>
+      {/* Left: Sidebar toggle & Breadcrumbs */}
+      <div className="w-fit flex items-center gap-x-6">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="fixed md:relative md:inset-0 left-4 top-4 rtl:left-auto rtl:right-4 flex justify-center items-center bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white/90 transition-colors rounded-lg size-8 cursor-pointer" />
+        </div>
+
+        {/* Breadcrumbs */}
+        <Breadcrumb className="flex justify-center">
+          <BreadcrumbList>
+            {breadcrumbs.map((item, index) => (
+              <React.Fragment key={index}>
+                {index > 0 && <BreadcrumbSeparator />}
+                <BreadcrumbItem>
+                  {index === breadcrumbs.length - 1 ? (
+                    <BreadcrumbPage className="line-clamp-1" title={item.title}>
                       {item.title}
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </React.Fragment>
-          ))}
-        </BreadcrumbList>
-      </Breadcrumb>
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link
+                        href={item.url}
+                        className="line-clamp-1"
+                        title={item.title}
+                      >
+                        {item.title}
+                      </Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
-      {/* Left Section (appears on right in RTL) */}
-      <div className="w-full flex justify-end items-center gap-6">
-        <Settings className="size-6 text-mid-gray cursor-pointer" />
-        <Bell className="size-6 text-mid-gray cursor-pointer" />
-
+      {/* Right: Fullscreen button and other controls */}
+      <div className="flex-1 flex items-center justify-end gap-6">
         {/* Center Section - Search */}
         <div className="hidden sm:block relative w-full max-w-52 mx-4">
           <Input
@@ -219,6 +241,22 @@ export default function Header() {
           />
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-light-gray" />
         </div>
+
+        <Bell className="size-6 text-mid-gray cursor-pointer" />
+        <Settings className="size-6 text-mid-gray cursor-pointer" />
+
+        {/* Fullscreen toggle (only on xl screens, far right) */}
+        <button
+          onClick={onToggleFullscreen}
+          className="hidden xl:flex justify-center items-center bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white/90 transition-colors rounded-lg size-8 cursor-pointer"
+          aria-label="Toggle fullscreen mode"
+        >
+          {sidebarOpen || secondarySidebarOpen ? (
+            <Maximize2 className="size-4" />
+          ) : (
+            <Minimize2 className="size-4" />
+          )}
+        </button>
       </div>
     </header>
   );

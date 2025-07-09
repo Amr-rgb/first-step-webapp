@@ -39,11 +39,12 @@ const BlogsSection = () => {
       const response = await centerService.getBlogs();
       return response.data.map((blog: any) => ({
         id: blog.id,
-        title: blog.center.name,
+        title: blog.title,
         description: blog.description,
         image: blog.blog_image_url,
-        created_at: blog.created_at,
-        published_at: blog.created_at.split(" ")[0],
+        readingTime: blog.reading_time,
+        created_at: blog.created_at.split("T")[0],
+        published_at: blog.created_at.split("T")[0],
       }));
     },
   });
@@ -61,13 +62,19 @@ const BlogsSection = () => {
       </div>
 
       <div className="grid md:grid-cols-3 items-start gap-10">
+        {blogsData
+          ? blogsData?.map((blog) => <BlogCard key={blog.id} blog={blog} />)
+          : null}
+
         {isLoading ? (
           <>
             <BlogCardSkeleton />
             <BlogCardSkeleton />
             <BlogCardSkeleton />
           </>
-        ) : error ? (
+        ) : null}
+
+        {error ? (
           <div className="col-span-3 flex flex-col items-center justify-center gap-4 rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
             <AlertCircle className="h-8 w-8 text-destructive" />
             <div className="space-y-2">
@@ -87,9 +94,7 @@ const BlogsSection = () => {
               {t("blog.form.error.retry")}
             </Button>
           </div>
-        ) : (
-          blogsData?.map((blog) => <BlogCard key={blog.id} blog={blog} />)
-        )}
+        ) : null}
       </div>
     </div>
   );

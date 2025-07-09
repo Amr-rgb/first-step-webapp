@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { ColumnDef } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -19,53 +20,59 @@ const BlogsRenderer = ({ value }: { value: number }) => {
   return <div className="text-center">{value}</div>;
 };
 
-export const columns: ColumnDef<Blog>[] = [
-  {
-    accessorKey: "id",
-    header: () => (
-      <div className="text-[.7rem] font-normal text-center">----</div>
-    ),
-    cell: ({ row }) => {
-      return <div className="text-center">{row.index + 1}</div>;
-    },
-  },
-  {
-    accessorKey: "center",
-    header: "Center Or Nursery",
-    cell: ({ row }) => {
-      return (
-        <div>
-          <Link
-            className="hover:text-secondary-mint-green"
-            href={`blog/center/${row.getValue("id")}`}
-          >
-            {row.getValue("center")}
-          </Link>
+export const useCenterBlogsColumns = () => {
+  const t = useTranslations("dashboard.tables.centerBlogs");
+  const columns: ColumnDef<Blog>[] = [
+    {
+      accessorKey: "id",
+      header: () => (
+        <div className="text-[.7rem] font-normal text-center">
+          {t("id")}
         </div>
-      );
+      ),
+      cell: ({ row }) => {
+        return <div className="text-center">{row.index + 1}</div>;
+      },
     },
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone Number",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "acceptedBlogs",
-    header: "Accepted Blogs",
-    cell: ({ row }) => BlogsRenderer({ value: row.getValue("acceptedBlogs") }),
-  },
-  {
-    accessorKey: "pendingBlogs",
-    header: "Pending Blogs",
-    cell: ({ row }) => BlogsRenderer({ value: row.getValue("pendingBlogs") }),
-  },
-  {
-    accessorKey: "rejectedBlogs",
-    header: "Rejected Blogs",
-    cell: ({ row }) => BlogsRenderer({ value: row.getValue("rejectedBlogs") }),
-  },
-];
+    {
+      accessorKey: "center",
+      header: t("center"),
+      cell: ({ row }) => {
+        return (
+          <div>
+            <Link
+              className="hover:text-secondary-mint-green"
+              href={`blog/center/${row.getValue("id")}`}
+            >
+              {row.getValue("center")}
+            </Link>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "phone",
+      header: t("phone"),
+    },
+    {
+      accessorKey: "email",
+      header: t("email"),
+    },
+    {
+      accessorKey: "acceptedBlogs",
+      header: t("acceptedBlogs"),
+      cell: ({ row }) => BlogsRenderer({ value: row.getValue("acceptedBlogs") }),
+    },
+    {
+      accessorKey: "pendingBlogs",
+      header: t("pendingBlogs"),
+      cell: ({ row }) => BlogsRenderer({ value: row.getValue("pendingBlogs") }),
+    },
+    {
+      accessorKey: "rejectedBlogs",
+      header: t("rejectedBlogs"),
+      cell: ({ row }) => BlogsRenderer({ value: row.getValue("rejectedBlogs") }),
+    },
+  ];
+  return columns;
+};

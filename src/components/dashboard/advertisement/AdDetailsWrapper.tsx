@@ -7,6 +7,7 @@ import AdRequestForm from "@/components/forms/dashboard/adblog-request/AdRequest
 import { AdRequestFormData } from "@/lib/schemas";
 import { adminService } from "@/services/dashboardApi";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type AdType = "accepted" | "pending" | "rejected";
 
@@ -24,6 +25,7 @@ const AdDetailsWrapper = ({
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("dashboard.admin.advertisement.adDetails");
 
   const editMutation = useMutation({
     mutationFn: (data: Partial<AdRequestFormData>) => {
@@ -40,43 +42,43 @@ const AdDetailsWrapper = ({
       return adminService.updateAdvertisement(adId, transformedData);
     },
     onSuccess: () => {
-      toast.success("تم تحديث الإعلان بنجاح");
+      toast.success(t("updateSuccess"));
     },
     onError: (error) => {
-      toast.error("حدث خطأ أثناء تحديث الإعلان");
+      toast.error(t("updateError"));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: () => adminService.deleteAdvertisement(adId),
     onSuccess: () => {
-      toast.success("تم حذف الإعلان بنجاح");
+      toast.success(t("deleteSuccess"));
       router.push(`/dashboard/admin/advertisement`);
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء حذف الإعلان");
+      toast.error(t("deleteError"));
     },
   });
 
   const acceptMutation = useMutation({
     mutationFn: () => adminService.approveCenterAd(adId),
     onSuccess: () => {
-      toast.success("تم قبول الإعلان بنجاح");
+      toast.success(t("acceptSuccess"));
       queryClient.invalidateQueries({ queryKey: ["centerAds"] });
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء قبول الإعلان");
+      toast.error(t("acceptError"));
     },
   });
 
   const rejectMutation = useMutation({
     mutationFn: () => adminService.rejectCenterAd(adId),
     onSuccess: () => {
-      toast.success("تم رفض الإعلان بنجاح");
+      toast.success(t("rejectSuccess"));
       queryClient.invalidateQueries({ queryKey: ["centerAds"] });
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء رفض الإعلان");
+      toast.error(t("rejectError"));
     },
   });
 
@@ -118,9 +120,9 @@ const AdDetailsWrapper = ({
       case "accepted":
         return (
           <>
-            <Button asChild size={"sm"}>
-              <Link href={`${adId}/edit`}>تعديل الإعلان</Link>
-            </Button>
+            {/* <Button asChild size={"sm"}>
+              <Link href={`${adId}/edit`}>{t("editAd")}</Link>
+            </Button> */}
             <Button
               onClick={deleteHandler}
               size={"sm"}
@@ -129,8 +131,8 @@ const AdDetailsWrapper = ({
               disabled={deleteMutation.status === "pending"}
             >
               {deleteMutation.status === "pending"
-                ? "جاري الحذف..."
-                : "حذف الإعلان"}
+                ? t("deleting")
+                : t("deleteAd")}
             </Button>
           </>
         );
@@ -142,7 +144,7 @@ const AdDetailsWrapper = ({
               size={"sm"}
               disabled={acceptMutation.isPending}
             >
-              {acceptMutation.isPending ? "جاري القبول..." : "قبول الإعلان"}
+              {acceptMutation.isPending ? t("accepting") : t("acceptAd")}
             </Button>
             <Button
               onClick={rejectHandler}
@@ -151,7 +153,7 @@ const AdDetailsWrapper = ({
               className="!border-destructive text-destructive"
               disabled={rejectMutation.isPending}
             >
-              {rejectMutation.isPending ? "جاري الرفض..." : "رفض الإعلان"}
+              {rejectMutation.isPending ? t("rejecting") : t("rejectAd")}
             </Button>
           </>
         );
@@ -159,16 +161,16 @@ const AdDetailsWrapper = ({
         return (
           <>
             <Button onClick={acceptHandler} size={"sm"}>
-              قبول الإعلان
+              {t("acceptAd")}
             </Button>
-            <Button
+            {/* <Button
               asChild
               size={"sm"}
               variant={"outline"}
               className="!border-light-gray text-mid-gray"
             >
-              <Link href={`${adId}/edit`}>تعديل الإعلان</Link>
-            </Button>
+              <Link href={`${adId}/edit`}>{t("editAd")}</Link>
+            </Button> */}
           </>
         );
       default:
@@ -191,9 +193,7 @@ const AdDetailsWrapper = ({
               dirtyFields.length === 0 || editMutation.status === "pending"
             }
           >
-            {editMutation.status === "pending"
-              ? "جاري التحديث..."
-              : "تعديل الإعلان"}
+            {editMutation.status === "pending" ? t("updating") : t("editAd")}
           </Button>
           <Button
             onClick={deleteHandler}
@@ -203,8 +203,8 @@ const AdDetailsWrapper = ({
             disabled={deleteMutation.status === "pending"}
           >
             {deleteMutation.status === "pending"
-              ? "جاري الحذف..."
-              : "حذف الإعلان"}
+              ? t("deleting")
+              : t("deleteAd")}
           </Button>
         </>
       );

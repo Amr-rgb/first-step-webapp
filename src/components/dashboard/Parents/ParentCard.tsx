@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface Child {
   id: number;
@@ -25,42 +26,43 @@ const ParentCard = ({
   childrenCount,
   children,
 }: ParentCardProps) => {
+  const t = useTranslations("dashboard.admin.parents.card");
   return (
     <div className="relative bg-sidebar border-b border-light-gray p-6 flex flex-col lg:flex-row gap-8">
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-2 lg:gap-4">
           <p className="font-bold text-primary text-xl">{name}</p>
           <span className="font-medium text-mid-gray flex gap-1">
-            <span>رقم الجوال:</span>
+            <span>{t("phone")}</span>
             <span>{phone}</span>
           </span>
           <span className="font-medium text-mid-gray flex gap-1">
-            <span>البريد الإلكتروني:</span>
+            <span>{t("email")}</span>
             <span>{email}</span>
           </span>
           <span className="font-medium text-mid-gray flex gap-1">
-            <span>رقم الهوية:</span>
+            <span>{t("nationalId")}</span>
             <span>{national_number}</span>
           </span>
         </div>
 
         <div className="flex gap-5 lg:gap-x-10">
           <Button asChild size={"sm"}>
-            <Link href={`parents/${id}`}>عرض ولي الأمر</Link>
+            <Link href={`parents/${id}`}>{t("viewParent")}</Link>
           </Button>
         </div>
       </div>
 
       <div className="flex flex-col gap-y-4">
         <div>
-          <p className="mb-1 font-medium text-primary text-xl">عدد الأطفال</p>
+          <p className="mb-1 font-medium text-primary text-xl">{t("childrenCount")}</p>
           <span className="font-medium text-mid-gray">
-            {childrenCount} أطفال
+            {t("childrenCountValue", { count: childrenCount })}
           </span>
         </div>
 
         <div>
-          <p className="mb-1 font-medium text-primary text-xl">أسماء الأطفال</p>
+          <p className="mb-1 font-medium text-primary text-xl">{t("childrenNames")}</p>
           <div className="flex flex-col gap-y-1 font-medium text-mid-gray">
             {children.map((child) => (
               <span key={child.id}>{child.child_name}</span>

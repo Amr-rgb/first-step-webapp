@@ -24,6 +24,9 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "./DataTablePagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "../ui/sidebar";
+import { useSecondarySidebarOpen } from "@/store/sidebarStore";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,6 +52,9 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const { open: sidebarOpen } = useSidebar();
+  const secondarySidebarOpen = useSecondarySidebarOpen();
 
   const table = useReactTable({
     data,
@@ -117,7 +123,19 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="rounded-sm max-w-full overflow-hidden">
-      <div className="max-w-[calc(100vw-3rem)] md:max-w-[calc(100vw-22rem)] xl:max-w-[calc(100vw-40rem)]">
+      <div
+        className={cn(
+          "max-w-[calc(100vw-3rem)]",
+          sidebarOpen
+            ? "md:max-w-[calc(100vw-22rem)]"
+            : "md:max-w-[calc(100vw-6rem)]",
+          sidebarOpen && secondarySidebarOpen
+            ? "xl:max-w-[calc(100vw-40rem)]"
+            : !sidebarOpen && secondarySidebarOpen
+            ? "xl:max-w-[calc(100vw-25rem)]"
+            : "xl:max-w-[calc(100vw-7rem)]"
+        )}
+      >
         {isLoading ? (
           <TableSkeleton />
         ) : (

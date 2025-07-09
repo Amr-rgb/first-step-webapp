@@ -6,12 +6,14 @@ import { AdminBlogRequestFormData } from "@/lib/schemas";
 import { adminService } from "@/services/dashboardApi";
 import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function BlogDetails({
   params,
 }: {
   params: Promise<{ blogId: string }>;
 }) {
+  const t = useTranslations("dashboard.admin.blog.details");
   const { blogId } = use(params);
 
   const { data, isLoading, error } = useQuery({
@@ -22,9 +24,8 @@ export default function BlogDetails({
 
   const router = useRouter();
 
-  if (isLoading) return <div>جاري التحميل...</div>;
-  if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div className="text-red-500">{t("error")}</div>;
   if (!data) return null;
 
   // Map API response to AdminBlogRequestFormData

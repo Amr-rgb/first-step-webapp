@@ -6,29 +6,48 @@ options:
       path: /kaniko/cache
 
 steps:
-  # Step 1: Build Docker image with cache
-  - name: 'gcr.io/cloud-builders/docker'
+  # Step 0: Try to pull previous cached image
+  - name: "gcr.io/cloud-builders/docker"
+    id: Pull Cache
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker pull europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:cache || echo "No cache image found."
+
+  # Step 1: Build Docker image using pulled cache
+  - name: "gcr.io/cloud-builders/docker"
     id: Build
     args:
       - build
-      - '--cache-from'
-      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest'
-      - '--tag'
-      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest'
-      - '.'
-    volumes:
-      - name: docker-cache
-        path: /kaniko/cache
+      - "--cache-from=europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:cache"
+      - "--tag=europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest"
+      - "--tag=europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:cache"
+      - "."
 
-  # Step 2: Push to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Push
+  # (Optional) Step 1.5: Show debug images (can be removed later)
+  - name: "gcr.io/cloud-builders/docker"
+    id: Debug Images
+    entrypoint: bash
+    args:
+      - -c
+      - docker images
+
+  # Step 2: Push both production and cache images
+  - name: "gcr.io/cloud-builders/docker"
+    id: Push Latest
     args:
       - push
-      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest'
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest
+
+  - name: "gcr.io/cloud-builders/docker"
+    id: Push Cache
+    args:
+      - push
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:cache
 
   # Step 3: Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     id: Deploy
     entrypoint: gcloud
     args:
@@ -42,4 +61,4 @@ steps:
       - --allow-unauthenticated
 
 images:
-  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest'
+  - europe-west1-docker.pkg.dev/$PROJECT_ID/first-step-images/first-step-frontend:latest

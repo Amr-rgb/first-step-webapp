@@ -52,9 +52,9 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
         time_of_first_period: fetchedBranch.time_of_first_period || "",
         time_of_second_period: fetchedBranch.time_of_second_period || "",
       },
-      license_path: new File([], "empty"),
-      commercial_record_path: new File([], "empty"),
-      logo: new File([], "empty"),
+      license_path: fetchedBranch.license_path || undefined,
+      commercial_record_path: fetchedBranch.commercial_record_path || undefined,
+      logo: fetchedBranch.logo || undefined,
       comments: fetchedBranch.comments || "",
     };
   }, [fetchedBranch]);

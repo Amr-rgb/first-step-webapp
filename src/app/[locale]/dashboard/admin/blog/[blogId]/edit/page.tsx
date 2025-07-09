@@ -7,12 +7,14 @@ import { adminService } from "@/services/dashboardApi";
 import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function BlogEdit({
   params,
 }: {
   params: Promise<{ blogId: string }>;
 }) {
+  const t = useTranslations("dashboard.admin.blog.edit");
   const { blogId } = use(params);
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -35,19 +37,18 @@ export default function BlogEdit({
       });
     },
     onSuccess: () => {
-      toast("تم تحديث المدونة بنجاح");
+      toast(t("success"));
       refetch();
     },
     onError: () => {
-      toast("حدث خطأ أثناء تحديث المدونة");
+      toast(t("error"));
     },
   });
 
   const router = useRouter();
 
-  if (isLoading) return <div>جاري التحميل...</div>;
-  if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div className="text-red-500">{t("fetchError")}</div>;
   if (!data) return null;
 
   // Map API response to AdminBlogRequestFormData
@@ -87,7 +88,7 @@ export default function BlogEdit({
     <div>
       <div className="mb-3.5 flex items-center justify-between">
         <h1 className="heading-4 font-bold text-primary max-w-[39.75rem] mx-auto">
-          تعديل المدونة
+          {t("title")}
         </h1>
       </div>
       <AdminBlogForm

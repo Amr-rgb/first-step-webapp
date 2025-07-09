@@ -1,6 +1,7 @@
 // src/store/authStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware"; // Optional: for persistence
+import Cookies from "js-cookie";
 
 export type UserRole = "admin" | "center" | "branch_admin" | "parent";
 
@@ -15,6 +16,8 @@ interface User {
   updated_at: string;
   national_number: string | null;
   branch_id: number;
+  logo: string | null;
+  nurcery_name: string | null;
 }
 
 interface AuthState {
@@ -32,8 +35,21 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
-      setUserToken: (user, token) => set({ user, token }),
-      clearAuth: () => set({ user: null, token: null }),
+      setUserToken: (user, token) => {
+        set({ user, token });
+        // Also store in cookies for middleware access
+        const authData = { user, token };
+        Cookies.set('auth-storage', JSON.stringify(authData), {
+          expires: 7, // 7 days
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        });
+      },
+      clearAuth: () => {
+        set({ user: null, token: null });
+        // Also remove from cookies
+        Cookies.remove('auth-storage');
+      },
       isAuthenticated: () => !!get().token,
       hasRole: (role) => {
         const userRole = get().user?.role;

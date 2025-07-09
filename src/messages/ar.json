@@ -61,7 +61,15 @@
       "terms": { "title": "الشروط والأحكام", "path": "/terms" }
     },
     "contactTitle": "تواصل معنا",
-    "newsletter": { "title": "نشرة أخبارنا", "button": "سجل الآن" },
+    "newsletter": {
+      "title": "اشترك في نشرتنا البريدية",
+      "button": "سجل الآن",
+      "successTitle": "تم الاشتراك بنجاح!",
+      "successMessage": "شكراً لك على الاشتراك في نشرتنا البريدية.",
+      "errorTitle": "فشل الاشتراك",
+      "errorMessage": "حدث خطأ أثناء محاولة الاشتراك. يرجى المحاولة مرة أخرى.",
+      "success": "شكراً لك على الاشتراك!"
+    },
     "appDownloadTitle": "حمل التطبيق الآن",
     "followTitle": "تابعونا هنا"
   },
@@ -121,7 +129,14 @@
   "blog": {
     "title": "كل منا لديه تجربة يشاركها",
     "blog": "مدونة",
-    "subtitle": "مقالات وموارد حول رعاية الأطفال وتحقيق التوازن بين العمل والحياة الأسرية"
+    "subtitle": "مقالات وموارد حول رعاية الأطفال وتحقيق التوازن بين العمل والحياة الأسرية",
+    "relatedBlogs": "مدونة ذات صلة",
+    "minutes": "دقائق",
+    "blogImageAlt": "صورة المدونة",
+    "noRelatedBlogs": "لا توجد مدونات ذات صلة",
+    "errorLoadingBlogs": "حدث خطأ في تحميل المدونات. يرجى المحاولة مرة أخرى لاحقًا.",
+    "acceptBlog": "قبول",
+    "rejectBlog": "رفض"
   },
   "nurseries": {
     "search": "ابحث هم المركز أو الحضانة",
@@ -606,6 +621,14 @@
       "phone": "تواصل صوتي",
       "sms": "تواصل نصي",
       "video": "تواصل فيديو"
+    },
+    "additionalFeatures": {
+      "emergency-contact": "اتصال طوارئ",
+      "special-needs": "احتياجات خاصة",
+      "food-service": "وجبات طعام"
+    },
+    "branchTypes": {
+      "main-branch": "الفرع الرئيسي"
     }
   },
   "headline": {
@@ -639,8 +662,23 @@
     }
   },
   "dashboard": {
-    "center": {
-      "sidebar": {
+    "sidebar": {
+      "parent": {
+        "home": "الرئيسية",
+        "children": "أطفالي",
+        "bookings": "الحجوزات",
+        "reports": "التقارير اليومية"
+      },
+      "admin": {
+        "home": "الرئيسية",
+        "centers": "الحضانات والمراكز",
+        "parents": "أولياء الأمور",
+        "bookings": "الحجوزات",
+        "advertisement": "إعلان",
+        "blog": "مدونة",
+        "notifications": "الإشعارات"
+      },
+      "center": {
         "home": "الرئيسية",
         "branches": "فروعي",
         "children-files": "ملفات الأطفال",
@@ -650,7 +688,9 @@
         "ad-or-blog-request": "طلب إعلان أو مدونة",
         "notifications": "الإشعارات",
         "team": "فريق العمل"
-      },
+      }
+    },
+    "center": {
       "branches": {
         "title": "الفروع",
         "add": "إضافة فرع",
@@ -882,6 +922,281 @@
         }
       }
     },
+    "parent": {
+      "children": {
+        "title": "الأطفال",
+        "add": "إضافة طفل",
+        "error": "خطأ: {error}",
+        "unknownError": "خطأ غير معروف",
+        "noChildren": "لم يتم العثور على أطفال.",
+        "card": {
+          "birthday": "تاريخ الميلاد:",
+          "gender": "الجنس:",
+          "male": "ذكر",
+          "female": "أنثى",
+          "parentName": "اسم ولي الأمر:",
+          "viewProfile": "عرض ملف الطفل",
+          "editProfile": "تعديل ملف الطفل",
+          "chronicDiseases": "الأمراض المزمنة",
+          "allergies": "الحساسية",
+          "authorizedPeople": "الأشخاص المفوضة",
+          "none": "لا يوجد"
+        }
+      },
+      "bookings": {
+        "fields": {
+          "status": "حالة الحجز",
+          "startDay": "بداية يوم",
+          "endDay": "نهاية يوم",
+          "daysCount": "عدد الأيام",
+          "childName": "الطفل/الأطفال",
+          "className": "الحضانة",
+          "branch": "الفرع",
+          "program": "البرنامج",
+          "paymentMethod": "طريقة الدفع"
+        },
+        "actions": {
+          "showDetails": "عرض تفاصيل الحجز",
+          "cancel": "الغاء الحجز"
+        },
+        "status": {
+          "accepted": "تم الدفع",
+          "pending": "في انتظار الدفع",
+          "rejected": "مرفوض",
+          "waiting_confirmation": "في انتظار التأكيد",
+          "canceled": "ملغي",
+          "cancelled": "ملغي"
+        },
+        "dialogs": {
+          "cancelTitle": "تأكيد إلغاء الحجز",
+          "cancelDescription": "هل أنت متأكد أنك تريد إلغاء هذا الحجز؟ لا يمكن التراجع عن هذه العملية.",
+          "cancelConfirm": "نعم، إلغاء الحجز",
+          "cancelCancel": "تراجع"
+        },
+        "error": "حدث خطأ أثناء تحميل البيانات",
+        "cancelSuccess": "تم إلغاء الحجز بنجاح",
+        "cancelError": "حدث خطأ أثناء إلغاء الحجز"
+      },
+      "reports": {
+        "title": "التقارير اليومية",
+        "error": "فشل في جلب التقارير",
+        "permissionError": "ليس لديك صلاحية لعرض هذه التقارير",
+        "deleteSuccess": "تم حذف التقرير بنجاح",
+        "deleteError": "فشل في حذف التقرير"
+      }
+    },
+    "admin": {
+      "blog": {
+        "tabs": {
+          "firstStep": "مدونات First step",
+          "centers": "مدونات الحضانات والمراكز"
+        },
+        "loading": "جاري التحميل...",
+        "error": "حدث خطأ أثناء جلب البيانات",
+        "noTitle": "بدون عنوان",
+        "addBlog": "إضافة مدونة",
+        "editBlog": "تعديل مدونة",
+        "centers": {
+          "title": "المدونات",
+          "loading": "جاري التحميل...",
+          "error": "حدث خطأ أثناء جلب البيانات"
+        },
+        "add": {
+          "success": "تمت إضافة المدونة بنجاح",
+          "error": "حدث خطأ أثناء إضافة المدونة"
+        },
+        "edit": {
+          "title": "تعديل المدونة",
+          "success": "تم تحديث المدونة بنجاح",
+          "error": "حدث خطأ أثناء تحديث المدونة",
+          "loading": "جاري التحميل...",
+          "fetchError": "حدث خطأ أثناء جلب بيانات المدونة"
+        },
+        "details": {
+          "loading": "جاري التحميل...",
+          "error": "حدث خطأ أثناء جلب بيانات المدونة"
+        },
+        "center": {
+          "loading": "جاري التحميل...",
+          "error": "حدث خطأ أثناء جلب البيانات",
+          "noTitle": "لا يوجد عنوان",
+          "center": "حضانة أو مركز",
+          "pendingBlogs": "مدونات في انتظار القبول",
+          "acceptedBlogs": "مدونات مقبولة",
+          "rejectedBlogs": "مدونات مرفوضة",
+          "acceptBlog": "قبول المدونة",
+          "rejectBlog": "رفض المدونة",
+          "imageAlt": "صورة الغلاف",
+          "editBlog": "تعديل المدونة",
+          "blogApproved": "تمت الموافقة على المدونة بنجاح",
+          "approvalError": "فشل في الموافقة على المدونة",
+          "blogRejected": "تم رفض المدونة بنجاح",
+          "rejectionError": "فشل في رفض المدونة"
+        },
+        "form": {
+          "coverImage": "صورة الغلاف",
+          "cardImage": "صورة البطاقة",
+          "chooseCoverImage": "اختر صورة الغلاف",
+          "chooseCardImage": "اختر صورة البطاقة",
+          "preview": "معاينة",
+          "titleAr": "العنوان (عربي)",
+          "titleEn": "العنوان (إنجليزي)",
+          "descriptionAr": "الوصف (عربي)",
+          "descriptionEn": "الوصف (إنجليزي)",
+          "contentAr": "المحتوى (عربي)",
+          "contentEn": "المحتوى (إنجليزي)",
+          "titleArPlaceholder": "العنوان بالعربية",
+          "titleEnPlaceholder": "العنوان بالإنجليزية",
+          "descriptionArPlaceholder": "الوصف بالعربية",
+          "descriptionEnPlaceholder": "الوصف بالإنجليزية",
+          "contentArPlaceholder": "محتوى التدوينة بالعربية",
+          "contentEnPlaceholder": "محتوى التدوينة بالإنجليزية",
+          "save": "حفظ",
+          "saving": "جاري الحفظ...",
+          "cancel": "إلغاء"
+        }
+      },
+      "loading": "جاري التحميل...",
+      "cards": {
+        "children": "عدد الأطفال",
+        "centers": "عدد الحضانات",
+        "parents": "عدد أولياء الأمور",
+        "firstStepAds": "عدد إعلانات First Step",
+        "centerAds": "عدد إعلانات الحضانات والمراكز"
+      },
+      "charts": {
+        "bookingsComparison": "مقارنة الحجوزات",
+        "enrollments": "الحجوزات"
+      },
+      "center": {
+        "title": "المراكز",
+        "branches": "الفروع",
+        "table": {
+          "name": "الاسم",
+          "address": "العنوان",
+          "children": "الأطفال",
+          "bookings": "الحجوزات",
+          "acceptedAges": "الأعمار المقبولة",
+          "availableServices": "الخدمات المتاحة",
+          "actions": "الإجراءات"
+        },
+        "actions": {
+          "add": "إضافة مركز",
+          "edit": "تعديل المركز",
+          "delete": "حذف المركز",
+          "view": "عرض المركز"
+        },
+        "error": {
+          "load": "تعذر تحميل المراكز",
+          "unexpected": "حدث خطأ غير متوقع أثناء تحميل البيانات. تحقق من اتصالك بالإنترنت، أو حاول مرة أخرى لاحقًا."
+        },
+        "loading": "جارى تحميل البيانا...",
+        "centerAccepted": "تم قبول المركز بنجاح",
+        "centerRejected": "تم رفض المركز بنجاح",
+        "errorAcceptingCenter": "حدث خطأ أثناء قبول المركز",
+        "errorRejectingCenter": "حدث خطأ أثناء رفض المركز",
+        "confirmAcceptCenter": "هل أنت متأكد من رغبتك في قبول هذا المركز؟",
+        "confirmRejectCenter": "هل أنت متأكد من رغبتك في رفض هذا المركز؟",
+        "accept": "قبول",
+        "reject": "رفض",
+        "status": {
+          "pending": "قيد الانتظار",
+          "confirmed": "تم التأكيد",
+          "canceled": "مرفوض"
+        }
+      },
+      "parents": {
+        "tabs": {
+          "parents": "أولياء الأمور",
+          "children": "الأطفال"
+        },
+        "details": {
+          "parentInfo": "بيانات ولي الأمر",
+          "childrenInfo": "بيانات الأطفال",
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات",
+          "form": {
+            "name": "الاسم",
+            "namePlaceholder": "الاسم بالكامل كما في الهوية",
+            "phone": "رقم الجوال",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "مثال: example@email.com",
+            "nationalId": "رقم الهوية"
+          }
+        },
+        "card": {
+          "phone": "رقم الجوال:",
+          "email": "البريد الإلكتروني:",
+          "nationalId": "رقم الهوية:",
+          "viewParent": "عرض ولي الأمر",
+          "childrenCount": "عدد الأطفال",
+          "childrenCountValue": "{count, plural, zero {لا يوجد أطفال} one {# طفل} two {# طفلان} few {# أطفال} many {# طفلاً} other {# طفل}}",
+          "childrenNames": "أسماء الأطفال"
+        }
+      },
+      "advertisement": {
+        "tabs": {
+          "firstStep": "إعلانات First step",
+          "centers": "إعلانات الحضانات والمراكز"
+        },
+        "adminAds": {
+          "addNewAd": "إضافة إعلان جديد",
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات",
+          "noAds": "لا توجد إعلانات متاحة",
+          "deleteSuccess": "تم حذف الإعلان بنجاح",
+          "deleteError": "حدث خطأ أثناء حذف الإعلان",
+          "editAd": "تعديل الإعلان",
+          "deleteAd": "حذف الإعلان"
+        },
+        "details": {
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات"
+        },
+        "edit": {
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات",
+          "pageTitle": "تعديل الإعلان"
+        },
+        "adDetails": {
+          "updateSuccess": "تم تحديث الإعلان بنجاح",
+          "updateError": "حدث خطأ أثناء تحديث الإعلان",
+          "deleteSuccess": "تم حذف الإعلان بنجاح",
+          "deleteError": "حدث خطأ أثناء حذف الإعلان",
+          "acceptSuccess": "تم قبول الإعلان بنجاح",
+          "acceptError": "حدث خطأ أثناء قبول الإعلان",
+          "rejectSuccess": "تم رفض الإعلان بنجاح",
+          "rejectError": "حدث خطأ أثناء رفض الإعلان",
+          "editAd": "تعديل الإعلان",
+          "deleteAd": "حذف الإعلان",
+          "acceptAd": "قبول الإعلان",
+          "rejectAd": "رفض الإعلان",
+          "deleting": "جاري الحذف...",
+          "accepting": "جاري القبول...",
+          "rejecting": "جاري الرفض...",
+          "updating": "جاري التحديث..."
+        },
+        "center": {
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات",
+          "pageTitle": "الحضانة أو المركز",
+          "pendingAds": "إعلانات في انتظار القبول",
+          "acceptedAds": "إعلانات مقبولة",
+          "rejectedAds": "إعلانات مرفوضة"
+        },
+        "centers": {
+          "loading": "جاري التحميل...",
+          "errorLoading": "حدث خطأ أثناء جلب البيانات",
+          "reservations": "الحجوزات"
+        }
+      },
+      "bookings": {
+        "title": "الحجوزات",
+        "loading": "جاري التحميل...",
+        "errorLoading": "حدث خطأ في تحميل البيانات. يرجى المحاولة مرة أخرى لاحقًا.",
+        "noBookings": "لا توجد حجوزات متاحة"
+      }
+    },
     "header": {
       "dashboard": "لوحة التحكم",
       "home": "الرئيسية",
@@ -1094,7 +1409,39 @@
           "income": "الدخل",
           "currency": "ر.س"
         }
-      }
+      },
+      "reports": {
+        "fields": {
+          "childNumber": "رقم الطفل",
+          "childName": "اسم الطفل",
+          "nurseryName": "الحضانة",
+          "reportDate": "تاريخ التقرير",
+          "control": "التحكم"
+        },
+        "actions": {
+          "view": "عرض",
+          "download": "تحميل",
+          "delete": "حذف"
+        }
+      },
+      "centerAds": {
+        "center": "المركز أو الحضانة",
+        "phone": "رقم الجوال",
+        "email": "البريد الإلكتروني",
+        "acceptedAds": "إعلانات مقبولة",
+        "pendingAds": "إعلانات قيد الانتظار",
+        "rejectedAds": "إعلانات مرفوضة"
+      },
+      "centerBlogs": {
+        "id": "#",
+        "center": "اسم المركز",
+        "phone": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "acceptedBlogs": "المدونات المقبولة",
+        "pendingBlogs": "المدونات المعلقة",
+        "rejectedBlogs": "المدونات المرفوضة"
+      },
+      "noResults": "لا توجد نتائج."
     },
     "children": {
       "search": {
@@ -1150,5 +1497,73 @@
   "common": {
     "cancel": "إلغاء",
     "confirm": "تأكيد"
+  },
+  "HomePage": {
+    "Features": {
+      "title": "مميزات First Step",
+      "comingSoon": "قريبًا",
+      "childManagement": {
+        "title": "إدارة ملفات الأطفال والتواصل مع أولياء الأمور",
+        "description": "قاعدة بيانات متكاملة لملفات الأطفال وأولياء الأمور مع إمكانية إرسال تقارير يومية بحالة الطفل داخل الحضانة."
+      },
+      "directChat": {
+        "title": "دردشة مباشرة",
+        "description": "وسيلة تواصل فورية بين الحضانة وأولياء الأمور من خلال الموقع."
+      },
+      "taskOrganization": {
+        "title": "تنظيم المهام وإرسال الإشعارات الفورية",
+        "description": "تقويم رقمي لإدارة المناسبات والمهام اليومية، مع إشعارات فورية للتنبيه بالمستجدات والأحداث الهامة."
+      },
+      "professionalProfile": {
+        "title": "بروفايل احترافي للحضانة",
+        "description": "صفحة مخصصة لعرض أنشطة وبرامج الحضانة مع إمكانية الاشتراك المباشر من قبل أولياء الأمور."
+      },
+      "dashboard": {
+        "title": "لوحة تحكم متكاملة",
+        "description": "إدارة متكاملة لأنشطة الحضانة مع عرض إحصائيات دقيقة للأرباح وعدد الأطفال المسجلين بشكل منظم واحترافي."
+      },
+      "bookingManagement": {
+        "title": "إدارة الحجوزات",
+        "description": "متابعة يومية للحجوزات الجديدة مع إمكانية قبولها أو رفضها."
+      },
+      "adSpace": {
+        "title": "مساحة إعلانية داخل الموقع",
+        "description": "إمكانية نشر إعلانات أو تدوينات لتعزيز ظهور الحضانة."
+      }
+    },
+    "Subscription": {
+      "title": "الخطط والاشتراكات",
+      "banner": {
+        "title": "اشترك بشكل مجاني تمامًا!",
+        "subtitle": "استمتع بكل مميزات First Step",
+        "month": "لمدة شهر",
+        "limitedOffer": "العرض لفترة محدودة",
+        "cta": "اشترك في العرض الآن"
+      },
+      "plans": {
+        "popular": "الأكثر شعبية",
+        "commission": "+ 12 % عمولة على كل حجز من خلال الموقع",
+        "select": "اختر الخطة",
+        "currency": "ر.س",
+        "annual": {
+          "title": "سنوي",
+          "period": "سنويًا"
+        },
+        "semiAnnual": {
+          "title": "نصف سنوي",
+          "period": "كل 6 أشهر"
+        },
+        "quarterly": {
+          "title": "ربع سنوي",
+          "period": "كل 3 أشهر"
+        },
+        "features": {
+          "allFeatures": "جميع الميزات المتاحة",
+          "support": "دعم فني على مدار الساعة",
+          "updates": "تحديثات مجانية",
+          "discount": "وفر {discount} مع الاشتراك السنوي"
+        }
+      }
+    }
   }
 }

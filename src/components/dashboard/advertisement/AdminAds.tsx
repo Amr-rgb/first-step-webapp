@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ import { AdRequestFormData } from "@/lib/schemas";
 const AdminAds = () => {
   const queryClient = useQueryClient();
 
+  const t = useTranslations("dashboard.admin.advertisement.adminAds");
   const { data, isLoading, error } = useQuery({
     queryKey: ["adminAdvertisements"],
     queryFn: adminService.getAdvertisements,
@@ -20,11 +22,11 @@ const AdminAds = () => {
   const deleteMutation = useMutation({
     mutationFn: (adId: string) => adminService.deleteAdvertisement(adId),
     onSuccess: () => {
-      toast.success("تم حذف الإعلان بنجاح");
+      toast.success(t("deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: ["adminAdvertisements"] });
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء حذف الإعلان");
+      toast.error(t("deleteError"));
     },
   });
 
@@ -32,19 +34,21 @@ const AdminAds = () => {
   const addButton = (
     <div className="mb-4 flex justify-end">
       <Button asChild size="sm">
-        <Link href="/dashboard/admin/advertisement/add">إضافة إعلان جديد</Link>
+        <Link href="/dashboard/admin/advertisement/add">
+          {t("addNewAd")}
+        </Link>
       </Button>
     </div>
   );
 
-  if (isLoading) return <div>جاري التحميل...</div>;
+  if (isLoading) return <div>{t("loading")}</div>;
   if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+    return <div className="text-red-500">{t("errorLoading")}</div>;
   if (!data?.data?.length)
     return (
       <>
         {addButton}
-        <div>لا توجد إعلانات</div>
+        <div>{t("noAds")}</div>
       </>
     );
 
@@ -55,7 +59,7 @@ const AdminAds = () => {
   ) => (
     <>
       <Button asChild size={"sm"}>
-        <Link href={`advertisement/${adId}/edit`}>تعديل الإعلان</Link>
+        <Link href={`advertisement/${adId}/edit`}>{t("editAd")}</Link>
       </Button>
       <Button
         onClick={(e) => {
@@ -66,7 +70,7 @@ const AdminAds = () => {
         variant={"outline"}
         className="!border-destructive text-destructive"
       >
-        حذف الإعلان
+        {t("deleteAd")}
       </Button>
     </>
   );

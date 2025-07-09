@@ -341,7 +341,17 @@ const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
       }),
     city: z
       .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+      .min(1, { message: getErrorMessage("general-field-required", locale) })
+      .refine(
+        (value) => {
+          // Check if it's a valid number (city ID)
+          const cityId = parseInt(value);
+          return !isNaN(cityId) && cityId > 0;
+        },
+        {
+          message: getErrorMessage("general-field-required", locale),
+        }
+      ),
     neighborhood: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -388,7 +398,17 @@ const createCenterStep1Schema = (locale: "ar" | "en" = "ar") =>
     confirmPassword: z.string(),
     city: z
       .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+      .min(1, { message: getErrorMessage("general-field-required", locale) })
+      .refine(
+        (value) => {
+          // Check if it's a valid number (city ID)
+          const cityId = parseInt(value);
+          return !isNaN(cityId) && cityId > 0;
+        },
+        {
+          message: getErrorMessage("general-field-required", locale),
+        }
+      ),
     neighborhood: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -843,8 +863,8 @@ export const createBlogRequestSchema = (locale: "ar" | "en" = "ar") =>
     content: z.string().min(30, "محتوى التدوينة مطلوب (نص MDX)"),
     mainImage: createImageSchema(
       1440,
-      680,
-      "يجب أن يكون مقاس الصورة 1440 × 680",
+      610,
+      "يجب أن يكون مقاس الصورة 610",
       locale
     ),
     cardImage: createImageSchema(
@@ -884,8 +904,8 @@ export const createAdminBlogRequestSchema = (locale: "ar" | "en" = "ar") =>
     }),
     mainImage: createImageSchema(
       1440,
-      680,
-      "يجب أن يكون مقاس الصورة 1440 × 680",
+      610,
+      "يجب أن يكون مقاس الصورة 610",
       locale
     ),
     cardImage: createImageSchema(

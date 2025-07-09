@@ -64,7 +64,15 @@
       "terms": { "title": "Terms and Conditions", "path": "/terms" }
     },
     "contactTitle": "Contact us",
-    "newsletter": { "title": "Our Newsletter", "button": "Join Now" },
+    "newsletter": {
+      "title": "Our Newsletter",
+      "button": "Join Now",
+      "successTitle": "Subscription Successful!",
+      "successMessage": "Thank you for subscribing to our newsletter.",
+      "errorTitle": "Subscription Failed",
+      "errorMessage": "An error occurred while subscribing. Please try again.",
+      "success": "Thank you for subscribing!"
+    },
     "appDownloadTitle": "Download App Now",
     "followTitle": "Follow us"
   },
@@ -124,7 +132,14 @@
   "blog": {
     "title": "We all have an experience to share",
     "blog": "Blog",
-    "subtitle": "Articles and resources on childcare and work-life balance"
+    "subtitle": "Articles and resources on childcare and work-life balance",
+    "relatedBlogs": "Related Blogs",
+    "minutes": "minutes",
+    "blogImageAlt": "Blog image",
+    "noRelatedBlogs": "No related blogs found",
+    "errorLoadingBlogs": "Error loading blogs. Please try again later.",
+    "acceptBlog": "Accept",
+    "rejectBlog": "Reject"
   },
   "nurseries": {
     "search": "Search for a center or nursery",
@@ -610,6 +625,14 @@
       "phone": "Voice",
       "sms": "Text",
       "video": "Video"
+    },
+    "additionalFeatures": {
+      "emergency-contact": "Emergency Contact",
+      "special-needs": "Special Needs",
+      "food-service": "Food Service"
+    },
+    "branchTypes": {
+      "main-branch": "Main Branch"
     }
   },
   "headline": {
@@ -643,8 +666,23 @@
     }
   },
   "dashboard": {
-    "center": {
-      "sidebar": {
+    "sidebar": {
+      "parent": {
+        "home": "Home",
+        "children": "My Children",
+        "bookings": "Bookings",
+        "reports": "Daily Reports"
+      },
+      "admin": {
+        "home": "Home",
+        "centers": "Nurseries & Centers",
+        "parents": "Parents",
+        "bookings": "Bookings",
+        "advertisement": "Advertisement",
+        "blog": "Blog",
+        "notifications": "Notifications"
+      },
+      "center": {
         "home": "Home",
         "branches": "My Branches",
         "children-files": "Children Files",
@@ -654,7 +692,9 @@
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team"
-      },
+      }
+    },
+    "center": {
       "ad-or-blog-request": {
         "title": "Advertisements",
         "request-ad": "Request Ad",
@@ -887,6 +927,281 @@
         }
       }
     },
+    "parent": {
+      "children": {
+        "title": "Children",
+        "add": "Add Child",
+        "error": "Error: {error}",
+        "unknownError": "Unknown error",
+        "noChildren": "No children found.",
+        "card": {
+          "birthday": "Birthday:",
+          "gender": "Gender:",
+          "male": "Male",
+          "female": "Female",
+          "parentName": "Parent Name:",
+          "viewProfile": "View Child's Profile",
+          "editProfile": "Edit Child's Profile",
+          "chronicDiseases": "Chronic Diseases",
+          "allergies": "Allergies",
+          "authorizedPeople": "Authorized People",
+          "none": "None"
+        }
+      },
+      "bookings": {
+        "fields": {
+          "status": "Booking Status",
+          "startDay": "Start Day",
+          "endDay": "End Day",
+          "daysCount": "Number of Days",
+          "childName": "Child/Children",
+          "className": "Nursery",
+          "branch": "Branch",
+          "program": "Program",
+          "paymentMethod": "Payment Method"
+        },
+        "actions": {
+          "showDetails": "Show Booking Details",
+          "cancel": "Cancel Booking"
+        },
+        "status": {
+          "accepted": "Paid",
+          "pending": "Pending Payment",
+          "rejected": "Rejected",
+          "waiting_confirmation": "Waiting for Confirmation",
+          "canceled": "Canceled",
+          "cancelled": "Canceled"
+        },
+        "dialogs": {
+          "cancelTitle": "Confirm Booking Cancellation",
+          "cancelDescription": "Are you sure you want to cancel this booking? This action cannot be undone.",
+          "cancelConfirm": "Yes, Cancel Booking",
+          "cancelCancel": "Back"
+        },
+        "error": "An error occurred while loading data",
+        "cancelSuccess": "Booking cancelled successfully",
+        "cancelError": "An error occurred while cancelling the booking"
+      },
+      "reports": {
+        "title": "Daily Reports",
+        "error": "Failed to fetch reports",
+        "permissionError": "You do not have permission to view these reports",
+        "deleteSuccess": "Report deleted successfully",
+        "deleteError": "Failed to delete report"
+      }
+    },
+    "admin": {
+      "blog": {
+        "tabs": {
+          "firstStep": "First Step Blogs",
+          "centers": "Centers' Blogs"
+        },
+        "loading": "Loading...",
+        "error": "An error occurred while fetching data",
+        "noTitle": "No title",
+        "addBlog": "Add Blog",
+        "editBlog": "Edit Blog",
+        "centers": {
+          "title": "Blogs",
+          "loading": "Loading...",
+          "error": "An error occurred while fetching data"
+        },
+        "add": {
+          "success": "Blog added successfully",
+          "error": "An error occurred while adding the blog"
+        },
+        "edit": {
+          "title": "Edit Blog",
+          "success": "Blog updated successfully",
+          "error": "An error occurred while updating the blog",
+          "loading": "Loading...",
+          "fetchError": "An error occurred while fetching blog data"
+        },
+        "details": {
+          "loading": "Loading...",
+          "error": "An error occurred while fetching blog data"
+        },
+        "center": {
+          "loading": "Loading...",
+          "error": "An error occurred while fetching data",
+          "noTitle": "No title",
+          "center": "Nursery or Center",
+          "pendingBlogs": "Pending Blogs",
+          "acceptedBlogs": "Accepted Blogs",
+          "rejectedBlogs": "Rejected Blogs",
+          "acceptBlog": "Accept blog",
+          "rejectBlog": "Reject blog",
+          "imageAlt": "Blog cover image",
+          "editBlog": "Edit Blog",
+          "blogApproved": "Blog approved successfully",
+          "approvalError": "Failed to approve blog",
+          "blogRejected": "Blog rejected successfully",
+          "rejectionError": "Failed to reject blog"
+        },
+        "form": {
+          "coverImage": "Cover Image",
+          "cardImage": "Card Image",
+          "chooseCoverImage": "Choose cover image",
+          "chooseCardImage": "Choose card image",
+          "preview": "Preview",
+          "titleAr": "Title (Arabic)",
+          "titleEn": "Title (English)",
+          "descriptionAr": "Description (Arabic)",
+          "descriptionEn": "Description (English)",
+          "contentAr": "Content (Arabic)",
+          "contentEn": "Content (English)",
+          "titleArPlaceholder": "Title in Arabic",
+          "titleEnPlaceholder": "Title in English",
+          "descriptionArPlaceholder": "Description in Arabic",
+          "descriptionEnPlaceholder": "Description in English",
+          "contentArPlaceholder": "Content in Arabic",
+          "contentEnPlaceholder": "Content in English",
+          "save": "Save",
+          "saving": "Saving...",
+          "cancel": "Cancel"
+        }
+      },
+      "loading": "Loading...",
+      "cards": {
+        "children": "Number of Children",
+        "centers": "Number of Nurseries",
+        "parents": "Number of Parents",
+        "firstStepAds": "Number of First Step Ads",
+        "centerAds": "Number of Center/Nursery Ads"
+      },
+      "charts": {
+        "bookingsComparison": "Bookings Comparison",
+        "enrollments": "Enrollments"
+      },
+      "center": {
+        "title": "Centers",
+        "branches": "Branches",
+        "table": {
+          "name": "Name",
+          "address": "Address",
+          "children": "Children",
+          "bookings": "Bookings",
+          "acceptedAges": "Accepted Ages",
+          "availableServices": "Available Services",
+          "actions": "Actions"
+        },
+        "actions": {
+          "add": "Add Center",
+          "edit": "Edit Center",
+          "delete": "Delete Center",
+          "view": "View Center"
+        },
+        "error": {
+          "load": "Could not load centers",
+          "unexpected": "An unexpected error occurred while loading the data. Check your internet connection, or try again later."
+        },
+        "loading": "Loading Data...",
+        "centerAccepted": "Center has been accepted successfully",
+        "centerRejected": "Center has been rejected successfully",
+        "errorAcceptingCenter": "Error accepting center",
+        "errorRejectingCenter": "Error rejecting center",
+        "confirmAcceptCenter": "Are you sure you want to accept this center?",
+        "confirmRejectCenter": "Are you sure you want to reject this center?",
+        "accept": "Accept",
+        "reject": "Reject",
+        "status": {
+          "pending": "Pending",
+          "confirmed": "Confirmed",
+          "canceled": "Rejected"
+        }
+      },
+      "parents": {
+        "tabs": {
+          "parents": "Parents",
+          "children": "Children"
+        },
+        "details": {
+          "parentInfo": "Parent Information",
+          "childrenInfo": "Children's Information",
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data",
+          "form": {
+            "name": "Name",
+            "namePlaceholder": "Full name as in ID",
+            "phone": "Phone Number",
+            "email": "Email",
+            "emailPlaceholder": "example: example@email.com",
+            "nationalId": "National ID"
+          }
+        },
+        "card": {
+          "phone": "Phone:",
+          "email": "Email:",
+          "nationalId": "National ID:",
+          "viewParent": "View Parent",
+          "childrenCount": "Number of Children",
+          "childrenCountValue": "{count, plural, one {# child} other {# children}}",
+          "childrenNames": "Children's Names"
+        }
+      },
+      "advertisement": {
+        "tabs": {
+          "firstStep": "First Step Ads",
+          "centers": "Nurseries and Centers Ads"
+        },
+        "adminAds": {
+          "addNewAd": "Add New Ad",
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data",
+          "noAds": "No ads available",
+          "deleteSuccess": "Ad deleted successfully",
+          "deleteError": "An error occurred while deleting the ad",
+          "editAd": "Edit Ad",
+          "deleteAd": "Delete Ad"
+        },
+        "details": {
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data"
+        },
+        "edit": {
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data",
+          "pageTitle": "Edit Ad"
+        },
+        "adDetails": {
+          "updateSuccess": "Ad updated successfully",
+          "updateError": "An error occurred while updating the ad",
+          "deleteSuccess": "Ad deleted successfully",
+          "deleteError": "An error occurred while deleting the ad",
+          "acceptSuccess": "Ad accepted successfully",
+          "acceptError": "An error occurred while accepting the ad",
+          "rejectSuccess": "Ad rejected successfully",
+          "rejectError": "An error occurred while rejecting the ad",
+          "editAd": "Edit Ad",
+          "deleteAd": "Delete Ad",
+          "acceptAd": "Accept Ad",
+          "rejectAd": "Reject Ad",
+          "deleting": "Deleting...",
+          "accepting": "Accepting...",
+          "rejecting": "Rejecting...",
+          "updating": "Updating..."
+        },
+        "center": {
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data",
+          "pageTitle": "Nursery or Center",
+          "pendingAds": "Pending Approval Ads",
+          "acceptedAds": "Accepted Ads",
+          "rejectedAds": "Rejected Ads"
+        },
+        "centers": {
+          "loading": "Loading...",
+          "errorLoading": "An error occurred while loading data",
+          "reservations": "Reservations"
+        }
+      },
+      "bookings": {
+        "title": "Bookings",
+        "loading": "Loading...",
+        "errorLoading": "An error occurred while loading data. Please try again later.",
+        "noBookings": "No bookings available."
+      }
+    },
     "header": {
       "dashboard": "Dashboard",
       "home": "Home",
@@ -1099,7 +1414,39 @@
           "income": "Income",
           "currency": "SAR"
         }
-      }
+      },
+      "reports": {
+        "fields": {
+          "childNumber": "Child Number",
+          "childName": "Child Name",
+          "nurseryName": "Nursery",
+          "reportDate": "Report Date",
+          "control": "Control"
+        },
+        "actions": {
+          "view": "View",
+          "download": "Download",
+          "delete": "Delete"
+        }
+      },
+      "centerAds": {
+        "center": "Center Or Nursery",
+        "phone": "Phone Number",
+        "email": "Email",
+        "acceptedAds": "Accepted Ads",
+        "pendingAds": "Pending Ads",
+        "rejectedAds": "Rejected Ads"
+      },
+      "centerBlogs": {
+        "id": "#",
+        "center": "Center Or Nursery",
+        "phone": "Phone Number",
+        "email": "Email",
+        "acceptedBlogs": "Accepted Blogs",
+        "pendingBlogs": "Pending Blogs",
+        "rejectedBlogs": "Rejected Blogs"
+      },
+      "noResults": "No results."
     },
     "children": {
       "search": {
@@ -1152,8 +1499,77 @@
       }
     }
   },
+
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm"
+  },
+  "HomePage": {
+    "Features": {
+      "title": "First Step Features",
+      "comingSoon": "Coming Soon",
+      "childManagement": {
+        "title": "Child File Management and Communication with Parents",
+        "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
+      },
+      "directChat": {
+        "title": "Direct Chat",
+        "description": "An instant communication method between the nursery and parents through the site."
+      },
+      "taskOrganization": {
+        "title": "Task Organization and Instant Notifications",
+        "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."
+      },
+      "professionalProfile": {
+        "title": "Professional Nursery Profile",
+        "description": "A dedicated page to display nursery activities and programs with the ability for direct subscription by parents."
+      },
+      "dashboard": {
+        "title": "Integrated Control Panel",
+        "description": "Integrated management of nursery activities with display of accurate profit statistics and the number of registered children in an organized and professional manner."
+      },
+      "bookingManagement": {
+        "title": "Booking Management",
+        "description": "Daily monitoring of new bookings with the ability to accept or reject them."
+      },
+      "adSpace": {
+        "title": "Advertising Space Within the Site",
+        "description": "Ability to publish ads or posts to enhance the nursery's visibility."
+      }
+    },
+    "Subscription": {
+      "title": "Plans and Subscriptions",
+      "banner": {
+        "title": "Subscribe for Free!",
+        "subtitle": "Enjoy all First Step features",
+        "month": "for one month",
+        "limitedOffer": "Limited time offer",
+        "cta": "Subscribe Now"
+      },
+      "plans": {
+        "popular": "Most Popular",
+        "commission": "+ 12% commission on every booking through the site",
+        "select": "Select Plan",
+        "currency": "SAR",
+        "annual": {
+          "title": "Annual",
+          "period": "per year"
+        },
+        "semiAnnual": {
+          "title": "Semi-Annual",
+          "period": "every 6 months"
+        },
+        "quarterly": {
+          "title": "Quarterly",
+          "period": "every 3 months"
+        },
+        "features": {
+          "allFeatures": "All features included",
+          "support": "24/7 support",
+          "updates": "Free updates",
+          "discount": "Save {discount} with annual billing"
+        }
+      }
+    }
   }
 }

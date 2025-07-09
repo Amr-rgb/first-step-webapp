@@ -102,7 +102,7 @@ export default function DashboardChildShow({
     fatherName: childData?.parent_name || "",
     motherName: childData?.mother_name || "",
     gender: childData?.gender === "boy" ? "male" : "female",
-    kinship: childData?.Kinship || "",
+    kinship: childData?.kinship || "",
 
     // Chronic diseases
     chronicDiseases: {

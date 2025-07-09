@@ -38,7 +38,8 @@ const BranchWrapper = ({
   const locale = useLocale();
   const router = useRouter();
 
-  const { data: fetchedBranch, isLoading: isFetchingBranch } = useBranch(editBranchId);
+  const { data: fetchedBranch, isLoading: isFetchingBranch } =
+    useBranch(editBranchId);
 
   useEffect(() => {
     if (fetchedBranch && onBranchData) {
@@ -74,9 +75,9 @@ const BranchWrapper = ({
         time_of_first_period: fetchedBranch.time_of_first_period || "",
         time_of_second_period: fetchedBranch.time_of_second_period || "",
       },
-      license_path: new File([], "empty"),
-      commercial_record_path: new File([], "empty"),
-      logo: new File([], "empty"),
+      license_path: fetchedBranch.license_path || undefined,
+      commercial_record_path: fetchedBranch.commercial_record_path || undefined,
+      logo: fetchedBranch.logo || undefined,
       comments: fetchedBranch.comments || "",
     };
   }, [fetchedBranch]);
@@ -176,12 +177,12 @@ const BranchWrapper = ({
       toast.success("Branch created successfully");
       setBranchId(data.id);
       setApiErrors({});
-      
+
       // Call onBranchCreated with the new branch data if provided
       if (onBranchCreated) {
         onBranchCreated({
           id: data.id,
-          name: data.name || ''
+          name: data.name || "",
         });
       }
     },
@@ -234,9 +235,10 @@ const BranchWrapper = ({
       if ("license_path" in values) result.license_path = values.license_path;
       if ("commercial_record_path" in values)
         result.commercial_record_path = values.commercial_record_path;
-      
+
       if ("nursery_name_en" in values) result.name = values.nursery_name_ar;
-      if ("nursery_name_ar" in values) result.nursery_name = values.nursery_name_en;
+      if ("nursery_name_ar" in values)
+        result.nursery_name = values.nursery_name_en;
 
       if ("email" in values) result.email = values.email;
       if ("address" in values) result.address = values.address;
@@ -334,8 +336,6 @@ const BranchWrapper = ({
     }
   };
 
-
-
   if (mode === "edit" && isFetchingBranch) {
     return <BranchFormSkeleton />;
   }
@@ -380,8 +380,6 @@ const BranchWrapper = ({
           )}
         </form>
       </FormProvider>
-
-
     </React.Fragment>
   );
 };

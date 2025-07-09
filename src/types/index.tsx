@@ -44,7 +44,7 @@ export interface Child {
   description_3_words: string | null;
   things_child_likes: string | null;
   notes: string | null;
-  Kinship: string | null;
+  kinship: string | null;
   center_branch_id: number | null;
   disease_details: string | null;
   enrollments: Array<{
@@ -222,13 +222,17 @@ export interface ChildInfoData {
 
 // ===== Content Types =====
 export interface Blog {
-  id: number;
-  title: string;
-  description: string;
+  id: string;
+  title: string | { [key: string]: string };
+  description: string | { [key: string]: string };
   image: string;
+  file?: string; // For the main blog image
+  content?: { [key: string]: string };
   author?: string;
+  reading_time: string;
   created_at: string;
   published_at: string;
+  status?: "pending" | "approved" | "rejected";
 }
 
 export interface AdSlide {

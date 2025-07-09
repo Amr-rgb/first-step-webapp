@@ -37,7 +37,7 @@ const SecondarySidebar = () => {
     <Sidebar
       className="bg-sidebar h-screen py-10 px-4"
       side={locale === "ar" ? "left" : "right"}
-      collapsible="none"
+      collapsible="offcanvas"
     >
       <SidebarHeader className="mb-9 px-0">
         <Header />

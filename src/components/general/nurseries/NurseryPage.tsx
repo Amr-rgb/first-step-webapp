@@ -32,7 +32,7 @@ const NurseryPage = ({ config }: NurseryPageProps) => (
       />
     )}
     {config.philosophyCards && (
-      <PhilosophyCards cards={config.philosophyCards} />
+      <PhilosophyCards sections={config.philosophyCards} />
     )}
     {config.programs && <Programs programs={config.programs} />}
     {config.services && <Services services={config.services} />}

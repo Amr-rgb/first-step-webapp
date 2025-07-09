@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import AdDetailsWrapper from "@/components/dashboard/advertisement/AdDetailsWrapper";
@@ -17,9 +18,10 @@ export default function CenterAdvertisementsPage({
     queryFn: () => adminService.getOneCenterAds(centerId),
   });
 
-  if (isLoading) return <div>جاري التحميل...</div>;
-  if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+  const t = useTranslations("dashboard.admin.advertisement.center");
+  
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div className="text-red-500">{t("errorLoading")}</div>;
 
   // Defensive: handle empty or missing ads
   const ads = data?.ads || [];
@@ -27,12 +29,12 @@ export default function CenterAdvertisementsPage({
   // Helper to map backend ad to AdRequestFormData
   const mapAdToFormData = (ad: any): AdRequestFormData => ({
     title: {
-      ar: ad.title || "",
-      en: ad.title || "",
+      ar: ad.title.ar || "",
+      en: ad.title.en || "",
     },
     description: {
-      ar: ad.description || "",
-      en: ad.description || "",
+      ar: ad.description.ar || "",
+      en: ad.description.en || "",
     },
     image: ad.image,
     start_date: ad.publish_date ? new Date(ad.publish_date) : new Date(),
@@ -42,12 +44,12 @@ export default function CenterAdvertisementsPage({
   return (
     <div className="space-y-4">
       <h1 className="heading-4 text-primary font-medium text-center">
-        الحضانة أو المركز
+        {t("pageTitle")}
       </h1>
       <div className="flex flex-col gap-y-12">
         <div className="space-y-4">
           <p className="heading-4 text-primary font-medium">
-            إعلانات في انتظار القبول
+            {t("pendingAds")}
           </p>
           <div className="flex flex-col gap-y-6 lg:px-5 xl:px-9">
             {ads
@@ -64,7 +66,7 @@ export default function CenterAdvertisementsPage({
           </div>
         </div>
         <div className="space-y-4">
-          <p className="heading-4 text-primary font-medium">إعلانات مقبولة</p>
+          <p className="heading-4 text-primary font-medium">{t("acceptedAds")}</p>
           <div className="flex flex-col gap-y-6 lg:px-5 xl:px-9">
             {ads
               .filter((ad: any) => ad.status === "approved")
@@ -80,7 +82,7 @@ export default function CenterAdvertisementsPage({
           </div>
         </div>
         <div className="space-y-4">
-          <p className="heading-4 text-primary font-medium">إعلانات مرفوضة</p>
+          <p className="heading-4 text-primary font-medium">{t("rejectedAds")}</p>
           <div className="flex flex-col gap-y-6 lg:px-5 xl:px-9">
             {ads
               .filter((ad: any) => ad.status === "rejected")

@@ -1,19 +1,22 @@
 "use client";
 
 import { DataTable } from "@/components/tables/DataTable";
-import { Blog, columns } from "@/components/tables/data/center-blogs";
+import { Blog, useCenterBlogsColumns } from "@/components/tables/data/center-blogs";
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
+import { useTranslations } from "next-intl";
 
 const CentersBlogs = () => {
+  const t = useTranslations("dashboard.admin.blog.centers");
   const { data, isLoading, error } = useQuery({
     queryKey: ["allCenterBlogs"],
     queryFn: adminService.getAllCenterBlogs,
   });
+  
+  const columns = useCenterBlogsColumns();
 
-  if (isLoading) return <div>جاري التحميل...</div>;
-  if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div className="text-red-500">{t("error")}</div>;
 
   // Map backend data to table format
   const rows: Blog[] = (data || []).map((item: any) => ({
@@ -30,7 +33,7 @@ const CentersBlogs = () => {
     <div>
       <div className="mt-6 lg:p-4 space-y-1">
         <p className="heading-4 font-medium text-primary text-center">
-          المدونات
+          {t("title")}
         </p>
         <DataTable columns={columns} data={rows} pagination={true} />
       </div>

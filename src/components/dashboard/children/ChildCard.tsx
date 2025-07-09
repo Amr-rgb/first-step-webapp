@@ -28,6 +28,7 @@ interface ChildCardProps {
   noEdit?: boolean;
   baseUrl?: string;
   absoluteBaseUrl?: string;
+  t?: (key: string, params?: Record<string, any>) => string;
 }
 
 const ChildCard = ({
@@ -42,6 +43,7 @@ const ChildCard = ({
   noEdit,
   baseUrl,
   absoluteBaseUrl,
+  t,
 }: ChildCardProps) => {
   return (
     <div className="bg-sidebar border-b border-light-gray p-6 flex flex-col lg:flex-row gap-8">
@@ -50,14 +52,14 @@ const ChildCard = ({
           {gender === "boy" ? (
             <Image
               src="/assets/illustrations/boy.png"
-              alt="Boy"
+              alt={t ? t("card.male") : "Boy"}
               width={91.32}
               height={120}
             />
           ) : (
             <Image
               src="/assets/illustrations/girl.png"
-              alt="Girl"
+              alt={t ? t("card.female") : "Girl"}
               width={84.74}
               height={120}
             />
@@ -66,15 +68,23 @@ const ChildCard = ({
           <div className="flex flex-col gap-2 lg:gap-4">
             <p className="font-bold text-primary text-xl">{name}</p>
             <span className="font-medium text-mid-gray flex gap-1">
-              <span>تاريخ الميلاد:</span>
+              <span>{t ? t("card.birthday") : "Birthday:"}</span>
               <span>{new Date(birthday).toLocaleDateString()}</span>
             </span>
             <span className="font-medium text-mid-gray flex gap-1">
-              <span>الجنس:</span>
-              <span>{gender === "boy" ? "ذكر" : "أنثى"}</span>
+              <span>{t ? t("card.gender") : "Gender:"}</span>
+              <span>
+                {gender === "boy"
+                  ? t
+                    ? t("card.male")
+                    : "Male"
+                  : t
+                  ? t("card.female")
+                  : "Female"}
+              </span>
             </span>
             <span className="font-medium text-mid-gray flex gap-1">
-              <span>اسم ولي الأمر:</span>
+              <span>{t ? t("card.parentName") : "Parent Name:"}</span>
               <span>{userName}</span>
             </span>
           </div>
@@ -83,7 +93,7 @@ const ChildCard = ({
         <div className="flex gap-4">
           <Button asChild size={"sm"}>
             <Link href={`${absoluteBaseUrl || baseUrl || "children"}/${id}`}>
-              عرض ملف الطفل
+              {t ? t("card.viewProfile") : "View Child's Profile"}
             </Link>
           </Button>
           {!noEdit && (
@@ -91,7 +101,7 @@ const ChildCard = ({
               <Link
                 href={`${absoluteBaseUrl || baseUrl || "children"}/${id}/edit`}
               >
-                تعديل ملف الطفل
+                {t ? t("card.editProfile") : "Edit Child's Profile"}
               </Link>
             </Button>
           )}
@@ -101,7 +111,7 @@ const ChildCard = ({
       <div className="flex flex-col gap-y-4">
         <div>
           <p className="mb-1 font-medium text-primary text-xl">
-            الأمراض المزمنة
+            {t ? t("card.chronicDiseases") : "Chronic Diseases"}
           </p>
 
           <div className="flex flex-col gap-y-1 font-medium text-mid-gray">
@@ -110,13 +120,15 @@ const ChildCard = ({
                 <span key={disease.disease_name}>{disease.disease_name}</span>
               ))
             ) : (
-              <span>لا يوجد</span>
+              <span>{t ? t("card.none") : "None"}</span>
             )}
           </div>
         </div>
 
         <div>
-          <p className="mb-1 font-medium text-primary text-xl">الحساسية</p>
+          <p className="mb-1 font-medium text-primary text-xl">
+            {t ? t("card.allergies") : "Allergies"}
+          </p>
 
           <div className="flex flex-col gap-y-1 font-medium text-mid-gray">
             {allergies && allergies.length > 0 ? (
@@ -124,22 +136,26 @@ const ChildCard = ({
                 <span key={allergy.id}>{allergy.name}</span>
               ))
             ) : (
-              <span>لا يوجد</span>
+              <span>{t ? t("card.none") : "None"}</span>
             )}
           </div>
         </div>
 
         <div>
           <p className="mb-1 font-medium text-primary text-xl">
-            الأشخاص المفوضة
+            {t ? t("card.authorizedPeople") : "Authorized People"}
           </p>
 
           <div className="flex flex-col gap-y-1 font-medium text-mid-gray">
-            {authorized_people?.map((person) => (
-              <span key={person.id}>
-                {person.name} - {person.cin}
-              </span>
-            ))}
+            {authorized_people?.length ? (
+              authorized_people?.map((person) => (
+                <span key={person.id}>
+                  {person.name} - {person.cin}
+                </span>
+              ))
+            ) : (
+              <span>{t ? t("card.none") : "None"}</span>
+            )}
           </div>
         </div>
       </div>

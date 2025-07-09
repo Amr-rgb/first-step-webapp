@@ -44,10 +44,11 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative container mx-auto px-4 py-2.5">
       {!token && (
-        <div className="z-10 fixed top-64 -left-[90px] -rotate-90 flex items-center gap-x-4">
+        <div className="z-[9999] fixed top-64 -left-[90px] -rotate-90 flex items-center gap-x-4">
           <Button
             asChild
             size={"sm"}
+            variant="defaultNoGradient"
             className="bg-secondary-mint-green rounded-[8px]"
           >
             <Link href={"/sign-up/parent"}>{t("buttons.join-parent")}</Link>
@@ -55,6 +56,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           <Button
             asChild
             size={"sm"}
+            variant="defaultNoGradient"
             className="bg-secondary-burgundy rounded-[8px]"
           >
             <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>

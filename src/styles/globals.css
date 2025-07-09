@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
 /* @custom-variant dark (&:is(.dark *)); */
@@ -240,6 +241,20 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@layer utilities {
+  .bg-left {
+    background-position: left center;
+  }
+
+  .bg-right {
+    background-position: right center;
+  }
+
+  .bg-size-200 {
+    background-size: 200% 200%;
+  }
+}
+
 @layer base {
   * {
     font-family: var(--font-primary), sans-serif;
@@ -251,6 +266,10 @@
   }
   section:not([aria-label="Notifications alt+T"]) {
     @apply py-10;
+  }
+
+  .blue-gradient {
+    @apply bg-[linear-gradient(to_right,_#7A8CFD,_#404FB1,_#2B3990)];
   }
 }
 

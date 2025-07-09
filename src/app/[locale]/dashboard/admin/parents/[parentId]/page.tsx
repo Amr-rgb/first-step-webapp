@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { adminService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
 import PhoneInput from "@/components/forms/PhoneInput";
@@ -24,6 +25,7 @@ export default function DashboardChildrenPage({
   params: Promise<{ parentId: string }>;
 }) {
   const { parentId } = use(params);
+  const t = useTranslations("dashboard.admin.parents.details");
 
   const { data, isLoading, error } = useQuery<ParentData>({
     queryKey: ["parent", parentId],
@@ -36,30 +38,30 @@ export default function DashboardChildrenPage({
       {/* Parent Info Readonly Form */}
       <div className="mb-8">
         <h2 className="heading-4 font-medium text-primary mb-6">
-          بيانات ولي الأمر
+          {t("parentInfo")}
         </h2>
         {isLoading ? (
-          <div className="text-center py-8">جاري التحميل...</div>
+          <div className="text-center py-8">{t("loading")}</div>
         ) : error ? (
           <div className="text-center text-red-500 py-8">
-            حدث خطأ أثناء جلب البيانات
+            {t("errorLoading")}
           </div>
-        ) : parent ? (
+        ) : data?.parent ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 gap-x-10 md:gap-y-4">
             <div>
               <Label className="mb-2">
-                <span className="text-base">الاسم</span>
+                <span className="text-base">{t("form.name")}</span>
               </Label>
               <Input
                 type="text"
                 value={data?.parent.name}
                 readOnly
-                placeholder="الاسم بالكامل كما في الهوية"
+                placeholder={t("form.namePlaceholder")}
               />
             </div>
             <div>
               <Label className="mb-2">
-                <span className="text-base">رقم الجوال</span>
+                <span className="text-base">{t("form.phone")}</span>
               </Label>
               <PhoneInput
                 value={data?.parent.phone?.replace(/^\+966/, "") || ""}
@@ -70,24 +72,24 @@ export default function DashboardChildrenPage({
             </div>
             <div>
               <Label className="mb-2">
-                <span className="text-base">البريد الإلكتروني</span>
+                <span className="text-base">{t("form.email")}</span>
               </Label>
               <Input
                 type="email"
                 value={data?.parent.email}
                 readOnly
-                placeholder="مثال: mennaemarauxi@gmail.com"
+                placeholder={t("form.emailPlaceholder")}
               />
             </div>
             <div>
               <Label className="mb-2">
-                <span className="text-base">رقم الهوية</span>
+                <span className="text-base">{t("form.nationalId")}</span>
               </Label>
               <Input
                 type="text"
                 value={data?.parent.national_number}
                 readOnly
-                placeholder="رقم الهوية"
+                placeholder={t("form.nationalId")}
               />
             </div>
           </div>
@@ -96,7 +98,7 @@ export default function DashboardChildrenPage({
 
       <div className="mb-3.5 flex items-center">
         <h1 className="sr-only heading-4 font-medium text-primary">
-          بيانات الأطفال
+          {t("childrenInfo")}
         </h1>
       </div>
 

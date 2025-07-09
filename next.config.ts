@@ -3,8 +3,26 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
-    domains: ["images.unsplash.com", "back.firststep-app.com","development.firststep-app.com"],
+
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "back.firststep-app.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "development.firststep-app.com",
+        port: "",
+      },
+    ],
   },
 };
 

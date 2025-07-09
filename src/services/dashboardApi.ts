@@ -48,7 +48,7 @@ const prepareCenterFormData = (
   if (payload.nursery_name)
     formData.append("nursery_name", payload.nursery_name);
   if (payload.location) formData.append("location", payload.location);
-  if (payload.city) formData.append("city", payload.city);
+  if (payload.city) formData.append("city_id", payload.city);
   if (payload.neighborhood)
     formData.append("neighborhood", payload.neighborhood);
 
@@ -640,7 +640,7 @@ export const centerService = {
   getCenterStats: async () => {
     try {
       const response = await apiClient.get(`/center/statistics`);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -674,7 +674,7 @@ export const adminService = {
   getCenters: async () => {
     try {
       const response = await apiClient.get("/dashboard/centers");
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -1070,6 +1070,28 @@ export const adminService = {
     try {
       const response = await apiClient.get(`/dashboard/enrollments/all`);
       return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  acceptCenter: async (centerId: string) => {
+    try {
+      const response = await apiClient.put(
+        `/dashboard/centers/${centerId}/confirm`
+      );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  rejectCenter: async (centerId: string) => {
+    try {
+      const response = await apiClient.put(
+        `/dashboard/centers/${centerId}/reject`
+      );
+      return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ const AdminBlogForm = ({
   readOnly,
   onCancel,
 }: AdminBlogFormProps) => {
+  const t = useTranslations("dashboard.admin.blog.form");
   const [previewMain, setPreviewMain] = useState<string | null>(null);
   const [previewCard, setPreviewCard] = useState<string | null>(null);
 
@@ -85,7 +87,7 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-3">
               <Label>
-                صورة الغلاف <span className="text-red-500">*</span>
+                {t("coverImage")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <div>
@@ -105,16 +107,18 @@ const AdminBlogForm = ({
                   />
                   <label
                     htmlFor="main-image-upload"
-                    className="w-full aspect-[1440/680] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-full aspect-[1440/610] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
                   >
                     {previewMain ? (
                       <img
                         src={previewMain}
-                        alt="Preview"
+                        alt={t("preview")}
                         className="rounded-md object-cover h-full w-full"
                       />
                     ) : (
-                      <span className="text-gray-500">اختر صورة الغلاف</span>
+                      <span className="text-gray-500">
+                        {t("chooseCoverImage")}
+                      </span>
                     )}
                   </label>
                 </div>
@@ -130,7 +134,7 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem>
               <Label>
-                صورة البطاقة <span className="text-red-500">*</span>
+                {t("cardImage")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <div>
@@ -155,11 +159,13 @@ const AdminBlogForm = ({
                     {previewCard ? (
                       <img
                         src={previewCard}
-                        alt="Preview"
+                        alt={t("preview")}
                         className="rounded-md object-cover h-full w-full"
                       />
                     ) : (
-                      <span className="text-gray-500">اختر صورة البطاقة</span>
+                      <span className="text-gray-500">
+                        {t("chooseCardImage")}
+                      </span>
                     )}
                   </label>
                 </div>
@@ -175,12 +181,12 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                العنوان (عربي) <span className="text-red-500">*</span>
+                {t("titleAr")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="العنوان بالعربية"
+                  placeholder={t("titleArPlaceholder")}
                   disabled={readOnly}
                 />
               </FormControl>
@@ -195,12 +201,12 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                العنوان (إنجليزي) <span className="text-red-500">*</span>
+                {t("titleEn")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Title in English"
+                  placeholder={t("titleEnPlaceholder")}
                   disabled={readOnly}
                 />
               </FormControl>
@@ -215,12 +221,12 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                الوصف (عربي) <span className="text-red-500">*</span>
+                {t("descriptionAr")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="الوصف بالعربية"
+                  placeholder={t("descriptionArPlaceholder")}
                   disabled={readOnly}
                 />
               </FormControl>
@@ -235,12 +241,12 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                الوصف (إنجليزي) <span className="text-red-500">*</span>
+                {t("descriptionEn")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Description in English"
+                  placeholder={t("descriptionEnPlaceholder")}
                   disabled={readOnly}
                 />
               </FormControl>
@@ -255,13 +261,13 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                المحتوى (عربي) <span className="text-red-500">*</span>
+                {t("contentAr")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <BlogEditor
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="محتوى التدوينة بالعربية"
+                  placeholder={t("contentArPlaceholder")}
                   readOnly={readOnly}
                 />
               </FormControl>
@@ -276,13 +282,13 @@ const AdminBlogForm = ({
           render={({ field }) => (
             <FormItem className="sm:col-span-2">
               <Label>
-                المحتوى (إنجليزي) <span className="text-red-500">*</span>
+                {t("contentEn")} <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <BlogEditor
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Blog content in English"
+                  placeholder={t("contentEnPlaceholder")}
                   readOnly={readOnly}
                 />
               </FormControl>
@@ -292,8 +298,8 @@ const AdminBlogForm = ({
         />
         {!readOnly && (
           <div className="sm:col-span-4 flex justify-end mt-4 gap-2">
-            <Button type="submit" disabled={loading || !isDirty}>
-              {loading ? "جاري الحفظ..." : "حفظ"}
+            <Button type="submit" disabled={loading}>
+              {loading ? t("saving") : t("save")}
             </Button>
             {onCancel && (
               <Button
@@ -302,7 +308,7 @@ const AdminBlogForm = ({
                 onClick={onCancel}
                 disabled={loading}
               >
-                إلغاء
+                {t("cancel")}
               </Button>
             )}
           </div>
@@ -310,7 +316,7 @@ const AdminBlogForm = ({
         {readOnly && onCancel && (
           <div className="sm:col-span-4 flex justify-end mt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
-              إلغاء
+              {t("cancel")}
             </Button>
           </div>
         )}

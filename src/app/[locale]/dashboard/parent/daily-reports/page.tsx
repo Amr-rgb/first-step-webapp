@@ -5,7 +5,7 @@ import {
   useParentReportsColumns,
 } from "@/components/tables/data/parent-reports";
 import { DataTable } from "@/components/tables/DataTable";
-import { centerService, parentService } from "@/services/dashboardApi";
+import { parentService } from "@/services/dashboardApi";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 interface DailyReportResponse {
   id: number;
@@ -55,6 +56,7 @@ interface DailyReportResponse {
 const useDailyReports = () => {
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
+  const t = useTranslations("dashboard.parent.reports");
 
   const options: UseQueryOptions<Report[], Error> = {
     queryKey: ["dailyReports"],
@@ -84,11 +86,11 @@ const useDailyReports = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dailyReports"] });
-      toast.success("Report deleted successfully");
+      toast.success(t("deleteSuccess"));
     },
     onError: (error) => {
       console.error("Error deleting report:", error);
-      toast.error("Failed to delete report");
+      toast.error(t("deleteError"));
     },
   });
 
@@ -101,6 +103,7 @@ const useDailyReports = () => {
 export default function DailyReports() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
+  const t = useTranslations("dashboard.parent.reports");
   const {
     data: reports = [],
     isLoading,
@@ -113,9 +116,9 @@ export default function DailyReports() {
   if (error) {
     console.error("Error fetching reports:", error);
     if ("status" in error && error.status === 403) {
-      toast.error("You do not have permission to view these reports");
+      toast.error(t("permissionError"));
     } else {
-      toast.error(error.message || "Failed to fetch reports");
+      toast.error(error.message || t("error"));
     }
   }
 
@@ -128,7 +131,7 @@ export default function DailyReports() {
 
   return (
     <div className="lg:p-4 space-y-1">
-      <p className="heading-4 text-primary text-center">التقارير اليومية</p>
+      <p className="heading-4 text-primary text-center">{t("title")}</p>
 
       <DataTable columns={columns} data={reports} isLoading={isLoading} />
     </div>

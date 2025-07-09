@@ -258,6 +258,37 @@ export const websiteService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  subscribeToNewsletter: async (email: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/subscripe`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (!res.ok) {
+        const responseData = await res.json();
+        throw {
+          message: responseData?.message || "Failed to subscribe to newsletter",
+          errors: responseData?.errors || {},
+          status: res.status,
+        };
+      }
+
+      return await res.json();
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const blogService = {
@@ -302,7 +333,7 @@ export const blogService = {
             process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
         next: {
-          revalidate: 86400,
+          revalidate: 1,
         },
       });
 
@@ -316,6 +347,39 @@ export const blogService = {
 
       const data = await res.json();
       return data.data as Blog[];
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getBlogById: async (blogId: string, locale: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/blogs/${blogId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            lang: locale,
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 1,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch blog",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -463,7 +527,7 @@ export const authService = {
 
       formData.append("nursery_name", payload.nursery_name);
       formData.append("location", payload.location);
-      formData.append("city", payload.city);
+      formData.append("city_id", payload.city);
       formData.append("neighborhood", payload.neighborhood);
 
       formData.append("provides_food", payload.provides_food ? "1" : "0");
@@ -616,6 +680,15 @@ export const authService = {
       const response = await apiClient.post("/auth/google", {
         token,
       });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCities: async () => {
+    try {
+      const response = await apiClient.get("/cities");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

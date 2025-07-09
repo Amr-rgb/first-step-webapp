@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import AdDetailsWrapper from "@/components/dashboard/advertisement/AdDetailsWrapper";
 import { AdRequestFormData } from "@/lib/schemas";
@@ -19,9 +20,10 @@ export default function AdvertisementDetails({
     enabled: !!adId,
   });
 
-  if (isLoading) return <div>جاري التحميل...</div>;
-  if (error)
-    return <div className="text-red-500">حدث خطأ أثناء جلب البيانات</div>;
+  const t = useTranslations("dashboard.admin.advertisement.details");
+  
+  if (isLoading) return <div>{t("loading")}</div>;
+  if (error) return <div className="text-red-500">{t("errorLoading")}</div>;
   if (!data) return null;
 
   // Map API response to AdRequestFormData

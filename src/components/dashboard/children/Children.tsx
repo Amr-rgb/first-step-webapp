@@ -5,9 +5,9 @@ import { adminService, parentService } from "@/services/dashboardApi";
 import ChildCard from "./ChildCard";
 import ChildrenSkeleton from "./ChildrenSkeleton";
 import { Child } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface AdminChild {
-
   id: number;
   child_name: string;
   birthday_date: string;
@@ -48,6 +48,7 @@ const Children = ({
   childrenData?: { userName: string; children: AdminChild[] };
   mode?: Mode;
 }) => {
+  const t = useTranslations("dashboard.parent.children");
   // Admin: use childrenData or fetch admin children
   // Parent: fetch parent children
   const isAdmin = mode === "admin";
@@ -92,9 +93,11 @@ const Children = ({
   if (adminQuery.error || parentQuery.error) {
     return (
       <div>
-        Error:{" "}
-        {(adminQuery.error || parentQuery.error)?.message?.toString() ||
-          "Unknown error"}
+        {t("error", {
+          error:
+            (adminQuery.error || parentQuery.error)?.message?.toString() ||
+            t("unknownError"),
+        })}
       </div>
     );
   }
@@ -104,7 +107,7 @@ const Children = ({
     Array.isArray(childrenToRender) &&
     childrenToRender.length === 0
   ) {
-    return <div>No children found.</div>;
+    return <div>{t("noChildren")}</div>;
   }
 
   if (!childrenToRender && isLoading) {
@@ -128,6 +131,7 @@ const Children = ({
             noEdit={noEdit}
             baseUrl={baseUrl}
             absoluteBaseUrl={absoluteBaseUrl}
+            t={t}
           />
         ) : (
           <ChildCard
@@ -160,10 +164,10 @@ const Children = ({
             noEdit={noEdit}
             baseUrl={baseUrl}
             absoluteBaseUrl={absoluteBaseUrl}
+            t={t}
           />
         )
       )}
-
     </div>
   );
 };

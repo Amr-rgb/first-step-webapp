@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Download, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -23,6 +23,7 @@ interface ParentReportsColumnsProps {
 export const useParentReportsColumns = ({
   onDelete,
 }: ParentReportsColumnsProps = {}) => {
+  const t = useTranslations("dashboard.tables.reports");
   const columns: ColumnDef<Report>[] = [
     {
       accessorKey: "childNumber",
@@ -35,19 +36,19 @@ export const useParentReportsColumns = ({
     },
     {
       accessorKey: "childName",
-      header: "Child Name",
+      header: t("fields.childName"),
     },
     {
       accessorKey: "nurseryName",
-      header: "Nursery",
+      header: t("fields.nurseryName"),
     },
     {
       accessorKey: "reportDate",
-      header: "Report Date",
+      header: t("fields.reportDate"),
     },
     {
       accessorKey: "control",
-      header: "Control",
+      header: t("fields.control"),
       cell: ({ row }) => {
         const report = row.original;
 
@@ -59,21 +60,40 @@ export const useParentReportsColumns = ({
 
         return (
           <div className="flex items-center gap-1">
-            <Button asChild variant={"ghost"} size={"icon"}>
-              <Link href={`daily-reports/${report.id}`}>
+            <Button
+              asChild
+              variant={"ghost"}
+              size={"icon"}
+              title={t("actions.view")}
+            >
+              <Link
+                href={`daily-reports/${report.id}`}
+                aria-label={t("actions.view")}
+              >
                 <Eye className="size-4 text-mid-gray" />
               </Link>
             </Button>
-            <Button asChild variant={"ghost"} size={"icon"}>
+            <Button
+              asChild
+              variant={"ghost"}
+              size={"icon"}
+              title={t("actions.download")}
+            >
               <a
                 href={report.pdf_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={t("actions.download")}
               >
                 <Download className="size-4 text-mid-gray" />
               </a>
             </Button>
-            <Button variant={"ghost"} size={"icon"} onClick={handleDelete}>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={handleDelete}
+              title={t("actions.delete")}
+            >
               <Trash2 className="size-4 text-mid-gray" />
             </Button>
           </div>

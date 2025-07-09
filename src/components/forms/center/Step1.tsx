@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import PhoneInput from "../PhoneInput";
 import CheckboxGroup from "../CheckboxGroup";
+import { CitySelector } from "../CitySelector";
 import type { BranchStep1FormData, CenterStep1FormData } from "@/lib/schemas";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
@@ -216,10 +217,11 @@ export function Step1BasicInfo({
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t("city.placeholder")}
-                  {...field}
+                <CitySelector
+                  value={field.value}
+                  onChange={field.onChange}
                   disabled={disabled}
+                  placeholder={t("city.placeholder")}
                 />
               </FormControl>
               <FormMessage />
