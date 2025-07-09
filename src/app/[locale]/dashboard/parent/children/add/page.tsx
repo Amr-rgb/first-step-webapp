@@ -12,15 +12,16 @@ const initialValues = {
   fatherName: "",
   motherName: "",
   gender: undefined,
+  kinship: "",
   chronicDiseases: {
-    hasDiseases: "yes",
+    hasDiseases: "no",
     diseases: [{ name: "", medication: "", procedures: "" }],
   },
   childDescription: "",
   favoriteThings: "",
   recommendations: "",
   allergies: {
-    hasAllergies: "yes",
+    hasAllergies: "no",
     allergies: [{ allergyTypes: "", allergyFoods: "", allergyProcedures: "" }],
   },
   authorizedPersons: [
