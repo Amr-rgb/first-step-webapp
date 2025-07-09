@@ -243,7 +243,7 @@ function transformChildData(formData: ParentRegisterFormDataInput): Child {
     description_3_words: formData.childDescription ?? null,
     things_child_likes: formData.favoriteThings ?? null,
     notes: formData.comments ?? null,
-    Kinship: formData.kinship ?? null,
+    kinship: formData.kinship ?? null,
     center_branch_id: null,
     enrollments: [],
     authorized_people: authorized_people,

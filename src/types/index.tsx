@@ -44,7 +44,7 @@ export interface Child {
   description_3_words: string | null;
   things_child_likes: string | null;
   notes: string | null;
-  Kinship: string | null;
+  kinship: string | null;
   center_branch_id: number | null;
   disease_details: string | null;
   enrollments: Array<{
@@ -232,7 +232,7 @@ export interface Blog {
   reading_time: string;
   created_at: string;
   published_at: string;
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: "pending" | "approved" | "rejected";
 }
 
 export interface AdSlide {

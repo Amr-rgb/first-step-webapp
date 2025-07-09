@@ -79,15 +79,16 @@ export default function EditChild({
     fatherName: childData?.parent_name || "",
     motherName: childData?.mother_name || "",
     gender: childData?.gender === "boy" ? "male" : "female",
-    kinship: childData?.Kinship || "",
+    kinship: childData?.kinship || "",
 
     // Chronic diseases
     chronicDiseases: {
       hasDiseases: childData?.disease ? "yes" : "no",
       diseases: childData?.disease_details
-        ? (typeof childData.disease_details === 'string'
+        ? (typeof childData.disease_details === "string"
             ? JSON.parse(childData.disease_details)
-            : childData.disease_details).map((disease: any) => ({
+            : childData.disease_details
+          ).map((disease: any) => ({
             id: disease.id, // Preserve the ID
             name: disease.disease_name,
             medication: disease.medicament,
@@ -103,8 +104,8 @@ export default function EditChild({
         childData?.allergies?.map((allergy: any) => ({
           id: allergy.id, // Preserve the ID
           allergyTypes: allergy.name || "",
-          allergyFoods: Array.isArray(allergy.allergy_causes) 
-            ? allergy.allergy_causes.join(", ") 
+          allergyFoods: Array.isArray(allergy.allergy_causes)
+            ? allergy.allergy_causes.join(", ")
             : allergy.allergy_causes || "",
           allergyProcedures: allergy.allergy_emergency || "",
         })) || [],

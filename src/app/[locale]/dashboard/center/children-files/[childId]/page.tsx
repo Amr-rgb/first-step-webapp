@@ -127,7 +127,7 @@ export default function DashboardChildShow({
     name: childData?.parent_name || "",
     email: childData?.user?.email || "",
     phone: childData?.user?.phone || "",
-    kinship: childData?.Kinship || "",
+    kinship: childData?.kinship || "",
 
     // Child Information
     childName: childData?.child_name || "",
