@@ -30,6 +30,7 @@ export interface BranchCardType {
   acceptedAges: string[];
   services: string[];
   imageUrl?: string;
+  is_main_branch: number;
 }
 
 const mapCenterData = (apiData: any, t: any): CenterCardType => {
@@ -71,6 +72,7 @@ const mapBranchData = (apiData: any, t: any): BranchCardType => {
       ...(apiData.additional_service ? [apiData.additional_service] : []),
     ],
     imageUrl: apiData.image || null,
+    is_main_branch: apiData.is_main_branch,
   };
 };
 
