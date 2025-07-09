@@ -5,22 +5,38 @@ import { Button } from "@/components/ui/button";
 import { CenterRegisterPayload } from "@/types";
 import Link from "next/link";
 import { createSlug, mapOptions } from "@/lib/utils";
-import { SERVICE_IDS, AGE_GROUP_IDS, COMMUNICATION_METHODS_IDS, ADDITIONAL_FEATURES_IDS } from "@/lib/options";
+import {
+  SERVICE_IDS,
+  AGE_GROUP_IDS,
+  COMMUNICATION_METHODS_IDS,
+  ADDITIONAL_FEATURES_IDS,
+} from "@/lib/options";
 import { useTranslations } from "next-intl";
 
 const NurseryCard = ({ nursery }: { nursery: any }) => {
   const slug = createSlug(nursery.nursery_name, "ar");
   const t = useTranslations("options");
-  
+
   // Create mapped options for translations
   const serviceOptions = mapOptions(SERVICE_IDS, "centerServices", t);
-  const communicationOptions = mapOptions(COMMUNICATION_METHODS_IDS, "centerCommunicationMethods", t);
+  const communicationOptions = mapOptions(
+    COMMUNICATION_METHODS_IDS,
+    "centerCommunicationMethods",
+    t
+  );
   const ageOptions = mapOptions(AGE_GROUP_IDS, "centerAges", t);
-  const additionalFeaturesOptions = mapOptions(ADDITIONAL_FEATURES_IDS, "additionalFeatures", t);
-  
+  const additionalFeaturesOptions = mapOptions(
+    ADDITIONAL_FEATURES_IDS,
+    "additionalFeatures",
+    t
+  );
+
   // Helper function to get translation by ID
-  const getTranslationById = (id: string, options: { id: string; label: string }[]) => {
-    return options.find(option => option.id === id)?.label || id;
+  const getTranslationById = (
+    id: string,
+    options: { id: string; label: string }[]
+  ) => {
+    return options.find((option) => option.id === id)?.label || id;
   };
 
   // Get branches for display
@@ -39,11 +55,21 @@ const NurseryCard = ({ nursery }: { nursery: any }) => {
 
   // Get services for display (including additional service)
   const allServices = [
-    ...nursery.services.map((service: string) => getTranslationById(service, serviceOptions)),
-    ...nursery.communication_methods.map((method: string) => getTranslationById(method, communicationOptions)),
-    nursery.emergency_contact ? getTranslationById("emergency-contact", additionalFeaturesOptions) : null,
-    nursery.special_needs ? getTranslationById("special-needs", additionalFeaturesOptions) : null,
-    nursery.provides_food ? getTranslationById("food-service", additionalFeaturesOptions) : null,
+    ...nursery.services.map((service: string) =>
+      getTranslationById(service, serviceOptions)
+    ),
+    ...nursery.communication_methods.map((method: string) =>
+      getTranslationById(method, communicationOptions)
+    ),
+    nursery.emergency_contact
+      ? getTranslationById("emergency-contact", additionalFeaturesOptions)
+      : null,
+    nursery.special_needs
+      ? getTranslationById("special-needs", additionalFeaturesOptions)
+      : null,
+    nursery.provides_food
+      ? getTranslationById("food-service", additionalFeaturesOptions)
+      : null,
     nursery.additional_service && nursery.additional_service !== "N/A"
       ? nursery.additional_service
       : null,
@@ -64,7 +90,13 @@ const NurseryCard = ({ nursery }: { nursery: any }) => {
             <div className="w-20 h-20 bg-white border border-secondary-mint-green rounded-lg flex items-center justify-center overflow-hidden">
               {nursery.logo ? (
                 <Image
-                  src={nursery.logo}
+                  src={
+                    typeof nursery.logo === "string" &&
+                    !nursery.logo.startsWith("/") &&
+                    !nursery.logo.startsWith("http")
+                      ? `/${nursery.logo}`
+                      : nursery.logo
+                  }
                   alt={`${nursery.nursery_name} logo`}
                   width={64}
                   height={64}
