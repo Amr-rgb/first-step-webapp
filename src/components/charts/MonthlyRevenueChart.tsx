@@ -12,28 +12,21 @@ import {
   YAxis,
 } from "recharts";
 
-type RevenueData = {
+export type RevenueData = {
   month: string;
   value: number;
 };
 
-// Generate the last 5 months dynamically
-function getLast5MonthsData(): RevenueData[] {
-  const now = new Date();
-  const data: RevenueData[] = [];
-  for (let i = 4; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    // Format as MM (01, 02, ...)
-    const month = (d.getMonth() + 1).toString().padStart(2, "0");
-    data.push({ month, value: 0 });
-  }
-  return data;
+interface MonthlyRevenueChartProps {
+  data: RevenueData[];
 }
 
-const data: RevenueData[] = getLast5MonthsData();
-
-export default function RevenueChart() {
-  const [selected, setSelected] = useState<RevenueData>(data[1]);
+export default function MonthlyRevenueChart({
+  data,
+}: MonthlyRevenueChartProps) {
+  const [selected, setSelected] = useState<RevenueData>(
+    data[data.length - 1] || { month: "", value: 0 }
+  );
   const t = useTranslations("dashboard.charts.revenue");
   const locale = useLocale();
 
