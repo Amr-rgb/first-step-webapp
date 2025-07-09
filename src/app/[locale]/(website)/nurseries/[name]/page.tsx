@@ -7,9 +7,9 @@ import { AdSlide } from "@/types";
 export default async function NurseryPage({
   params,
 }: {
-  params: Promise<{ name: string }>;
+  params: Promise<{ name: string; locale: string }>;
 }) {
-  const { name } = await params;
+  const { name, locale } = await params;
   const readableName = slugToReadableName(name);
 
   const slides: AdSlide[] = [
@@ -42,7 +42,7 @@ export default async function NurseryPage({
   return (
     <div>
       <Header name={readableName} />
-      <Branches />
+      <Branches locale={locale} nurseryName={name} />
       {/* <Advertisment slides={slides} /> */}
     </div>
   );

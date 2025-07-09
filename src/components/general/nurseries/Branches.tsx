@@ -1,6 +1,15 @@
-import { Icons } from "../icons";
+"use client";
 
-const Branches = () => {
+import { Icons } from "../icons";
+import Link from "next/link";
+
+interface BranchesProps {
+  locale: string;
+  nurseryName: string;
+}
+
+const Branches = ({ locale, nurseryName }: BranchesProps) => {
+  
   const branches = ["القصيم", "حي غرناطة", "المدينة", "مكة المكرمة", "الرياض"];
 
   const branchColors = [
@@ -117,9 +126,12 @@ const Branches = () => {
               <li>خدمة من خدمات البرنامج</li>
               <li>خدمة من خدمات البرنامج</li>
             </ul>
-            <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90">
+            <Link
+              href={`/${locale}/nurseries/${nurseryName}/reservation?program=hourly`}
+              className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 text-center"
+            >
               احجز الآن
-            </button>
+            </Link>
           </div>
           {/* Daily Program */}
           <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col items-center min-w-[220px] max-w-xs mx-auto">
@@ -139,9 +151,12 @@ const Branches = () => {
               <li>خدمة من خدمات البرنامج</li>
               <li>خدمة من خدمات البرنامج</li>
             </ul>
-            <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90">
+            <Link
+              href={`/${locale}/nurseries/${nurseryName}/reservation?program=daily`}
+              className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 text-center"
+            >
               احجز الآن
-            </button>
+            </Link>
           </div>
           {/* Weekly Program */}
           <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col items-center min-w-[220px] max-w-xs mx-auto">
@@ -161,9 +176,12 @@ const Branches = () => {
               <li>خدمة من خدمات البرنامج</li>
               <li>خدمة من خدمات البرنامج</li>
             </ul>
-            <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90">
+            <Link
+              href={`/${locale}/nurseries/${nurseryName}/reservation?program=weekly`}
+              className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 text-center"
+            >
               احجز الآن
-            </button>
+            </Link>
           </div>
           {/* Monthly Program */}
           <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col items-center min-w-[220px] max-w-xs mx-auto">
@@ -183,9 +201,12 @@ const Branches = () => {
               <li>خدمة من خدمات البرنامج</li>
               <li>خدمة من خدمات البرنامج</li>
             </ul>
-            <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90">
+            <Link
+              href={`/${locale}/nurseries/${nurseryName}/reservation?program=monthly`}
+              className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 text-center"
+            >
               احجز الآن
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -289,9 +310,12 @@ const Branches = () => {
       {/* Nursery Stats Section */}
       <section className="mt-16 mb-10">
         <div className="flex justify-center mb-8">
-          <button className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-md px-8 py-2 font-bold text-sm shadow-md hover:opacity-90 transition">
+          <Link
+            href={`/${locale}/nurseries/${nurseryName}/reservation`}
+            className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-md px-8 py-2 font-bold text-sm shadow-md hover:opacity-90 transition"
+          >
             احجز لطفلك الآن
-          </button>
+          </Link>
         </div>
         <div className="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-24 text-center">
           {/* Stat 1 */}
@@ -402,9 +426,12 @@ const Branches = () => {
           />
         </div>
         <div className="flex justify-center">
-          <button className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-md px-8 py-2 font-bold text-sm shadow-md hover:opacity-90 transition">
+          <Link
+            href={`/${locale}/nurseries/${nurseryName}/reservation`}
+            className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-md px-8 py-2 font-bold text-sm shadow-md hover:opacity-90 transition"
+          >
             احجز لطفلك الآن
-          </button>
+          </Link>
         </div>
       </section>
 
