@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { parentService } from "@/services/dashboardApi";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { createSlug } from "@/lib/utils";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -85,6 +87,7 @@ const ReservationForm = ({
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const router = useRouter();
 
   const {
     data: realChildren,
@@ -114,6 +117,10 @@ const ReservationForm = ({
   const isRTL = locale === "ar";
 
   if (submitSuccess) {
+    // Construct URLs
+    const nurserySlug = createSlug(nurseryName, locale);
+    const reservationDetailsUrl = `/${locale}/(website)/nurseries/${nurserySlug}/reservation`;
+    const dashboardReservationsUrl = `/${locale}/dashboard/parent/bookings`;
     return (
       <motion.div
         initial={{ opacity: 0, y: 32 }}
@@ -122,19 +129,12 @@ const ReservationForm = ({
         className="bg-white rounded-xl shadow-lg p-8 text-center"
       >
         <div className="mb-6">
-          <svg
-            className="mx-auto h-16 w-16 text-green-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+          <Image
+            src="/assets/illustrations/success.png"
+            alt="Success"
+            width={100}
+            height={100}
+          />
         </div>
         <h2 className="text-2xl font-bold text-[#22336C] mb-4">
           {locale === "ar"
@@ -146,12 +146,31 @@ const ReservationForm = ({
             ? "سنتواصل معك قريباً لتأكيد تفاصيل الحجز."
             : "We will contact you soon to confirm the reservation details."}
         </p>
-        <button
-          onClick={() => setSubmitSuccess(false)}
-          className="bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-2 font-bold transition"
-        >
-          {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 items-center justify-center mb-6">
+          <button
+            onClick={() => router.push(reservationDetailsUrl)}
+            className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
+              bg-[#4D5EDB] text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
+          >
+            {locale === "ar" ? "تفاصيل الحجز" : "View Reservation Details"}
+          </button>
+          <button
+            onClick={() => router.push(dashboardReservationsUrl)}
+            className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
+              border-2 border-[#4D5EDB] text-[#4D5EDB] bg-white hover:bg-[#f7f8fa] hover:border-[#22336C] hover:text-[#22336C] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
+          >
+            {locale === "ar"
+              ? "حجوزاتي في لوحة التحكم"
+              : "Go to My Reservations"}
+          </button>
+          <button
+            onClick={() => setSubmitSuccess(false)}
+            className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
+              bg-gray-100 text-[#22336C] hover:bg-gray-200 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
+          >
+            {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
+          </button>
+        </div>
       </motion.div>
     );
   }
@@ -264,7 +283,7 @@ const ReservationForm = ({
                       }
                     }
                   }}
-                  aria-pressed={isSelected || isInRange}
+                  aria-pressed={isSelected || isInRange ? true : false}
                 >
                   {t}
                 </button>
