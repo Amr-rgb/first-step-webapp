@@ -330,26 +330,31 @@ export default function CenterDashboardHome() {
     },
   ];
 
-  const childrenRows = [
-    {
-      value: 3620,
-      valueLabel: t("center.children.valueLabel"),
-      trend: "up" as const,
-      data: [{ v: 8 }, { v: 10 }, { v: 12 }, { v: 17 }, { v: 13 }, { v: 15 }],
-    },
-    {
-      value: 3620,
-      valueLabel: t("center.children.valueLabel"),
-      trend: "down" as const,
-      data: [{ v: 18 }, { v: 12 }, { v: 15 }, { v: 10 }, { v: 7 }, { v: 9 }],
-    },
-    {
-      value: 3620,
-      valueLabel: t("center.children.valueLabel"),
-      trend: "up" as const,
-      data: [{ v: 7 }, { v: 10 }, { v: 13 }, { v: 12 }, { v: 15 }, { v: 17 }],
-    },
-  ];
+  // Build children comparison rows from enrollments_over_time
+  const months = Object.keys(stats?.enrollments_over_time || {}).sort();
+  const lastThreeMonths = months.slice(-3);
+
+  function getMonthData(value: number, isUp: boolean) {
+    const baseValues = [8, 10, 12, 17, 13, 15];
+    if (isUp) {
+      return baseValues.map((v) => ({ v: v + Math.floor(Math.random() * 5) }));
+    } else {
+      return baseValues.map((v) => ({ v: v - Math.floor(Math.random() * 5) }));
+    }
+  }
+
+  const childrenRows = lastThreeMonths.map((month, index) => {
+    const currentValue = stats?.enrollments_over_time?.[month] || 0;
+    const previousValue =
+      stats?.enrollments_over_time?.[months[months.length - 4 + index]] || 0;
+    const isUp = currentValue > previousValue;
+    return {
+      value: currentValue,
+      valueLabel: t("children.valueLabel"),
+      trend: isUp ? ("up" as const) : ("down" as const),
+      data: getMonthData(currentValue, isUp),
+    };
+  });
 
   return (
     <div className="grid gap-y-10">
