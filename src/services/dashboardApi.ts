@@ -533,11 +533,17 @@ export const centerService = {
     }
   },
 
-  sendDailyReport: async (childId: string, payload: any) => {
+  sendDailyReport: async (childIds: string[], payload: any) => {
     try {
       const response = await apiClient.post(
-        `/children/${childId}/daily-reports`,
-        payload
+        `/children/daily-reports`,
+        {
+          child_ids: childIds,
+          ...payload,
+        },
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       return response.data;
     } catch (error) {
