@@ -1247,6 +1247,102 @@
         "parentDetails": "Parent Details"
       }
     },
+    "search": {
+      "searching": "Searching...",
+      "startTyping": "Start typing to search the dashboard",
+      "noResults": "No results found for '{query}'",
+      "recentSearches": "Recent Searches",
+      "resultsCount": "{count, plural, one {# result} other {# results}} found",
+      "categories": {
+        "dashboard": "Dashboard",
+        "management": "Management",
+        "bookings": "Bookings",
+        "content": "Content",
+        "communication": "Communication",
+        "reports": "Reports",
+        "family": "Family",
+        "account": "Account",
+        "actions": "Actions"
+      },
+      "profile": {
+        "title": "Profile",
+        "description": "Manage your profile and account settings"
+      },
+      "admin": {
+        "dashboard": {
+          "description": "Overview of all system activities and statistics"
+        },
+        "centers": {
+          "description": "Manage nurseries and childcare centers"
+        },
+        "parents": {
+          "description": "View and manage parent accounts"
+        },
+        "children": {
+          "title": "All Children",
+          "description": "View and manage all children in the system"
+        },
+        "bookings": {
+          "description": "View and manage all booking requests"
+        },
+        "advertisements": {
+          "description": "Manage advertisements and promotional content"
+        },
+        "blogs": {
+          "description": "Manage blog posts and articles"
+        },
+        "notifications": {
+          "description": "Send and manage system notifications"
+        }
+      },
+      "center": {
+        "dashboard": {
+          "description": "Overview of your center's activities and performance"
+        },
+        "branches": {
+          "description": "Manage your center's branches and locations"
+        },
+        "childrenFiles": {
+          "description": "Manage children files and records"
+        },
+        "bookings": {
+          "description": "View and manage booking requests"
+        },
+        "dailyReports": {
+          "description": "Send and view daily activity reports"
+        },
+        "adBlogRequest": {
+          "description": "Request advertisements or blog posts"
+        },
+        "team": {
+          "description": "Manage your team members and staff"
+        },
+        "notifications": {
+          "description": "View and manage notifications"
+        }
+      },
+      "parent": {
+        "children": {
+          "description": "Manage your children's information and records"
+        },
+        "bookings": {
+          "description": "View and manage your booking requests"
+        },
+        "dailyReports": {
+          "description": "View daily reports about your children"
+        }
+      },
+      "actions": {
+        "logout": {
+          "title": "Logout",
+          "description": "Sign out of your account"
+        },
+        "home": {
+          "title": "Home",
+          "description": "Return to the main website"
+        }
+      }
+    },
     "secondary-sidebar": {
       "upcoming-occasions": "Upcoming Occasions",
       "birthdays": "Birthdays",

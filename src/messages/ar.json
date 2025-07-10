@@ -1242,6 +1242,102 @@
         "parentDetails": "تفاصيل ولي الأمر"
       }
     },
+    "search": {
+      "searching": "جاري البحث...",
+      "startTyping": "ابدأ في الكتابة للبحث في لوحة التحكم",
+      "noResults": "لا توجد نتائج لـ '{query}'",
+      "recentSearches": "عمليات البحث الأخيرة",
+      "resultsCount": "{count, plural, zero {لا توجد نتائج} one {نتيجة واحدة} two {نتيجتان} few {# نتائج} many {# نتيجة} other {# نتيجة}}",
+      "categories": {
+        "dashboard": "لوحة التحكم",
+        "management": "الإدارة",
+        "bookings": "الحجوزات",
+        "content": "المحتوى",
+        "communication": "التواصل",
+        "reports": "التقارير",
+        "family": "العائلة",
+        "account": "الحساب",
+        "actions": "الإجراءات"
+      },
+      "profile": {
+        "title": "الملف الشخصي",
+        "description": "إدارة ملفك الشخصي وإعدادات الحساب"
+      },
+      "admin": {
+        "dashboard": {
+          "description": "نظرة عامة على جميع أنشطة النظام والإحصائيات"
+        },
+        "centers": {
+          "description": "إدارة الحضانات ومراكز رعاية الأطفال"
+        },
+        "parents": {
+          "description": "عرض وإدارة حسابات أولياء الأمور"
+        },
+        "children": {
+          "title": "جميع الأطفال",
+          "description": "عرض وإدارة جميع الأطفال في النظام"
+        },
+        "bookings": {
+          "description": "عرض وإدارة جميع طلبات الحجز"
+        },
+        "advertisements": {
+          "description": "إدارة الإعلانات والمحتوى الترويجي"
+        },
+        "blogs": {
+          "description": "إدارة منشورات المدونة والمقالات"
+        },
+        "notifications": {
+          "description": "إرسال وإدارة إشعارات النظام"
+        }
+      },
+      "center": {
+        "dashboard": {
+          "description": "نظرة عامة على أنشطة وأداء مركزك"
+        },
+        "branches": {
+          "description": "إدارة فروع ومواقع مركزك"
+        },
+        "childrenFiles": {
+          "description": "إدارة ملفات وسجلات الأطفال"
+        },
+        "bookings": {
+          "description": "عرض وإدارة طلبات الحجز"
+        },
+        "dailyReports": {
+          "description": "إرسال وعرض التقارير اليومية للأنشطة"
+        },
+        "adBlogRequest": {
+          "description": "طلب إعلانات أو منشورات مدونة"
+        },
+        "team": {
+          "description": "إدارة أعضاء فريقك والموظفين"
+        },
+        "notifications": {
+          "description": "عرض وإدارة الإشعارات"
+        }
+      },
+      "parent": {
+        "children": {
+          "description": "إدارة معلومات وسجلات أطفالك"
+        },
+        "bookings": {
+          "description": "عرض وإدارة طلبات الحجز الخاصة بك"
+        },
+        "dailyReports": {
+          "description": "عرض التقارير اليومية حول أطفالك"
+        }
+      },
+      "actions": {
+        "logout": {
+          "title": "تسجيل خروج",
+          "description": "تسجيل الخروج من حسابك"
+        },
+        "home": {
+          "title": "الرئيسية",
+          "description": "العودة إلى الموقع الرئيسي"
+        }
+      }
+    },
     "secondary-sidebar": {
       "upcoming-occasions": "مناسبات قادمة",
       "birthdays": "أعياد الميلاد",

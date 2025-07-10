@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { Bell, Settings, Search, Maximize2, Minimize2 } from "lucide-react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import { Bell, Settings, Search, Maximize2, Minimize2, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
+import { useDashboardSearch } from "@/hooks/use-dashboard-search";
+import SearchResults from "./SearchResults";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -14,6 +16,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import clsx from "clsx";
 
 type BreadcrumbItem = {
   title: string;
@@ -37,10 +40,50 @@ export default function Header({
   sidebarOpen,
   secondarySidebarOpen,
 }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
   const t = useTranslations("dashboard.header");
   const commonT = useTranslations("common");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  // Dashboard search functionality
+  const {
+    query,
+    results,
+    isSearching,
+    isOpen,
+    recentSearches,
+    handleSearchChange,
+    handleSearchSubmit,
+    handleClose,
+    handleOpen,
+  } = useDashboardSearch();
+
+  const handleCloseAndBlur = () => {
+    handleClose();
+    setTimeout(() => setSearchFocused(false), 150);
+  };
+
+  // Keyboard shortcuts for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + K to open search
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (!isOpen) {
+          handleOpen();
+          setTimeout(() => {
+            searchInputRef.current?.focus();
+          }, 100);
+        } else {
+          handleClose();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, handleOpen, handleClose]);
 
   // Define all possible routes with their translations
   const routes: RouteConfig[] = [
@@ -231,15 +274,57 @@ export default function Header({
       {/* Right: Fullscreen button and other controls */}
       <div className="flex-1 flex items-center justify-end gap-6">
         {/* Center Section - Search */}
-        <div className="hidden sm:block relative w-full max-w-52 mx-4">
-          <Input
-            type="search"
-            className="rounded-full py-1.5 px-2.5 pr-11 placeholder:text-mid-gray"
-            placeholder={t("search")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-light-gray" />
+        <div
+          className={clsx(
+            "hidden sm:block relative w-full transition-all duration-200",
+            searchFocused ? "max-w-2xl mx-auto" : "max-w-52 mx-4"
+          )}
+        >
+          <div className="relative">
+            <Input
+              ref={searchInputRef}
+              type="search"
+              className="z-50 relative rounded-full py-1.5 px-2.5 pr-11 placeholder:text-mid-gray"
+              placeholder={t("search")}
+              value={query}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => {
+                handleOpen();
+                setSearchFocused(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  handleClose();
+                  searchInputRef.current?.blur();
+                }
+              }}
+            />
+            {query ? (
+              <button
+                onClick={() => {
+                  handleSearchChange("");
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-8 top-1/2 -translate-y-1/2 size-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            ) : (
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-light-gray" />
+            )}
+
+            {/* Search Results */}
+            <SearchResults
+              isOpen={isOpen}
+              query={query}
+              results={results}
+              recentSearches={recentSearches}
+              isSearching={isSearching}
+              onClose={handleCloseAndBlur}
+              onSearchChange={handleSearchChange}
+              onSearchSubmit={handleSearchSubmit}
+            />
+          </div>
         </div>
 
         <Bell className="size-6 text-mid-gray cursor-pointer" />
