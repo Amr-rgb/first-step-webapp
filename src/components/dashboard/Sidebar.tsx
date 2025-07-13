@@ -138,7 +138,7 @@ const getAdminNavbar = (t: any) => [
 
 const DashboardSideBar = () => {
   const pathname = usePathname();
-  const { state, setOpen } = useSidebar();
+  const { state, setOpen, toggleSidebar } = useSidebar();
   const locale = useLocale();
   const t = useTranslations("dashboard.sidebar");
   const isMobile = useIsMobile();
@@ -199,6 +199,7 @@ const DashboardSideBar = () => {
                         asChild
                         variant={isActive ? "default" : "defaultNoGradient"}
                         className="bg-transparent shadow-none"
+                        onClick={isMobile ? () => toggleSidebar() : undefined}
                       >
                         <Link
                           href={item.url}
