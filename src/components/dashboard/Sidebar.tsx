@@ -170,16 +170,44 @@ const DashboardSideBar = () => {
       collapsible="icon"
     >
       <SidebarHeader className="mb-4 justify-center items-center">
-        <Image
-          className={cn(
-            "size-20 aspect-square object-center object-cover rounded-full bg-primary-blue/20",
-            state === "collapsed" ? "size-fit" : ""
-          )}
-          src={user?.logo || "/assets/logos/instagram-logo.png"}
-          width={80}
-          height={80}
-          alt="Nersery Logo"
-        />
+        {user?.role === "parent" || user?.role === "branch_admin" ? (
+          <Image
+            className="w-20 aspect-square object-center object-cover rounded-full bg-primary-blue/20"
+            src={user?.logo || "/assets/logos/logo.svg"}
+            width={80}
+            height={80}
+            alt="Nersery Logo"
+          />
+        ) : null}
+
+        {user?.role === "admin" ? (
+          <Image
+            className={"w-20"}
+            src={"/assets/logos/logo.svg"}
+            alt="logo"
+            width={64.09}
+            height={80}
+          />
+        ) : null}
+
+        {user?.role === "center" ? (
+          <>
+            <div
+              className={
+                state === "collapsed"
+                  ? "hidden"
+                  : "flex items-center gap-1 font-bold"
+              }
+            >
+              <span>{locale === "en" ? "Hello," : "،مرحبًا"}</span>
+              <span>{user?.name}</span>
+              <span>👋</span>
+            </div>
+            <div className={state === "collapsed" ? "text-2xl" : "hidden"}>
+              👋
+            </div>
+          </>
+        ) : null}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
