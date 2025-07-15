@@ -57,7 +57,7 @@ const BranchWrapper = ({
       nursery_name_en: fetchedBranch.nursery_name || "",
       nursery_type: fetchedBranch.nursery_type || [],
       address: fetchedBranch.address || "",
-      city: fetchedBranch.city || "",
+      city: fetchedBranch.city_id || "",
       location: fetchedBranch.location || "",
       services: fetchedBranch.services || [],
       additional_service: fetchedBranch.additional_service || "",

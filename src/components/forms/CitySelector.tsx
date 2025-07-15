@@ -41,7 +41,7 @@ export function CitySelector({
   const t = useTranslations("auth.center-signup.1.form");
   const locale = useLocale();
 
-  const selectedCity = cities.find((city) => city.id.toString() === value);
+  const selectedCity = cities.find((city) => city.id.toString() == value);
   const defaultPlaceholder = placeholder || t("city.placeholder");
 
   return (
