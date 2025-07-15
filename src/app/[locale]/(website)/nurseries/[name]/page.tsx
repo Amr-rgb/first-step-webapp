@@ -62,7 +62,9 @@ export default async function NurseryPage({
       {/* World of Learning custom sections */}
       {isWorldOfLearning && (
         <>
-          {isWorldOfLearningJunior && <Programs nurseryName={name} />}
+          {isWorldOfLearningJunior && (
+            <Programs nurseryName={name} locale={locale} />
+          )}
 
           {/* Contact/Owner Info Section */}
           <section className="my-10 container mx-auto px-4 xl:px-8">

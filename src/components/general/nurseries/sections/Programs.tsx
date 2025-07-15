@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 interface Program {
   title: string;
@@ -11,9 +12,10 @@ interface Program {
 interface ProgramsProps {
   programs?: Program[];
   nurseryName?: string;
+  locale?: string;
 }
 
-const Programs = ({ programs, nurseryName }: ProgramsProps) => {
+const Programs = ({ programs, nurseryName, locale }: ProgramsProps) => {
   const t = useTranslations("nurseryDetails.programs");
   let displayPrograms = programs;
   if (
@@ -90,9 +92,15 @@ const Programs = ({ programs, nurseryName }: ProgramsProps) => {
                 <li key={i}>{feature}</li>
               ))}
             </ul>
-            <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90">
-              {program.buttonText}
-            </button>
+            <Link
+              href={`/${locale}/nurseries/${nurseryName}/reservation`}
+              passHref
+              legacyBehavior
+            >
+              <a className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 block text-center">
+                {program.buttonText}
+              </a>
+            </Link>
           </div>
         ))}
       </div>
