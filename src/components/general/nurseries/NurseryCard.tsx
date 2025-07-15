@@ -81,7 +81,7 @@ const NurseryCard = ({ nursery }: { nursery: any }) => {
     .join("، ");
 
   return (
-    // <Link href={`/nurseries/${slug}`} className="block">
+    <Link href={`/nurseries/${slug}`} className="block">
     <div className="bg-white rounded-5xl overflow-hidden shadow-[0_2px_80px_0_rgba(34,34,34,0.08)]">
       <div className="p-6">
         {/* Logo section */}
@@ -192,7 +192,7 @@ const NurseryCard = ({ nursery }: { nursery: any }) => {
         </div>
       </div>
     </div>
-    // </Link>
+    </Link>
   );
 };
 

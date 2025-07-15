@@ -1,8 +1,10 @@
 import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
+import Programs from "@/components/general/nurseries/sections/Programs";
 import { slugToReadableName } from "@/lib/utils";
 import { AdSlide } from "@/types";
+import { getTranslations } from "next-intl/server";
 
 export default async function NurseryPage({
   params,
@@ -10,6 +12,7 @@ export default async function NurseryPage({
   params: Promise<{ name: string; locale: string }>;
 }) {
   const { name, locale } = await params;
+  const t = await getTranslations("nurseryDetails");
   const readableName = slugToReadableName(name);
 
   const slides: AdSlide[] = [
@@ -39,10 +42,49 @@ export default async function NurseryPage({
     },
   ];
 
+  const isWorldOfLearning =
+    readableName === "World of Learning" ||
+    name.toLowerCase().includes("world-of-learning") ||
+    name.toLowerCase().includes("world-of-learning-junior");
+
+  const isWorldOfLearningJunior = name
+    .toLowerCase()
+    .includes("world-of-learning-junior");
+
   return (
     <div>
-      <Header name={readableName} />
+      <Header
+        name={readableName}
+        slogan={isWorldOfLearning ? t("slogan") : undefined}
+      />
       <Branches locale={locale} nurseryName={name} />
+
+      {/* World of Learning custom sections */}
+      {isWorldOfLearning && (
+        <>
+          {isWorldOfLearningJunior && <Programs nurseryName={name} />}
+
+          {/* Contact/Owner Info Section */}
+          <section className="my-10 container mx-auto px-4 xl:px-8">
+            <div
+              dir={locale === "ar" ? "rtl" : "ltr"}
+              style={{ fontFamily: "Tahoma, Arial, sans-serif" }}
+            >
+              <h2 className="mb-6 heading-3 text-secondary-burgundy text-center">
+                {t("contact.title")}
+              </h2>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center space-y-2">
+                <p className="font-bold text-lg">{t("contact.ownerName")}</p>
+                <p>{t("contact.ownerRole")}</p>
+                <p>{t("contact.nurseryName")}</p>
+                <p>{t("contact.mobile")}</p>
+                <p>{t("contact.phone")}</p>
+                <p>{t("contact.address")}</p>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
       {/* <Advertisment slides={slides} /> */}
     </div>
   );
