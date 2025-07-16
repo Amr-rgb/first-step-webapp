@@ -7,8 +7,9 @@ import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { parentService } from "@/services/dashboardApi";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createSlug } from "@/lib/utils";
+import { paymentService } from "@/services/api";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -25,18 +26,27 @@ interface FormData {
   selectedChildren: string[];
 }
 
-const programs = {
+type ProgramType = "monthly" | "weekly" | "daily" | "hourly";
+interface Program {
+  id: number;
+  type: ProgramType;
+  name: string;
+  price: string;
+  planId: number;
+}
+
+const programs: { ar: Program[]; en: Program[] } = {
   ar: [
-    { id: "monthly", name: "شهري", price: "50 ر.س" },
-    { id: "weekly", name: "أسبوعي", price: "50 ر.س" },
-    { id: "daily", name: "يومي", price: "50 ر.س" },
-    { id: "hourly", name: "بالساعة", price: "50 ر.س" },
+    { id: 1, type: "monthly", name: "شهري", price: "50 ر.س", planId: 1 },
+    { id: 2, type: "weekly", name: "أسبوعي", price: "50 ر.س", planId: 2 },
+    { id: 3, type: "daily", name: "يومي", price: "50 ر.س", planId: 3 },
+    { id: 4, type: "hourly", name: "بالساعة", price: "50 ر.س", planId: 4 },
   ],
   en: [
-    { id: "monthly", name: "Monthly", price: "50 SAR" },
-    { id: "weekly", name: "Weekly", price: "50 SAR" },
-    { id: "daily", name: "Daily", price: "50 SAR" },
-    { id: "hourly", name: "Hourly", price: "50 SAR" },
+    { id: 1, type: "monthly", name: "Monthly", price: "50 SAR", planId: 1 },
+    { id: 2, type: "weekly", name: "Weekly", price: "50 SAR", planId: 2 },
+    { id: 3, type: "daily", name: "Daily", price: "50 SAR", planId: 3 },
+    { id: 4, type: "hourly", name: "Hourly", price: "50 SAR", planId: 4 },
   ],
 };
 
@@ -80,14 +90,78 @@ const ReservationForm = ({
   locale,
 }: ReservationFormProps) => {
   const t = useTranslations();
-  const [program, setProgram] = useState(selectedProgram || "hourly");
+  const router = useRouter();
+  const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const isWorldOfLearningJunior =
+    nurseryName &&
+    (nurseryName.toLowerCase().includes("world-of-learning-junior") ||
+      nurseryName.toLowerCase().includes("world-of-learning"));
+
+  // Dynamic programs for World of Learning Junior
+  let dynamicPrograms: Program[] = [];
+  if (isWorldOfLearningJunior) {
+    dynamicPrograms = [
+      {
+        id: 1,
+        type: "monthly",
+        name: t("nurseryDetails.programs.junior.monthly.title"),
+        price: t("nurseryDetails.programs.junior.monthly.price"),
+        planId: 1,
+      },
+      {
+        id: 3,
+        type: "daily",
+        name: t("nurseryDetails.programs.junior.daily.title"),
+        price: t("nurseryDetails.programs.junior.daily.price"),
+        planId: 3,
+      },
+      {
+        id: 4,
+        type: "hourly",
+        name: t("nurseryDetails.programs.junior.hourly.title"),
+        price: t("nurseryDetails.programs.junior.hourly.price"),
+        planId: 4,
+      },
+    ];
+  }
+  const programList: Program[] = isWorldOfLearningJunior
+    ? dynamicPrograms
+    : programs[locale];
+  // Helper to match program by id or name (case-insensitive)
+  function findSelectedProgram(
+    programList: Program[],
+    program: string | number
+  ): Program | undefined {
+    return programList.find((p) => {
+      if (typeof program === "number") {
+        return p.id === program;
+      } else if (typeof program === "string") {
+        return (
+          p.id.toString() === program ||
+          p.type === program ||
+          p.name === program ||
+          (typeof p.name === "string" &&
+            p.name.toLowerCase() === program.toLowerCase())
+        );
+      }
+      return false;
+    });
+  }
+  // Set default program to first in list if not found
+  const [program, setProgram] = useState<string | number>(
+    selectedProgram && findSelectedProgram(programList, selectedProgram)
+      ? findSelectedProgram(programList, selectedProgram)!.id
+      : programList[0]?.id ?? 4 // Default to hourly if not found
+  );
   const [fromTime, setFromTime] = useState("03:00");
   const [toTime, setToTime] = useState("07:00");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const router = useRouter();
+  // Show success if redirected from payment
+  const [submitSuccess, setSubmitSuccess] = useState(
+    typeof window !== "undefined" && searchParams?.get("payment") === "success"
+  );
 
   const {
     data: realChildren,
@@ -107,14 +181,32 @@ const ReservationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    // Get the selected plan/program ID
+    const selectedPlanId = selectedProgramObj?.planId;
+    if (!selectedPlanId) {
+      alert("No program selected. Please choose a program.");
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-    }, 1500);
+      return;
+    }
+    try {
+      const data = await paymentService.subscribe(selectedPlanId);
+      setIsSubmitting(false);
+      if (data.success && data.payment_url) {
+        // Redirect to Moyasar payment page
+        window.location.href = data.payment_url;
+      } else {
+        alert("Payment initiation failed. Please try again.");
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      alert("Payment initiation failed. Please try again.");
+    }
   };
 
   const dir = locale === "ar" ? "rtl" : "ltr";
   const isRTL = locale === "ar";
+
+  const selectedProgramObj = findSelectedProgram(programList, program);
 
   if (submitSuccess) {
     // Construct URLs
@@ -196,8 +288,14 @@ const ReservationForm = ({
           stiffness: 60,
         }}
       >
-        {programs[locale].map((p) => {
-          const selected = program === p.id;
+        {programList.map((p) => {
+          const selected =
+            program === p.id ||
+            p.type === program ||
+            p.name === program ||
+            (typeof p.name === "string" &&
+              typeof program === "string" &&
+              p.name.toLowerCase() === program.toLowerCase());
           return (
             <button
               key={p.id}
@@ -483,7 +581,7 @@ const ReservationForm = ({
         <div className="space-y-2 text-sm text-gray-700">
           <div className="flex justify-between">
             <span>{locale === "ar" ? "البرنامج" : "Program"}</span>
-            <span>{programs[locale].find((p) => p.id === program)?.name}</span>
+            <span>{selectedProgramObj ? selectedProgramObj.name : "-"}</span>
           </div>
           <div className="flex justify-between">
             <span>{locale === "ar" ? "الوقت" : "Time"}</span>
@@ -507,7 +605,7 @@ const ReservationForm = ({
             {locale === "ar" ? "السعر الإجمالي" : "Total"}
           </span>
           <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            450 {locale === "ar" ? "ر.س" : "SAR"}
+            {selectedProgramObj ? selectedProgramObj.price : "-"}
           </span>
         </div>
       </motion.div>

@@ -93,7 +93,7 @@ const Programs = ({ programs, nurseryName, locale }: ProgramsProps) => {
               ))}
             </ul>
             <Link
-              href={`/${locale}/nurseries/${nurseryName}/reservation`}
+              href={`/${locale}/nurseries/${nurseryName}/reservation?program=${program.title}`}
               passHref
               legacyBehavior
             >
