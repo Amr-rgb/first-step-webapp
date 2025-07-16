@@ -192,7 +192,9 @@ const ReservationForm = ({
       const data = await paymentService.subscribe(selectedPlanId);
       setIsSubmitting(false);
       if (data.success && data.payment_url) {
-        // Redirect to Moyasar payment page
+        // Redirect to Moyasar payment page, but after payment, Moyasar should redirect back to our reservation page with ?payment=success
+        // To achieve this, we need to set the return_url in the backend/payment API to point to our reservation page with ?payment=success
+        // For now, we open the payment page, and after payment, the user will be redirected back with ?payment=success
         window.location.href = data.payment_url;
       } else {
         alert("Payment initiation failed. Please try again.");
