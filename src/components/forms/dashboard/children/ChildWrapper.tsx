@@ -59,14 +59,10 @@ const ChildWrapper = ({
       }, 1500);
     },
     onError: (error: any) => {
-      console.error(
-        mode === "edit"
-          ? "Failed to update child (mutation):"
-          : "Failed to add child (mutation):",
-        error
-      );
-      if (error?.response?.data) {
-        console.error("API error details:", error.response.data);
+      console.error("API error details:", error?.response?.data);
+      if (error?.response?.data?.errors) {
+        console.error("API validation errors:", error.response.data.errors);
+        alert(JSON.stringify(error.response.data.errors, null, 2)); // Show errors in an alert for easy copy-paste
       }
       if (error?.response?.data?.errors) {
         console.error("API validation errors:", error.response.data.errors);
@@ -75,8 +71,77 @@ const ChildWrapper = ({
   });
 
   const onSubmit = (data: any) => {
-    console.log("Submitting form data:", data); 
-    mutation.mutate(data);
+    let payload = { ...data };
+
+    // Remove all disease/allergy objects if 'no' is selected
+    if (payload.chronicDiseases?.hasDiseases === "no") {
+      payload.chronicDiseases.diseases = [];
+    }
+    if (payload.allergies?.hasAllergies === "no") {
+      payload.allergies.allergies = [];
+    }
+
+    // Chronic Diseases
+    let disease = payload.chronicDiseases.hasDiseases === "yes";
+    let disease_details;
+    if (!disease) {
+      disease_details = [
+        { disease_name: "None", medicament: null, emergency: null },
+      ];
+    } else {
+      disease_details = payload.chronicDiseases.diseases
+        .filter((d: any) => d.name && d.medication && d.procedures)
+        .map((d: any) => ({
+          disease_name: d.name,
+          medicament: d.medication,
+          emergency: d.procedures,
+        }));
+    }
+
+    // Allergies
+    let allergy = payload.allergies.hasAllergies === "yes";
+    let allergies = [];
+    if (allergy) {
+      allergies = payload.allergies.allergies
+        .filter(
+          (a: any) => a.allergyTypes && a.allergyFoods && a.allergyProcedures
+        )
+        .map((a: any) => ({
+          name: a.allergyTypes,
+          allergy_causes: a.allergyFoods.split(/,\s*/),
+          allergy_emergency: a.allergyProcedures,
+        }));
+    } // If allergy is false, allergies stays as []
+
+    // Compose the child object as expected by the backend
+    const child = {
+      child_name: payload.childName,
+      birthday_date:
+        payload.birthDate instanceof Date
+          ? payload.birthDate.toISOString().split("T")[0]
+          : payload.birthDate,
+      gender: payload.gender === "male" ? "boy" : "girl",
+      disease,
+      disease_details,
+      allergy,
+      parent_name: payload.fatherName,
+      mother_name: payload.motherName,
+      recommendations: payload.recommendations,
+      description_3_words: payload.childDescription,
+      things_child_likes: payload.favoriteThings,
+      notes: payload.comments,
+      kinship: payload.kinship,
+      authorized_persons: (payload.authorizedPersons || []).map(
+        (person: any) => ({
+          name: person.name,
+          cin: person.idNumber,
+        })
+      ),
+      allergies, // <-- this is now an array, not an object
+    };
+
+    // Send both the raw form data and the children array
+    mutation.mutate({ ...payload, children: [child] });
   };
 
   function mapFetchedChildToInitialValues(childData: any) {

@@ -10,7 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, name } = await params;
   const nurseryName = slugToReadableName(name);
-  
+
   return {
     title:
       locale === "ar"
@@ -33,10 +33,15 @@ export default async function ReservationPage({
   const { locale, name } = await params;
   const searchParameters = await searchParams;
   const nurseryName = slugToReadableName(name);
-  
-  const program = typeof searchParameters.program === "string" 
-    ? searchParameters.program 
-    : "";
+
+  const program =
+    typeof searchParameters.program === "string"
+      ? searchParameters.program
+      : "";
+
+  // If redirected from payment, Moyasar should use:
+  // /[locale]/nurseries/[name]/reservation?payment=success
+  // ReservationForm will show the success message automatically.
 
   const t = await getTranslations();
 
@@ -45,22 +50,18 @@ export default async function ReservationPage({
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-[#22336C] mb-2">
-            {locale === "ar" 
-              ? "تفاصيل الحجز"
-              : "Booking Details"
-            }
+            {locale === "ar" ? "تفاصيل الحجز" : "Booking Details"}
           </h1>
           {program && (
             <p className="text-lg text-gray-600">
-              {locale === "ar" 
+              {locale === "ar"
                 ? `البرنامج المختار: ${program}`
-                : `Selected Program: ${program}`
-              }
+                : `Selected Program: ${program}`}
             </p>
           )}
         </div>
-        
-        <ReservationForm 
+
+        <ReservationForm
           nurseryName={nurseryName}
           selectedProgram={program}
           locale={locale}

@@ -73,7 +73,12 @@ export default async function NurseriesPage({
   return (
     <div>
       <Advertisment slides={slides} />
-      <Nurseries nurseries={nurseries} query={query} filter={filter} />
+      <Nurseries
+        nurseries={nurseries}
+        query={query}
+        filter={filter}
+        locale={locale}
+      />
       <BlogsWrapper number={4} locale={locale} />
       <Contact />
     </div>
