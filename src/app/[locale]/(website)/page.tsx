@@ -9,6 +9,7 @@ import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
 import FAQs from "@/components/general/FAQs";
 import Contact from "@/components/general/contact/Contact";
 import { websiteService } from "@/services/api";
+import HeroSection from "@/components/general/HeroSection";
 
 export const revalidate = 86400;
 
@@ -45,7 +46,8 @@ export default async function HomePage({
 
   return (
     <main>
-      <Advertisment slides={adSlides} />
+      <HeroSection />
+      {/* <Advertisment slides={adSlides} /> */}
       <Headline />
       <FeaturesSection />
       <SubscriptionSection />
