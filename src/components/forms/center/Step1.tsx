@@ -23,9 +23,11 @@ import { CENTER_TYPE_IDS, SERVICE_IDS } from "@/lib/options";
 export function Step1BasicInfo({
   isBranch = false,
   disabled = false,
+  show = false,
 }: {
   isBranch?: boolean;
   disabled?: boolean;
+  show?: boolean;
 }) {
   const t = useTranslations("auth.center-signup.1.form");
   const tOptions = useTranslations("options");
@@ -84,26 +86,28 @@ export function Step1BasicInfo({
           )}
         />
 
-        <FormField
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("email.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("email.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(show ? !!control._formValues?.email : true) && (
+          <FormField
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("email.label")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("email.placeholder")}
+                    {...field}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={control}
@@ -250,26 +254,28 @@ export function Step1BasicInfo({
           )}
         />
 
-        <FormField
-          control={control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("address.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("address.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(show ? !!control._formValues?.address : true) && (
+          <FormField
+            control={control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("address.label")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("address.placeholder")}
+                    {...field}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={control}

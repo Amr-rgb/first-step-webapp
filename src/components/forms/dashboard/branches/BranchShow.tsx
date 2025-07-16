@@ -114,7 +114,7 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
     <FormProvider {...methods}>
       <form className="flex flex-col items-center space-y-8">
         <div className="flex flex-col gap-6">
-          <Step1BasicInfo disabled isBranch />
+          <Step1BasicInfo disabled isBranch show />
           <Step2AgesAndHours disabled />
           <Step3Communication disabled />
           <Step4Permits disabled />
