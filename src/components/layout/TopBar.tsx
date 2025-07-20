@@ -49,14 +49,14 @@ const TopBar = () => {
   ];
 
   return (
-    <div dir="ltr" className="bg-secondary-orange text-white">
+    <div dir="ltr" className="bg-primary-blue text-white">
       <div className="container mx-auto px-4 flex justify-between items-center py-1.5">
         <LanguageSwitcher />
 
         <div className="flex items-center gap-x-4">
           {icons.map((item) => (
             <a target="_blank" key={item.title} href={item.link}>
-              <item.icon className="text-white size-4" />
+              <item.icon className="text-white size-4 hover:opacity-80 duration-300" />
             </a>
           ))}
         </div>

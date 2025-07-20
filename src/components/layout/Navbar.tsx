@@ -129,7 +129,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         </div>
 
         {/* Centered navigation */}
-        <div className="hidden xl:block shrink-0 py-7 px-14 rounded-full bg-gradient-to-t from-white from-[28%] to-[#E2F3EB]">
+        <div className="hidden xl:block shrink-0 py-7 px-14 rounded-full">
           <ul className="flex justify-between items-center gap-x-9">
             {links.map((link) => (
               <li
