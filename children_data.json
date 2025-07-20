@@ -1,0 +1,38 @@
+{
+    "children": [
+        {
+            "child_name": "John Doe",
+            "birthday_date": "2015-06-15",
+            "gender": "boy",
+            "disease": false,
+            "disease_details": [
+                {
+                    "disease_name": "None",
+                    "medicament": null,
+                    "emergency": null
+                }
+            ],
+            "allergy": true,
+            "parent_name": "Jane Doe",
+            "mother_name": "Jane Doe",
+            "recommendations": "None",
+            "description_3_words": "Funny, Active, Smart",
+            "things_child_likes": "Playing soccer",
+            "notes": "Loves to play outside.",
+            "kinship": "Mother",
+            "authorized_persons": [
+                {
+                    "name": "Alice Smith",
+                    "cin": "123456788"
+                }
+            ],
+            "allergies": [
+                {
+                    "name": "Peanuts",
+                    "allergy_causes": ["Peanuts", "Tree Nuts"],
+                    "allergy_emergency": "EpiPen required"
+                }
+            ]
+        }
+    ]
+}

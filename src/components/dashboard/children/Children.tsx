@@ -125,7 +125,18 @@ const Children = ({
             birthday={child.birthday_date}
             gender={child.gender}
             userName={userName || child.user.name}
-            disease_details={child.disease_details}
+            disease_details={
+              child.disease_details
+                ? (typeof child.disease_details === "string"
+                    ? JSON.parse(child.disease_details)
+                    : child.disease_details
+                  ).map((disease: any) => ({
+                    disease_name: disease.disease_name,
+                    medicament: disease.medicament,
+                    emergency: disease.emergency,
+                  }))
+                : []
+            }
             allergies={child.allergies}
             authorized_people={child.authorized_people}
             noEdit={noEdit}
@@ -141,15 +152,26 @@ const Children = ({
             birthday={child.birthday_date || ""}
             gender={child.gender}
             userName={child.parent_name || ""}
-            disease_details={[]}
+            disease_details={
+              child.disease_details
+                ? (typeof child.disease_details === "string"
+                    ? JSON.parse(child.disease_details)
+                    : child.disease_details
+                  ).map((disease: any) => ({
+                    disease_name: disease.disease_name,
+                    medicament: disease.medicament,
+                    emergency: disease.emergency,
+                  }))
+                : []
+            }
             allergies={
               child.allergies?.map((a: any) => ({
                 id: a.id,
                 name: a.name,
                 allergy_causes: Array.isArray(a.allergy_causes)
                   ? a.allergy_causes
-                  : a.allergy_causes
-                  ? [a.allergy_causes]
+                  : typeof a.allergy_causes === "string"
+                  ? a.allergy_causes.split(",").map((s: string) => s.trim())
                   : [],
                 allergy_emergency: a.allergy_emergency,
               })) || []

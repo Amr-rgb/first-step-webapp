@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
-const Header = ({ name }: { name: string }) => {
+const Header = ({ name, slogan }: { name: string; slogan?: string }) => {
+  const t = useTranslations("nurseryDetails");
   return (
     <div
       className="relative flex h-[37.5rem] px-4 bg-center bg-cover"
@@ -14,16 +16,13 @@ const Header = ({ name }: { name: string }) => {
           <div className="space-y-1">
             <p className="heading-3 text-primary font-extrabold">{name}</p>
             <p className="heading-4 text-secondary-mint-green font-medium">
-              هنا هيكون الشعار بتاع الحضانة أو أي جملة
+              {slogan || t("header.sloganFallback")}
             </p>
           </div>
 
           <div className="space-y-4">
-            <p className="font-bold text-mid-gray">
-              نوفر للآباء تقارير يومية تفصيلية عن أداء أطفالهم داخل الحضانة،
-              تشمل مستوى التفاعل، الأنشطة التي شاركوا فيها
-            </p>
-            <Button size={"sm"}>احجز لطفلك الآن</Button>
+            <p className="font-bold text-mid-gray">{t("header.description")}</p>
+            <Button size={"sm"}>{t("header.cta")}</Button>
           </div>
         </div>
       </div>

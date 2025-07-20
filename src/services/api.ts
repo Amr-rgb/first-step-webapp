@@ -696,3 +696,16 @@ export const authService = {
     }
   },
 };
+
+export const paymentService = {
+  subscribe: async (planId: string) => {
+    try {
+      const response = await apiClient.post("/payment/subscribe", {
+        plan_id: planId,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};

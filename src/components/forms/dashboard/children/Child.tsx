@@ -17,6 +17,9 @@ import { Allergy, ChronicDisease } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import React from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { RadioGroup } from "@/components/general/RadioGroup";
+import { Plus, Minus } from "lucide-react";
 
 const Child = ({
   initialValues,
@@ -39,10 +42,7 @@ const Child = ({
     if (mode === "add") {
       return (
         <>
-          <Button
-            size={"sm"}
-            type="submit"
-          >
+          <Button size={"sm"} type="submit">
             إضافة الطفل
           </Button>
           <Button size={"sm"} variant={"outline"} onClick={() => router.back()}>
@@ -93,10 +93,27 @@ const Child = ({
     }
   }, [methods.formState.errors]);
 
-  const hasDiseases = methods.watch("chronicDiseases.hasDiseases");
-  const diseases = methods.watch("chronicDiseases.diseases");
-  const hasAllergies = methods.watch("allergies.hasAllergies");
-  const allergies = methods.watch("allergies.allergies");
+  // --- Add useFieldArray for diseases and allergies ---
+  const { control, watch } = methods;
+  const {
+    fields: diseases,
+    append: appendDisease,
+    remove: removeDisease,
+  } = useFieldArray({
+    control,
+    name: "chronicDiseases.diseases",
+  });
+  const {
+    fields: allergies,
+    append: appendAllergy,
+    remove: removeAllergy,
+  } = useFieldArray({
+    control,
+    name: "allergies.allergies",
+  });
+  // ---
+  const hasDiseases = watch("chronicDiseases.hasDiseases");
+  const hasAllergies = watch("allergies.hasAllergies");
   const authorizedPersons = methods.watch("authorizedPersons");
 
   return (
@@ -116,22 +133,240 @@ const Child = ({
           locale={locale}
           readOnly={isReadOnly}
         />
-
-        <DiseasesPart
-          control={methods.control}
-          locale={locale}
-          hasDiseases={hasDiseases}
-          diseases={diseases}
-          readOnly={isReadOnly}
-        />
-
-        <AllergiesPart
-          control={methods.control}
-          locale={locale}
-          hasAllergies={hasAllergies}
-          allergies={allergies}
-          readOnly={isReadOnly}
-        />
+        {/* --- Chronic Diseases Section --- */}
+        <div className="w-full flex flex-col gap-y-4">
+          <h2 className="heading-4 font-medium text-primary">
+            الأمراض المزمنة
+          </h2>
+          <FormField
+            control={control}
+            name="chronicDiseases.hasDiseases"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <RadioGroup
+                    className="gap-14.5"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={[
+                      { value: "yes", label: "نعم" },
+                      { value: "no", label: "لا" },
+                    ]}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {hasDiseases === "yes" &&
+            diseases.map((_, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
+              >
+                <FormField
+                  control={control}
+                  name={`chronicDiseases.diseases.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">اسم المرض</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder="اسم المرض"
+                          {...field}
+                          value={field.value?.toString() || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`chronicDiseases.diseases.${index}.medication`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">الدواء</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder="الدواء"
+                          {...field}
+                          value={field.value?.toString() || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`chronicDiseases.diseases.${index}.procedures`}
+                  render={({ field }) => (
+                    <FormItem className="col-span-1 md:col-span-2">
+                      <Label>
+                        <span className="text-base">إجراءات الطوارئ</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder="إجراءات الطوارئ"
+                          {...field}
+                          value={field.value?.toString() || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex gap-2 col-span-2">
+                  {diseases.length > 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeDisease(index)}
+                      className="font-bold aspect-square"
+                    >
+                      <Minus className="size-6" size={24} />
+                    </Button>
+                  )}
+                  {index === diseases.length - 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        appendDisease({
+                          name: "",
+                          medication: "",
+                          procedures: "",
+                        })
+                      }
+                      className="font-bold"
+                    >
+                      <Plus className="size-6" size={24} /> إضافة مرض
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+        </div>
+        {/* --- Allergies Section --- */}
+        <div className="w-full flex flex-col gap-y-4">
+          <h2 className="heading-4 font-medium text-primary">الحساسية</h2>
+          <FormField
+            control={control}
+            name="allergies.hasAllergies"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <RadioGroup
+                    className="gap-14.5"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={[
+                      { value: "yes", label: "نعم" },
+                      { value: "no", label: "لا" },
+                    ]}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {hasAllergies === "yes" &&
+            allergies.map((_, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
+              >
+                <FormField
+                  control={control}
+                  name={`allergies.allergies.${index}.allergyTypes`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">نوع الحساسية</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input placeholder="نوع الحساسية" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`allergies.allergies.${index}.allergyFoods`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">مسببات الحساسية</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input placeholder="مسببات الحساسية" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`allergies.allergies.${index}.allergyProcedures`}
+                  render={({ field }) => (
+                    <FormItem className="col-span-1 md:col-span-2">
+                      <Label>
+                        <span className="text-base">إجراءات الطوارئ</span>
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input placeholder="إجراءات الطوارئ" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex gap-2 col-span-2">
+                  {allergies.length > 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeAllergy(index)}
+                      className="font-bold aspect-square"
+                    >
+                      <Minus className="size-6" size={24} />
+                    </Button>
+                  )}
+                  {index === allergies.length - 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        appendAllergy({
+                          allergyTypes: "",
+                          allergyFoods: "",
+                          allergyProcedures: "",
+                        })
+                      }
+                      className="font-bold"
+                    >
+                      <Plus className="size-6" size={24} /> إضافة حساسية
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+        </div>
 
         <Recommendations
           control={methods.control}
