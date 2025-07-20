@@ -32,7 +32,7 @@ const FeaturesSection = () => {
     {
       title: t("adSpace.title"),
       description: t("adSpace.description"),
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 
