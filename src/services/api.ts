@@ -267,6 +267,7 @@ export const websiteService = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
             "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
             "X-Authorization-Secret":
               process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
