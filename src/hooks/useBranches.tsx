@@ -1,6 +1,6 @@
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { centerService, adminService } from "@/services/dashboardApi";
 import { ApiError } from "@/lib/error-handling";
 
@@ -33,11 +33,15 @@ export interface BranchCardType {
   is_main_branch: number;
 }
 
-const mapCenterData = (apiData: any, t: any): CenterCardType => {
+const mapCenterData = (
+  apiData: any,
+  t: any,
+  locale: string
+): CenterCardType => {
   return {
     id: apiData.id,
     name: apiData.nursery_name,
-    address: `${apiData.city}، ${apiData.neighborhood}`,
+    address: `${apiData.city.name[locale]}، ${apiData.neighborhood}`,
     branches: apiData.branches,
     childrenCount: apiData.children_count || 0,
     bookingsCount: apiData.enrollments_count || 0,
@@ -53,11 +57,15 @@ const mapCenterData = (apiData: any, t: any): CenterCardType => {
   };
 };
 
-const mapBranchData = (apiData: any, t: any): BranchCardType => {
+const mapBranchData = (
+  apiData: any,
+  t: any,
+  locale: string
+): BranchCardType => {
   return {
     id: apiData.id,
     name: apiData.name,
-    address: `${apiData.city}، ${apiData.neighborhood}`,
+    address: `${apiData.city.name[locale]}، ${apiData.neighborhood}`,
     logo: apiData.logo,
     childrenCount: 0,
     bookingsCount: 0,
@@ -78,12 +86,13 @@ const mapBranchData = (apiData: any, t: any): BranchCardType => {
 
 export const useCenters = () => {
   const t = useTranslations("options");
+  const locale = useLocale();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["centers"],
     queryFn: async () => {
       const response = await adminService.getCenters();
-      return response.map((center: any) => mapCenterData(center, t));
+      return response.map((center: any) => mapCenterData(center, t, locale));
     },
   });
 
@@ -97,6 +106,7 @@ export const useCenters = () => {
 
 export const useBranches = (centerId?: string) => {
   const t = useTranslations("options");
+  const locale = useLocale();
   const pathname = usePathname();
   const isAdminContext = pathname?.includes("/admin/");
 
@@ -108,7 +118,7 @@ export const useBranches = (centerId?: string) => {
     queryKey: ["branches", isAdminContext ? centerId : undefined],
     queryFn: async () => {
       const response = await getBranchesFn(centerId || "");
-      return response.map((branch: any) => mapBranchData(branch, t));
+      return response.map((branch: any) => mapBranchData(branch, t, locale));
     },
   });
 
