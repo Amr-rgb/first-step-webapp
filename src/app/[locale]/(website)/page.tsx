@@ -46,8 +46,8 @@ export default async function HomePage({
 
   return (
     <main>
-      <HeroSection />
-      {/* <Advertisment slides={adSlides} /> */}
+      {/* <HeroSection /> */}
+      <Advertisment slides={adSlides} />
       <Headline />
       <FeaturesSection />
       <SubscriptionSection />
