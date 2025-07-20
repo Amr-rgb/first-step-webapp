@@ -698,7 +698,7 @@ export const authService = {
 };
 
 export const paymentService = {
-  subscribe: async (planId: string) => {
+  subscribe: async (planId: number) => {
     try {
       const response = await apiClient.post("/payment/subscribe", {
         plan_id: planId,
