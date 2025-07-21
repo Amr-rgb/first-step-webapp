@@ -31,7 +31,7 @@ const Values = async ({ locale }: { locale: "ar" | "en" }) => {
   return (
     <section dir="rtl" className="container mx-auto px-4 text-center space-y-9">
       <h2 className="text-primary space-y-9">
-        <span>{locale === "ar" ? "قيمنا" : "Our Values"}</span>
+        <span>{locale === "ar" ? "قيم" : "Values"}</span>
         <span className="block">First Step</span>
       </h2>
       <ValuesGridClient values={values} valuesConstants={valuesConstants} />
