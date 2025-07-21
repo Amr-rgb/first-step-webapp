@@ -126,16 +126,16 @@ const Children = ({
             gender={child.gender}
             userName={userName || child.user.name}
             disease_details={
-              child.disease_details
-                ? (typeof child.disease_details === "string"
-                    ? JSON.parse(child.disease_details)
-                    : child.disease_details
-                  ).map((disease: any) => ({
-                    disease_name: disease.disease_name,
-                    medicament: disease.medicament,
-                    emergency: disease.emergency,
-                  }))
+              (child.disease_details
+                ? typeof child.disease_details === "string"
+                  ? JSON.parse(child.disease_details)
+                  : child.disease_details
                 : []
+              )?.map((disease: any) => ({
+                disease_name: disease.disease_name,
+                medicament: disease.medicament,
+                emergency: disease.emergency,
+              })) || []
             }
             allergies={child.allergies}
             authorized_people={child.authorized_people}
@@ -153,16 +153,16 @@ const Children = ({
             gender={child.gender}
             userName={child.parent_name || ""}
             disease_details={
-              child.disease_details
-                ? (typeof child.disease_details === "string"
-                    ? JSON.parse(child.disease_details)
-                    : child.disease_details
-                  ).map((disease: any) => ({
-                    disease_name: disease.disease_name,
-                    medicament: disease.medicament,
-                    emergency: disease.emergency,
-                  }))
+              (child.disease_details
+                ? typeof child.disease_details === "string"
+                  ? JSON.parse(child.disease_details)
+                  : child.disease_details
                 : []
+              )?.map((disease: any) => ({
+                disease_name: disease.disease_name,
+                medicament: disease.medicament,
+                emergency: disease.emergency,
+              })) || []
             }
             allergies={
               child.allergies?.map((a: any) => ({

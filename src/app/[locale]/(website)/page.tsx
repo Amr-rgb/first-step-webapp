@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Advertisment from "@/components/general/Advertisment";
+// import Advertisment from "@/components/general/Advertisment";
 import Headline from "@/components/general/Headline";
 // import VisionMission from "@/components/general/VisionMission";
 import Values from "@/components/general/Values";
