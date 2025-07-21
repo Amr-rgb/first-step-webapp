@@ -222,7 +222,7 @@ const HeroSection = () => {
                         zIndex: 50,
                       }}
                     >
-                      <div className="z-20 relative pt-52 pb-80 2xl:py-52 w-full h-full">
+                      <div className="z-20 relative pt-52 pb-80 2xl:py-40 w-full h-full">
                         {/* Content area */}
                         <motion.div
                           className="z-50 relative flex flex-col gap-y-6 max-w-[50rem]"
