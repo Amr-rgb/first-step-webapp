@@ -40,15 +40,12 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
 
-  const [adSlides, commonQuestions] = await Promise.all([
-    websiteService.getAdSlides(locale),
-    websiteService.getCommonQuestions(locale),
-  ]);
+  const commonQuestions = await websiteService.getCommonQuestions(locale);
 
   return (
     <main>
-      {/* <HeroSection /> */}
-      <Advertisment slides={adSlides} />
+      <HeroSection />
+      {/* <Advertisment slides={adSlides} /> */}
       <Headline />
       <PreviewVideo />
       <FeaturesSection />

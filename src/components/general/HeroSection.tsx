@@ -47,18 +47,6 @@ interface Slide {
   images: SlideImages;
 }
 
-const centerImages = {
-  left: "/assets/hero/desktop-center.png",
-  center: "/assets/hero/woman.png",
-  right: "/assets/hero/mobile-center.png",
-};
-
-const parentImages = {
-  left: "/assets/hero/mobile-parent.png",
-  center: "/assets/hero/family.png",
-  right: "/assets/hero/desktop-parent.png",
-};
-
 const HeroSection = () => {
   const locale = useLocale();
   const t = useTranslations("HomePage.HeroSection");
@@ -67,6 +55,18 @@ const HeroSection = () => {
   const [progress, setProgress] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  const centerImages = {
+    left: `/assets/hero/desktop-center-${locale}.png`,
+    center: "/assets/hero/woman.png",
+    right: `/assets/hero/mobile-center-${locale}.png`,
+  };
+
+  const parentImages = {
+    left: `/assets/hero/mobile-parent-${locale}.png`,
+    center: "/assets/hero/family.png",
+    right: `/assets/hero/desktop-parent-${locale}.png`,
+  };
 
   // Detect direction (RTL or LTR)
   const isRTL = locale === "ar";
@@ -292,7 +292,7 @@ const HeroSection = () => {
                               height={400}
                               alt=""
                               draggable={false}
-                              className="ltr:rotate-y-180 select-none pointer-events-none"
+                              className="select-none pointer-events-none"
                             />
                           </motion.div>
                           <motion.div
@@ -316,7 +316,7 @@ const HeroSection = () => {
                               height={400}
                               alt=""
                               draggable={false}
-                              className="ltr:rotate-y-180 select-none pointer-events-none"
+                              className="select-none pointer-events-none"
                             />
                           </motion.div>
                           <motion.div
