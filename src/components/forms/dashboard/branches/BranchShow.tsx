@@ -31,7 +31,7 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
       email: fetchedBranch.email || "",
       phone: fetchedBranch.phone || "",
       neighborhood: fetchedBranch.neighborhood || "",
-      nursery_name_en: fetchedBranch.nursery_name || "",
+      nursery_name_en: fetchedBranch.nursery_name_branch || "",
       nursery_type: fetchedBranch.nursery_type || [],
       address: fetchedBranch.address || "",
       city: fetchedBranch.city_id || "",

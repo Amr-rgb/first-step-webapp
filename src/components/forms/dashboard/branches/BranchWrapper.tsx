@@ -4,13 +4,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocale } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  BranchAdminFormData,
-  BranchFormData,
-  createBranchSchema,
-} from "@/lib/schemas";
+import { BranchFormData, createBranchSchema } from "@/lib/schemas";
 import Branch from "./Branch";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useBranch } from "@/hooks/useBranches";
 import { centerService } from "@/services/dashboardApi";
 import BranchFormSkeleton from "./BranchFormSkeleton";
@@ -32,7 +28,7 @@ const BranchWrapper = ({
   onBranchData,
   onBranchCreated,
 }: BranchWrapperProps) => {
-  const [branchId, setBranchId] = useState(null);
+  const queryClient = useQueryClient();
 
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
   const locale = useLocale();
@@ -54,7 +50,7 @@ const BranchWrapper = ({
       email: fetchedBranch.email || "",
       phone: fetchedBranch.phone || "",
       neighborhood: fetchedBranch.neighborhood || "",
-      nursery_name_en: fetchedBranch.nursery_name || "",
+      nursery_name_en: fetchedBranch.nursery_name_branch || "",
       nursery_type: fetchedBranch.nursery_type || [],
       address: fetchedBranch.address || "",
       city: fetchedBranch.city_id || "",
@@ -163,8 +159,9 @@ const BranchWrapper = ({
     },
     onSuccess: (data) => {
       toast.success("Branch updated successfully");
-      setBranchId(data.id);
+      queryClient.invalidateQueries({ queryKey: ["branch", editBranchId] });
       setApiErrors({});
+      router.back();
     },
     onError: handleApiError,
   });
@@ -175,7 +172,6 @@ const BranchWrapper = ({
     },
     onSuccess: (data) => {
       toast.success("Branch created successfully");
-      setBranchId(data.id);
       setApiErrors({});
 
       // Call onBranchCreated with the new branch data if provided
@@ -185,18 +181,6 @@ const BranchWrapper = ({
           name: data.name || "",
         });
       }
-    },
-    onError: handleApiError,
-  });
-
-  const branchMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return await centerService.assignBranch(branchId!, data);
-    },
-    onSuccess: (data) => {
-      toast.success("Branch admin assigned successfully");
-      router.back();
-      setApiErrors({});
     },
     onError: handleApiError,
   });
@@ -236,8 +220,8 @@ const BranchWrapper = ({
       if ("commercial_record_path" in values)
         result.commercial_record_path = values.commercial_record_path;
 
-      if ("nursery_name_en" in values) result.name = values.nursery_name_ar;
-      if ("nursery_name_ar" in values)
+      if ("nursery_name_ar" in values) result.name = values.nursery_name_ar;
+      if ("nursery_name_en" in values)
         result.nursery_name = values.nursery_name_en;
 
       if ("email" in values) result.email = values.email;
