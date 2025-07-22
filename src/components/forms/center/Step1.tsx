@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { usePathname } from "@/i18n/navigation";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,6 +30,13 @@ export function Step1BasicInfo({
   disabled?: boolean;
   show?: boolean;
 }) {
+  const pathname = usePathname();
+  const mode: "edit" | "add" | undefined = pathname.includes("edit")
+    ? "edit"
+    : pathname.includes("add")
+    ? "add"
+    : undefined;
+
   const t = useTranslations("auth.center-signup.1.form");
   const tOptions = useTranslations("options");
 
@@ -254,7 +262,7 @@ export function Step1BasicInfo({
           )}
         />
 
-        {(show ? !!control._formValues?.address : true) && (
+        {(mode === "edit" || show ? !!control._formValues?.address : true) && (
           <FormField
             control={control}
             name="address"
@@ -336,28 +344,30 @@ export function Step1BasicInfo({
         />
       </div>
 
-      <FormField
-        control={control}
-        name="additional_service"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
-              <span>{t("other.label")}</span>
-              <span className="font-normal text-sm md:text-base text-light-gray">
-                {t("other.sublabel")}
-              </span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t("other.placeholder")}
-                {...field}
-                disabled={disabled}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {(show ? !!control._formValues?.address : true) && (
+        <FormField
+          control={control}
+          name="additional_service"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
+                <span>{t("other.label")}</span>
+                <span className="font-normal text-sm md:text-base text-light-gray">
+                  {t("other.sublabel")}
+                </span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("other.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   );
 }
