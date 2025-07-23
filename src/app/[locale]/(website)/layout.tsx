@@ -12,8 +12,10 @@ export const metadata: Metadata = {
 
 export default async function WebsiteLayout({
   children,
+  modal
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <React.Fragment>
@@ -22,6 +24,7 @@ export default async function WebsiteLayout({
       {children}
       <WhatsAppButton />
       <Footer />
+      {modal}
     </React.Fragment>
   );
 }

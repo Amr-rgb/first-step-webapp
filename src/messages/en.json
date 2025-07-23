@@ -151,6 +151,20 @@
     }
   },
   "auth": {
+    "sign-up": {
+      "select-account-description": "Choose the type of account you want to create",
+      "select-account-type": "Create Your Account",
+      "have-account": "Already have an account?",
+      "sign-in": "Sign In",
+      "center": {
+        "title": "Center Account",
+        "description": "For nurseries and childcare centers to manage their services"
+      },
+      "parent": {
+        "title": "Parent Account",
+        "description": "For parents looking for quality childcare services"
+      }
+    },
     "buttons": {
       "sign-in": "Sign In",
       "sign-in-google": "Sign In with Google",
@@ -165,6 +179,8 @@
     "sign-in": {
       "title": "Welcome Back, Sign In",
       "loading": "Signing you in...",
+      "no-account": "Don't have an account?",
+      "sign-up": "Create Account",
       "form": {
         "email": {
           "label": "Email",
