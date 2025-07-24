@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { useAuthStore, useAuthToken, useAuthUser } from "@/store/authStore";
 import { Link } from "@/i18n/navigation";
 import { Button } from "../ui/button";
+import { openSignInModal } from "@/components/modals/SignInModalHandler";
 
 const NavbarButton = () => {
   const token = useAuthToken();
@@ -21,13 +22,11 @@ const NavbarButton = () => {
   return (
     <div className="flex gap-2 items-center">
       {!token ? (
-        <Button size={"sm"} asChild>
-          <Link href="/sign-in" className="inline-block font-semibold">
-            <span className="font-normal text-xs">
-              {tBtns("already-have-account")}
-            </span>
-            <span>{tBtns("sign-in")}</span>
-          </Link>
+        <Button size={"sm"} onClick={openSignInModal} className="inline-block font-semibold">
+          <span className="font-normal text-xs">
+            {tBtns("already-have-account")}
+          </span>
+          <span>{tBtns("sign-in")}</span>
         </Button>
       ) : (
         <>

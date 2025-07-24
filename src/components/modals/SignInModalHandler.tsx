@@ -22,20 +22,26 @@ import { Building2, UserRound, X, ArrowLeft } from "lucide-react";
 
 type ViewType = "signin" | "account-type";
 
+// Create a global state for the modal
+let globalModalState = {
+  isOpen: false,
+  setIsOpen: (open: boolean) => {
+    globalModalState.isOpen = open;
+    // Trigger re-render for all modal instances
+    window.dispatchEvent(new CustomEvent('signInModalToggle', { detail: { isOpen: open } }));
+  }
+};
+
+// Export function to open modal from anywhere
+export const openSignInModal = () => {
+  globalModalState.setIsOpen(true);
+};
+
 const SignInModalHandler = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>("signin");
-  const [previousPath, setPreviousPath] = useState<string>("/");
   const router = useRouter();
   const pathname = usePathname();
-  
-  // Store the current path in session storage before any navigation
-  useEffect(() => {
-    // Only store the path if it's not a sign-in related path
-    if (!pathname.includes("sign-in")) {
-      sessionStorage.setItem('previousPath', pathname);
-    }
-  }, [pathname]);
   const formRef = useRef<UseFormReturn<SignInFormData> | null>(null);
   const t = useTranslations("auth");
 
@@ -103,38 +109,35 @@ const SignInModalHandler = () => {
     if (!open) {
       // Reset mutation state when dialog is closed
       mutation.reset();
-      // Navigate back to the previous page
-      console.log(previousPath);
-      router.push(previousPath);
+      setCurrentView("signin");
+      globalModalState.setIsOpen(false);
     }
   };
 
+  // Listen for global modal state changes
   useEffect(() => {
-    // Check if the current path should show the modal
-    const shouldShowModal = pathname.includes("sign-in");
+    const handleModalToggle = (event: CustomEvent) => {
+      setIsOpen(event.detail.isOpen);
+      if (event.detail.isOpen) {
+        setCurrentView("signin");
+      }
+    };
 
-    if (shouldShowModal && !isOpen) {
-      // Get the stored previous path or use the current path as fallback
-      const storedPath = sessionStorage.getItem('previousPath') || "/";
-      // Clean up the stored path
-      sessionStorage.removeItem('previousPath');
-      
-      setPreviousPath(storedPath);
-      setCurrentView("signin");
-      setIsOpen(true);
-    } else if (!shouldShowModal && isOpen) {
-      setIsOpen(false);
+    window.addEventListener('signInModalToggle', handleModalToggle as EventListener);
+    
+    // Check for direct navigation to sign-in routes
+    if (pathname.includes("sign-in")) {
+      globalModalState.setIsOpen(true);
     }
-  }, [pathname, isOpen]);
+
+    return () => {
+      window.removeEventListener('signInModalToggle', handleModalToggle as EventListener);
+    };
+  }, [pathname]);
 
   const handleBackToSignIn = () => {
     setCurrentView("signin");
   };
-
-  // Don't render if not on a sign-in route
-  if (!pathname.includes("sign-in")) {
-    return null;
-  }
 
   return (
     <AnimatePresence mode="wait">
