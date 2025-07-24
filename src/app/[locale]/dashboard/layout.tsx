@@ -9,6 +9,7 @@ import {
   useSetSecondarySidebarOpen,
 } from "@/store/sidebarStore";
 
+
 export default function DashboardLayout({
   children,
   params,
@@ -45,6 +46,7 @@ export default function DashboardLayout({
           sidebarOpen={sidebarOpen}
           secondarySidebarOpen={secondarySidebarOpen}
         />
+
         <div className="px-4 md:px-10 py-10">{children}</div>
       </main>
       {/* SecondarySidebar only on xl screens, toggleable */}
