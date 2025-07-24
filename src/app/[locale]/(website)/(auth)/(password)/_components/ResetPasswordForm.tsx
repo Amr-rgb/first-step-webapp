@@ -156,18 +156,18 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
         )}
 
         <div className="mt-12 flex flex-col items-center gap-y-4">
-          <Button
-            size={"long"}
-            type="submit"
-            disabled={mutation.isPending || mutation.isSuccess}
-          >
-            {mutation.isSuccess && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
-            )}
-            {tBtns("sign-in")}
-          </Button>
+        <Button
+          size={"long"}
+          type="submit"
+          disabled={mutation.isPending || mutation.isSuccess || !form.formState.isValid}
+        >
+          {(mutation.isPending || mutation.isSuccess) && (
+            <span className="animate-spin mr-2.5">
+              <LoaderCircle />
+            </span>
+          )}
+          {mutation.isPending ? "Updating Password..." : "Reset Password"}
+        </Button>
           <Button
             variant={"outline"}
             size={"long"}

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import useOTPTimer from "@/hooks/useOTPTimer";
 import { useForm } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
@@ -41,6 +42,10 @@ const SendOTPForm = ({ email }: { email: string }) => {
       otp: "",
     },
   });
+
+  // State for resend functionality
+  const [resendCount, setResendCount] = React.useState(0);
+  const MAX_RESEND_ATTEMPTS = 3;
 
   const mutation = useMutation<
     any, // Success response type (update this based on your API response)
@@ -90,15 +95,41 @@ const SendOTPForm = ({ email }: { email: string }) => {
     mutation.mutate(data);
   };
 
-  const { timeLeft, otpExpired } = useOTPTimer({
-    duration: 60,
-    onExpire: () => {
+  // Resend OTP mutation
+  const resendMutation = useMutation<any, ApiError, string>({
+    mutationFn: async (email: string) => {
+      return await authService.forgotPassword(email);
+    },
+    onSuccess: () => {
+      setResendCount((prev) => prev + 1);
+      resetTimer();
+      form.clearErrors();
+    },
+    onError: (error) => {
       form.setError("root", {
-        type: "expired",
-        message: t("timer-expired"),
+        type: "server",
+        message: error.message || "Failed to resend OTP",
       });
     },
   });
+
+  const { timeLeft, otpExpired, resetTimer } = useOTPTimer({
+    duration: 120, // 2 minutes for production
+    onExpire: () => {
+      // Timer expired, user can now resend
+    },
+  });
+
+  const handleResendOTP = () => {
+    if (resendCount >= MAX_RESEND_ATTEMPTS) {
+      form.setError("root", {
+        type: "limit",
+        message: "Maximum resend attempts reached. Please try again later.",
+      });
+      return;
+    }
+    resendMutation.mutate(email);
+  };
 
   return (
     <Form {...form}>
@@ -125,9 +156,34 @@ const SendOTPForm = ({ email }: { email: string }) => {
                 </InputOTP>
               </FormControl>
               <FormDescription className="font-medium text-mid-gray text-base">
-                {otpExpired
-                  ? `${t("timer-expired")} ${t("request-code")}`
-                  : `${t("timer")} ${timeLeft}`}
+                {otpExpired ? (
+                  resendCount >= MAX_RESEND_ATTEMPTS ? (
+                    <span className="font-normal text-red-600">
+                      {t("max-attempts-reached")}
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      disabled={
+                        resendMutation.isPending ||
+                        resendCount >= MAX_RESEND_ATTEMPTS
+                      }
+                      className="text-primary hover:text-primary-dark underline disabled:text-gray-400 disabled:no-underline"
+                    >
+                      {resendMutation.isPending ? (
+                        <span className="flex items-center gap-2">
+                          <LoaderCircle size={14} className="animate-spin" />
+                          Sending...
+                        </span>
+                      ) : (
+                        t("resend-code")
+                      )}
+                    </button>
+                  )
+                ) : (
+                  `${t("timer")} ${timeLeft}`
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -151,7 +207,7 @@ const SendOTPForm = ({ email }: { email: string }) => {
                 <LoaderCircle />
               </span>
             )}
-            {tBtns("send-code")}
+            {t("verify")}
           </Button>
         </div>
       </form>

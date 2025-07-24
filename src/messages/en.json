@@ -586,7 +586,10 @@
         "description": "Check your email",
         "timer": "Code will expire in:",
         "timer-expired": "Code has expired",
-        "request-code": "Request new code"
+        "request-code": "Request new code",
+        "resend-code": "Resend code",
+        "max-attempts-reached": "Maximum resend attempts reached. Please try again later.",
+        "verify": "Verify"
       }
     },
     "reset-password": {
