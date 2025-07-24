@@ -5,16 +5,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const nextConfig: NextConfig = {
   output: "standalone",
 
-  // Better handling of intercepting routes and modal components
   experimental: {
     optimizePackageImports: ["next-intl"],
-    // Force proper route resolution for intercepting routes
-    optimizeServerReact: false,
-  },
-  
-  // Ensure proper route generation for intercepting routes
-  generateBuildId: async () => {
-    return 'build-' + Date.now()
   },
 
   images: {
