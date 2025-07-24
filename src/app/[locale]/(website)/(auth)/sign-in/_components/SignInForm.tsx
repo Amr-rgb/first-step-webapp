@@ -25,10 +25,12 @@ const SignInForm = ({
   onSubmit,
   isLoading,
   formRef,
+  onForgotPassword,
 }: {
   onSubmit: (data: SignInFormData) => void;
   isLoading: boolean;
   formRef: React.RefObject<UseFormReturn<SignInFormData> | null>;
+  onForgotPassword?: () => void;
 }) => {
   const t = useTranslations("auth.sign-in");
   const tBtns = useTranslations("auth.buttons");
@@ -129,9 +131,19 @@ const SignInForm = ({
                 <span className="text-light-gray">
                   {t("form.forgot-password.label")}
                 </span>
-                <Link className="text-info" href="/forgot-password">
-                  {t("form.forgot-password.button")}
-                </Link>
+                {onForgotPassword ? (
+                  <button
+                    type="button"
+                    className="text-info hover:underline"
+                    onClick={onForgotPassword}
+                  >
+                    {t("form.forgot-password.button")}
+                  </button>
+                ) : (
+                  <Link className="text-info" href="/forgot-password">
+                    {t("form.forgot-password.button")}
+                  </Link>
+                )}
               </FormDescription>
             </FormItem>
           )}

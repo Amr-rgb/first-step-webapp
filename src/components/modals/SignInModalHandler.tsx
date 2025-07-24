@@ -9,6 +9,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { authService } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import SignInForm from "@/app/[locale]/(website)/(auth)/sign-in/_components/SignInForm";
+import SendEmailForm from "@/app/[locale]/(website)/(auth)/(password)/_components/SendEmailForm";
+import SendOTPForm from "@/app/[locale]/(website)/(auth)/(password)/_components/SendOTPForm";
+import ResetPasswordForm from "@/app/[locale]/(website)/(auth)/(password)/_components/ResetPasswordForm";
 import { SignInFormData } from "@/lib/schemas";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { ApiError } from "@/lib/error-handling";
@@ -20,7 +23,12 @@ import {
 } from "@/components/ui/dialog";
 import { Building2, UserRound, X, ArrowLeft } from "lucide-react";
 
-type ViewType = "signin" | "account-type";
+type ViewType =
+  | "signin"
+  | "account-type"
+  | "forgot-password"
+  | "otp-verification"
+  | "reset-password";
 
 // Create a global state for the modal
 let globalModalState = {
@@ -28,32 +36,35 @@ let globalModalState = {
   setIsOpen: (open: boolean) => {
     globalModalState.isOpen = open;
     // Trigger re-render for all modal instances
-    window.dispatchEvent(new CustomEvent('signInModalToggle', { detail: { isOpen: open } }));
-  }
+    window.dispatchEvent(
+      new CustomEvent("signInModalToggle", { detail: { isOpen: open } })
+    );
+  },
 };
 
 // Export function to open modal from anywhere
 export const openSignInModal = () => {
   // Store current path for returning to it later
   const currentPath = window.location.pathname;
-  sessionStorage.setItem('previousPath', currentPath);
-  
+  sessionStorage.setItem("previousPath", currentPath);
+
   // Extract locale from current path (e.g., /en/contact -> en)
   const localeMatch = currentPath.match(/^\/(en|ar)/);
-  const locale = localeMatch ? localeMatch[1] : 'en';
-  
+  const locale = localeMatch ? localeMatch[1] : "en";
+
   // Update URL to locale-specific sign-in route
   const signInPath = `/${locale}/sign-in`;
   if (currentPath !== signInPath) {
-    window.history.pushState(null, '', signInPath);
+    window.history.pushState(null, "", signInPath);
   }
-  
+
   globalModalState.setIsOpen(true);
 };
 
 const SignInModalHandler = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>("signin");
+  const [resetEmail, setResetEmail] = useState<string>("");
   const router = useRouter();
   const pathname = usePathname();
   const formRef = useRef<UseFormReturn<SignInFormData> | null>(null);
@@ -124,23 +135,23 @@ const SignInModalHandler = () => {
       // Reset mutation state when dialog is closed
       mutation.reset();
       setCurrentView("signin");
-      
+
       // Get the stored previous path or use current locale as fallback
-      const storedPath = sessionStorage.getItem('previousPath');
+      const storedPath = sessionStorage.getItem("previousPath");
       if (storedPath) {
         // Navigate back to the stored previous path
-        window.history.replaceState(null, '', storedPath);
-        sessionStorage.removeItem('previousPath');
+        window.history.replaceState(null, "", storedPath);
+        sessionStorage.removeItem("previousPath");
       } else {
         // Fallback: remove /sign-in from current URL
         const currentPath = window.location.pathname;
-        if (currentPath.includes('/sign-in')) {
+        if (currentPath.includes("/sign-in")) {
           const localeMatch = currentPath.match(/^\/(en|ar)/);
-          const locale = localeMatch ? localeMatch[1] : 'en';
-          window.history.replaceState(null, '', `/${locale}`);
+          const locale = localeMatch ? localeMatch[1] : "en";
+          window.history.replaceState(null, "", `/${locale}`);
         }
       }
-      
+
       globalModalState.setIsOpen(false);
     }
   };
@@ -149,31 +160,57 @@ const SignInModalHandler = () => {
   useEffect(() => {
     const handleModalToggle = (event: CustomEvent) => {
       // Don't show modal if we're already on the sign-in page route
-      if (pathname === '/sign-in') {
+      if (pathname === "/sign-in") {
         return;
       }
-      
+
       setIsOpen(event.detail.isOpen);
       if (event.detail.isOpen) {
         setCurrentView("signin");
       }
     };
 
-    window.addEventListener('signInModalToggle', handleModalToggle as EventListener);
-    
+    window.addEventListener(
+      "signInModalToggle",
+      handleModalToggle as EventListener
+    );
+
     // Check for direct navigation to sign-in routes
     // Only show modal if we're on a sign-in URL but NOT on the actual sign-in page
-    if (pathname.includes("sign-in") && pathname !== '/sign-in') {
+    if (pathname.includes("sign-in") && pathname !== "/sign-in") {
       globalModalState.setIsOpen(true);
     }
 
     return () => {
-      window.removeEventListener('signInModalToggle', handleModalToggle as EventListener);
+      window.removeEventListener(
+        "signInModalToggle",
+        handleModalToggle as EventListener
+      );
     };
   }, [pathname]);
 
   const handleBackToSignIn = () => {
     setCurrentView("signin");
+  };
+
+  // Password reset flow handlers
+  const handleForgotPassword = () => {
+    setCurrentView("forgot-password");
+  };
+
+  const handleEmailSent = (email: string) => {
+    setResetEmail(email);
+    setCurrentView("otp-verification");
+  };
+
+  const handleOTPVerified = () => {
+    setCurrentView("reset-password");
+  };
+
+  const handlePasswordReset = () => {
+    // After successful password reset, go back to sign in
+    setCurrentView("signin");
+    setResetEmail(""); // Clear email
   };
 
   return (
@@ -219,6 +256,7 @@ const SignInModalHandler = () => {
                       formRef={formRef}
                       onSubmit={onSubmit}
                       isLoading={mutation.isPending}
+                      onForgotPassword={handleForgotPassword}
                     />
                     <motion.div
                       className="mt-4 text-center text-sm"
@@ -254,7 +292,70 @@ const SignInModalHandler = () => {
                     </motion.div>
                   </motion.div>
                 </>
-              ) : (
+              ) : currentView === "forgot-password" ? (
+                <>
+                  <DialogHeader>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 top-2"
+                      onClick={handleBackToSignIn}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <DialogTitle className="text-center text-2xl font-bold text-primary">
+                      {t("forgot-password.title")}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <SendEmailForm onSuccess={handleEmailSent} />
+                  </div>
+                </>
+              ) : currentView === "otp-verification" ? (
+                <>
+                  <DialogHeader>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 top-2"
+                      onClick={() => setCurrentView("forgot-password")}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <DialogTitle className="text-center text-2xl font-bold text-primary">
+                      {t("otp.title")}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <SendOTPForm
+                      email={resetEmail}
+                      onSuccess={handleOTPVerified}
+                    />
+                  </div>
+                </>
+              ) : currentView === "reset-password" ? (
+                <>
+                  <DialogHeader>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 top-2"
+                      onClick={() => setCurrentView("otp-verification")}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <DialogTitle className="text-center text-2xl font-bold text-primary">
+                      {t("reset-password.title")}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <ResetPasswordForm
+                      email={resetEmail}
+                      onSuccess={handlePasswordReset}
+                    />
+                  </div>
+                </>
+              ) : currentView === "account-type" ? (
                 <>
                   <DialogHeader className="relative">
                     <DialogTitle className="text-center text-2xl font-bold text-foreground">
@@ -285,7 +386,7 @@ const SignInModalHandler = () => {
                           onClick={() => {
                             // Close modal and navigate to center signup
                             globalModalState.setIsOpen(false);
-                            sessionStorage.removeItem('previousPath'); // Clear stored path since we're navigating away
+                            sessionStorage.removeItem("previousPath"); // Clear stored path since we're navigating away
                             router.push("/sign-up/center");
                           }}
                         >
@@ -364,7 +465,7 @@ const SignInModalHandler = () => {
                           onClick={() => {
                             // Close modal and navigate to parent signup
                             globalModalState.setIsOpen(false);
-                            sessionStorage.removeItem('previousPath'); // Clear stored path since we're navigating away
+                            sessionStorage.removeItem("previousPath"); // Clear stored path since we're navigating away
                             router.push("/sign-up/parent");
                           }}
                         >
@@ -436,7 +537,7 @@ const SignInModalHandler = () => {
                     </Button>
                   </div>
                 </>
-              )}
+              ) : null}
             </motion.div>
           </DialogContent>
         </Dialog>

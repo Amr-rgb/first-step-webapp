@@ -30,7 +30,7 @@ import { useRouter } from "@/i18n/navigation";
 import { LoaderCircle } from "lucide-react";
 import { ApiError } from "@/lib/error-handling";
 
-const SendOTPForm = ({ email }: { email: string }) => {
+const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => void }) => {
   const t = useTranslations("auth.otp.form");
   const tBtns = useTranslations("auth.buttons");
   const router = useRouter();
@@ -63,7 +63,11 @@ const SendOTPForm = ({ email }: { email: string }) => {
       return await authService.checkOTP(email, data.otp);
     },
     onSuccess: () => {
-      router.push(`/reset-password?email=${email}`);
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push(`/reset-password?email=${email}`);
+      }
     },
     onError: (error) => {
       // Clear any existing errors
