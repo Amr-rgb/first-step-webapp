@@ -34,6 +34,20 @@ let globalModalState = {
 
 // Export function to open modal from anywhere
 export const openSignInModal = () => {
+  // Store current path for returning to it later
+  const currentPath = window.location.pathname;
+  sessionStorage.setItem('previousPath', currentPath);
+  
+  // Extract locale from current path (e.g., /en/contact -> en)
+  const localeMatch = currentPath.match(/^\/(en|ar)/);
+  const locale = localeMatch ? localeMatch[1] : 'en';
+  
+  // Update URL to locale-specific sign-in route
+  const signInPath = `/${locale}/sign-in`;
+  if (currentPath !== signInPath) {
+    window.history.pushState(null, '', signInPath);
+  }
+  
   globalModalState.setIsOpen(true);
 };
 
@@ -110,6 +124,23 @@ const SignInModalHandler = () => {
       // Reset mutation state when dialog is closed
       mutation.reset();
       setCurrentView("signin");
+      
+      // Get the stored previous path or use current locale as fallback
+      const storedPath = sessionStorage.getItem('previousPath');
+      if (storedPath) {
+        // Navigate back to the stored previous path
+        window.history.replaceState(null, '', storedPath);
+        sessionStorage.removeItem('previousPath');
+      } else {
+        // Fallback: remove /sign-in from current URL
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/sign-in')) {
+          const localeMatch = currentPath.match(/^\/(en|ar)/);
+          const locale = localeMatch ? localeMatch[1] : 'en';
+          window.history.replaceState(null, '', `/${locale}`);
+        }
+      }
+      
       globalModalState.setIsOpen(false);
     }
   };
@@ -245,7 +276,12 @@ const SignInModalHandler = () => {
                           variant="outline"
                           size="lg"
                           className="w-full h-auto p-6 flex items-start space-x-4 hover:border-primary/50 transition-all duration-300 relative overflow-visible hover:!bg-transparent"
-                          onClick={() => router.push("/sign-up/center")}
+                          onClick={() => {
+                            // Close modal and navigate to center signup
+                            globalModalState.setIsOpen(false);
+                            sessionStorage.removeItem('previousPath'); // Clear stored path since we're navigating away
+                            router.push("/sign-up/center");
+                          }}
                         >
                           <motion.div
                             className="absolute inset-0 bg-primary/10 m-0"
@@ -319,7 +355,12 @@ const SignInModalHandler = () => {
                           variant="outline"
                           size="lg"
                           className="w-full h-auto p-6 flex items-start space-x-4 hover:border-primary/50 transition-all duration-300 relative overflow-visible hover:!bg-transparent"
-                          onClick={() => router.push("/sign-up/parent")}
+                          onClick={() => {
+                            // Close modal and navigate to parent signup
+                            globalModalState.setIsOpen(false);
+                            sessionStorage.removeItem('previousPath'); // Clear stored path since we're navigating away
+                            router.push("/sign-up/parent");
+                          }}
                         >
                           <motion.div
                             className="absolute inset-0 bg-primary/10 m-0"
