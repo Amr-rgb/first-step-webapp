@@ -148,6 +148,11 @@ const SignInModalHandler = () => {
   // Listen for global modal state changes
   useEffect(() => {
     const handleModalToggle = (event: CustomEvent) => {
+      // Don't show modal if we're already on the sign-in page route
+      if (pathname === '/sign-in') {
+        return;
+      }
+      
       setIsOpen(event.detail.isOpen);
       if (event.detail.isOpen) {
         setCurrentView("signin");
@@ -157,7 +162,8 @@ const SignInModalHandler = () => {
     window.addEventListener('signInModalToggle', handleModalToggle as EventListener);
     
     // Check for direct navigation to sign-in routes
-    if (pathname.includes("sign-in")) {
+    // Only show modal if we're on a sign-in URL but NOT on the actual sign-in page
+    if (pathname.includes("sign-in") && pathname !== '/sign-in') {
       globalModalState.setIsOpen(true);
     }
 
