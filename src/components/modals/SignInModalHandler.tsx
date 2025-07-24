@@ -25,8 +25,17 @@ type ViewType = "signin" | "account-type";
 const SignInModalHandler = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>("signin");
+  const [previousPath, setPreviousPath] = useState<string>("/");
   const router = useRouter();
   const pathname = usePathname();
+  
+  // Store the current path in session storage before any navigation
+  useEffect(() => {
+    // Only store the path if it's not a sign-in related path
+    if (!pathname.includes("sign-in")) {
+      sessionStorage.setItem('previousPath', pathname);
+    }
+  }, [pathname]);
   const formRef = useRef<UseFormReturn<SignInFormData> | null>(null);
   const t = useTranslations("auth");
 
@@ -94,22 +103,28 @@ const SignInModalHandler = () => {
     if (!open) {
       // Reset mutation state when dialog is closed
       mutation.reset();
-      // Instead of router.back(), navigate to the base route
-      const baseRoute = pathname.replace(/\/sign-in.*$/, '');
-      router.push(baseRoute || '/');
+      // Navigate back to the previous page
+      console.log(previousPath);
+      router.push(previousPath);
     }
   };
 
   useEffect(() => {
     // Check if the current path should show the modal
     const shouldShowModal = pathname.includes("sign-in");
-    
-    // Reset view when opening the modal
+
     if (shouldShowModal && !isOpen) {
+      // Get the stored previous path or use the current path as fallback
+      const storedPath = sessionStorage.getItem('previousPath') || "/";
+      // Clean up the stored path
+      sessionStorage.removeItem('previousPath');
+      
+      setPreviousPath(storedPath);
       setCurrentView("signin");
+      setIsOpen(true);
+    } else if (!shouldShowModal && isOpen) {
+      setIsOpen(false);
     }
-    
-    setIsOpen(shouldShowModal);
   }, [pathname, isOpen]);
 
   const handleBackToSignIn = () => {
