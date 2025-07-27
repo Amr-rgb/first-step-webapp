@@ -144,7 +144,7 @@ const TaskCard = ({
           )}
         >
           <Checkbox
-            checked={done}
+            checked={Boolean(done)}
             onCheckedChange={() => toggleTaskDone.mutate({ id, done: !done })}
           />
         </div>
