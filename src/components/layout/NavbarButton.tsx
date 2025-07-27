@@ -22,17 +22,33 @@ const NavbarButton = () => {
   return (
     <div className="flex gap-2 items-center">
       {!token ? (
-        <Button size={"sm"} onClick={openSignInModal} className="inline-block font-semibold">
-          <span className="font-normal text-xs">
-            {tBtns("already-have-account")}
-          </span>
-          <span>{tBtns("sign-in")}</span>
-        </Button>
+        <>
+          <Button
+            size={"sm"}
+            className="hidden sm:inline-flex font-semibold"
+            onClick={openSignInModal}
+          >
+            <div className="flex items-center gap-1">
+              <span className="font-normal text-xs">
+                {tBtns("already-have-account")}
+              </span>
+              <span>{tBtns("sign-in")}</span>
+            </div>
+          </Button>
+          <Button asChild size={"sm"} className="sm:hidden font-semibold">
+            <Link href="/sign-in">
+              <span className="font-normal text-xs">
+                {tBtns("already-have-account")}
+              </span>
+              <span>{tBtns("sign-in")}</span>
+            </Link>
+          </Button>
+        </>
       ) : (
         <>
           {dashboardPath && (
             <Button size={"sm"} asChild>
-              <Link href={dashboardPath} className="inline-block font-semibold" >
+              <Link href={dashboardPath} className="inline-block font-semibold">
                 {tBtns("dashboard")}
               </Link>
             </Button>
