@@ -5,27 +5,19 @@ import ChatMainArea from "@/components/chat/ChatMainArea";
 export default function CenterChatPage() {
   return (
     <ChatProvider>
-      <div
-        style={{
-          display: "flex",
-          height: "70vh",
-          background: "#f9f9fb",
-          borderRadius: 16,
-          overflow: "hidden",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          margin: "24px 0",
-        }}
-      >
-        <ChatSidebar />
-        <div style={{ 
-          flex: 1, 
-          minWidth: 0, 
-          display: 'flex', 
-          flexDirection: 'column',
-          backgroundColor: '#fff',
-          borderRadius: '0 16px 16px 0'
-        }}>
-          <ChatMainArea />
+      <div className="h-[calc(100vh-120px)] flex flex-col">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
+          <div className="flex flex-1 overflow-hidden">
+            {/* Sidebar */}
+            <div className="w-80 border-r border-gray-100 flex-shrink-0">
+              <ChatSidebar />
+            </div>
+            
+            {/* Main Chat Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <ChatMainArea />
+            </div>
+          </div>
         </div>
       </div>
     </ChatProvider>

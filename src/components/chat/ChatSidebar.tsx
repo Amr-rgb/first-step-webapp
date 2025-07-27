@@ -4,6 +4,7 @@ import { useChat } from "./ChatProvider";
 import { useAuthUser } from "../../store/authStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, MoreVertical, MessageSquare, Plus, X } from "lucide-react";
+import { Chat } from "@/types";
 
 // -----------------------------
 // ChatSidebar Component
@@ -48,16 +49,19 @@ const ChatSidebar: React.FC = () => {
   const handleNewChat = (user: any) => {
     if (!currentUser) return;
     
-    // Create a new chat with the selected user
-    const newChat = {
-      id: `chat-${Date.now()}`,
-      participants: [currentUser, user],
-      messages: []
-    };
-    
-    addChat(newChat);
-    selectChat(newChat.id);
-    setShowNewChatModal(false);
+    try {
+      // Ensure we have valid user objects
+      const currentUserObj = { ...currentUser };
+      const otherUser = { ...user };
+      
+      // Add the new chat with the participants
+      // The ChatProvider will create the chat and select it
+      addChat([currentUserObj, otherUser]);
+      setShowNewChatModal(false);
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      // You might want to show an error toast/message to the user here
+    }
   };
 
   // Filter chats based on search query
