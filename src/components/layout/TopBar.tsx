@@ -49,10 +49,8 @@ const TopBar = () => {
   ];
 
   return (
-    <div dir="ltr" className="bg-primary-blue text-white">
+    <div className="bg-primary-blue text-white">
       <div className="container mx-auto px-4 flex justify-between items-center py-1.5">
-        <LanguageSwitcher />
-
         <div className="flex items-center gap-x-4">
           {icons.map((item) => (
             <a target="_blank" key={item.title} href={item.link}>
@@ -60,6 +58,8 @@ const TopBar = () => {
             </a>
           ))}
         </div>
+
+        <LanguageSwitcher />
       </div>
     </div>
   );

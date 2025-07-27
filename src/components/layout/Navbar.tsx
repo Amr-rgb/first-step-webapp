@@ -44,7 +44,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative container mx-auto px-4 py-2.5">
       {!token && (
-        <div className="z-[9999] fixed top-64 -left-[90px] -rotate-90 flex items-center gap-x-4">
+        <div className="z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4">
           <Button
             asChild
             size={"sm"}
