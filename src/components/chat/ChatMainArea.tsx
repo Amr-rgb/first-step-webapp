@@ -1,37 +1,148 @@
-"use client"
-import React, { useRef, useEffect, useState } from "react";
+"use client";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useChat } from "./ChatProvider";
 import { useAuthUser } from "../../store/authStore";
-import { getUserInitials, getUserLogo } from "../../utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Paperclip, Mic, Send, Smile, MoreVertical, Search } from "lucide-react";
+import { Paperclip, Send, Smile, X, Image as ImageIcon, File, XCircle, Search, MoreVertical } from "lucide-react";
+import { Chat, Message } from "@/types";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the emoji picker with no SSR
+const Picker = dynamic(
+  () => {
+    return import('emoji-picker-react');
+  },
+  { ssr: false }
+);
 
 // -----------------------------
 // ChatMainArea Component
 // -----------------------------
 const ChatMainArea: React.FC = () => {
-  const { chats, selectedChatId, sendMessage } = useChat();
+  const { chats, selectedChatId, sendMessage, addMessage } = useChat();
   const user = useAuthUser();
   const chat = chats.find((c) => c.id === selectedChatId);
+  const [message, setMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat?.messages]);
 
-  // Handle sending a message
-  const handleSend = () => {
-    const value = inputRef.current?.value?.trim();
-    if (value) {
-      sendMessage(value);
-      if (inputRef.current) inputRef.current.value = "";
+  // Handle emoji selection
+  const onEmojiClick = (emojiObject: any) => {
+    setMessage(prev => prev + emojiObject.emoji);
+    // Keep the picker open after selection
+    // setShowEmojiPicker(false); // Uncomment this if you want to close after selection
+    // Focus back on the input
+    inputRef.current?.focus();
+  };
+
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Set the selected file
+    setSelectedFile(file);
+    
+    // Create a preview for images
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
+    
+    // Reset the input value to allow selecting the same file again
+    e.target.value = '';
+  };
+
+  // Remove selected file
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFilePreview(null);
+  };
+
+  // Handle click outside to close emoji picker
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSend = () => {
+    if ((!message.trim() && !selectedFile) || !chat || !user) return;
+
+    // Create a new message object
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: message,
+      sender: user,
+      timestamp: new Date(),
+      read: false,
+      file: selectedFile ? {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: selectedFile.size,
+        url: filePreview || ''
+      } : undefined
+    };
+
+    // Add the message to the chat
+    addMessage(chat.id, newMessage);
+    
+    // Clear the input field and reset file
+    setMessage("");
+    setSelectedFile(null);
+    setFilePreview(null);
+    
+    // Close emoji picker if open
+    setShowEmojiPicker(false);
+  };
+
+  // Get user's profile picture or return null if not available
+  const getUserLogo = (user: any): string | null => {
+    // Check for different possible properties where the logo/avatar might be stored
+    if (user?.logoUrl) return user.logoUrl;
+    if (user?.avatar) return user.avatar;
+    if (user?.profilePicture) return user.profilePicture;
+    return null;
+  };
+
+  // Get user's initials from their name
+  const getUserInitials = (user: any): string => {
+    if (!user?.name) return 'U';
+    
+    const names = user.name.split(' ');
+    let initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+      initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    
+    return initials;
   };
 
   // Render avatar (logo or initials)
   const renderAvatar = (sender: any, isCurrentUser: boolean = false) => {
+    if (!sender) return null;
+    
     const logo = getUserLogo(sender);
     const avatarSize = isCurrentUser ? 32 : 40; // Larger avatar for received messages
     
@@ -40,13 +151,19 @@ const ChatMainArea: React.FC = () => {
         <div className={`relative ${isCurrentUser ? 'ml-2' : 'mr-2'}`}>
           <img
             src={logo}
-            alt={sender.name}
+            alt={sender.name || 'User'}
             className="rounded-full object-cover border-2 border-white shadow-sm"
             style={{ 
               width: avatarSize, 
               height: avatarSize,
               minWidth: avatarSize,
               minHeight: avatarSize
+            }}
+            onError={(e) => {
+              // Fallback to initials if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              // The parent will render the initials fallback
             }}
           />
           {!isCurrentUser && (
@@ -56,9 +173,10 @@ const ChatMainArea: React.FC = () => {
       );
     }
     
+    // Fallback to initials if no logo
     return (
       <div 
-        className={`flex items-center justify-center rounded-full bg-gray-200 text-gray-600 font-medium ${isCurrentUser ? 'ml-2' : 'mr-2'}`}
+        className={`flex items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-blue-600 font-medium ${isCurrentUser ? 'ml-2' : 'mr-2'}`}
         style={{
           width: avatarSize,
           height: avatarSize,
@@ -224,33 +342,145 @@ const ChatMainArea: React.FC = () => {
     if (!chat) return null;
     
     return (
-      <div className="border-t border-gray-100 p-3 bg-white">
-        <div className="flex items-center bg-gray-50 rounded-full px-4 py-2">
-          <button className="text-gray-400 hover:text-gray-600 p-1">
-            <Paperclip className="w-5 h-5" />
-          </button>
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Type a message..."
-            className="flex-1 bg-transparent border-0 focus:ring-0 text-sm text-gray-700 placeholder-gray-400 px-3 py-1"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-          />
-          <div className="flex items-center space-x-1 rtl:space-x-reverse">
-            <button className="text-gray-400 hover:text-gray-600 p-1">
-              <Smile className="w-5 h-5" />
-            </button>
+      <div className="border-t border-gray-100 bg-white relative">
+        {/* File preview */}
+        {selectedFile && (
+          <div className="relative p-3 border-b border-gray-100">
+            <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                {filePreview ? (
+                  <div className="w-10 h-10 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center text-blue-500">
+                    <File className="w-5 h-5" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{selectedFile.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {(selectedFile.size / 1024).toFixed(1)} KB • {selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={removeFile}
+                className="text-gray-400 hover:text-red-500 p-1"
+                aria-label="Remove file"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Emoji picker container - positioned absolutely within the chat area */}
+        <div className="absolute bottom-full right-0 mb-2 z-50" ref={emojiPickerRef}>
+          <AnimatePresence>
+            {showEmojiPicker && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="shadow-2xl rounded-xl overflow-hidden border border-gray-200 bg-white"
+                style={{
+                  position: 'fixed',
+                  bottom: '200px', // Position above the input area
+                  right: '20px',
+                  width: '320px',
+                  height: '400px',
+                  maxHeight: 'calc(100vh - 200px)'
+                }}
+              >
+                <div className="w-full h-10 bg-gray-50 border-b border-gray-100 flex items-center justify-between px-4">
+                  <span className="text-sm font-medium text-gray-700">Emoji</span>
+                  <button 
+                    onClick={() => setShowEmojiPicker(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                    aria-label="Close emoji picker"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="w-full h-[calc(100%-2.5rem)]">
+                  <Picker 
+                    onEmojiClick={onEmojiClick} 
+                    theme="light"
+                    searchPlaceHolder="Search emojis..."
+                    previewConfig={{
+                      defaultEmoji: '1f60a',
+                      defaultCaption: 'How are you feeling?',
+                      showPreview: false
+                    }}
+                    height="100%"
+                    width="100%"
+                    native
+                    disableSearchBar={false}
+                    skinTonesDisabled={true}
+                    groupVisibility={{
+                      flags: false,
+                      search: true,
+                    }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Message input */}
+        <div className="p-3">
+          <div className="flex items-center bg-gray-50 rounded-xl px-4 py-2">
+            <div className="flex items-center space-x-1 rtl:space-x-reverse">
+              <button 
+                type="button" 
+                className="text-gray-400 hover:text-blue-500 p-1.5 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Paperclip className="w-5 h-5" />
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  className="hidden" 
+                  onChange={handleFileChange}
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                />
+              </button>
+              <button 
+                type="button"
+                className={`p-1.5 rounded-full transition-colors ${showEmojiPicker ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100'}`}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <input
+              ref={inputRef}
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="اكتب رسالة..."
+              className="flex-1 bg-transparent border-0 focus:ring-0 text-sm text-gray-700 placeholder-gray-400 px-3 py-1.5 rtl:text-right"
+              dir="auto"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+            />
+            
             <button 
+              type="button"
               onClick={handleSend}
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1.5 transition-colors"
-              aria-label="Send message"
+              disabled={!message.trim() && !selectedFile}
+              className={`p-1.5 rounded-full transition-colors ${message.trim() || selectedFile ? 'bg-blue-500 text-white hover:bg-blue-600' : 'text-gray-300'}`}
+              aria-label="إرسال"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
             </button>
           </div>
         </div>
