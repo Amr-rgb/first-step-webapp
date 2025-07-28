@@ -89,24 +89,24 @@ const ChatMainArea: React.FC = () => {
   const handleSend = () => {
     if ((!message.trim() && !selectedFile) || !chat || !user) return;
 
-    // Create a new message object
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: message,
-      sender: user,
-      timestamp: new Date(),
-      read: false,
-      file: selectedFile ? {
+    // Create a message content string that includes file info if present
+    let messageContent = message;
+    if (selectedFile) {
+      const fileInfo = {
+        type: 'file',
         name: selectedFile.name,
-        type: selectedFile.type,
         size: selectedFile.size,
+        mimeType: selectedFile.type,
         url: filePreview || ''
-      } : undefined
-    };
+      };
+      messageContent = message ? 
+        `${message} [FILE:${JSON.stringify(fileInfo)}]` : 
+        `[FILE:${JSON.stringify(fileInfo)}]`;
+    }
 
-    // Add the message to the chat
-    addMessage(chat.id, newMessage);
-    
+    // Send the message using the context's sendMessage function
+    sendMessage(messageContent);
+  
     // Clear the input field and reset file
     setMessage("");
     setSelectedFile(null);
@@ -376,60 +376,85 @@ const ChatMainArea: React.FC = () => {
         )}
 
         {/* Emoji picker container - positioned absolutely within the chat area */}
-        <div className="absolute bottom-full right-0 mb-2 z-50" ref={emojiPickerRef}>
-          <AnimatePresence>
-            {showEmojiPicker && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="shadow-2xl rounded-xl overflow-hidden border border-gray-200 bg-white"
-                style={{
-                  position: 'fixed',
-                  bottom: '200px', // Position above the input area
-                  right: '20px',
-                  width: '320px',
-                  height: '400px',
-                  maxHeight: 'calc(100vh - 200px)'
-                }}
-              >
-                <div className="w-full h-10 bg-gray-50 border-b border-gray-100 flex items-center justify-between px-4">
-                  <span className="text-sm font-medium text-gray-700">Emoji</span>
-                  <button 
-                    onClick={() => setShowEmojiPicker(false)}
-                    className="text-gray-400 hover:text-gray-600"
-                    aria-label="Close emoji picker"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="w-full h-[calc(100%-2.5rem)]">
-                  <Picker 
-                    onEmojiClick={onEmojiClick} 
-                    theme="light"
-                    searchPlaceHolder="Search emojis..."
-                    previewConfig={{
-                      defaultEmoji: '1f60a',
-                      defaultCaption: 'How are you feeling?',
-                      showPreview: false
-                    }}
-                    height="100%"
-                    width="100%"
-                    native
-                    disableSearchBar={false}
-                    skinTonesDisabled={true}
-                    groupVisibility={{
-                      flags: false,
-                      search: true,
-                    }}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
+        <AnimatePresence>
+          {showEmojiPicker && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed z-[9999] shadow-2xl rounded-xl overflow-hidden border border-gray-200 bg-white"
+              style={{
+                bottom: '80px',
+                right: '20px',
+                width: '320px',
+                height: '400px',
+                maxHeight: 'calc(100vh - 100px)'
+              }}
+              ref={emojiPickerRef}
+            >
+              <div className="w-full h-10 bg-gray-50 border-b border-gray-100 flex items-center justify-between px-4">
+                <span className="text-sm font-medium text-gray-700">Emoji</span>
+                <button 
+                  onClick={() => setShowEmojiPicker(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                  aria-label="Close emoji picker"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="w-full h-[400px] overflow-y-auto">
+                <Picker 
+                  onEmojiClick={onEmojiClick} 
+                  theme="light"
+                  searchPlaceHolder="Search emojis..."
+                  previewConfig={{
+                    defaultEmoji: '1f60a',
+                    defaultCaption: 'How are you feeling?',
+                    showPreview: false
+                  }}
+                  height={400}
+                  width={320}
+                  native={false}
+                  disableSearchBar={false}
+                  disableSkinTonePicker={true}
+                  groupVisibility={{
+                    flags: false,
+                    search: true,
+                  }}
+                  lazyLoadEmojis={false}
+                  previewPosition="none"
+                  skinTonesDisabled
+                  searchPlaceholder="Search emojis..."
+                  groupNames={{
+                    smileys_people: 'Smileys',
+                    animals_nature: 'Animals & Nature',
+                    food_drink: 'Food & Drink',
+                    travel_places: 'Travel',
+                    activities: 'Activities',
+                    objects: 'Objects',
+                    symbols: 'Symbols',
+                    flags: 'Flags',
+                    recently_used: 'Recent'
+                  }}
+                  pickerStyle={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '8px',
+                    boxShadow: 'none'
+                  }}
+                  emojiStyle={{
+                    width: 24,
+                    height: 24,
+                    margin: '6px',
+                    fontSize: '24px'
+                  } as any}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Message input */}
         <div className="p-3">
           <div className="flex items-center bg-gray-50 rounded-xl px-4 py-2">
