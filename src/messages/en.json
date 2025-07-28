@@ -688,7 +688,7 @@
         "children-files": "Children Files",
         "bookings": "Bookings",
         "daily-reports": "Daily Reports",
-        "site-edit": "Edit Site",
+        "profile-editor": "Profile Editor",
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team"
@@ -1318,6 +1318,20 @@
             "description": "Begin accepting children's bookings and organizing your center's schedule"
           }
         }
+      }
+    },
+    "profileEditor": {
+      "title": "Nursery Profile Editor",
+      "subtitle": "Create and customize your nursery's profile page",
+      "editMode": "Edit Mode",
+      "previewMode": "Preview Mode",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "saveSuccess": "Profile updated successfully!",
+      "saveError": "Failed to save profile. Please try again.",
+      "reminder": {
+        "title": "Complete Your Nursery Profile",
+        "description": "Add sections to showcase your nursery's story, services, and team. This will help parents learn more about what makes your nursery special."
       }
     },
     "tables": {
