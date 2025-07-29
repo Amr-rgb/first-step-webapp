@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Blog } from "@/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
 import { AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +32,8 @@ const BlogsSection = () => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations("dashboard.center.ad-or-blog-request");
+
+  const queryClient = useQueryClient();
 
   const {
     data: blogsData,
@@ -81,11 +83,14 @@ const BlogsSection = () => {
                   setSelectedBlogId(blog.id);
                   setViewModalOpen(true);
                 }}
-                onEdit={() =>
+                onEdit={() => {
+                  queryClient.refetchQueries({
+                    queryKey: ["blogs", blog.id],
+                  });
                   router.push(
                     `/dashboard/center/ad-or-blog-request/edit-blog/${blog.id}`
-                  )
-                }
+                  );
+                }}
               />
             ))
           : null}

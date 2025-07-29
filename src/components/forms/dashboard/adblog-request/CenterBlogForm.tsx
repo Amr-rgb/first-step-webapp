@@ -61,7 +61,7 @@ const CenterBlogForm = ({
     mainImage: z.any().optional(),
     cardImage: z.any().optional(),
   });
-  
+
   const validationSchema = blogId ? editSchema : createSchema;
 
   const methods = useForm<BlogRequestFormData>({
@@ -92,19 +92,25 @@ const CenterBlogForm = ({
   }, [initialValues, methods]);
 
   const mutation = useMutation({
-    mutationFn: async (payload: { data: BlogRequestFormData; dirtyFields?: any }) => {
+    mutationFn: async (payload: {
+      data: BlogRequestFormData;
+      dirtyFields?: any;
+    }) => {
       const { data, dirtyFields } = payload;
-      
+
       if (blogId && dirtyFields) {
         // Update existing blog - only send dirty fields
         const updatePayload: any = {};
-        
+
         if (dirtyFields.title) updatePayload.title = data.title;
-        if (dirtyFields.description) updatePayload.description = data.description;
+        if (dirtyFields.description)
+          updatePayload.description = data.description;
         if (dirtyFields.content) updatePayload.content = data.content;
-        if (dirtyFields.mainImage) updatePayload.mainImage = data.mainImage?.[0] as File;
-        if (dirtyFields.cardImage) updatePayload.cardImage = data.cardImage?.[0] as File;
-        
+        if (dirtyFields.mainImage)
+          updatePayload.mainImage = data.mainImage?.[0] as File;
+        if (dirtyFields.cardImage)
+          updatePayload.cardImage = data.cardImage?.[0] as File;
+
         return centerService.updateBlog(blogId, updatePayload);
       } else {
         // Create new blog
@@ -130,7 +136,7 @@ const CenterBlogForm = ({
       }
 
       // Invalidate the blogs query to refetch the list
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.refetchQueries({ queryKey: ["blogs"] });
 
       // Navigate back
       router.back();
@@ -163,7 +169,9 @@ const CenterBlogForm = ({
             <FormItem className="sm:col-span-3">
               <Label>
                 <span className="text-base">{t("mainImage.label")}</span>
-                {!preview1 && !blogId && <span className="text-red-500">*</span>}
+                {!preview1 && !blogId && (
+                  <span className="text-red-500">*</span>
+                )}
               </Label>
               <FormControl>
                 <div>
@@ -216,7 +224,9 @@ const CenterBlogForm = ({
             <FormItem className="">
               <Label>
                 <span className="text-base">{t("cardImage.label")}</span>
-                {!preview2 && !blogId && <span className="text-red-500">*</span>}
+                {!preview2 && !blogId && (
+                  <span className="text-red-500">*</span>
+                )}
               </Label>
               <FormControl>
                 <div>

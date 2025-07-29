@@ -24,7 +24,7 @@ const BlogViewModal = ({ blog, isOpen, onClose }: BlogViewModalProps) => {
 
   // Only fetch full content if we don't already have all the data we need
   const { data: fullBlog, isLoading: isLoadingContent } = useQuery({
-    queryKey: ["blog", blog?.id],
+    queryKey: ["blogs", blog?.id],
     queryFn: () => centerService.getBlog(blog!.id),
     enabled: isOpen && !!blog?.id && !blog.content, // Only fetch if we don't have content
     staleTime: 5 * 60 * 1000, // 5 minutes
