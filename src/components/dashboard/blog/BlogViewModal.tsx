@@ -64,9 +64,9 @@ const BlogViewModal = ({
               src={
                 displayBlog?.coverImage ||
                 displayBlog?.cover_url ||
+                displayBlog?.file ||
                 displayBlog?.image ||
                 displayBlog?.blog_image_url ||
-                displayBlog?.file ||
                 "/placeholder-image.png"
               }
               alt={
