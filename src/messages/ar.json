@@ -835,6 +835,7 @@
               "label": "المدونة"
             },
             "submit": "إرسال طلب",
+            "update": "تحديث",
             "cancel": "إلغاء",
             "sending": "جاري الإرسال...",
             "success": {
@@ -846,7 +847,17 @@
               "description": "لم نتمكن من جلب بيانات المدونات. يرجى المحاولة مرة أخرى",
               "retry": "إعادة المحاولة"
             }
-          }
+          },
+          "edit": {
+            "pageTitle": "تعديل المدونة",
+            "loading": "جاري التحميل...",
+            "errorLoading": "حدث خطأ أثناء جلب البيانات",
+            "successMessage": "تم تحديث المدونة بنجاح",
+            "errorMessage": "حدث خطأ أثناء تحديث المدونة"
+          },
+          "errorLoadingContent": "حدث خطأ أثناء جلب المحتوى",
+          "noContentAvailable": "لا يوجد محتوى",
+          "minutes": "دقائق"
         }
       },
       "notifications": {

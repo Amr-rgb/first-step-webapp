@@ -779,6 +779,7 @@
               "label": "Blog"
             },
             "submit": "Send Request",
+            "update": "Update",
             "cancel": "Cancel",
             "sending": "Sending...",
             "success": {
@@ -790,7 +791,17 @@
               "description": "We couldn't fetch the blogs data. Please try again",
               "retry": "Try Again"
             }
-          }
+          },
+          "edit": {
+            "pageTitle": "Edit Blog",
+            "loading": "Loading...",
+            "errorLoading": "An error occurred while loading data",
+            "successMessage": "Blog updated successfully",
+            "errorMessage": "An error occurred while updating the blog"
+          },
+          "errorLoadingContent": "An error occurred while loading content",
+          "noContentAvailable": "No content available",
+          "minutes": "Minutes"
         }
       },
       "branches": {

@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import Ads from "@/components/dashboard/ad-or-blog-request/Ads";
-import BlogCard from "@/components/general/blog/BlogCard";
+import DashboardBlogCard from "@/components/dashboard/blog/DashboardBlogCard";
+import BlogViewModal from "@/components/dashboard/blog/BlogViewModal";
+import { useState } from "react";
 import { Blog } from "@/types";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
@@ -26,6 +28,9 @@ const BlogCardSkeleton = () => {
 };
 
 const BlogsSection = () => {
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const router = useRouter();
   const t = useTranslations("dashboard.center.ad-or-blog-request");
 
   const {
@@ -42,12 +47,17 @@ const BlogsSection = () => {
         title: blog.title,
         description: blog.description,
         image: blog.blog_image_url,
+        coverImage: blog.cover_url,
         readingTime: blog.reading_time,
         created_at: blog.created_at.split("T")[0],
         published_at: blog.created_at.split("T")[0],
       }));
     },
   });
+
+  const selectedBlog = selectedBlogId
+    ? blogsData?.find((blog) => blog.id === selectedBlogId) || null
+    : null;
 
   return (
     <div>
@@ -63,7 +73,21 @@ const BlogsSection = () => {
 
       <div className="grid md:grid-cols-3 items-start gap-10">
         {blogsData
-          ? blogsData?.map((blog) => <BlogCard key={blog.id} blog={blog} />)
+          ? blogsData?.map((blog) => (
+              <DashboardBlogCard
+                key={blog.id}
+                blog={blog}
+                onView={() => {
+                  setSelectedBlogId(blog.id);
+                  setViewModalOpen(true);
+                }}
+                onEdit={() =>
+                  router.push(
+                    `/dashboard/center/ad-or-blog-request/edit-blog/${blog.id}`
+                  )
+                }
+              />
+            ))
           : null}
 
         {isLoading ? (
@@ -96,6 +120,16 @@ const BlogsSection = () => {
           </div>
         ) : null}
       </div>
+
+      <BlogViewModal
+        blog={selectedBlog}
+        isOpen={viewModalOpen}
+        onClose={() => {
+          setViewModalOpen(false);
+          // Don't clear selectedBlogId to keep the data in cache
+          // This way if the modal is reopened, we won't need to refetch
+        }}
+      />
     </div>
   );
 };
