@@ -9,23 +9,32 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Icons } from "@/components/general/icons";
 import { useQuery } from "@tanstack/react-query";
-import { centerService } from "@/services/dashboardApi";
+import { centerService, adminService } from "@/services/dashboardApi";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface BlogViewModalProps {
   blog: Blog | null;
   isOpen: boolean;
   onClose: () => void;
+  isAdmin?: boolean; // Flag to determine which service to use
 }
 
-const BlogViewModal = ({ blog, isOpen, onClose }: BlogViewModalProps) => {
+const BlogViewModal = ({
+  blog,
+  isOpen,
+  onClose,
+  isAdmin = false,
+}: BlogViewModalProps) => {
   const locale = useLocale();
   const t = useTranslations("blog");
 
   // Only fetch full content if we don't already have all the data we need
   const { data: fullBlog, isLoading: isLoadingContent } = useQuery({
-    queryKey: ["blogs", blog?.id],
-    queryFn: () => centerService.getBlog(blog!.id),
+    queryKey: [isAdmin ? "adminBlogs" : "blogs", blog?.id],
+    queryFn: () =>
+      isAdmin
+        ? adminService.getBlog(blog!.id)
+        : centerService.getBlog(blog!.id),
     enabled: isOpen && !!blog?.id && !blog.content, // Only fetch if we don't have content
     staleTime: 5 * 60 * 1000, // 5 minutes
     // Use the blog prop as initial data if available
@@ -52,11 +61,18 @@ const BlogViewModal = ({ blog, isOpen, onClose }: BlogViewModalProps) => {
           {/* Blog image */}
           <div className="w-full h-64 rounded-xl overflow-hidden relative">
             <Image
-              src={displayBlog?.coverImage || displayBlog?.cover_url || null}
+              src={
+                displayBlog?.coverImage ||
+                displayBlog?.cover_url ||
+                displayBlog?.image ||
+                displayBlog?.blog_image_url ||
+                displayBlog?.file ||
+                "/placeholder-image.png"
+              }
               alt={
                 typeof displayBlog?.title === "string"
                   ? displayBlog.title
-                  : displayBlog?.title?.[locale] || ""
+                  : displayBlog?.title?.[locale] || t("blogImageAlt")
               }
               fill
               className="object-cover"
