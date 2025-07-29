@@ -67,16 +67,16 @@ const BlogViewModal = ({ blog, isOpen, onClose }: BlogViewModalProps) => {
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center gap-4">
               <span className="text-secondary-orange font-medium">
-                {blog.reading_time} {t("minutes")}
+                {displayBlog.reading_time} {t("minutes")}
               </span>
 
-              {blog.author && (
+              {displayBlog.author && (
                 <div className="flex items-center gap-2">
                   <div
                     className="w-5 h-5 rounded-full"
                     style={{ backgroundColor: "#E5E5E5" }}
                   />
-                  <span>{blog.author}</span>
+                  <span>{displayBlog.author}</span>
                 </div>
               )}
             </div>

@@ -48,7 +48,7 @@ const BlogsSection = () => {
         description: blog.description,
         image: blog.blog_image_url,
         coverImage: blog.cover_url,
-        readingTime: blog.reading_time,
+        reading_time: blog.reading_time,
         created_at: blog.created_at.split("T")[0],
         published_at: blog.created_at.split("T")[0],
       }));
@@ -126,8 +126,6 @@ const BlogsSection = () => {
         isOpen={viewModalOpen}
         onClose={() => {
           setViewModalOpen(false);
-          // Don't clear selectedBlogId to keep the data in cache
-          // This way if the modal is reopened, we won't need to refetch
         }}
       />
     </div>
