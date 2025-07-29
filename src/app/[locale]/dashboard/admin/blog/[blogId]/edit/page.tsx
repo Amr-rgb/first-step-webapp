@@ -8,6 +8,7 @@ import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function BlogEdit({
   params,
@@ -17,8 +18,10 @@ export default function BlogEdit({
   const t = useTranslations("dashboard.admin.blog.edit");
   const { blogId } = use(params);
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["blog", blogId],
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["adminBlogs", blogId],
     queryFn: () => adminService.getBlog(blogId),
     enabled: !!blogId,
   });
@@ -38,7 +41,7 @@ export default function BlogEdit({
     },
     onSuccess: () => {
       toast(t("success"));
-      refetch();
+      queryClient.refetchQueries({ queryKey: ["adminBlogs", blogId] });
     },
     onError: () => {
       toast(t("error"));

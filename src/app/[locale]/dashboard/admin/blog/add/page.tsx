@@ -29,7 +29,7 @@ export default function AdminBlogAddPage() {
     onSuccess: () => {
       toast(t("success"));
       // Invalidate the blogs query to refetch the list
-      queryClient.invalidateQueries({ queryKey: ['adminBlogs'] });
+      queryClient.refetchQueries({ queryKey: ["adminBlogs"] });
       router.back();
     },
     onError: () => {
@@ -42,9 +42,9 @@ export default function AdminBlogAddPage() {
   };
 
   return (
-    <AdminBlogForm 
-      onSubmit={handleSubmit} 
-      loading={createBlogMutation.isPending} 
+    <AdminBlogForm
+      onSubmit={handleSubmit}
+      loading={createBlogMutation.isPending}
     />
   );
 }
