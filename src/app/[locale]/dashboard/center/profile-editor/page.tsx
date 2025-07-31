@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export interface ProfileSection {
   id: string;
   name: string;
-  type: 'hero' | 'about' | 'services' | 'programs' | 'team' | 'activities' | 'contact' | 'philosophy' | 'stats';
+  type: 'hero' | 'about' | 'services' | 'programs' | 'team' | 'activities' | 'contact' | 'philosophy' | 'stats' | 'branches';
   enabled: boolean;
   data: any;
 }
@@ -41,16 +41,37 @@ export default function ProfileEditorPage() {
       }
     },
     {
-      id: 'about',
-      name: 'About Us',
-      type: 'about',
+      id: 'branches',
+      name: 'Branches',
+      type: 'branches',
       enabled: false,
       data: {
-        title: '',
-        description: '',
-        images: [],
-        mission: '',
-        vision: ''
+        title: 'Our Branches',
+        branches: []
+      }
+    },
+    {
+      id: 'philosophy',
+      name: 'Philosophy, Methodology & Goal',
+      type: 'philosophy',
+      enabled: false,
+      data: {
+        philosophyTitle: 'Our Philosophy',
+        philosophy: '',
+        methodologyTitle: 'Our Methodology',
+        methodology: '',
+        goalTitle: 'Our Goal',
+        goal: ''
+      }
+    },
+    {
+      id: 'programs',
+      name: 'Programs (برامجنا)',
+      type: 'programs',
+      enabled: false,
+      data: {
+        title: 'برامجنا',
+        programs: []
       }
     },
     {
@@ -64,23 +85,14 @@ export default function ProfileEditorPage() {
       }
     },
     {
-      id: 'programs',
-      name: 'Programs',
-      type: 'programs',
+      id: 'stats',
+      name: 'Nursery Stats',
+      type: 'stats',
       enabled: false,
       data: {
-        title: 'Our Programs',
-        programs: []
-      }
-    },
-    {
-      id: 'team',
-      name: 'Our Team',
-      type: 'team',
-      enabled: false,
-      data: {
-        title: 'Meet Our Team',
-        members: []
+        area: '2000',
+        classrooms: '10',
+        teamMembers: '25'
       }
     },
     {
@@ -92,6 +104,16 @@ export default function ProfileEditorPage() {
         title: 'Activities',
         subtitle: '',
         images: []
+      }
+    },
+    {
+      id: 'team',
+      name: 'Our Team',
+      type: 'team',
+      enabled: false,
+      data: {
+        title: 'Meet Our Team',
+        members: []
       }
     },
     {
@@ -162,6 +184,9 @@ export default function ProfileEditorPage() {
       programs: { title: 'Our Programs', programs: [] },
       team: { title: 'Meet Our Team', members: [] },
       activities: { title: 'Activities', subtitle: '', images: [] },
+      philosophy: { philosophyTitle: 'Our Philosophy', philosophy: '', methodologyTitle: 'Our Methodology', methodology: '', goalTitle: 'Our Goal', goal: '' },
+      branches: { title: 'Our Branches', branches: [] },
+      stats: { area: '', classrooms: '', teamMembers: '' },
       contact: { address: '', phone: '', email: '', workingHours: '', socialMedia: {} }
     };
     return defaults[type] || {};
@@ -270,7 +295,7 @@ export default function ProfileEditorPage() {
       <div className="flex-1">
         {isPreviewMode ? (
           <ProfilePreview 
-            sections={enabledSections}
+            sections={profileSections}
             isEmpty={isProfileEmpty}
           />
         ) : (

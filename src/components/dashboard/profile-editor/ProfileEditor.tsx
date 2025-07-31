@@ -278,7 +278,7 @@ const ProfileEditor = ({ sections, onSectionUpdate, onSectionToggle, onSectionDe
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => addListItem(section.id, 'programs', { title: '', description: '', price: '', features: [], image: '' })}
+                  onClick={() => addListItem(section.id, 'programs', { title: '', description: '', price: '', features: [], image: '', buttonText: 'احجز الآن' })}
                 >
                   <Plus className="w-4 h-4 mr-1" /> Add Program
                 </Button>
@@ -327,9 +327,152 @@ const ProfileEditor = ({ sections, onSectionUpdate, onSectionToggle, onSectionDe
                         onChange={e => updateListItem(section.id, 'programs', index, { features: e.target.value.split(',').map(f => f.trim()).filter(f => f) })}
                       />
                     </div>
+                    <div>
+                      <Label className="text-sm">Button Text</Label>
+                      <Input
+                        placeholder="احجز الآن"
+                        value={program.buttonText || ''}
+                        onChange={e => updateListItem(section.id, 'programs', index, { buttonText: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </Card>
               ))}
+            </div>
+          </div>
+        );
+
+      case 'philosophy':
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>Philosophy Title</Label>
+                <Input
+                  placeholder="Our Philosophy"
+                  value={section.data.philosophyTitle || ''}
+                  onChange={e => onSectionUpdate(section.id, { philosophyTitle: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Methodology Title</Label>
+                <Input
+                  placeholder="Our Methodology"
+                  value={section.data.methodologyTitle || ''}
+                  onChange={e => onSectionUpdate(section.id, { methodologyTitle: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Goal Title</Label>
+                <Input
+                  placeholder="Our Goal"
+                  value={section.data.goalTitle || ''}
+                  onChange={e => onSectionUpdate(section.id, { goalTitle: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>Philosophy Content</Label>
+                <Textarea
+                  placeholder="Our philosophy..."
+                  value={section.data.philosophy || ''}
+                  onChange={e => onSectionUpdate(section.id, { philosophy: e.target.value })}
+                  rows={4}
+                />
+              </div>
+              <div>
+                <Label>Methodology Content</Label>
+                <Textarea
+                  placeholder="Our methodology..."
+                  value={section.data.methodology || ''}
+                  onChange={e => onSectionUpdate(section.id, { methodology: e.target.value })}
+                  rows={4}
+                />
+              </div>
+              <div>
+                <Label>Goal Content</Label>
+                <Textarea
+                  placeholder="Our goal..."
+                  value={section.data.goal || ''}
+                  onChange={e => onSectionUpdate(section.id, { goal: e.target.value })}
+                  rows={4}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'branches':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label>Section Title</Label>
+              <Input
+                placeholder="Our Branches"
+                value={section.data.title || ''}
+                onChange={e => onSectionUpdate(section.id, { title: e.target.value })}
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label>Branches</Label>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => addListItem(section.id, 'branches', { name: '' })}
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add Branch
+                </Button>
+              </div>
+              {(section.data.branches || []).map((branch: any, index: number) => (
+                <div key={index} className="flex gap-2 items-end">
+                  <Input
+                    placeholder="Branch name"
+                    value={branch.name || ''}
+                    onChange={e => updateListItem(section.id, 'branches', index, { name: e.target.value })}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => removeListItem(section.id, 'branches', index)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'stats':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Area (sqm)</Label>
+                <Input
+                  placeholder="2000"
+                  value={section.data.area || ''}
+                  onChange={e => onSectionUpdate(section.id, { area: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Classrooms</Label>
+                <Input
+                  placeholder="10"
+                  value={section.data.classrooms || ''}
+                  onChange={e => onSectionUpdate(section.id, { classrooms: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Team Members</Label>
+                <Input
+                  placeholder="25"
+                  value={section.data.teamMembers || ''}
+                  onChange={e => onSectionUpdate(section.id, { teamMembers: e.target.value })}
+                />
+              </div>
             </div>
           </div>
         );
