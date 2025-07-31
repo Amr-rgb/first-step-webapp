@@ -29,16 +29,6 @@ const Branches = ({ locale, nurseryName }: BranchesProps) => {
     "text-[#FFAD0D] fill-[#FFAD0D]",
   ];
 
-  // Dynamic content for Philosophy, Methodology, and Goal
-  let philosophy = t("philosophy.text");
-  let methodology = t("methodology.text");
-  let goal = t("goal.text");
-
-  if (nurseryName.toLowerCase().includes("world-of-learning-junior")) {
-    philosophy = t("philosophy.junior");
-    methodology = t("methodology.junior");
-    goal = t("goal.junior");
-  }
 
   // Remove the static Nursery Services Section
   // Add dynamic Services component for World Of Learning Junior
@@ -109,54 +99,6 @@ const Branches = ({ locale, nurseryName }: BranchesProps) => {
         </section>
       )}
 
-      {/* Philosophy, Methodology, Goal Section */}
-      <div className="mt-20 flex flex-col md:flex-row justify-center gap-8 text-center">
-        {/* Philosophy Card */}
-        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
-          <img
-            src="/assets/illustrations/philosophy.png"
-            alt={t("philosophy.title")}
-            className="mx-auto mb-4 w-28 h-28 object-contain"
-          />
-          <h3 className="text-2xl font-bold text-[#B12F53] mb-2">
-            {t("philosophy.title")}
-          </h3>
-          <p className="text-gray-700 text-base">{philosophy}</p>
-        </div>
-        {/* Methodology Card */}
-        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
-          <img
-            src="/assets/illustrations/methodology.png"
-            alt={t("methodology.title")}
-            className="mx-auto mb-4 w-28 h-28 object-contain"
-          />
-          <h3 className="text-2xl font-bold text-[#B12F53] mb-2">
-            {t("methodology.title")}
-          </h3>
-          <p
-            className="text-gray-700 text-base"
-            style={
-              nurseryName.toLowerCase().includes("world-of-learning-junior")
-                ? { whiteSpace: "pre-line" }
-                : {}
-            }
-          >
-            {methodology}
-          </p>
-        </div>
-        {/* Goal Card */}
-        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
-          <img
-            src="/assets/illustrations/goal.png"
-            alt={t("goal.title")}
-            className="mx-auto mb-4 w-28 h-28 object-contain"
-          />
-          <h3 className="text-2xl font-bold text-[#B12F53] mb-2">
-            {t("goal.title")}
-          </h3>
-          <p className="text-gray-700 text-base">{goal}</p>
-        </div>
-      </div>
 
       {/* Nursery Services Section */}
       {services.length > 0 && <Services services={services} />}
