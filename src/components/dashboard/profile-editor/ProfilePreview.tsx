@@ -3,8 +3,17 @@
 import { ProfileSection } from "@/app/[locale]/dashboard/center/profile-editor/page";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Clock, MapPin, Mail, Phone, Facebook, Instagram, Twitter, MessageCircle } from "lucide-react";
+import { Clock, MapPin, Mail, Phone, Facebook, Instagram, Twitter, MessageCircle, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
+import Services from "@/components/general/nurseries/sections/Services";
+import Programs from "@/components/general/nurseries/sections/Programs";
+import Activities from "@/components/general/nurseries/sections/Activities";
+import Team from "@/components/general/nurseries/sections/Team";
+import Stats from "@/components/general/nurseries/sections/Stats";
+import PhilosophyCards from "@/components/general/nurseries/sections/PhilosophyCards";
+import Branches from "@/components/general/nurseries/Branches";
+import Link from "next/link";
+import { Icons } from "@/components/general/icons";
 
 interface ProfilePreviewProps {
   sections: ProfileSection[];
@@ -187,267 +196,155 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
         );
 
       case 'services':
-        return (
-          <section key={section.id} className="py-20 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  {section.data.title || 'Our Services'}
-                </h2>
-                
-                {section.data.services && section.data.services.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-                    {section.data.services.map((service: any, index: number) => (
-                      <Card key={index} className="p-6 hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-lg">
-                        <div className="mb-4">
-                          <img
-                            src={service.image || 'https://via.placeholder.com/300x200?text=Service'}
-                            alt={service.title}
-                            className="w-full h-48 object-cover rounded-lg"
-                          />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">
-                          {service.title || 'Service Title'}
-                        </h3>
-                        <p className="text-gray-600 leading-relaxed">
-                          {service.description || 'Service description goes here.'}
-                        </p>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 mt-8">
-                    <p>No services added yet. Add services in the editor to showcase what you offer.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        );
+        return section.data.services && section.data.services.length > 0 ? (
+          <Services key={section.id} services={section.data.services} />
+        ) : null;
 
       case 'programs':
-        return (
-          <section key={section.id} className="py-20 bg-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  {section.data.title || 'Our Programs'}
-                </h2>
-                
-                {section.data.programs && section.data.programs.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-                    {section.data.programs.map((program: any, index: number) => (
-                      <Card key={index} className="p-6 hover:shadow-xl transition-all duration-300 bg-white border-2 border-primary/10 hover:border-primary/20">
-                        <div className="mb-4">
-                          <img
-                            src={program.image || 'https://via.placeholder.com/300x200?text=Program'}
-                            alt={program.title}
-                            className="w-full h-32 object-cover rounded-lg"
-                          />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {program.title || 'Program Title'}
-                        </h3>
-                        {program.price && (
-                          <div className="text-2xl font-bold text-primary mb-3">
-                            {program.price}
-                          </div>
-                        )}
-                        <p className="text-gray-600 mb-4 leading-relaxed">
-                          {program.description || 'Program description goes here.'}
-                        </p>
-                        {program.features && program.features.length > 0 && (
-                          <ul className="text-left text-sm text-gray-600 space-y-1 mb-4">
-                            {program.features.map((feature: string, idx: number) => (
-                              <li key={idx} className="flex items-center">
-                                <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                {feature}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        <Button className="w-full bg-primary hover:bg-primary/90">
-                          Learn More
-                        </Button>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 mt-8">
-                    <p>No programs added yet. Add programs in the editor to showcase your offerings.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        );
+        return section.data.programs && section.data.programs.length > 0 ? (
+          <Programs 
+            key={section.id} 
+            programs={section.data.programs}
+            isPreview={true}
+            locale="en"
+            nurseryName="preview"
+          />
+        ) : null;
 
       case 'team':
+        return section.data.members && section.data.members.length > 0 ? (
+          <Team key={section.id} members={section.data.members} />
+        ) : null;
+
+      case 'activities':
+        return section.data.images && section.data.images.length > 0 ? (
+          <Activities 
+            key={section.id}
+            title={section.data.title || 'Our Activities'}
+            subtitle={section.data.subtitle || ''}
+            activities={section.data.images.map((img: any) => img.url)}
+            buttonText="Book Now"
+            isPreview={true}
+          />
+        ) : null;
+
+      case 'philosophy':
         return (
-          <section key={section.id} className="py-20 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  {section.data.title || 'Meet Our Team'}
-                </h2>
-                
-                {section.data.members && section.data.members.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-                    {section.data.members.map((member: any, index: number) => (
-                      <Card key={index} className="p-6 text-center hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-lg">
-                        <div className="mb-4">
-                          <img
-                            src={member.image || 'https://via.placeholder.com/150x150?text=Team'}
-                            alt={member.name}
-                            className="w-24 h-24 object-cover rounded-full mx-auto mb-4"
-                          />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">
-                          {member.name || 'Team Member'}
-                        </h3>
-                        <p className="text-primary font-medium mb-3">
-                          {member.role || 'Position'}
-                        </p>
-                        {member.bio && (
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            {member.bio}
-                          </p>
-                        )}
-                      </Card>
-                    ))}
+          <PhilosophyCards 
+            key={section.id}
+            sections={[
+              {
+                title: section.data.philosophyTitle || 'Philosophy',
+                image: '/assets/illustrations/philosophy.png',
+                text: section.data.philosophy || 'Our philosophy goes here'
+              },
+              {
+                title: section.data.methodologyTitle || 'Methodology', 
+                image: '/assets/illustrations/methodology.png',
+                text: section.data.methodology || 'Our methodology goes here'
+              },
+              {
+                title: section.data.goalTitle || 'Goal',
+                image: '/assets/illustrations/goal.png', 
+                text: section.data.goal || 'Our goal goes here'
+              }
+            ]}
+          />
+        );
+
+      case 'branches':
+        return (
+          <section key={section.id} className="my-10 container mx-auto px-4 xl:px-8">
+            <h2 className="mb-6 heading-3 text-secondary-burgundy text-center">
+              {section.data.title || 'Our Branches'}
+            </h2>
+            <div className="relative overflow-x-auto overflow-y-hidden px-4">
+              <div className="flex flex-nowrap pb-4 min-h-[120px] justify-center">
+                {(section.data.branches || []).map((branch: any, index: number) => (
+                  <div
+                    key={branch.name || index}
+                    className={`group relative flex flex-col items-center min-w-48 md:min-w-64 w-48 mb-8 text-[#B12F53] fill-[#B12F53]`}
+                  >
+                    <div className="-z-50 w-full h-1 bg-light-gray absolute translate-y-[670%] top-1/2 group-first:w-1/2 group-last:w-1/2 group-first:right-0 group-last:left-0 rtl:group-last:right-0 rtl:group-first:right-auto rtl:group-first:left-0" />
+                    <div className="rounded-full flex items-center justify-center origin-[50%_80%] group-even:rotate-180">
+                      <svg className="fill-inherit size-20" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </div>
+                    <p className="absolute left-1/2 -translate-x-1/2 group-even:top-[20%] group-odd:top-[100%] text-2xl text-center font-bold text-nowrap whitespace-nowrap">
+                      {branch.name || `Branch ${index + 1}`}
+                    </p>
                   </div>
-                ) : (
-                  <div className="text-gray-500 mt-8">
-                    <p>No team members added yet. Add team members in the editor to introduce your staff.</p>
-                  </div>
-                )}
+                ))}
               </div>
             </div>
           </section>
         );
 
-      case 'activities':
+      case 'stats':
         return (
-          <section key={section.id} className="py-20 bg-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  {section.data.title || 'Our Activities'}
-                </h2>
-                {section.data.subtitle && (
-                  <p className="text-lg text-gray-600 mb-12">
-                    {section.data.subtitle}
-                  </p>
-                )}
-                
-                {section.data.images && section.data.images.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {section.data.images.map((image: any, index: number) => (
-                      <div key={index} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                        <img
-                          src={image.url || 'https://via.placeholder.com/400x300?text=Activity'}
-                          alt={image.caption || `Activity ${index + 1}`}
-                          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {image.caption && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p className="text-white font-medium">{image.caption}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 mt-8">
-                    <p>No activities added yet. Add activity images in the editor to showcase what children do.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
+          <Stats 
+            key={section.id}
+            stats={[
+              {
+                icon: (
+                  <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
+                    <path d="M8 56V24L32 8l24 16v32H8Z" stroke="#B12F53" strokeWidth="3" />
+                    <path d="M24 56V40h16v16" stroke="#B12F53" strokeWidth="3" />
+                  </svg>
+                ),
+                value: section.data.area || '2000',
+                label: 'Area (sqm)',
+                color: 'text-[#B12F53]'
+              },
+              {
+                icon: (
+                  <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
+                    <path d="M12 16h40v32H12z" stroke="#22336C" strokeWidth="3" />
+                    <path d="M24 32h16M24 40h16" stroke="#22336C" strokeWidth="3" />
+                    <circle cx="20" cy="24" r="4" stroke="#22336C" strokeWidth="3" />
+                  </svg>
+                ),
+                value: section.data.classrooms || '10',
+                label: 'Classrooms',
+                color: 'text-[#22336C]'
+              },
+              {
+                icon: (
+                  <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
+                    <circle cx="32" cy="20" r="8" stroke="#47B881" strokeWidth="3" />
+                    <path d="M16 52c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="#47B881" strokeWidth="3" />
+                    <circle cx="16" cy="28" r="5" stroke="#47B881" strokeWidth="2" />
+                    <circle cx="48" cy="28" r="5" stroke="#47B881" strokeWidth="2" />
+                  </svg>
+                ),
+                value: section.data.teamMembers || '25',
+                label: 'Team Members',
+                color: 'text-[#47B881]'
+              }
+            ]}
+            buttonText="Book Now"
+            isPreview={true}
+          />
         );
 
       case 'contact':
         return (
-          <section key={section.id} className="py-20 bg-gray-900 text-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                  <h2 className="text-4xl font-bold mb-6">Get In Touch</h2>
-                  <p className="text-lg text-gray-300">We'd love to hear from you and answer any questions you may have.</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {section.data.address && (
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                        <MapPin className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2">Address</h3>
-                      <p className="text-gray-300 text-sm leading-relaxed">{section.data.address}</p>
-                    </div>
-                  )}
-                  
-                  {section.data.phone && (
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Phone className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2">Phone</h3>
-                      <p className="text-gray-300">{section.data.phone}</p>
-                    </div>
-                  )}
-                  
-                  {section.data.email && (
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Mail className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2">Email</h3>
-                      <p className="text-gray-300">{section.data.email}</p>
-                    </div>
-                  )}
-                  
-                  {section.data.workingHours && (
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Clock className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2">Working Hours</h3>
-                      <p className="text-gray-300 text-sm leading-relaxed">{section.data.workingHours}</p>
-                    </div>
-                  )}
-                </div>
-                
-                {section.data.socialMedia && Object.values(section.data.socialMedia).some(url => url) && (
-                  <div className="text-center mt-12">
-                    <h3 className="text-lg font-semibold mb-6">Follow Us</h3>
-                    <div className="flex justify-center space-x-4">
-                      {section.data.socialMedia.facebook && (
-                        <a href={section.data.socialMedia.facebook} className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
-                          <Facebook className="w-5 h-5" />
-                        </a>
-                      )}
-                      {section.data.socialMedia.instagram && (
-                        <a href={section.data.socialMedia.instagram} className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors">
-                          <Instagram className="w-5 h-5" />
-                        </a>
-                      )}
-                      {section.data.socialMedia.twitter && (
-                        <a href={section.data.socialMedia.twitter} className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
-                          <Twitter className="w-5 h-5" />
-                        </a>
-                      )}
-                      {section.data.socialMedia.whatsapp && (
-                        <a href={section.data.socialMedia.whatsapp} className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition-colors">
-                          <MessageCircle className="w-5 h-5" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                )}
+          <section key={section.id} className="mt-20 mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-8">
+              Contact Information
+            </h2>
+            <div className="flex justify-center">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center space-y-2 max-w-md w-full mx-4">
+                <img
+                  src="/assets/illustrations/contact.png"
+                  alt="Contact"
+                  className="mx-auto mb-4 w-16 h-16 object-contain"
+                />
+                {section.data.address && <p className="text-gray-700">{section.data.address}</p>}
+                {section.data.phone && <p className="text-gray-700">{section.data.phone}</p>}
+                {section.data.email && <p className="text-gray-700">{section.data.email}</p>}
+                {section.data.workingHours && <p className="text-gray-700">{section.data.workingHours}</p>}
               </div>
             </div>
           </section>
@@ -474,7 +371,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
 
       {/* Profile Content */}
       <div className="relative">
-        {sections.map(renderSection)}
+        {sections.filter(section => section.enabled).map(renderSection)}
         
         {/* Footer */}
         <footer className="bg-gray-50 py-8 border-t border-gray-200">
