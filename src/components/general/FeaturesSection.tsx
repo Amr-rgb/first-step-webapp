@@ -9,10 +9,7 @@ const FeaturesSection = () => {
       title: t("childManagement.title"),
       description: t("childManagement.description"),
     },
-    {
-      title: t("directChat.title"),
-      description: t("directChat.description"),
-    },
+   
     {
       title: t("taskOrganization.title"),
       description: t("taskOrganization.description"),

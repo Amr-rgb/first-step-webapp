@@ -291,13 +291,3 @@ export interface Message {
   timestamp: string; // ISO string
 }
 
-// Chat object (group chat between parent, center, admin)
-export interface Chat {
-  id: string;
-  participants: User[];
-  messages: Message[];
-}
-
-// -----------------------------
-// (Add other types below as needed)
-// -----------------------------

@@ -74,9 +74,9 @@ const getCenterNavbar = (t: any) => [
     icon: dashboardIcons.team,
   },
   {
-    title: "الدردشة", // Chat tab
+    title: t("center.chat"),
     url: "/dashboard/center/chat",
-    icon: dashboardIcons.chat, // Use a chat/message icon
+    icon: dashboardIcons.chat,
   },
 ];
 
@@ -102,9 +102,9 @@ const getParentNavbar = (t: any) => [
     icon: dashboardIcons.reports,
   },
   {
-    title: "الدردشة", // Chat tab
+    title: t("parent.chat"),
     url: "/dashboard/parent/chat",
-    icon: dashboardIcons.chat, // Use a chat/message icon
+    icon: dashboardIcons.chat,
   },
 ];
 
@@ -145,10 +145,11 @@ const getAdminNavbar = (t: any) => [
     icon: dashboardIcons.notifications,
   },
   {
-    title: "الدردشة", // Chat tab
+    title: t("admin.chat"),
     url: "/dashboard/admin/chat",
-    icon: dashboardIcons.chat, // Use a chat/message icon
+    icon: dashboardIcons.chat,
   },
+
 ];
 
 const DashboardSideBar = () => {
