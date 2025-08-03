@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 // import Advertisment from "@/components/general/Advertisment";
 import Headline from "@/components/general/Headline";
-import Services from "@/components/general/Services";
+import StickyScrollServices from "@/components/general/StickyScrollServices";
 import { websiteService } from "@/services/api";
+import Services from "@/components/general/Services";
 
 export const revalidate = 86400;
 
@@ -38,6 +39,7 @@ export default async function ServicesPage({
     <main>
       {/* <Advertisment slides={adSlides} /> */}
       <Headline />
+      {/* <StickyScrollServices locale={locale as "en" | "ar"} /> */}
       <Services services={services} />
     </main>
   );
