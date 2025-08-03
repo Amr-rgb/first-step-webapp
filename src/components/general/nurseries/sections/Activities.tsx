@@ -3,6 +3,7 @@ interface ActivitiesProps {
   subtitle: string;
   activities: string[];
   buttonText?: string;
+  isPreview?: boolean;
 }
 
 const Activities = ({
@@ -10,6 +11,7 @@ const Activities = ({
   subtitle,
   activities,
   buttonText,
+  isPreview = false,
 }: ActivitiesProps) => (
   <section className="mt-20 mb-10">
     <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">

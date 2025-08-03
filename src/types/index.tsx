@@ -266,3 +266,38 @@ export interface Value {
   description: string;
   image: string;
 }
+
+// -----------------------------
+// Chat Feature Types
+// -----------------------------
+
+// User roles in the system
+export type Role = "parent" | "center" | "admin";
+
+// User object for chat participants
+export interface User {
+  id: string;
+  name: string;
+  role: Role;
+  logoUrl?: string; // For center/admin, optional for parent
+}
+
+// Single chat message
+export interface Message {
+  id: string;
+  chatId: string;
+  sender: User;
+  content: string;
+  timestamp: string; // ISO string
+}
+
+// Chat object (group chat between parent, center, admin)
+export interface Chat {
+  id: string;
+  participants: User[];
+  messages: Message[];
+}
+
+// -----------------------------
+// (Add other types below as needed)
+// -----------------------------

@@ -53,11 +53,11 @@ const getCenterNavbar = (t: any) => [
     url: "/dashboard/center/daily-reports",
     icon: dashboardIcons.reports,
   },
-  // {
-  //   title: t("center.site-edit"),
-  //   url: "/dashboard/center/site-edit",
-  //   icon: dashboardIcons.site,
-  // },
+  {
+    title: t("center.profile-editor"),
+    url: "/dashboard/center/profile-editor",
+    icon: dashboardIcons.site,
+  },
   {
     title: t("center.ad-or-blog-request"),
     url: "/dashboard/center/ad-or-blog-request",
@@ -72,6 +72,11 @@ const getCenterNavbar = (t: any) => [
     title: t("center.team"),
     url: "/dashboard/center/team",
     icon: dashboardIcons.team,
+  },
+  {
+    title: "الدردشة", // Chat tab
+    url: "/dashboard/center/chat",
+    icon: dashboardIcons.chat, // Use a chat/message icon
   },
 ];
 
@@ -95,6 +100,11 @@ const getParentNavbar = (t: any) => [
     title: t("parent.reports"),
     url: "/dashboard/parent/daily-reports",
     icon: dashboardIcons.reports,
+  },
+  {
+    title: "الدردشة", // Chat tab
+    url: "/dashboard/parent/chat",
+    icon: dashboardIcons.chat, // Use a chat/message icon
   },
 ];
 
@@ -134,6 +144,11 @@ const getAdminNavbar = (t: any) => [
     url: "/dashboard/admin/notifications",
     icon: dashboardIcons.notifications,
   },
+  {
+    title: "الدردشة", // Chat tab
+    url: "/dashboard/admin/chat",
+    icon: dashboardIcons.chat, // Use a chat/message icon
+  },
 ];
 
 const DashboardSideBar = () => {
@@ -165,9 +180,15 @@ const DashboardSideBar = () => {
 
   return (
     <Sidebar
-      className="h-screen py-10"
+      className="h-screen py-10 transition-all duration-300 ease-in-out"
       side={locale === "ar" ? "right" : "left"}
       collapsible="icon"
+      style={{
+        '--sidebar-width': '250px',
+        '--sidebar-collapsed-width': '80px',
+        '--transition-duration': '300ms',
+        '--transition-timing': 'cubic-bezier(0.4, 0, 0.2, 1)'
+      } as React.CSSProperties}
     >
       <SidebarHeader className="mb-4 justify-center items-center">
         {user?.role === "parent" || user?.role === "branch_admin" ? (
@@ -209,7 +230,7 @@ const DashboardSideBar = () => {
           </>
         ) : null}
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="transition-all duration-300 ease-in-out">
         <SidebarGroup>
           {/* <SidebarGroupLabel>app</SidebarGroupLabel> */}
           <SidebarGroupContent>
@@ -232,10 +253,10 @@ const DashboardSideBar = () => {
                         <Link
                           href={item.url}
                           className={cn(
-                            "flex justify-start items-center space-x-2 px-4 py-6.5 w-full rounded-lg transition-colors",
+                            "flex justify-start items-center space-x-2 px-4 py-6.5 w-full rounded-lg transition-all duration-200 ease-in-out transform",
                             isActive
-                              ? "!bg-primary !text-white !font-bold"
-                              : "bg-transparent !text-mid-gray"
+                              ? "!bg-primary !text-white !font-bold scale-[0.98]"
+                              : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99]"
                           )}
                         >
                           <Tooltip>
@@ -287,8 +308,8 @@ const DashboardSideBar = () => {
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "mt-4 justify-end items-center",
-          state === "collapsed" ? "my-4" : ""
+          "mt-4 justify-end items-center transition-all duration-300 ease-in-out",
+          state === "collapsed" ? "my-4 px-2" : ""
         )}
       >
         <Link href="/" className={state === "collapsed" ? "w-full h-full" : ""}>

@@ -8,9 +8,10 @@ interface Stat {
 interface StatsProps {
   stats: Stat[];
   buttonText?: string;
+  isPreview?: boolean;
 }
 
-const Stats = ({ stats, buttonText }: StatsProps) => (
+const Stats = ({ stats, buttonText, isPreview = false }: StatsProps) => (
   <section className="mt-16 mb-10">
     {buttonText && (
       <div className="flex justify-center mb-8">

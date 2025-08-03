@@ -2,6 +2,7 @@ import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
+import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
 import { AdSlide } from "@/types";
 import { getTranslations } from "next-intl/server";
@@ -51,43 +52,56 @@ export default async function NurseryPage({
     .toLowerCase()
     .includes("world-of-learning-junior");
 
+  // Check if nursery has profile configured
+  // For now, only World of Learning nurseries have profiles configured
+  // Other nurseries should show the waiting page
+  const hasProfile = isWorldOfLearning;
+
   return (
     <div>
-      <Header
-        name={readableName}
-        slogan={isWorldOfLearning ? t("slogan") : undefined}
-      />
-      <Branches locale={locale} nurseryName={name} />
-
-      {/* World of Learning custom sections */}
-      {isWorldOfLearning && (
+      {hasProfile ? (
         <>
-          {isWorldOfLearningJunior && (
-            <Programs nurseryName={name} locale={locale} />
-          )}
+          <Header
+            name={readableName}
+            slogan={isWorldOfLearning ? t("slogan") : undefined}
+          />
+          <Branches locale={locale} nurseryName={name} />
 
-          {/* Contact/Owner Info Section */}
-          <section className="my-10 container mx-auto px-4 xl:px-8">
-            <div
-              dir={locale === "ar" ? "rtl" : "ltr"}
-              style={{ fontFamily: "Tahoma, Arial, sans-serif" }}
-            >
-              <h2 className="mb-6 heading-3 text-secondary-burgundy text-center">
-                {t("contact.title")}
-              </h2>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center space-y-2">
-                <p className="font-bold text-lg">{t("contact.ownerName")}</p>
-                <p>{t("contact.ownerRole")}</p>
-                <p>{t("contact.nurseryName")}</p>
-                <p>{t("contact.mobile")}</p>
-                <p>{t("contact.phone")}</p>
-                <p>{t("contact.address")}</p>
-              </div>
-            </div>
-          </section>
+          {/* World of Learning custom sections */}
+          {isWorldOfLearning && (
+            <>
+              {isWorldOfLearningJunior && (
+                <Programs nurseryName={name} locale={locale} />
+              )}
+
+              {/* Contact/Owner Info Section */}
+              <section className="mt-20 mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-8">
+                  {t("contact.title")}
+                </h2>
+                <div className="flex justify-center">
+                  <div className="bg-white rounded-lg shadow-md p-6 text-center space-y-2 max-w-md w-full mx-4">
+                    <img
+                      src="/assets/illustrations/contact.png"
+                      alt={t("contact.title")}
+                      className="mx-auto mb-4 w-16 h-16 object-contain"
+                    />
+                    <p className="font-bold text-lg text-[#22336C]">{t("contact.ownerName")}</p>
+                    <p className="text-gray-700">{t("contact.ownerRole")}</p>
+                    <p className="text-gray-700">{t("contact.nurseryName")}</p>
+                    <p className="text-gray-700">{t("contact.mobile")}</p>
+                    <p className="text-gray-700">{t("contact.phone")}</p>
+                    <p className="text-gray-700">{t("contact.address")}</p>
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
+          {/* <Advertisment slides={slides} /> */}
         </>
+      ) : (
+        <ProfileWaitingPage nurseryName={readableName} locale={locale} />
       )}
-      {/* <Advertisment slides={slides} /> */}
     </div>
   );
 }

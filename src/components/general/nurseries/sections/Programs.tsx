@@ -13,9 +13,10 @@ interface ProgramsProps {
   programs?: Program[];
   nurseryName?: string;
   locale?: string;
+  isPreview?: boolean;
 }
 
-const Programs = ({ programs, nurseryName, locale }: ProgramsProps) => {
+const Programs = ({ programs, nurseryName, locale, isPreview = false }: ProgramsProps) => {
   const t = useTranslations("nurseryDetails.programs");
   let displayPrograms = programs;
   if (
@@ -87,20 +88,26 @@ const Programs = ({ programs, nurseryName, locale }: ProgramsProps) => {
             <div className="text-3xl font-bold text-[#22336C] mb-2">
               {program.price}
             </div>
-            <ul className="text-[#22336C] text-right mb-4 space-y-1">
+            <ul className="text-[#22336C] text-right mb-4 space-y-1 font-medium leading-relaxed">
               {program.features.map((feature, i) => (
                 <li key={i}>{feature}</li>
               ))}
             </ul>
-            <Link
-              href={`/${locale}/nurseries/${nurseryName}/reservation?program=${program.title}`}
-              passHref
-              legacyBehavior
-            >
-              <a className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 block text-center">
+            {isPreview ? (
+              <button className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 block text-center w-full">
                 {program.buttonText}
-              </a>
-            </Link>
+              </button>
+            ) : (
+              <Link
+                href={`/${locale}/nurseries/${nurseryName}/reservation?program=${encodeURIComponent(program.title)}`}
+                passHref
+                legacyBehavior
+              >
+                <a className="mt-auto bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-lg px-6 py-2 font-bold transition hover:opacity-90 block text-center">
+                  {program.buttonText}
+                </a>
+              </Link>
+            )}
           </div>
         ))}
       </div>
