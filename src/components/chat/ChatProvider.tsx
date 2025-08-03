@@ -51,6 +51,7 @@ const mockChats: Chat[] = [
         sender: mockUsers[0],
         content: "رسالة من ولي الأمر للصفحة",
         timestamp: new Date().toISOString(),
+        read: false,
       },
       {
         id: "msg2",
@@ -58,6 +59,7 @@ const mockChats: Chat[] = [
         sender: mockUsers[2],
         content: "رسالة مسجلة من الصفحة في أول الأمر",
         timestamp: new Date().toISOString(),
+        read: false,
       },
       {
         id: "msg3",
@@ -65,6 +67,7 @@ const mockChats: Chat[] = [
         sender: mockUsers[1],
         content: "first step من رسالة",
         timestamp: new Date().toISOString(),
+        read: false,
       },
     ],
   },
@@ -105,6 +108,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
                   sender: currentUser,
                   content,
                   timestamp: new Date().toISOString(),
+                  read: false,
                 },
               ],
             }
