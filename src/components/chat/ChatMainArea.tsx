@@ -17,13 +17,15 @@ import {
 import { Chat, Message } from "@/types";
 import dynamic from "next/dynamic";
 
-// Dynamically import the emoji picker with no SSR
-const Picker = dynamic(
-  () => {
-    return import("emoji-picker-react");
-  },
-  { ssr: false }
-);
+// Dynamically import the emoji picker with no SSR and proper typing
+const Picker = dynamic<
+  React.ComponentProps<typeof import("emoji-picker-react")> & {
+    onEmojiClick: (emoji: any) => void;
+  }
+>(() => import("emoji-picker-react").then((mod) => mod.default), {
+  ssr: false,
+  loading: () => <div>Loading emoji picker...</div>,
+});
 
 // -----------------------------
 // ChatMainArea Component
