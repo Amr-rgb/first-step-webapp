@@ -48,15 +48,25 @@ const ChatSidebar: React.FC = () => {
   }, [currentUser]);
 
   const handleNewChat = (user: any) => {
-    if (!currentUser) return;
+    if (!currentUser || currentUser.role === 'admin') return;
     
+    // Prevent creating a chat if one already exists between these users
+    const existingChat = chats.find(chat => 
+      chat.participants.some(p => p.id === user.id)
+    );
+
+    if (existingChat) {
+      selectChat(existingChat.id);
+      setShowNewChatModal(false);
+      return;
+    }
+
     try {
       // Ensure we have valid user objects
       const currentUserObj = { ...currentUser };
       const otherUser = { ...user };
       
       // Add the new chat with the participants
-      // The ChatProvider will create the chat and select it
       addChat([currentUserObj, otherUser]);
       setShowNewChatModal(false);
     } catch (error) {

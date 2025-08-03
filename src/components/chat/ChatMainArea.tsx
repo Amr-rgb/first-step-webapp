@@ -111,6 +111,9 @@ const ChatMainArea: React.FC = () => {
     setMessage("");
     setSelectedFile(null);
     setFilePreview(null);
+
+    // Auto-scroll to bottom after sending a message
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     
     // Close emoji picker if open
     setShowEmojiPicker(false);
