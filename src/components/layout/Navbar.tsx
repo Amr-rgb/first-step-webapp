@@ -44,7 +44,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative container mx-auto px-4 py-2.5">
       {!token && (
-        <div className="z-[9999] fixed top-64 -left-[90px] -rotate-90 flex items-center gap-x-4">
+        <div className="z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4">
           <Button
             asChild
             size={"sm"}
@@ -129,7 +129,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         </div>
 
         {/* Centered navigation */}
-        <div className="hidden xl:block shrink-0 py-7 px-14 rounded-full bg-gradient-to-t from-white from-[28%] to-[#E2F3EB]">
+        <div className="hidden xl:block shrink-0 py-7 px-14 rounded-full">
           <ul className="flex justify-between items-center gap-x-9">
             {links.map((link) => (
               <li

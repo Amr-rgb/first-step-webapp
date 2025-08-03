@@ -148,6 +148,20 @@
     }
   },
   "auth": {
+    "sign-up": {
+      "select-account-description": "اختر نوع الحساب الذي ترغب في إنشائه",
+      "select-account-type": "إنشاء حسابك",
+      "have-account": "لديك حساب بالفعل؟",
+      "sign-in": "تسجيل الدخول",
+      "center": {
+        "title": "حساب مركز",
+        "description": "لرياض الأطفال ومراكز الرعاية النهارية لإدارة خدماتهم"
+      },
+      "parent": {
+        "title": "حساب ولي أمر",
+        "description": "للآباء الذين يبحثون عن خدمات رعاية أطفال عالية الجودة"
+      }
+    },
     "buttons": {
       "sign-in": "سجل دخولك",
       "sign-in-google": "سجل دخولك عن طريق جوجل",
@@ -162,6 +176,8 @@
     "sign-in": {
       "title": "مرحبًا مرة أخرى، سجل دخولك",
       "loading": "جارى تسجيل دخولك...",
+      "no-account": "ليس لديك حساب؟",
+      "sign-up": "إنشاء حساب",
       "form": {
         "email": {
           "label": "البريد الإلكتروني",
@@ -566,7 +582,10 @@
         "description": "راجع بريدك الإلكتروني",
         "timer": "سينتهي صلاحية الكود خلال:",
         "timer-expired": "انتهت صلاحية الكود",
-        "request-code": "اطلب كود جديد"
+        "request-code": "اطلب كود جديد",
+        "resend-code": "إعادة إرسال الكود",
+        "max-attempts-reached": "تم الوصول إلى الحد الأقصى من المحاولات. يرجى المحاولة مرة أخرى لاحقا.",
+        "verify": "تحقق"
       }
     },
     "reset-password": {
@@ -816,6 +835,7 @@
               "label": "المدونة"
             },
             "submit": "إرسال طلب",
+            "update": "تحديث",
             "cancel": "إلغاء",
             "sending": "جاري الإرسال...",
             "success": {
@@ -827,7 +847,17 @@
               "description": "لم نتمكن من جلب بيانات المدونات. يرجى المحاولة مرة أخرى",
               "retry": "إعادة المحاولة"
             }
-          }
+          },
+          "edit": {
+            "pageTitle": "تعديل المدونة",
+            "loading": "جاري التحميل...",
+            "errorLoading": "حدث خطأ أثناء جلب البيانات",
+            "successMessage": "تم تحديث المدونة بنجاح",
+            "errorMessage": "حدث خطأ أثناء تحديث المدونة"
+          },
+          "errorLoadingContent": "حدث خطأ أثناء جلب المحتوى",
+          "noContentAvailable": "لا يوجد محتوى",
+          "minutes": "دقائق"
         }
       },
       "notifications": {
@@ -1242,6 +1272,102 @@
         "parentDetails": "تفاصيل ولي الأمر"
       }
     },
+    "search": {
+      "searching": "جاري البحث...",
+      "startTyping": "ابدأ في الكتابة للبحث في لوحة التحكم",
+      "noResults": "لا توجد نتائج لـ '{query}'",
+      "recentSearches": "عمليات البحث الأخيرة",
+      "resultsCount": "{count, plural, zero {لا توجد نتائج} one {نتيجة واحدة} two {نتيجتان} few {# نتائج} many {# نتيجة} other {# نتيجة}}",
+      "categories": {
+        "dashboard": "لوحة التحكم",
+        "management": "الإدارة",
+        "bookings": "الحجوزات",
+        "content": "المحتوى",
+        "communication": "التواصل",
+        "reports": "التقارير",
+        "family": "العائلة",
+        "account": "الحساب",
+        "actions": "الإجراءات"
+      },
+      "profile": {
+        "title": "الملف الشخصي",
+        "description": "إدارة ملفك الشخصي وإعدادات الحساب"
+      },
+      "admin": {
+        "dashboard": {
+          "description": "نظرة عامة على جميع أنشطة النظام والإحصائيات"
+        },
+        "centers": {
+          "description": "إدارة الحضانات ومراكز رعاية الأطفال"
+        },
+        "parents": {
+          "description": "عرض وإدارة حسابات أولياء الأمور"
+        },
+        "children": {
+          "title": "جميع الأطفال",
+          "description": "عرض وإدارة جميع الأطفال في النظام"
+        },
+        "bookings": {
+          "description": "عرض وإدارة جميع طلبات الحجز"
+        },
+        "advertisements": {
+          "description": "إدارة الإعلانات والمحتوى الترويجي"
+        },
+        "blogs": {
+          "description": "إدارة منشورات المدونة والمقالات"
+        },
+        "notifications": {
+          "description": "إرسال وإدارة إشعارات النظام"
+        }
+      },
+      "center": {
+        "dashboard": {
+          "description": "نظرة عامة على أنشطة وأداء مركزك"
+        },
+        "branches": {
+          "description": "إدارة فروع ومواقع مركزك"
+        },
+        "childrenFiles": {
+          "description": "إدارة ملفات وسجلات الأطفال"
+        },
+        "bookings": {
+          "description": "عرض وإدارة طلبات الحجز"
+        },
+        "dailyReports": {
+          "description": "إرسال وعرض التقارير اليومية للأنشطة"
+        },
+        "adBlogRequest": {
+          "description": "طلب إعلانات أو منشورات مدونة"
+        },
+        "team": {
+          "description": "إدارة أعضاء فريقك والموظفين"
+        },
+        "notifications": {
+          "description": "عرض وإدارة الإشعارات"
+        }
+      },
+      "parent": {
+        "children": {
+          "description": "إدارة معلومات وسجلات أطفالك"
+        },
+        "bookings": {
+          "description": "عرض وإدارة طلبات الحجز الخاصة بك"
+        },
+        "dailyReports": {
+          "description": "عرض التقارير اليومية حول أطفالك"
+        }
+      },
+      "actions": {
+        "logout": {
+          "title": "تسجيل خروج",
+          "description": "تسجيل الخروج من حسابك"
+        },
+        "home": {
+          "title": "الرئيسية",
+          "description": "العودة إلى الموقع الرئيسي"
+        }
+      }
+    },
     "secondary-sidebar": {
       "upcoming-occasions": "مناسبات قادمة",
       "birthdays": "أعياد الميلاد",
@@ -1557,7 +1683,7 @@
       "plans": {
         "popular": "الأكثر شعبية",
         "commission": "+ 12 % عمولة على كل حجز من خلال الموقع",
-        "select": "اختر الخطة",
+        "select": "اشترك الآن",
         "currency": "ر.س",
         "annual": {
           "title": "سنوي",
@@ -1577,6 +1703,18 @@
           "updates": "تحديثات مجانية",
           "discount": "وفر {discount} مع الاشتراك السنوي"
         }
+      }
+    },
+    "HeroSection": {
+      "slide1": {
+        "title": "تمنحك منصة First Step أدوات متكاملة لإدارة مركزك بكفاءة واحترافية.",
+        "button1": "سجل مركزك مجانًا",
+        "button2": "اكتشف خدماتنا"
+      },
+      "slide2": {
+        "title": "استعرض وقارن بين أفضل الحضانات والمراكز التأهيلية في السعودية",
+        "button1": "احجز لطفلك الآن",
+        "button2": "سجل أطفالك معنا"
       }
     }
   },

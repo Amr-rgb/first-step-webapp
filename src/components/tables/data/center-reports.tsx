@@ -85,8 +85,11 @@ export function useCenterReportsColumns(
       accessorKey: "reportDate",
       header: () => t("headers.reportDate"),
       cell: ({ row }) => {
-        const parentId = row.original.id;
-        const selectedChild = selectedChildMap[parentId];
+        const parent = row.original;
+        const selectedChild = selectedChildMap[parent.id] ?? {
+          reportId: parent.childs[0]?.id ?? "",
+          reportDate: reportIdMap[parent.childs[0]?.id]?.reportDate ?? "",
+        };
         return selectedChild?.reportDate ?? row.original.reportDate;
       },
     },

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { usePathname } from "@/i18n/navigation";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,10 +24,19 @@ import { CENTER_TYPE_IDS, SERVICE_IDS } from "@/lib/options";
 export function Step1BasicInfo({
   isBranch = false,
   disabled = false,
+  show = false,
 }: {
   isBranch?: boolean;
   disabled?: boolean;
+  show?: boolean;
 }) {
+  const pathname = usePathname();
+  const mode: "edit" | "add" | undefined = pathname.includes("edit")
+    ? "edit"
+    : pathname.includes("add")
+    ? "add"
+    : undefined;
+
   const t = useTranslations("auth.center-signup.1.form");
   const tOptions = useTranslations("options");
 
@@ -84,26 +94,28 @@ export function Step1BasicInfo({
           )}
         />
 
-        <FormField
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("email.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("email.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(show ? !!control._formValues?.email : true) && (
+          <FormField
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("email.label")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("email.placeholder")}
+                    {...field}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={control}
@@ -250,26 +262,28 @@ export function Step1BasicInfo({
           )}
         />
 
-        <FormField
-          control={control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("address.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("address.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(mode === "edit" || show ? !!control._formValues?.address : true) && (
+          <FormField
+            control={control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("address.label")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("address.placeholder")}
+                    {...field}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={control}
@@ -330,28 +344,30 @@ export function Step1BasicInfo({
         />
       </div>
 
-      <FormField
-        control={control}
-        name="additional_service"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
-              <span>{t("other.label")}</span>
-              <span className="font-normal text-sm md:text-base text-light-gray">
-                {t("other.sublabel")}
-              </span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t("other.placeholder")}
-                {...field}
-                disabled={disabled}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {(show ? !!control._formValues?.address : true) && (
+        <FormField
+          control={control}
+          name="additional_service"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
+                <span>{t("other.label")}</span>
+                <span className="font-normal text-sm md:text-base text-light-gray">
+                  {t("other.sublabel")}
+                </span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("other.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   );
 }

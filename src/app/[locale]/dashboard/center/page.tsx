@@ -6,10 +6,15 @@ import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import CircularProgressChart from "@/components/charts/CircularProgressChart";
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
 import TopBookings from "@/components/dashboard/center-bookings/TopBooking";
-import MonthlyRevenueChart from "@/components/charts/MonthlyRevenueChart";
+import MonthlyRevenueChart, {
+  RevenueData,
+} from "@/components/charts/MonthlyRevenueChart";
 import { useHasRole } from "@/store/authStore";
 import { useCenterStats } from "@/hooks/useCenterStats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format, parse } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
+import { useLocale } from "next-intl";
 
 const CARDS = [
   {
@@ -276,6 +281,7 @@ export default function CenterDashboardHome() {
   const t = useTranslations("dashboard.charts");
   const isCenter = useHasRole("center");
   const { stats, isLoading } = useCenterStats(isCenter ? "center" : "branch");
+  const locale = useLocale();
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -285,54 +291,37 @@ export default function CenterDashboardHome() {
     return <NoDataView stats={stats} isCenter={isCenter} />;
   }
 
-  const bookingsRows = [
-    {
-      value: stats.enrollments_over_time?.["2025-05"] || 0,
-      valueLabel: t("center.comparison.valueLabel"),
-      trend:
-        stats.enrollments_over_time?.["2025-05"] >
-        (stats.enrollments_over_time?.["2025-04"] || 0)
-          ? ("up" as const)
-          : ("down" as const),
-      data:
-        stats.enrollments_over_time?.["2025-05"] >
-        (stats.enrollments_over_time?.["2025-04"] || 0)
-          ? [{ v: 8 }, { v: 10 }, { v: 12 }, { v: 17 }, { v: 13 }, { v: 15 }]
-          : [{ v: 18 }, { v: 12 }, { v: 15 }, { v: 10 }, { v: 7 }, { v: 9 }],
-    },
-    {
-      value: stats.enrollments_over_time?.["2025-04"] || 0,
-      valueLabel: t("center.comparison.valueLabel"),
-      trend:
-        stats.enrollments_over_time?.["2025-04"] >
-        (stats.enrollments_over_time?.["2025-03"] || 0)
-          ? ("up" as const)
-          : ("down" as const),
-      data:
-        stats.enrollments_over_time?.["2025-04"] >
-        (stats.enrollments_over_time?.["2025-03"] || 0)
-          ? [{ v: 8 }, { v: 10 }, { v: 12 }, { v: 17 }, { v: 13 }, { v: 15 }]
-          : [{ v: 18 }, { v: 12 }, { v: 15 }, { v: 10 }, { v: 7 }, { v: 9 }],
-    },
-    {
-      value: stats.enrollments_over_time?.["2025-03"] || 0,
-      valueLabel: t("center.comparison.valueLabel"),
-      trend:
-        stats.enrollments_over_time?.["2025-03"] >
-        (stats.enrollments_over_time?.["2025-02"] || 0)
-          ? ("up" as const)
-          : ("down" as const),
-      data:
-        stats.enrollments_over_time?.["2025-03"] >
-        (stats.enrollments_over_time?.["2025-02"] || 0)
-          ? [{ v: 8 }, { v: 10 }, { v: 12 }, { v: 17 }, { v: 13 }, { v: 15 }]
-          : [{ v: 18 }, { v: 12 }, { v: 15 }, { v: 10 }, { v: 7 }, { v: 9 }],
-    },
-  ];
+  // Build bookingsRows from total_revenue_for_the_lates_5_months
+  type RevenueItem = { month: string; total_paid: number | null };
+  const revenueArr = (
+    (stats.total_revenue_for_the_lates_5_months || []) as RevenueItem[]
+  )
+    .slice()
+    .sort((a: RevenueItem, b: RevenueItem) => a.month.localeCompare(b.month));
+  const lastThreeRevenue = revenueArr.slice(-3).reverse();
+
+  const bookingsRows = lastThreeRevenue.map(
+    (item: RevenueItem, idx: number, arr: RevenueItem[]) => {
+      const value = item.total_paid ?? 0;
+      const valueLabel = t("center.comparison.valueLabel");
+      // Find previous month in the sorted array
+      const prev = revenueArr.findIndex(
+        (r: RevenueItem) => r.month === item.month
+      );
+      const previousValue = prev > 0 ? revenueArr[prev - 1].total_paid ?? 0 : 0;
+      const isUp = value > previousValue;
+      return {
+        value,
+        valueLabel,
+        trend: isUp ? ("up" as const) : ("down" as const),
+        data: getMonthData(value, isUp),
+      };
+    }
+  );
 
   // Build children comparison rows from enrollments_over_time
   const months = Object.keys(stats?.enrollments_over_time || {}).sort();
-  const lastThreeMonths = months.slice(-3);
+  const lastThreeMonths = months.slice(-3).reverse();
 
   function getMonthData(value: number, isUp: boolean) {
     const baseValues = [8, 10, 12, 17, 13, 15];
@@ -343,10 +332,13 @@ export default function CenterDashboardHome() {
     }
   }
 
-  const childrenRows = lastThreeMonths.map((month, index) => {
+  const childrenRows = lastThreeMonths.map((month) => {
     const currentValue = stats?.enrollments_over_time?.[month] || 0;
-    const previousValue =
-      stats?.enrollments_over_time?.[months[months.length - 4 + index]] || 0;
+    const monthIndex = months.indexOf(month);
+    const previousMonth = months[monthIndex - 1];
+    const previousValue = previousMonth
+      ? stats?.enrollments_over_time?.[previousMonth] || 0
+      : 0;
     const isUp = currentValue > previousValue;
     return {
       value: currentValue,
@@ -406,7 +398,26 @@ export default function CenterDashboardHome() {
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
         <div className="w-full flex-1 min-w-3xs">
-          <MonthlyRevenueChart />
+          <MonthlyRevenueChart
+            data={(stats.total_revenue_for_the_lates_5_months || []).map(
+              (item: { month: string; total_paid: number | null }) => {
+                // item.month is 'YYYY-MM', e.g. '2025-07'
+                const [year, monthNum] = item.month.split("-");
+                const dateObj = parse(
+                  `${year}-${monthNum}-01`,
+                  "yyyy-MM-dd",
+                  new Date()
+                );
+                const monthName = format(dateObj, "LLLL", {
+                  locale: locale === "ar" ? ar : enUS,
+                });
+                return {
+                  month: monthName,
+                  value: item.total_paid ?? 0,
+                };
+              }
+            )}
+          />
         </div>
         <div className="w-full flex-1">
           <TopBookings />

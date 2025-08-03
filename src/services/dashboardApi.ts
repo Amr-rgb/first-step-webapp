@@ -533,11 +533,17 @@ export const centerService = {
     }
   },
 
-  sendDailyReport: async (childId: string, payload: any) => {
+  sendDailyReport: async (childIds: string[], payload: any) => {
     try {
       const response = await apiClient.post(
-        `/children/${childId}/daily-reports`,
-        payload
+        `/children/daily-reports`,
+        {
+          child_ids: childIds,
+          ...payload,
+        },
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       return response.data;
     } catch (error) {
@@ -611,6 +617,15 @@ export const centerService = {
     }
   },
 
+  getBlog: async (id: string) => {
+    try {
+      const response = await apiClient.get(`/blog-centers/${id}`);
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   requestBlog: async (payload: {
     cover: File;
     blog_image: File;
@@ -627,6 +642,28 @@ export const centerService = {
       formData.append("content", payload.content);
 
       const response = await apiClient.post(`/blog-centers`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateBlog: async (
+    id: string,
+    payload: {
+      cover: File;
+      blog_image: File;
+      title: string;
+      description: string;
+      content: string;
+    }
+  ) => {
+    try {
+      const response = await apiClient.post(`/blog-centers/${id}`, payload, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -153,7 +153,7 @@ const getAdminNavbar = (t: any) => [
 
 const DashboardSideBar = () => {
   const pathname = usePathname();
-  const { state, setOpen } = useSidebar();
+  const { state, setOpen, toggleSidebar } = useSidebar();
   const locale = useLocale();
   const t = useTranslations("dashboard.sidebar");
   const isMobile = useIsMobile();
@@ -190,17 +190,45 @@ const DashboardSideBar = () => {
         '--transition-timing': 'cubic-bezier(0.4, 0, 0.2, 1)'
       } as React.CSSProperties}
     >
-      <SidebarHeader className="mb-4 justify-center items-center transition-all duration-300 ease-in-out">
-        <Image
-          className={cn(
-            "size-20 aspect-square object-center object-cover rounded-full bg-primary-blue/20",
-            state === "collapsed" ? "size-fit" : ""
-          )}
-          src={user?.logo || "/assets/logos/instagram-logo.png"}
-          width={80}
-          height={80}
-          alt="Nersery Logo"
-        />
+      <SidebarHeader className="mb-4 justify-center items-center">
+        {user?.role === "parent" || user?.role === "branch_admin" ? (
+          <Image
+            className="w-20 aspect-square object-center object-cover rounded-full bg-primary-blue/20"
+            src={user?.logo || "/assets/logos/logo.svg"}
+            width={80}
+            height={80}
+            alt="Nersery Logo"
+          />
+        ) : null}
+
+        {user?.role === "admin" ? (
+          <Image
+            className={"w-20"}
+            src={"/assets/logos/logo.svg"}
+            alt="logo"
+            width={64.09}
+            height={80}
+          />
+        ) : null}
+
+        {user?.role === "center" ? (
+          <>
+            <div
+              className={
+                state === "collapsed"
+                  ? "hidden"
+                  : "flex items-center gap-1 font-bold"
+              }
+            >
+              <span>{locale === "en" ? "Hello," : "،مرحبًا"}</span>
+              <span>{user?.name}</span>
+              <span>👋</span>
+            </div>
+            <div className={state === "collapsed" ? "text-2xl" : "hidden"}>
+              👋
+            </div>
+          </>
+        ) : null}
       </SidebarHeader>
       <SidebarContent className="transition-all duration-300 ease-in-out">
         <SidebarGroup>
@@ -220,6 +248,7 @@ const DashboardSideBar = () => {
                         asChild
                         variant={isActive ? "default" : "defaultNoGradient"}
                         className="bg-transparent shadow-none"
+                        onClick={isMobile ? () => toggleSidebar() : undefined}
                       >
                         <Link
                           href={item.url}

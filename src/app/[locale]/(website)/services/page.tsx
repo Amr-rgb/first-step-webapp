@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Advertisment from "@/components/general/Advertisment";
+// import Advertisment from "@/components/general/Advertisment";
 import Headline from "@/components/general/Headline";
 import Services from "@/components/general/Services";
 import { websiteService } from "@/services/api";
@@ -31,12 +31,12 @@ export default async function ServicesPage({
 }) {
   const { locale } = await params;
 
-  const adSlides = await websiteService.getAdSlides(locale);
+  // const adSlides = await websiteService.getAdSlides(locale);
   const services = await websiteService.getOurServices(locale);
 
   return (
     <main>
-      <Advertisment slides={adSlides} />
+      {/* <Advertisment slides={adSlides} /> */}
       <Headline />
       <Services services={services} />
     </main>

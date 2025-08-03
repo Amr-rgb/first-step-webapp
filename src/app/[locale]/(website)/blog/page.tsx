@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-import Header from "@/components/general/blog/Header";
 import AllBlogs from "@/components/general/blog/AllBlogs";
 import Contact from "@/components/general/contact/Contact";
 import { blogService } from "@/services/api";
+import Image from "next/image";
 
 export const revalidate = 86400;
 
@@ -35,7 +35,13 @@ export default async function BlogPage({
 
   return (
     <div>
-      <Header />
+      <Image
+        src="/assets/backgrounds/blog-bg.png"
+        alt="Blog Header"
+        width={1440}
+        height={750}
+        className="w-full h-full max-h-[750px] object-cover"
+      />
       <AllBlogs blogs={blogs} />
       <Contact />
     </div>

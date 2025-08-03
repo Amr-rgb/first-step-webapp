@@ -10,7 +10,12 @@ import { useTranslations } from "next-intl";
 // You can use a Zod schema here if you want.
 export type Report = {
   id: number;
-  childName: string;
+  child: {
+    id: number;
+    name: string;
+    gender: string;
+    birthday: string;
+  };
   nurseryName: string;
   reportDate: string;
   pdf_url: string;
@@ -35,8 +40,9 @@ export const useParentReportsColumns = ({
       },
     },
     {
-      accessorKey: "childName",
+      accessorKey: "child.name",
       header: t("fields.childName"),
+      cell: ({ row }) => row.original.child.name,
     },
     {
       accessorKey: "nurseryName",

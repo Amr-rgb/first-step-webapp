@@ -24,7 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/api";
 import { useRouter } from "@/i18n/navigation";
 
-const ResetPasswordForm = ({ email }: { email: string }) => {
+const ResetPasswordForm = ({ email, onSuccess }: { email: string; onSuccess?: () => void }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const t = useTranslations("auth.reset-password.form");
@@ -50,7 +50,11 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
       return await authService.resetPassword(email, password);
     },
     onSuccess: () => {
-      router.push("/sign-in");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/sign-in");
+      }
     },
     onError: (error) => {
       if (error?.errors?.password?.length) {
@@ -156,18 +160,18 @@ const ResetPasswordForm = ({ email }: { email: string }) => {
         )}
 
         <div className="mt-12 flex flex-col items-center gap-y-4">
-          <Button
-            size={"long"}
-            type="submit"
-            disabled={mutation.isPending || mutation.isSuccess}
-          >
-            {mutation.isSuccess && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
-            )}
-            {tBtns("sign-in")}
-          </Button>
+        <Button
+          size={"long"}
+          type="submit"
+          disabled={mutation.isPending || mutation.isSuccess || !form.formState.isValid}
+        >
+          {(mutation.isPending || mutation.isSuccess) && (
+            <span className="animate-spin mr-2.5">
+              <LoaderCircle />
+            </span>
+          )}
+          {mutation.isPending ? "Updating Password..." : "Reset Password"}
+        </Button>
           <Button
             variant={"outline"}
             size={"long"}

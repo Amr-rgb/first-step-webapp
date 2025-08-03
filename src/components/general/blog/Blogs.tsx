@@ -10,7 +10,7 @@ const Blogs = ({ blogs }: { blogs: Blog[] }) => {
   const t = useTranslations("blogsection");
 
   return (
-    <section className="mt-40 my-20 relative">
+    <section className="mt-40 my-20 relative overflow-hidden md:overflow-visible">
       <div
         className="-z-50 absolute inset-0 bg-center bg-cover scale-130 2xl:bg-contain bg-no-repeat"
         style={{ backgroundImage: `url(/assets/backgrounds/bubbles-bg.svg)` }}

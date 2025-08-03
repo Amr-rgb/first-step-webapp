@@ -51,11 +51,35 @@ export default function Carousel({
   React.useEffect(() => {
     if (!api) return;
 
-    setCount(api.scrollSnapList().length);
+    // Add delay for React 19 compatibility
+    const timer = setTimeout(() => {
+      try {
+        if (typeof api.scrollSnapList === 'function') {
+          setCount(api.scrollSnapList().length);
+        }
 
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+        if (typeof api.on === 'function') {
+          api.on("select", () => {
+            if (typeof api.selectedScrollSnap === 'function') {
+              setCurrent(api.selectedScrollSnap());
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Carousel API error:', error);
+      }
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      if (api && typeof api.off === 'function') {
+        try {
+          api.off("select", () => {});
+        } catch (error) {
+          console.warn('Carousel cleanup error:', error);
+        }
+      }
+    };
   }, [api]);
 
   return (
@@ -64,8 +88,24 @@ export default function Carousel({
         setApi={setApi}
         plugins={[plugin.current]}
         className="relative w-full"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
+        onMouseEnter={() => {
+          try {
+            if (plugin.current && typeof plugin.current.stop === 'function') {
+              plugin.current.stop();
+            }
+          } catch (error) {
+            console.warn('Carousel plugin stop error:', error);
+          }
+        }}
+        onMouseLeave={() => {
+          try {
+            if (plugin.current && typeof plugin.current.reset === 'function') {
+              plugin.current.reset();
+            }
+          } catch (error) {
+            console.warn('Carousel plugin reset error:', error);
+          }
+        }}
         opts={{
           direction: dir,
         }}
@@ -86,7 +126,15 @@ export default function Carousel({
           {itemsStatic.map((_, index) => (
             <button
               key={index}
-              onClick={() => api?.scrollTo(index)}
+              onClick={() => {
+                try {
+                  if (api && typeof api.scrollTo === 'function') {
+                    api.scrollTo(index);
+                  }
+                } catch (error) {
+                  console.warn('Carousel scrollTo error:', error);
+                }
+              }}
               className={`
               size-4 md:size-5 xl:size-6 rounded-full border-2 border-white
               ${current === index ? "bg-white" : "bg-transparent"}

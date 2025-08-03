@@ -3,8 +3,13 @@
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import TopBookings from "@/components/dashboard/admin-bookings/TopBooking";
-import MonthlyRevenueChart from "@/components/charts/MonthlyRevenueChart";
+import MonthlyRevenueChart, {
+  RevenueData,
+} from "@/components/charts/MonthlyRevenueChart";
 import { useTranslations } from "next-intl";
+import { format, parse } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
+import { useLocale } from "next-intl";
 
 const CARDS = [
   {
@@ -147,6 +152,7 @@ import { useAdminStats } from "@/hooks/useAdminStats";
 export default function AdminDashboardHome() {
   const { stats, isLoading } = useAdminStats();
   const t = useTranslations("dashboard.admin");
+  const locale = useLocale();
 
   if (isLoading) {
     return (
@@ -235,7 +241,26 @@ export default function AdminDashboardHome() {
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
         <div className="w-full flex-1 min-w-3xs">
-          <MonthlyRevenueChart />
+          <MonthlyRevenueChart
+            data={Object.entries(stats.total_paid_revenue || {}).map(
+              ([month, value]) => {
+                // month is 'YYYY-MM', e.g. '2025-07'
+                const [year, monthNum] = month.split("-");
+                const dateObj = parse(
+                  `${year}-${monthNum}-01`,
+                  "yyyy-MM-dd",
+                  new Date()
+                );
+                const monthName = format(dateObj, "LLLL", {
+                  locale: locale === "ar" ? ar : enUS,
+                });
+                return {
+                  month: monthName,
+                  value: Number(value ?? 0),
+                };
+              }
+            )}
+          />
         </div>
         <div className="w-full flex-1">
           <TopBookings />

@@ -15,6 +15,8 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 interface DailyReportResponse {
@@ -69,9 +71,14 @@ const useDailyReports = () => {
 
       return reports.map((report: DailyReportResponse) => ({
         id: report.id,
-        childName: report.child.name,
+        child: {
+          id: report.child.id,
+          name: report.child.name,
+          gender: report.child.gender,
+          birthday: report.child.birthday,
+        },
         nurseryName: report.center.name,
-        reportDate: new Date(report.created_at).toLocaleDateString("ar-SA"),
+        reportDate: new Date(report.created_at).toISOString().split("T")[0],
         pdf_url: report.pdf_url,
       }));
     },
@@ -100,17 +107,64 @@ const useDailyReports = () => {
   };
 };
 
+interface Child {
+  id: number;
+  name: string;
+  gender: string;
+  age: number;
+  reportCount: number;
+}
+
 export default function DailyReports() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const t = useTranslations("dashboard.parent.reports");
+  const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
+
   const {
     data: reports = [],
     isLoading,
     error,
     deleteReport,
   } = useDailyReports();
+
   const columns = useParentReportsColumns({ onDelete: deleteReport });
+
+  // Extract unique children from reports
+  const children = useMemo(() => {
+    const childrenMap = new Map<number, Child>();
+    const reportCounts = new Map<number, number>();
+
+    // First pass: count reports per child
+    reports.forEach((report) => {
+      const count = reportCounts.get(report.child.id) || 0;
+      reportCounts.set(report.child.id, count + 1);
+    });
+
+    // Second pass: create child objects with report counts
+    reports.forEach((report) => {
+      if (!childrenMap.has(report.child.id)) {
+        const birthDate = new Date(report.child.birthday);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+
+        childrenMap.set(report.child.id, {
+          id: report.child.id,
+          name: report.child.name,
+          gender: report.child.gender,
+          age,
+          reportCount: reportCounts.get(report.child.id) || 0,
+        });
+      }
+    });
+    return Array.from(childrenMap.values());
+  }, [reports]);
+
+  // Filter reports by selected child
+  const filteredReports = useMemo(() => {
+    if (!selectedChildId) return reports;
+    return reports.filter((report) => report.child.id === selectedChildId);
+  }, [reports, selectedChildId]);
 
   // Handle errors
   if (error) {
@@ -129,11 +183,83 @@ export default function DailyReports() {
     return null;
   }
 
+  // If no children found but still loading
+  if (isLoading && children.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div className="lg:p-4 space-y-1">
+    <div className="lg:p-4 space-y-6">
+      {children.length > 0 && (
+        <div className="flex flex-wrap gap-4 justify-center">
+          {children.map((child) => (
+            <div
+              key={child.id}
+              className={`group flex flex-col items-center cursor-pointer p-4 border-2 rounded-2xl transition-all duration-300 ${
+                selectedChildId === child.id
+                  ? child.gender === "male"
+                    ? "border-secondary-mint-green"
+                    : "border-secondary-burgundy"
+                  : "border-light-gray hover:border-gray-300"
+              }`}
+              onClick={() =>
+                setSelectedChildId((prev) =>
+                  prev === child.id ? null : child.id
+                )
+              }
+            >
+              <div
+                className={`text-lg font-medium text-center mb-2 ${
+                  selectedChildId === child.id
+                    ? "text-primary"
+                    : "text-mid-gray group-hover:text-primary"
+                } transition-colors duration-300`}
+              >
+                {child.reportCount}
+              </div>
+              <div
+                className={`relative transition-all duration-300 ${
+                  selectedChildId === child.id
+                    ? "saturate-100"
+                    : "saturate-0 group-hover:saturate-50"
+                }`}
+              >
+                <Image
+                  src={`/assets/illustrations/${
+                    child.gender === "male" ? "boy" : "girl"
+                  }.png`}
+                  alt={child.gender === "male" ? "Boy" : "Girl"}
+                  width={child.gender === "male" ? 91.32 : 84.74}
+                  height={120}
+                  className="group-hover:scale-110 duration-300"
+                />
+              </div>
+              <p
+                className={`text-lg font-medium text-center mt-2 ${
+                  selectedChildId === child.id
+                    ? "text-primary"
+                    : "text-mid-gray group-hover:text-primary"
+                } transition-colors duration-300`}
+              >
+                {child.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
       <p className="heading-4 text-primary text-center">{t("title")}</p>
 
-      <DataTable columns={columns} data={reports} isLoading={isLoading} />
+      <DataTable
+        columns={columns}
+        data={filteredReports}
+        isLoading={isLoading}
+        pagination={true}
+      />
     </div>
   );
 }
