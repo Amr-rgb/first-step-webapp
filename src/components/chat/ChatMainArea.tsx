@@ -18,14 +18,13 @@ import { Chat, Message } from "@/types";
 import dynamic from "next/dynamic";
 
 // Dynamically import the emoji picker with no SSR and proper typing
-const Picker = dynamic<
-  React.ComponentProps<typeof import("emoji-picker-react")> & {
-    onEmojiClick: (emoji: any) => void;
+const Picker = dynamic(
+  () => import('emoji-picker-react'),
+  { 
+    ssr: false,
+    loading: () => <div>Loading emoji picker...</div>
   }
->(() => import("emoji-picker-react").then((mod) => mod.default), {
-  ssr: false,
-  loading: () => <div>Loading emoji picker...</div>,
-});
+) as any; // Using 'any' as a temporary workaround due to type issues
 
 // -----------------------------
 // ChatMainArea Component
