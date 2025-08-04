@@ -670,6 +670,7 @@
       "parent": {
         "home": "Home",
         "children": "My Children",
+        "chat": "Chat",
         "bookings": "Bookings",
         "reports": "Daily Reports"
       },
