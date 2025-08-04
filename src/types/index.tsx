@@ -289,6 +289,7 @@ export interface Message {
   sender: User;
   content: string;
   timestamp: string; // ISO string
+  read: boolean; // Tracks if the message has been read
 }
 
 // Chat object (group chat between parent, center, admin)

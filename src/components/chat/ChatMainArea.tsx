@@ -17,13 +17,14 @@ import {
 import { Chat, Message } from "@/types";
 import dynamic from "next/dynamic";
 
-// Dynamically import the emoji picker with no SSR
+// Dynamically import the emoji picker with no SSR and proper typing
 const Picker = dynamic(
-  () => {
-    return import("emoji-picker-react");
-  },
-  { ssr: false }
-);
+  () => import('emoji-picker-react'),
+  { 
+    ssr: false,
+    loading: () => <div>Loading emoji picker...</div>
+  }
+) as any; // Using 'any' as a temporary workaround due to type issues
 
 // -----------------------------
 // ChatMainArea Component
