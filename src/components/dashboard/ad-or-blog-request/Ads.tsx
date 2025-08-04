@@ -24,11 +24,11 @@ const Ads = () => {
         id: ad.id,
         type: "paid",
         startDate: ad.publish_date,
-        endDate: ad.publish_date, // Since end_date is not provided in the response
-        branch: "الفرع الرئيسي", // Since branch name is not provided in the response
-        amount: ad.status === "accepted" ? 564.5 : 0, // Amount only if accepted
+        endDate: ad.end_date,
+        branch: ad.branch_id, // Since branch name is not provided in the response
+        amount: ad.status === "approved" ? 0 : 0, // Amount only if approved
         reservationStatus:
-          ad.status === "accepted"
+          ad.status === "approved"
             ? "confirmed"
             : ad.status === "pending"
             ? "waitingForPayment"

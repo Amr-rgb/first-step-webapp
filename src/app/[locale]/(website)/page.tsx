@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import Advertisment from "@/components/general/Advertisment";
+// import Advertisment from "@/components/general/Advertisment";
 import Headline from "@/components/general/Headline";
-import VisionMission from "@/components/general/VisionMission";
+// import VisionMission from "@/components/general/VisionMission";
 import Values from "@/components/general/Values";
 import FeaturesSection from "@/components/general/FeaturesSection";
 import SubscriptionSection from "@/components/general/SubscriptionSection";
@@ -9,6 +9,8 @@ import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
 import FAQs from "@/components/general/FAQs";
 import Contact from "@/components/general/contact/Contact";
 import { websiteService } from "@/services/api";
+import HeroSection from "@/components/general/HeroSection";
+import PreviewVideo from "@/components/general/PreviewVideo";
 
 export const revalidate = 86400;
 
@@ -38,18 +40,17 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
 
-  const [adSlides, commonQuestions] = await Promise.all([
-    websiteService.getAdSlides(locale),
-    websiteService.getCommonQuestions(locale),
-  ]);
+  const commonQuestions = await websiteService.getCommonQuestions(locale);
 
   return (
     <main>
-      <Advertisment slides={adSlides} />
+      <HeroSection />
+      {/* <Advertisment slides={adSlides} /> */}
       <Headline />
+      <PreviewVideo />
       <FeaturesSection />
       <SubscriptionSection />
-      <VisionMission />
+      {/* <VisionMission /> */}
       <Values locale={locale} />
       <BlogsWrapper locale={locale} number={4} />
       <FAQs commonQuestions={commonQuestions} />

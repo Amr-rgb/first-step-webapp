@@ -63,16 +63,37 @@ function Carousel({
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return;
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
+    
+    try {
+      queueMicrotask(() => {
+        if (api && typeof api.canScrollPrev === 'function' && typeof api.canScrollNext === 'function') {
+          setCanScrollPrev(api.canScrollPrev());
+          setCanScrollNext(api.canScrollNext());
+        }
+      });
+    } catch (error) {
+      console.warn('Carousel onSelect error:', error);
+    }
   }, []);
 
   const scrollPrev = React.useCallback(() => {
-    api?.scrollPrev();
+    try {
+      if (api && typeof api.scrollPrev === 'function') {
+        api.scrollPrev();
+      }
+    } catch (error) {
+      console.warn('Carousel scrollPrev error:', error);
+    }
   }, [api]);
 
   const scrollNext = React.useCallback(() => {
-    api?.scrollNext();
+    try {
+      if (api && typeof api.scrollNext === 'function') {
+        api.scrollNext();
+      }
+    } catch (error) {
+      console.warn('Carousel scrollNext error:', error);
+    }
   }, [api]);
 
   const handleKeyDown = React.useCallback(
@@ -95,12 +116,22 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return;
-    onSelect(api);
-    api.on("reInit", onSelect);
-    api.on("select", onSelect);
+    
+    // Delay to ensure API is fully initialized in React 19
+    const timer = setTimeout(() => {
+      onSelect(api);
+      if (api && typeof api.on === 'function') {
+        api.on("reInit", onSelect);
+        api.on("select", onSelect);
+      }
+    }, 0);
 
     return () => {
-      api?.off("select", onSelect);
+      clearTimeout(timer);
+      if (api && typeof api.off === 'function') {
+        api.off("select", onSelect);
+        api.off("reInit", onSelect);
+      }
     };
   }, [api, onSelect]);
 

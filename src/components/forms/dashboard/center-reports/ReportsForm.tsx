@@ -88,8 +88,8 @@ const ReportsForm = () => {
   });
 
   const { mutate: sendReport, isPending } = useMutation({
-    mutationFn: ({ childId, payload }: { childId: string; payload: any }) =>
-      centerService.sendDailyReport(childId, payload),
+    mutationFn: ({ childIds, payload }: { childIds: string[]; payload: any }) =>
+      centerService.sendDailyReport(childIds, payload),
     onSuccess: () => {
       toast.success(t("success"));
       router.back();
@@ -114,9 +114,11 @@ const ReportsForm = () => {
 
     const data = methods.getValues();
 
-    // Get the first selected child's ID
-    const firstChildId = data.recipients[0]?.childs[0]?.id;
-    if (!firstChildId) {
+    // Gather all selected child IDs
+    const childIds = data.recipients
+      .flatMap((parent: any) => parent.childs.map((child: any) => child.id))
+      .filter(Boolean);
+    if (!childIds.length) {
       toast.error(t("noChildSelected"));
       return;
     }
@@ -130,7 +132,7 @@ const ReportsForm = () => {
       notes: data.additionalNotes,
     };
 
-    sendReport({ childId: firstChildId, payload });
+    sendReport({ childIds, payload });
   };
 
   return (

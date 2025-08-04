@@ -23,7 +23,7 @@ import { authService } from "@/services/api";
 import { useRouter } from "@/i18n/navigation";
 import { LoaderCircle } from "lucide-react";
 
-const SendEmailForm = ({}: {}) => {
+const SendEmailForm = ({ onSuccess }: { onSuccess?: (email: string) => void }) => {
   const t = useTranslations("auth.forgot-password.form");
   const tBtns = useTranslations("auth.buttons");
   const locale = useLocale();
@@ -47,7 +47,12 @@ const SendEmailForm = ({}: {}) => {
       return await authService.forgotPassword(data);
     },
     onSuccess: () => {
-      router.push(`/otp-verification?email=${form.getValues("email")}`);
+      const email = form.getValues("email");
+      if (onSuccess) {
+        onSuccess(email);
+      } else {
+        router.push(`/otp-verification?email=${email}`);
+      }
     },
     onError: (error) => {
       // Field-specific error (email)

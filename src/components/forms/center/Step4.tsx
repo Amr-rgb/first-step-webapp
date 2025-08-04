@@ -82,7 +82,7 @@ export function Step4Permits({ disabled = false }: { disabled?: boolean }) {
         {t("description")}
       </p>
 
-      <FormField
+      {/* <FormField
         control={control}
         name="comments"
         render={({ field }) => (
@@ -99,7 +99,7 @@ export function Step4Permits({ disabled = false }: { disabled?: boolean }) {
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
     </div>
   );
 }

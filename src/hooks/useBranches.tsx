@@ -1,6 +1,6 @@
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { centerService, adminService } from "@/services/dashboardApi";
 import { ApiError } from "@/lib/error-handling";
 
@@ -29,59 +29,87 @@ export interface BranchCardType {
   bookingsCount: number;
   acceptedAges: string[];
   services: string[];
-  imageUrl?: string;
+  imageUrl?: string | null;
+  is_main_branch: number;
 }
 
-const mapCenterData = (apiData: any, t: any): CenterCardType => {
+const mapCenterData = (
+  apiData: any,
+  t: any,
+  locale: string
+): CenterCardType => {
+  const safeCityName = apiData.city?.name?.[locale] || "Unknown City";
+  const safeNeighborhood = apiData.neighborhood || "";
+
+  const acceptedAges = Array.isArray(apiData.accepted_ages)
+    ? apiData.accepted_ages.map((id: string) => t(`centerAges.${id}`))
+    : [];
+
   return {
     id: apiData.id,
-    name: apiData.nursery_name,
-    address: `${apiData.city}، ${apiData.neighborhood}`,
-    branches: apiData.branches,
+    name: apiData.nursery_name || "",
+    address: `${safeCityName}، ${safeNeighborhood}`,
+    branches: Array.isArray(apiData.branches) ? apiData.branches : [],
     childrenCount: apiData.children_count || 0,
     bookingsCount: apiData.enrollments_count || 0,
-    acceptedAges: Array.isArray(apiData.accepted_ages)
-      ? [
-          ...(apiData.accepted_ages?.map((id: string) =>
-            t(`centerAges.${id}`)
-          ) || []),
-        ]
-      : [apiData.accepted_ages],
-    logo: apiData.logo,
-    status: apiData.status,
+    acceptedAges,
+    logo: apiData.logo || "",
+    status: apiData.status || "",
   };
 };
 
-const mapBranchData = (apiData: any, t: any): BranchCardType => {
+const mapBranchData = (
+  apiData: any,
+  t: any,
+  locale: string
+): BranchCardType => {
+  console.log("🔍 Mapping branch:", apiData);
+
+  const safeCityName = apiData.city?.name?.[locale] || "Unknown City";
+  const safeNeighborhood = apiData.neighborhood || "";
+
+  const acceptedAges = Array.isArray(apiData.accepted_ages)
+    ? apiData.accepted_ages.map((id: string) => t(`centerAges.${id}`))
+    : [];
+
+  const services = Array.isArray(apiData.services)
+    ? apiData.services.map((id: string) => t(`centerServices.${id}`) || "")
+    : [];
+
   return {
     id: apiData.id,
-    name: apiData.name,
-    address: `${apiData.city}، ${apiData.neighborhood}`,
-    logo: apiData.logo,
+    name: apiData.name || "",
+    address: `${safeCityName}، ${safeNeighborhood}`,
+    logo: apiData.logo || "",
     childrenCount: 0,
     bookingsCount: 0,
-    acceptedAges: [
-      ...(apiData.accepted_ages?.map((id: string) => t(`centerAges.${id}`)) ||
-        []),
-    ],
+    acceptedAges,
     services: [
-      ...(apiData.services?.map(
-        (id: string) => t(`centerServices.${id}`) || ""
-      ) || []),
+      ...services,
       ...(apiData.additional_service ? [apiData.additional_service] : []),
     ],
     imageUrl: apiData.image || null,
+    is_main_branch: apiData.is_main_branch ?? 0,
   };
 };
 
 export const useCenters = () => {
   const t = useTranslations("options");
+  const locale = useLocale();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["centers"],
     queryFn: async () => {
       const response = await adminService.getCenters();
-      return response.map((center: any) => mapCenterData(center, t));
+      console.log("🌍 Raw centers response:", response);
+      return response.map((center: any) => {
+        try {
+          return mapCenterData(center, t, locale);
+        } catch (err) {
+          console.error("❌ Center mapping failed:", err, center);
+          throw err;
+        }
+      });
     },
   });
 
@@ -95,6 +123,7 @@ export const useCenters = () => {
 
 export const useBranches = (centerId?: string) => {
   const t = useTranslations("options");
+  const locale = useLocale();
   const pathname = usePathname();
   const isAdminContext = pathname?.includes("/admin/");
 
@@ -106,7 +135,15 @@ export const useBranches = (centerId?: string) => {
     queryKey: ["branches", isAdminContext ? centerId : undefined],
     queryFn: async () => {
       const response = await getBranchesFn(centerId || "");
-      return response.map((branch: any) => mapBranchData(branch, t));
+
+      try {
+        const res = response.map((branch: any) =>
+          mapBranchData(branch, t, locale)
+        );
+        return res;
+      } catch (err) {
+        throw err;
+      }
     },
   });
 
@@ -129,6 +166,9 @@ export const useBranch = (branchId?: string) => {
   return useQuery<any, ApiError>({
     enabled: !!branchId,
     queryKey: ["branch", branchId],
-    queryFn: () => getBranchFn(branchId!),
+    queryFn: async () => {
+      const res = await getBranchFn(branchId!);
+      return res;
+    },
   });
 };

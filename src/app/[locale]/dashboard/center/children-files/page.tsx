@@ -25,7 +25,7 @@ export default function CenterDashboardHome() {
 
   // Build children comparison rows from enrollments_over_time
   const months = Object.keys(stats?.enrollments_over_time || {}).sort();
-  const lastThreeMonths = months.slice(-3);
+  const lastThreeMonths = months.slice(-3).reverse();
 
   function getMonthData(value: number, isUp: boolean) {
     const baseValues = [8, 10, 12, 17, 13, 15];
@@ -36,10 +36,13 @@ export default function CenterDashboardHome() {
     }
   }
 
-  const comparisonRows = lastThreeMonths.map((month, index) => {
+  const comparisonRows = lastThreeMonths.map((month) => {
     const currentValue = stats?.enrollments_over_time?.[month] || 0;
-    const previousValue =
-      stats?.enrollments_over_time?.[months[months.length - 4 + index]] || 0;
+    const monthIndex = months.indexOf(month);
+    const previousMonth = months[monthIndex - 1];
+    const previousValue = previousMonth
+      ? stats?.enrollments_over_time?.[previousMonth] || 0
+      : 0;
     const isUp = currentValue > previousValue;
     return {
       value: currentValue,

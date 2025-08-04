@@ -25,7 +25,7 @@ const BranchCard = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const canDelete = useHasRole("center");
+  const canDelete = useHasRole("center") && !Boolean(branch.is_main_branch);
   const { can } = usePermissions();
   const canEdit = can("edit", "branches");
 

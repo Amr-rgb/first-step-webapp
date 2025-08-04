@@ -42,8 +42,10 @@ const MemberFormWrapper = ({
       }
       return centerService.createBranchTeamMember(formData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branch-team"] });
+    onSuccess: ({ data }) => {
+      queryClient.refetchQueries({
+        queryKey: ["branch-team", data.branch_id],
+      });
       toast.success("Team member added successfully");
       router.back();
     },
@@ -63,8 +65,10 @@ const MemberFormWrapper = ({
       }
       return centerService.updateBranchTeamMember(memberId!, formData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branch-team"] });
+    onSuccess: ({ data }) => {
+      queryClient.refetchQueries({
+        queryKey: ["branch-team", data.branch_id],
+      });
       toast.success("Team member updated successfully");
       router.back();
     },
@@ -75,8 +79,10 @@ const MemberFormWrapper = ({
 
   const deleteMutation = useMutation({
     mutationFn: () => centerService.deleteBranchTeamMember(memberId!),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branch-team"] });
+    onSuccess: ({ data }) => {
+      queryClient.refetchQueries({
+        queryKey: ["branch-team", data.branch_id],
+      });
       toast.success("Team member deleted successfully");
       router.back();
     },

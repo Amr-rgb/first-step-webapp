@@ -4,7 +4,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Icons } from "../icons";
 import { Blog } from "@/types";
 
-
 const BlogCard = ({ blog }: { blog: Blog }) => {
   const locale = useLocale();
   const t = useTranslations("blog");
@@ -23,7 +22,6 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
           className="object-cover"
         />
       </div>
-
 
       <Link href={`/blog/${blog.id}`} className="text-primary font-bold">
         {typeof blog.title === "string" ? blog.title : blog.title?.[locale]}
