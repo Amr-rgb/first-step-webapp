@@ -4,6 +4,7 @@ export interface User {
   type: "admin" | "center" | "parent";
   avatar?: string;
   logo?: string;
+  email?: string;
 }
 
 export interface Message {
@@ -14,6 +15,9 @@ export interface Message {
   senderType: "admin" | "center" | "parent";
   timestamp: Date;
   chatId: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  isRead?: boolean;
 }
 
 export interface Chat {
@@ -35,4 +39,5 @@ export interface ChatListItem {
   timestamp?: Date;
   unreadCount: number;
   isOnline?: boolean;
+  email?: string;
 }
