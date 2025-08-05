@@ -256,8 +256,8 @@ export interface Service {
   title: string;
   description: string;
   image: string;
-  created_at: string;
-  published_at: string;
+  // created_at: string;
+  // published_at: string;
 }
 
 export interface Value {
