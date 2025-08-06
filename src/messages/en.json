@@ -1805,6 +1805,7 @@
         "popular": "Most Popular",
         "commission": "+ 12% commission on every booking through the site",
         "select": "Join Now",
+        "processing": "Processing...",
         "currency": "SAR",
         "annual": {
           "title": "Annual",
@@ -1824,6 +1825,11 @@
           "updates": "Free updates",
           "discount": "Save {discount} with annual billing"
         }
+      },
+      "success": {
+        "title": "Subscription Successful!",
+        "message": "Thank you for your subscription. You will receive a confirmation email shortly.",
+        "continue": "Continue"
       }
     },
     "HeroSection": {
