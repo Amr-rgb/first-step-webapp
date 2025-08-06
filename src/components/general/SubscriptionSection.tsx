@@ -61,7 +61,7 @@ const SubscriptionSection = () => {
   const handlePayment = async (planId: number) => {
     setIsSubmitting(planId);
     try {
-      const data = await paymentService.subscribe(planId);
+      const data = await paymentService.centerSubscribe(planId);
       setIsSubmitting(null);
       if (data.success && data.payment_url) {
         // Redirect to Moyasar payment page

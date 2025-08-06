@@ -698,10 +698,21 @@ export const authService = {
 };
 
 export const paymentService = {
-  subscribe: async (planId: number) => {
+  centerSubscribe: async (planId: number) => {
     try {
       const response = await apiClient.post("/payment/subscribe", {
         plan_id: planId,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  parentSubscribe: async (enrollmentId: number) => {
+    try {
+      const response = await apiClient.post("/payment/subscribe", {
+        enrollment_id: enrollmentId,
       });
       return response.data;
     } catch (error) {
