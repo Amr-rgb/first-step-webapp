@@ -164,7 +164,7 @@ export default function ProfileEditorPage() {
     }
     async function fetchPortfolio() {
       try {
-        const result = await getPortfolio(centerId);
+        const result = await getPortfolio(centerId as number);
         if (result.portofilo) {
           setProfileSections(mapBackendToProfileSections(result.portofilo));
         } else {
@@ -257,10 +257,10 @@ export default function ProfileEditorPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      if (!centerId) throw new Error("No center id");
+      if (typeof centerId !== "number") throw new Error("No center id");
       await savePortfolio(
         centerId,
-        mapProfileSectionsToBackend(profileSections)
+        mapProfileSectionsToBackend(profileSections, centerId)
       );
       setIsDirty(false);
       toast.success(t("saveSuccess"));
@@ -491,23 +491,57 @@ export default function ProfileEditorPage() {
           },
         },
       },
-      {
-        id: "branches",
-        name: "Branches",
-        type: "branches",
-        enabled:
-          Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
-        data: {
-          title: "Our Branches",
-          branches: portofilo?.branches || [],
-        },
-      },
     ];
   }
-  function mapProfileSectionsToBackend(sections) {
-    // TODO: Map profileSections array to backend format
-    // Example: return { hero_section: ... }
-    return {};
+  function mapProfileSectionsToBackend(sections, centerId) {
+    // Helper to get section by type
+    const get = (type) => sections.find((s) => s.type === type);
+
+    return {
+      hero_section: {
+        title_of_hero: get("hero")?.data.title || "",
+        subtitle_of_hero: get("hero")?.data.subtitle || "",
+        description: get("hero")?.data.description || "",
+        background_image: get("hero")?.data.image || "",
+      },
+      branches: get("branches")?.data.branches || [],
+      Philosophy_Methodology_Goal: {
+        philosophy: {
+          title: get("philosophy")?.data.philosophyTitle || "",
+          content: get("philosophy")?.data.philosophy || "",
+        },
+        methodology: {
+          title: get("philosophy")?.data.methodologyTitle || "",
+          content: get("philosophy")?.data.methodology || "",
+        },
+        goals: {
+          title: get("philosophy")?.data.goalTitle || "",
+          content: get("philosophy")?.data.goal || "",
+        },
+      },
+      service_section_title: get("services")?.data.title || "",
+      services: get("services")?.data.services || [],
+      nursery_state: {
+        area: get("stats")?.data.area || "",
+        class_rooms: get("stats")?.data.classrooms || "",
+        team_members: get("stats")?.data.teamMembers || "",
+      },
+      activity_section_title: get("activities")?.data.title || "",
+      activity_section_subtitle: get("activities")?.data.subtitle || "",
+      images_activities: get("activities")?.data.images || [],
+      ads_images: [], // Add logic if you have ads images in your UI
+      teams: get("team")?.data.members || [],
+      contact_info: {
+        address: get("contact")?.data.address || "",
+        working_hours: get("contact")?.data.workingHours || "",
+        phone_number: get("contact")?.data.phone || "",
+        email_address: get("contact")?.data.email || "",
+        facebook: get("contact")?.data.socialMedia?.facebook || "",
+        instagram: get("contact")?.data.socialMedia?.instagram || "",
+        whatsapp: get("contact")?.data.socialMedia?.whatsapp || "",
+      },
+      center_id: centerId,
+    };
   }
 
   const enabledSections = profileSections.filter((section) => section.enabled);
