@@ -9,17 +9,31 @@ import { Card } from "@/components/ui/card";
 import { Eye, Edit, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/authStore";
+import { getPortfolio, savePortfolio } from "@/services/dashboardApi";
 
 export interface ProfileSection {
   id: string;
   name: string;
-  type: 'hero' | 'about' | 'services' | 'programs' | 'team' | 'activities' | 'contact' | 'philosophy' | 'stats' | 'branches';
+  type:
+    | "hero"
+    | "about"
+    | "services"
+    | "programs"
+    | "team"
+    | "activities"
+    | "contact"
+    | "philosophy"
+    | "stats"
+    | "branches";
   enabled: boolean;
   data: any;
 }
 
 export default function ProfileEditorPage() {
   const t = useTranslations("dashboard.profileEditor");
+  const user = useAuthUser();
+  const centerId = user?.id; // Assuming user.id is the center id
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -27,112 +41,112 @@ export default function ProfileEditorPage() {
 
   const [profileSections, setProfileSections] = useState<ProfileSection[]>([
     {
-      id: 'hero',
-      name: 'Hero Section',
-      type: 'hero',
+      id: "hero",
+      name: "Hero Section",
+      type: "hero",
       enabled: false,
       data: {
-        title: '',
-        subtitle: '',
-        description: '',
-        image: '',
-        ctaText: '',
-        ctaLink: ''
-      }
+        title: "",
+        subtitle: "",
+        description: "",
+        image: "",
+        ctaText: "",
+        ctaLink: "",
+      },
     },
     {
-      id: 'branches',
-      name: 'Branches',
-      type: 'branches',
+      id: "branches",
+      name: "Branches",
+      type: "branches",
       enabled: false,
       data: {
-        title: 'Our Branches',
-        branches: []
-      }
+        title: "Our Branches",
+        branches: [],
+      },
     },
     {
-      id: 'philosophy',
-      name: 'Philosophy, Methodology & Goal',
-      type: 'philosophy',
+      id: "philosophy",
+      name: "Philosophy, Methodology & Goal",
+      type: "philosophy",
       enabled: false,
       data: {
-        philosophyTitle: 'Our Philosophy',
-        philosophy: '',
-        methodologyTitle: 'Our Methodology',
-        methodology: '',
-        goalTitle: 'Our Goal',
-        goal: ''
-      }
+        philosophyTitle: "Our Philosophy",
+        philosophy: "",
+        methodologyTitle: "Our Methodology",
+        methodology: "",
+        goalTitle: "Our Goal",
+        goal: "",
+      },
     },
     {
-      id: 'programs',
-      name: 'Programs (برامجنا)',
-      type: 'programs',
+      id: "programs",
+      name: "Programs (برامجنا)",
+      type: "programs",
       enabled: false,
       data: {
-        title: 'برامجنا',
-        programs: []
-      }
+        title: "برامجنا",
+        programs: [],
+      },
     },
     {
-      id: 'services',
-      name: 'Services',
-      type: 'services',
+      id: "services",
+      name: "Services",
+      type: "services",
       enabled: false,
       data: {
-        title: 'Our Services',
-        services: []
-      }
+        title: "Our Services",
+        services: [],
+      },
     },
     {
-      id: 'stats',
-      name: 'Nursery Stats',
-      type: 'stats',
+      id: "stats",
+      name: "Nursery Stats",
+      type: "stats",
       enabled: false,
       data: {
-        area: '2000',
-        classrooms: '10',
-        teamMembers: '25'
-      }
+        area: "2000",
+        classrooms: "10",
+        teamMembers: "25",
+      },
     },
     {
-      id: 'activities',
-      name: 'Activities',
-      type: 'activities',
+      id: "activities",
+      name: "Activities",
+      type: "activities",
       enabled: false,
       data: {
-        title: 'Activities',
-        subtitle: '',
-        images: []
-      }
+        title: "Activities",
+        subtitle: "",
+        images: [],
+      },
     },
     {
-      id: 'team',
-      name: 'Our Team',
-      type: 'team',
+      id: "team",
+      name: "Our Team",
+      type: "team",
       enabled: false,
       data: {
-        title: 'Meet Our Team',
-        members: []
-      }
+        title: "Meet Our Team",
+        members: [],
+      },
     },
     {
-      id: 'contact',
-      name: 'Contact Information',
-      type: 'contact',
+      id: "contact",
+      name: "Contact Information",
+      type: "contact",
       enabled: false,
       data: {
-        address: '',
-        phone: '',
-        email: '',
-        workingHours: '',
-        socialMedia: {}
-      }
-    }
+        address: "",
+        phone: "",
+        email: "",
+        workingHours: "",
+        socialMedia: {},
+      },
+    },
   ]);
 
   // Check if profile is empty (no sections enabled)
-  const isProfileEmpty = profileSections.every(section => !section.enabled);
+  const isProfileEmpty = profileSections.every((section) => !section.enabled);
 
   // Show reminder for empty profile
   useEffect(() => {
@@ -143,10 +157,30 @@ export default function ProfileEditorPage() {
     }
   }, [isProfileEmpty]);
 
+  useEffect(() => {
+    if (typeof centerId !== "number") {
+      setProfileSections(getDefaultProfileSections());
+      return;
+    }
+    async function fetchPortfolio() {
+      try {
+        const result = await getPortfolio(centerId);
+        if (result.portofilo) {
+          setProfileSections(mapBackendToProfileSections(result.portofilo));
+        } else {
+          setProfileSections(getDefaultProfileSections());
+        }
+      } catch (e) {
+        setProfileSections(getDefaultProfileSections());
+      }
+    }
+    fetchPortfolio();
+  }, [centerId]);
+
   const handleSectionUpdate = (sectionId: string, data: any) => {
-    setProfileSections(prev => 
-      prev.map(section => 
-        section.id === sectionId 
+    setProfileSections((prev) =>
+      prev.map((section) =>
+        section.id === sectionId
           ? { ...section, data: { ...section.data, ...data } }
           : section
       )
@@ -155,21 +189,23 @@ export default function ProfileEditorPage() {
   };
 
   const handleSectionToggle = (sectionId: string, enabled: boolean) => {
-    setProfileSections(prev => 
-      prev.map(section => 
-        section.id === sectionId 
-          ? { ...section, enabled }
-          : section
+    setProfileSections((prev) =>
+      prev.map((section) =>
+        section.id === sectionId ? { ...section, enabled } : section
       )
     );
     setIsDirty(true);
   };
 
   const handleSectionDelete = (sectionId: string) => {
-    setProfileSections(prev => 
-      prev.map(section => 
-        section.id === sectionId 
-          ? { ...section, enabled: false, data: getDefaultSectionData(section.type) }
+    setProfileSections((prev) =>
+      prev.map((section) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              enabled: false,
+              data: getDefaultSectionData(section.type),
+            }
           : section
       )
     );
@@ -178,16 +214,42 @@ export default function ProfileEditorPage() {
 
   const getDefaultSectionData = (type: string) => {
     const defaults: Record<string, any> = {
-      hero: { title: '', subtitle: '', description: '', image: '', ctaText: '', ctaLink: '' },
-      about: { title: '', description: '', images: [], mission: '', vision: '' },
-      services: { title: 'Our Services', services: [] },
-      programs: { title: 'Our Programs', programs: [] },
-      team: { title: 'Meet Our Team', members: [] },
-      activities: { title: 'Activities', subtitle: '', images: [] },
-      philosophy: { philosophyTitle: 'Our Philosophy', philosophy: '', methodologyTitle: 'Our Methodology', methodology: '', goalTitle: 'Our Goal', goal: '' },
-      branches: { title: 'Our Branches', branches: [] },
-      stats: { area: '', classrooms: '', teamMembers: '' },
-      contact: { address: '', phone: '', email: '', workingHours: '', socialMedia: {} }
+      hero: {
+        title: "",
+        subtitle: "",
+        description: "",
+        image: "",
+        ctaText: "",
+        ctaLink: "",
+      },
+      about: {
+        title: "",
+        description: "",
+        images: [],
+        mission: "",
+        vision: "",
+      },
+      services: { title: "Our Services", services: [] },
+      programs: { title: "Our Programs", programs: [] },
+      team: { title: "Meet Our Team", members: [] },
+      activities: { title: "Activities", subtitle: "", images: [] },
+      philosophy: {
+        philosophyTitle: "Our Philosophy",
+        philosophy: "",
+        methodologyTitle: "Our Methodology",
+        methodology: "",
+        goalTitle: "Our Goal",
+        goal: "",
+      },
+      branches: { title: "Our Branches", branches: [] },
+      stats: { area: "", classrooms: "", teamMembers: "" },
+      contact: {
+        address: "",
+        phone: "",
+        email: "",
+        workingHours: "",
+        socialMedia: {},
+      },
     };
     return defaults[type] || {};
   };
@@ -195,12 +257,11 @@ export default function ProfileEditorPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Here you would make the actual API call to save the profile
-      // await api.post('/center/profile', { sections: profileSections });
-      
+      if (!centerId) throw new Error("No center id");
+      await savePortfolio(
+        centerId,
+        mapProfileSectionsToBackend(profileSections)
+      );
       setIsDirty(false);
       toast.success(t("saveSuccess"));
     } catch (error) {
@@ -210,7 +271,246 @@ export default function ProfileEditorPage() {
     }
   };
 
-  const enabledSections = profileSections.filter(section => section.enabled);
+  // Mapping functions (implement as needed)
+  function getDefaultProfileSections(): ProfileSection[] {
+    return [
+      {
+        id: "hero",
+        name: "Hero Section",
+        type: "hero",
+        enabled: false,
+        data: {
+          title: "",
+          subtitle: "",
+          description: "",
+          image: "",
+          ctaText: "",
+          ctaLink: "",
+        },
+      },
+      {
+        id: "branches",
+        name: "Branches",
+        type: "branches",
+        enabled: false,
+        data: {
+          title: "Our Branches",
+          branches: [],
+        },
+      },
+      {
+        id: "philosophy",
+        name: "Philosophy, Methodology & Goal",
+        type: "philosophy",
+        enabled: false,
+        data: {
+          philosophyTitle: "Our Philosophy",
+          philosophy: "",
+          methodologyTitle: "Our Methodology",
+          methodology: "",
+          goalTitle: "Our Goal",
+          goal: "",
+        },
+      },
+      {
+        id: "programs",
+        name: "Programs (برامجنا)",
+        type: "programs",
+        enabled: false,
+        data: {
+          title: "برامجنا",
+          programs: [],
+        },
+      },
+      {
+        id: "services",
+        name: "Services",
+        type: "services",
+        enabled: false,
+        data: {
+          title: "Our Services",
+          services: [],
+        },
+      },
+      {
+        id: "stats",
+        name: "Nursery Stats",
+        type: "stats",
+        enabled: false,
+        data: {
+          area: "2000",
+          classrooms: "10",
+          teamMembers: "25",
+        },
+      },
+      {
+        id: "activities",
+        name: "Activities",
+        type: "activities",
+        enabled: false,
+        data: {
+          title: "Activities",
+          subtitle: "",
+          images: [],
+        },
+      },
+      {
+        id: "team",
+        name: "Our Team",
+        type: "team",
+        enabled: false,
+        data: {
+          title: "Meet Our Team",
+          members: [],
+        },
+      },
+      {
+        id: "contact",
+        name: "Contact Information",
+        type: "contact",
+        enabled: false,
+        data: {
+          address: "",
+          phone: "",
+          email: "",
+          workingHours: "",
+          socialMedia: {},
+        },
+      },
+    ];
+  }
+
+  function mapBackendToProfileSections(portofilo: any): ProfileSection[] {
+    // Always return all sections, using backend data if present, or defaults if not
+    return [
+      {
+        id: "hero",
+        name: "Hero Section",
+        type: "hero",
+        enabled: !!portofilo?.hero_section,
+        data: {
+          title: portofilo?.hero_section?.title_of_hero || "",
+          subtitle: portofilo?.hero_section?.subtitle_of_hero || "",
+          description: portofilo?.hero_section?.description || "",
+          image: portofilo?.hero_section?.background_image || "",
+          ctaText: "",
+          ctaLink: "",
+        },
+      },
+      {
+        id: "branches",
+        name: "Branches",
+        type: "branches",
+        enabled:
+          Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
+        data: {
+          title: "Our Branches",
+          branches: portofilo?.branches || [],
+        },
+      },
+      {
+        id: "philosophy",
+        name: "Philosophy, Methodology & Goal",
+        type: "philosophy",
+        enabled: !!portofilo?.Philosophy_Methodology_Goal,
+        data: {
+          philosophyTitle:
+            portofilo?.Philosophy_Methodology_Goal?.philosophy?.title ||
+            "Our Philosophy",
+          philosophy:
+            portofilo?.Philosophy_Methodology_Goal?.philosophy?.content || "",
+          methodologyTitle:
+            portofilo?.Philosophy_Methodology_Goal?.methodology?.title ||
+            "Our Methodology",
+          methodology:
+            portofilo?.Philosophy_Methodology_Goal?.methodology?.content || "",
+          goalTitle:
+            portofilo?.Philosophy_Methodology_Goal?.goals?.title || "Our Goal",
+          goal: portofilo?.Philosophy_Methodology_Goal?.goals?.content || "",
+        },
+      },
+      {
+        id: "services",
+        name: "Services",
+        type: "services",
+        enabled:
+          Array.isArray(portofilo?.services) && portofilo.services.length > 0,
+        data: {
+          title: portofilo?.service_section_title || "Our Services",
+          services: portofilo?.services || [],
+        },
+      },
+      {
+        id: "stats",
+        name: "Nursery Stats",
+        type: "stats",
+        enabled: !!portofilo?.nursery_state,
+        data: {
+          area: portofilo?.nursery_state?.area || "",
+          classrooms: portofilo?.nursery_state?.class_rooms || "",
+          teamMembers: portofilo?.nursery_state?.team_members || "",
+        },
+      },
+      {
+        id: "activities",
+        name: "Activities",
+        type: "activities",
+        enabled:
+          Array.isArray(portofilo?.images_activities) &&
+          portofilo.images_activities.length > 0,
+        data: {
+          title: portofilo?.activity_section_title || "Activities",
+          subtitle: portofilo?.activity_section_subtitle || "",
+          images: portofilo?.images_activities || [],
+        },
+      },
+      {
+        id: "team",
+        name: "Our Team",
+        type: "team",
+        enabled: Array.isArray(portofilo?.teams) && portofilo.teams.length > 0,
+        data: {
+          title: "Meet Our Team",
+          members: portofilo?.teams || [],
+        },
+      },
+      {
+        id: "contact",
+        name: "Contact Information",
+        type: "contact",
+        enabled: !!portofilo?.contact_info,
+        data: {
+          address: portofilo?.contact_info?.address || "",
+          phone: portofilo?.contact_info?.phone_number || "",
+          email: portofilo?.contact_info?.email_address || "",
+          workingHours: portofilo?.contact_info?.working_hours || "",
+          socialMedia: {
+            facebook: portofilo?.contact_info?.facebook || "",
+            instagram: portofilo?.contact_info?.instagram || "",
+            whatsapp: portofilo?.contact_info?.whatsapp || "",
+          },
+        },
+      },
+      {
+        id: "branches",
+        name: "Branches",
+        type: "branches",
+        enabled:
+          Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
+        data: {
+          title: "Our Branches",
+          branches: portofilo?.branches || [],
+        },
+      },
+    ];
+  }
+  function mapProfileSectionsToBackend(sections) {
+    // TODO: Map profileSections array to backend format
+    // Example: return { hero_section: ... }
+    return {};
+  }
+
+  const enabledSections = profileSections.filter((section) => section.enabled);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -218,14 +518,10 @@ export default function ProfileEditorPage() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {t("title")}
-            </h1>
-            <p className="text-gray-600 mt-1">
-              {t("subtitle")}
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+            <p className="text-gray-600 mt-1">{t("subtitle")}</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Mode Toggle */}
             <div className="flex items-center bg-gray-100 rounded-lg p-1">
@@ -235,8 +531,8 @@ export default function ProfileEditorPage() {
                 onClick={() => setIsPreviewMode(false)}
                 className={cn(
                   "px-3 py-1 text-sm font-medium rounded-md transition-all",
-                  !isPreviewMode 
-                    ? "bg-primary text-white shadow-sm" 
+                  !isPreviewMode
+                    ? "bg-primary text-white shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
                 )}
               >
@@ -249,8 +545,8 @@ export default function ProfileEditorPage() {
                 onClick={() => setIsPreviewMode(true)}
                 className={cn(
                   "px-3 py-1 text-sm font-medium rounded-md transition-all",
-                  isPreviewMode 
-                    ? "bg-primary text-white shadow-sm" 
+                  isPreviewMode
+                    ? "bg-primary text-white shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
                 )}
               >
@@ -294,10 +590,7 @@ export default function ProfileEditorPage() {
       {/* Main Content */}
       <div className="flex-1">
         {isPreviewMode ? (
-          <ProfilePreview 
-            sections={profileSections}
-            isEmpty={isProfileEmpty}
-          />
+          <ProfilePreview sections={profileSections} isEmpty={isProfileEmpty} />
         ) : (
           <ProfileEditor
             sections={profileSections}
