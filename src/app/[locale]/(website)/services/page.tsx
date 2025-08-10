@@ -4,6 +4,8 @@ import Headline from "@/components/general/Headline";
 // import StickyScrollServices from "@/components/general/StickyScrollServices";
 import { websiteService } from "@/services/api";
 import Services from "@/components/general/Services";
+import ServicesClientWrapper from "@/components/general/ServicesClientWrapper";
+import { getParentServices, getCenterServices } from "@/data/services";
 
 export const revalidate = 86400;
 
@@ -30,67 +32,10 @@ export default async function ServicesPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  
+  const parentServices = getParentServices(resolvedParams.locale);
+  const centerServices = getCenterServices(resolvedParams.locale);
 
-  // const adSlides = await websiteService.getAdSlides(locale);
-  // const services = await websiteService.getOurServices(locale);
-  const services = [
-    {
-      id: 1,
-      title: "بروفايل احترافي للمركز",
-      description:
-        "صفحة تعريفية جذابة تعرض هوية الحضانة أو المركز من البرامج والأنشطة. هذه الصفحة تمكن أولياء الأمور من التعرف على الخدمات",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 2,
-      title: "خدماتنا المتميزة",
-      description:
-        "نقدم مجموعة واسعة من الخدمات التعليمية والترفيهية المصممة خصيصاً لتنمية قدرات الأطفال وإعدادهم للمستقبل بأفضل الطرق التعليمية الحديثة",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 3,
-      title: "فريق العمل المحترف",
-      description:
-        "يضم فريقنا نخبة من المعلمين والمختصين في التربية والتعليم، المدربين على أحدث الأساليب التعليمية لضمان تقديم أفضل رعاية وتعليم لأطفالكم",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 4,
-      title: "بيئة تعليمية آمنة",
-      description:
-        "نوفر بيئة تعليمية آمنة ومحفزة للإبداع والتعلم، مع توفير كافة وسائل الأمان والسلامة، ومساحات مصممة خصيصاً لتناسب احتياجات الأطفال في مختلف المراحل العمرية",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 5,
-      title: "بيئة تعليمية آمنة",
-      description:
-        "نوفر بيئة تعليمية آمنة ومحفزة للإبداع والتعلم، مع توفير كافة وسائل الأمان والسلامة، ومساحات مصممة خصيصاً لتناسب احتياجات الأطفال في مختلف المراحل العمرية",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 6,
-      title: "بيئة تعليمية آمنة",
-      description:
-        "نوفر بيئة تعليمية آمنة ومحفزة للإبداع والتعلم، مع توفير كافة وسائل الأمان والسلامة، ومساحات مصممة خصيصاً لتناسب احتياجات الأطفال في مختلف المراحل العمرية",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-    {
-      id: 7,
-      title: "بيئة تعليمية آمنة",
-      description:
-        "نوفر بيئة تعليمية آمنة ومحفزة للإبداع والتعلم، مع توفير كافة وسائل الأمان والسلامة، ومساحات مصممة خصيصاً لتناسب احتياجات الأطفال في مختلف المراحل العمرية",
-      image: "/assets/screens/center/center-21.jpg",
-    },
-  ];
-
-  return (
-    <main>
-      {/* <Advertisment slides={adSlides} /> */}
-      <Headline />
-      <Services services={services} />
-    </main>
-  );
+  return <ServicesClientWrapper parentServices={parentServices} centerServices={centerServices} />;
 }
