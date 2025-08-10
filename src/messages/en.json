@@ -60,8 +60,8 @@
       "story": { "title": "Our Story", "path": "/our-story" },
       "contact": { "title": "Contact Us", "path": "/contact" },
       "help": { "title": "Help", "path": "/help" },
-      "privacy": { "title": "Privacy", "path": "/privacy" },
-      "terms": { "title": "Terms and Conditions", "path": "/terms" }
+      "privacy-policy": { "title": "Privacy", "path": "/privacy" },
+      "terms-conditions": { "title": "Terms and Conditions", "path": "/terms" }
     },
     "contactTitle": "Contact us",
     "newsletter": {
