@@ -290,6 +290,70 @@ export const websiteService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getTermsAndConditions: async (locale: string): Promise<Blog[]> => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/terms-and-condition?lang=${locale}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 86400,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch terms and conditions",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data.terms;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getPrivacy: async (locale: string): Promise<Blog[]> => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/privacy?lang=${locale}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 86400,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch privacy",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data.privacy;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const blogService = {
