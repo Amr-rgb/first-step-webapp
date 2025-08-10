@@ -46,35 +46,30 @@ const FAQs = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
   );
 };
 
-const FAQAccordion = ({
-  commonQuestions,
-}: {
-  commonQuestions: CommonQuestion[];
-}) => {
-  const t = useTranslations("faqs.questions");
-
+const FAQAccordion = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
   return (
     <div className="grow w-full max-w-[600px] mx-auto rounded-lg">
       <Accordion
         type="multiple"
         className="w-full flex flex-col gap-y-2 md:gap-y-4 text-mid-gray"
       >
-        {Array(5)
-          .fill(1)
-          .map((item, index) => (
-            <AccordionItem
-              className="bg-white rounded-2xl stroke-1 stroke-light-gray"
-              key={index}
-              value={`item-${t(`${index + 1}.question`)}-${index + 1}`}
-            >
-              <AccordionTrigger className="text-left font-medium md:!text-lg lg:!text-xl p-4 lg:p-6">
-                {t(`${index + 1}.question`)}
-              </AccordionTrigger>
-              <AccordionContent className="px-4 lg:px-6">
-                {t(`${index + 1}.answer`)}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+        {commonQuestions.map((item) => (
+          <AccordionItem
+            className="bg-white rounded-2xl stroke-1 stroke-light-gray"
+            key={item.id}
+            value={`item-${item.id}`}
+          >
+            <AccordionTrigger className="text-left font-medium md:!text-lg lg:!text-xl p-4 lg:p-6">
+              {item.question}
+            </AccordionTrigger>
+            <AccordionContent className="px-4 lg:px-6">
+              <div 
+                className="prose max-w-none text-gray-700 leading-7"
+                dangerouslySetInnerHTML={{ __html: item.answer }}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        ))}
       </Accordion>
     </div>
   );
