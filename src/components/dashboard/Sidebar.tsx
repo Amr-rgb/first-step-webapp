@@ -149,7 +149,6 @@ const getAdminNavbar = (t: any) => [
     url: "/dashboard/admin/chat",
     icon: dashboardIcons.chat,
   },
-
 ];
 
 const DashboardSideBar = () => {
@@ -184,12 +183,14 @@ const DashboardSideBar = () => {
       className="h-screen py-10 transition-all duration-300 ease-in-out fixed top-0 left-0 z-40"
       side={locale === "ar" ? "right" : "left"}
       collapsible="icon"
-      style={{
-        '--sidebar-width': '250px',
-        '--sidebar-collapsed-width': '80px',
-        '--transition-duration': '300ms',
-        '--transition-timing': 'cubic-bezier(0.4, 0, 0.2, 1)'
-      } as React.CSSProperties}
+      style={
+        {
+          "--sidebar-width": "250px",
+          "--sidebar-collapsed-width": "80px",
+          "--transition-duration": "300ms",
+          "--transition-timing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        } as React.CSSProperties
+      }
     >
       <SidebarHeader className="mb-4 justify-center items-center">
         {user?.role === "parent" || user?.role === "branch_admin" ? (

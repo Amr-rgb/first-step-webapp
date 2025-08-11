@@ -1,14 +1,13 @@
 "use client";
 import { use, useState } from "react";
 import Header from "@/components/dashboard/Header";
-import MainSidebar from "@/components/dashboard/Sidebar";
+import DashboardSideBar from "@/components/dashboard/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SecondarySidebar from "@/components/dashboard/SecondarySidebar";
 import {
   useSecondarySidebarOpen,
   useSetSecondarySidebarOpen,
 } from "@/store/sidebarStore";
-
 
 export default function DashboardLayout({
   children,
@@ -30,10 +29,10 @@ export default function DashboardLayout({
   // No need for client-side guards
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="relative h-screen">
       <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <MainSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
+        <DashboardSideBar />
+        <div className="w-full">
           <Header
             onToggleFullscreen={() => {
               if (sidebarOpen || secondarySidebarOpen) {
@@ -48,7 +47,7 @@ export default function DashboardLayout({
             secondarySidebarOpen={secondarySidebarOpen}
           />
 
-          <div className="flex-1 overflow-auto">
+          <div className="overflow-auto h-[calc(100vh-80px)]">
             <div className="px-4 md:px-10 py-10">{children}</div>
           </div>
         </div>
