@@ -97,19 +97,19 @@ export default function Header({
       onChange: setNotificationsEnabled,
     },
     separator1: { type: "separator" as const },
-    paymentLog: {
-      icon: CreditCard,
-      label: "سجل الدفع",
-      type: "link" as const,
-      href: "/dashboard/payment-log",
-    },
-    accountData: {
-      icon: User,
-      label: "تعديل بيانات الحساب",
-      type: "link" as const,
-      href: "/dashboard/account",
-    },
-    separator2: { type: "separator" as const },
+    // paymentLog: {
+    //   icon: CreditCard,
+    //   label: "سجل الدفع",
+    //   type: "link" as const,
+    //   href: "/dashboard/payment-log",
+    // },
+    // accountData: {
+    //   icon: User,
+    //   label: "تعديل بيانات الحساب",
+    //   type: "link" as const,
+    //   href: "/dashboard/account",
+    // },
+    // separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
       label: "سياسة الخصوصية",
