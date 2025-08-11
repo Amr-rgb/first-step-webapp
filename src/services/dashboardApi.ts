@@ -1371,6 +1371,19 @@ export const sidebarService = {
   },
 };
 
+// Portfolio API integration
+export const getPortfolio = async (centerId: number) => {
+  const response = await apiClient.get(
+    `/portfolios/show?center_id=${centerId}`
+  );
+  return response.data;
+};
+
+export const savePortfolio = async (centerId: number, data: any) => {
+  const response = await apiClient.post(`/portfolios/${centerId}`, data);
+  return response.data;
+};
+
 export interface Enrollment {
   id: number;
   branch_id: number;

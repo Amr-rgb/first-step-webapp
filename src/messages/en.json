@@ -689,6 +689,7 @@
       "parent": {
         "home": "Home",
         "children": "My Children",
+        "chat": "Chat",
         "bookings": "Bookings",
         "reports": "Daily Reports"
       },
@@ -710,7 +711,8 @@
         "profile-editor": "Profile Editor",
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
-        "team": "Team"
+        "team": "Team",
+        "chat": "Chat"
       }
     },
     "center": {
@@ -1767,10 +1769,7 @@
         "title": "Child File Management and Communication with Parents",
         "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
       },
-      "directChat": {
-        "title": "Direct Chat",
-        "description": "An instant communication method between the nursery and parents through the site."
-      },
+     
       "taskOrganization": {
         "title": "Task Organization and Instant Notifications",
         "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."

@@ -35,7 +35,7 @@ const SecondarySidebar = () => {
 
   return (
     <Sidebar
-      className="bg-sidebar h-screen py-10 px-4"
+      className="bg-sidebar h-screen py-10 px-4 fixed top-0 right-0 z-30"
       side={locale === "ar" ? "left" : "right"}
       collapsible="offcanvas"
     >

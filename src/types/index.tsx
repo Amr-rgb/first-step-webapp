@@ -292,13 +292,3 @@ export interface Message {
   read: boolean; // Tracks if the message has been read
 }
 
-// Chat object (group chat between parent, center, admin)
-export interface Chat {
-  id: string;
-  participants: User[];
-  messages: Message[];
-}
-
-// -----------------------------
-// (Add other types below as needed)
-// -----------------------------
