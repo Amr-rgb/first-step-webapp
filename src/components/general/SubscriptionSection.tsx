@@ -6,9 +6,11 @@ import { Button } from "../ui/button";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { animate } from "framer-motion";
+import { paymentService } from "@/services/api";
 
 const SubscriptionSection = () => {
   const t = useTranslations("HomePage.Subscription");
+  const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
 
   const plans = [
     {
@@ -16,6 +18,7 @@ const SubscriptionSection = () => {
       name: t("plans.annual.title"),
       price: "3,999",
       period: t("plans.annual.period"),
+      planId: 1, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -29,6 +32,7 @@ const SubscriptionSection = () => {
       name: t("plans.semiAnnual.title"),
       price: "2,599",
       period: t("plans.semiAnnual.period"),
+      planId: 2, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -43,6 +47,7 @@ const SubscriptionSection = () => {
       name: t("plans.quarterly.title"),
       price: "1,499",
       period: t("plans.quarterly.period"),
+      planId: 3, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -51,6 +56,53 @@ const SubscriptionSection = () => {
       buttonText: t("plans.select"),
     },
   ];
+
+  const handlePlanSelection = async (planId: number, planName: string) => {
+    setIsSubmitting(planName);
+    try {
+      console.log(`Subscribing to plan: ${planName} with ID: ${planId}`);
+      const data = await paymentService.subscribe(planId);
+
+      if (data.success && data.payment_url) {
+        // Redirect to payment page
+        window.location.href = data.payment_url;
+      } else {
+        alert("Payment initiation failed. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Payment error:", err);
+
+      // More specific error handling
+      if (err?.data?.message) {
+        alert(`Payment error: ${err.data.message}`);
+      } else if (err?.message) {
+        alert(`Payment error: ${err.message}`);
+      } else {
+        alert("Payment initiation failed. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(null);
+    }
+  };
+
+  const handleBannerClick = async () => {
+    setIsSubmitting("banner");
+    try {
+      // Use a default plan ID for the banner (you can change this)
+      const data = await paymentService.subscribe(1);
+
+      if (data.success && data.payment_url) {
+        window.location.href = data.payment_url;
+      } else {
+        alert("Payment initiation failed. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Payment error:", err);
+      alert("Payment initiation failed. Please try again.");
+    } finally {
+      setIsSubmitting(null);
+    }
+  };
 
   return (
     <section className="py-16 bg-white">
@@ -75,8 +127,10 @@ const SubscriptionSection = () => {
                 size="sm"
                 variant="defaultNoGradient"
                 className="bg-white hover:bg-white/90 text-primary rounded-xl w-full"
+                onClick={handleBannerClick}
+                disabled={isSubmitting === "banner"}
               >
-                {t("banner.cta")}
+                {isSubmitting === "banner" ? "Processing..." : t("banner.cta")}
               </Button>
               <p className="text-warning font-medium flex items-center">
                 {t("banner.limitedOffer")}
@@ -224,8 +278,14 @@ const SubscriptionSection = () => {
                       size="sm"
                       variant="defaultNoGradient"
                       className="w-full rounded-xl bg-white text-primary-blue hover:bg-white/90"
+                      onClick={() =>
+                        handlePlanSelection(plan.planId, plan.name)
+                      }
+                      disabled={isSubmitting === plan.name}
                     >
-                      {plan.buttonText}
+                      {isSubmitting === plan.name
+                        ? "Processing..."
+                        : plan.buttonText}
                     </Button>
                   </div>
                 </div>
@@ -247,8 +307,12 @@ const SubscriptionSection = () => {
                   <Button
                     size="sm"
                     className="w-full rounded-xl hover:bg-white/90"
+                    onClick={() => handlePlanSelection(plan.planId, plan.name)}
+                    disabled={isSubmitting === plan.name}
                   >
-                    {plan.buttonText}
+                    {isSubmitting === plan.name
+                      ? "Processing..."
+                      : plan.buttonText}
                   </Button>
                 </div>
               </div>

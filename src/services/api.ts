@@ -708,4 +708,13 @@ export const paymentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getPlans: async () => {
+    try {
+      const response = await apiClient.get("/payment/plans");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
