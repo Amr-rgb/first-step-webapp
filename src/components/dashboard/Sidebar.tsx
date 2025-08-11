@@ -181,7 +181,7 @@ const DashboardSideBar = () => {
 
   return (
     <Sidebar
-      className="h-screen py-10 transition-all duration-300 ease-in-out"
+      className="h-screen py-10 transition-all duration-300 ease-in-out fixed top-0 left-0 z-40"
       side={locale === "ar" ? "right" : "left"}
       collapsible="icon"
       style={{
