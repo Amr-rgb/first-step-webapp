@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
-import { parentService } from "@/services/dashboardApi";
-import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createSlug } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { motion } from "framer-motion";
+import Image from "next/image";
 import { paymentService } from "@/services/api";
 
 interface ReservationFormProps {
@@ -27,6 +28,7 @@ interface FormData {
 }
 
 type ProgramType = "monthly" | "weekly" | "daily" | "hourly";
+
 interface Program {
   id: number;
   type: ProgramType;
@@ -35,7 +37,15 @@ interface Program {
   planId: number;
 }
 
-const programs: { ar: Program[]; en: Program[] } = {
+interface BackendPlan {
+  id: number;
+  name: string;
+  type: string;
+  price: number;
+}
+
+// Default programs with fallback plan IDs
+const defaultPrograms: { ar: Program[]; en: Program[] } = {
   ar: [
     { id: 1, type: "monthly", name: "شهري", price: "50 ر.س", planId: 1 },
     { id: 2, type: "weekly", name: "أسبوعي", price: "50 ر.س", planId: 2 },
@@ -124,9 +134,39 @@ const ReservationForm = ({
       },
     ];
   }
-  const programList: Program[] = isWorldOfLearningJunior
-    ? dynamicPrograms
-    : programs[locale];
+  const [plans, setPlans] = useState<BackendPlan[]>([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await paymentService.getPlans();
+        setPlans(data);
+      } catch (error) {
+        console.error("Failed to fetch plans:", error);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
+  // Create program list from backend plans or use default
+  const createProgramList = (): Program[] => {
+    if (plans.length > 0) {
+      // Map backend plans to program format
+      return plans.map((plan, index) => ({
+        id: index + 1,
+        type: plan.type as ProgramType,
+        name: plan.name,
+        price: `${plan.price} ${locale === "ar" ? "ر.س" : "SAR"}`,
+        planId: plan.id, // Use the actual backend plan ID
+      }));
+    }
+
+    // Fallback to default programs
+    return isWorldOfLearningJunior ? dynamicPrograms : defaultPrograms[locale];
+  };
+
+  const programList = createProgramList();
   // Helper to match program by id or name (case-insensitive)
   function findSelectedProgram(
     programList: Program[],
@@ -163,15 +203,6 @@ const ReservationForm = ({
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
   );
 
-  const {
-    data: realChildren,
-    isLoading: isChildrenLoading,
-    error: childrenError,
-  } = useQuery<Array<any>>({
-    queryKey: ["parent-children"] as const,
-    queryFn: parentService.getParentChildren,
-  });
-
   const handleChildSelect = (id: string) => {
     setSelectedChildren((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
@@ -182,12 +213,16 @@ const ReservationForm = ({
     e.preventDefault();
     setIsSubmitting(true);
     // Get the selected plan/program ID
-    const selectedPlanId = selectedProgramObj?.planId;
+    const selectedPlanId = findSelectedProgram(programList, program)?.planId;
     if (!selectedPlanId) {
       alert("No program selected. Please choose a program.");
       setIsSubmitting(false);
       return;
     }
+
+    console.log("Selected program:", findSelectedProgram(programList, program));
+    console.log("Selected plan ID:", selectedPlanId);
+
     try {
       const data = await paymentService.parentSubscribe(selectedPlanId);
       setIsSubmitting(false);
@@ -199,9 +234,18 @@ const ReservationForm = ({
       } else {
         alert("Payment initiation failed. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error("Payment error details:", err);
       setIsSubmitting(false);
-      alert("Payment initiation failed. Please try again.");
+
+      // More specific error handling
+      if (err?.data?.message) {
+        alert(`Payment error: ${err.data.message}`);
+      } else if (err?.message) {
+        alert(`Payment error: ${err.message}`);
+      } else {
+        alert("Payment initiation failed. Please try again.");
+      }
     }
   };
 
@@ -212,7 +256,7 @@ const ReservationForm = ({
 
   if (submitSuccess) {
     // Construct URLs
-    const nurserySlug = createSlug(nurseryName, locale);
+    const nurserySlug = nurseryName.toLowerCase().replace(/\s+/g, "-");
     const reservationDetailsUrl = `/${locale}/(website)/nurseries/${nurserySlug}/reservation`;
     const dashboardReservationsUrl = `/${locale}/dashboard/parent/bookings`;
     return (
@@ -467,7 +511,7 @@ const ReservationForm = ({
             paddingRight: 8,
           }}
         >
-          {isChildrenLoading
+          {/* {isChildrenLoading
             ? Array.from({ length: 4 }).map((_, idx) => (
                 <motion.div
                   key={idx}
@@ -561,7 +605,7 @@ const ReservationForm = ({
                     )}
                   </motion.button>
                 );
-              })}
+              })} */}
         </div>
       </motion.div>
 
