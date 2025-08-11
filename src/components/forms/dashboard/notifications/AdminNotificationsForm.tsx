@@ -122,7 +122,7 @@ const NotificationsForm = () => {
         ],
         title: data.type,
         date: data.day.toISOString().split("T")[0],
-        time: data.time,
+        time_start: data.time,
       });
     },
     onSuccess: () => {
@@ -164,7 +164,7 @@ const NotificationsForm = () => {
     methods.setValue("centerRecipients", selectedBranchIds);
     methods.setValue("recipients", {
       centerRecipients: selectedBranchIds,
-      parentRecipients: selectedWithOnlySelectedChild
+      parentRecipients: selectedWithOnlySelectedChild,
     });
 
     const valid = await methods.trigger(); // re-validate with updated recipients
