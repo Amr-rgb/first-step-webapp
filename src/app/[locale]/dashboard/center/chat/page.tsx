@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
 import { chatService } from "@/services/chatService";
+import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
+import { MessageCircle } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 const CenterChatPage = () => {
-  const { data: session, status } = useSession();
+  const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatListItem[]>([]);
@@ -19,26 +21,22 @@ const CenterChatPage = () => {
   const [isSending, setIsSending] = useState(false);
 
   const currentUser: User = {
-    id: session?.user?.id?.toString() || "",
-    name: session?.user?.name || "Center User",
+    id: user?.id?.toString() || "",
+    name: user?.name || "Center User",
     type: "center",
-    email: session?.user?.email || "",
+    email: user?.email || "",
     avatar: "/assets/logos/center-logo.png",
   };
 
   // Fetch chat contacts
   const fetchChatContacts = useCallback(async () => {
-    const token = await fetch('/api/auth/session')
-      .then(res => res.json())
-      .then(session => session?.accessToken);
-    
     if (!token) return;
-    
+
     try {
       setIsLoading(true);
       const contacts = await chatService.getChatContacts(token);
       setChats(contacts);
-      
+
       // Select the first chat by default if none selected
       if (contacts.length > 0 && !selectedChatId) {
         setSelectedChatId(contacts[0].id);
@@ -49,30 +47,28 @@ const CenterChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId]);
+  }, [selectedChatId, token]);
 
   // Fetch messages for the selected chat
   const fetchMessages = useCallback(async () => {
-    if (!selectedChatId) return;
-    
-    const token = await fetch('/api/auth/session')
-      .then(res => res.json())
-      .then(session => session?.accessToken);
-    
-    if (!token) return;
-    
+    if (!selectedChatId || !token) return;
+
     try {
       setIsLoading(true);
       const chatMessages = await chatService.getMessages(selectedChatId, token);
       setMessages(chatMessages);
-      
+
       // Update last message in chats list
       if (chatMessages.length > 0) {
         const lastMessage = chatMessages[chatMessages.length - 1];
-        setChats(prevChats => 
-          prevChats.map(chat => 
-            chat.id === selectedChatId 
-              ? { ...chat, lastMessage: lastMessage.content, timestamp: lastMessage.timestamp }
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === selectedChatId
+              ? {
+                  ...chat,
+                  lastMessage: lastMessage.content,
+                  timestamp: lastMessage.timestamp,
+                }
               : chat
           )
         );
@@ -83,56 +79,52 @@ const CenterChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId]);
+  }, [selectedChatId, token]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
     let keepAliveInterval: NodeJS.Timeout;
-    
+
     const updateStatus = async (isOnline: boolean) => {
       try {
-        const token = await fetch('/api/auth/session')
-          .then(res => res.json())
-          .then(session => session?.accessToken);
-        
         if (!token) return;
-        
+
         await chatService.updateOnlineStatus(isOnline, token);
       } catch (error) {
-        console.error('Error updating online status:', error);
+        console.error("Error updating online status:", error);
       }
     };
-    
+
     // Set online
     updateStatus(true);
-    
+
     // Set up interval to keep alive (every 30 seconds)
     keepAliveInterval = setInterval(() => {
       updateStatus(true);
     }, 30000);
-    
+
     // Set up beforeunload to set offline
     const handleBeforeUnload = () => {
       updateStatus(false);
     };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
       clearInterval(keepAliveInterval);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       updateStatus(false);
     };
-  }, []);
+  }, [token]);
 
   // Load initial data
   useEffect(() => {
-    if (status === "authenticated") {
+    if (isAuthenticated()) {
       fetchChatContacts();
-    } else if (status === "unauthenticated") {
-      router.push("/signin");
+    } else {
+      router.push("/sign-in");
     }
-  }, [status, fetchChatContacts, router]);
+  }, [isAuthenticated, fetchChatContacts, router]);
 
   // Load messages when selected chat changes
   useEffect(() => {
@@ -146,38 +138,29 @@ const CenterChatPage = () => {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedChatId || !content.trim()) return;
-    
+    if (!selectedChatId || !content.trim() || !token) return;
+
     try {
       setIsSending(true);
-      
-      // Get token from session
-      const token = await fetch('/api/auth/session')
-        .then(res => res.json())
-        .then(session => session?.accessToken);
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      
+
       const newMessage = await chatService.sendMessage(
         selectedChatId,
         content,
         token
       );
-      
-      setMessages(prev => [...prev, newMessage]);
-      
+
+      setMessages((prev) => [...prev, newMessage]);
+
       // Update last message in chats list
-      setChats(prevChats => 
-        prevChats.map(chat => 
-          chat.id === selectedChatId 
-            ? { 
-                ...chat, 
-                lastMessage: newMessage.content, 
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === selectedChatId
+            ? {
+                ...chat,
+                lastMessage: newMessage.content,
                 timestamp: newMessage.timestamp,
-                unreadCount: 0 // Reset unread count
-              } 
+                unreadCount: 0, // Reset unread count
+              }
             : chat
         )
       );
@@ -191,18 +174,13 @@ const CenterChatPage = () => {
 
   const handleNewChat = async (participantId: string) => {
     try {
-      // Get token from session
-      const token = await fetch('/api/auth/session')
-        .then(res => res.json())
-        .then(session => session?.accessToken);
-      
       if (!token) {
-        throw new Error('No authentication token found');
+        throw new Error("No authentication token found");
       }
-      
+
       // In a real implementation, you would create a new chat with the participant
       // For now, we'll just select the chat if it exists
-      const existingChat = chats.find(chat => chat.id === participantId);
+      const existingChat = chats.find((chat) => chat.id === participantId);
       if (existingChat) {
         setSelectedChatId(participantId);
       } else {
@@ -219,7 +197,7 @@ const CenterChatPage = () => {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -233,9 +211,16 @@ const CenterChatPage = () => {
         messages={messages}
         onSendMessage={handleSendMessage}
       />
+
+      {/* Coming Soon Overlay */}
+      <ComingSoonOverlay
+        message="Chat feature is being polished with amazing new capabilities! Stay tuned for seamless communication."
+        icon={<MessageCircle className="w-8 h-8 text-blue-400 animate-pulse" />}
+        theme="gradient"
+        showBlur={true}
+      />
     </div>
   );
 };
 
 export default CenterChatPage;
-

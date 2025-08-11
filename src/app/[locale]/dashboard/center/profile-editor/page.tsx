@@ -6,11 +6,12 @@ import ProfileEditor from "@/components/dashboard/profile-editor/ProfileEditor";
 import ProfilePreview from "@/components/dashboard/profile-editor/ProfilePreview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Eye, Edit, Save, AlertCircle } from "lucide-react";
+import { Eye, Edit, Save, AlertCircle, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/authStore";
 import { getPortfolio, savePortfolio } from "@/services/dashboardApi";
+import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
 
 export interface ProfileSection {
   id: string;
@@ -622,7 +623,7 @@ export default function ProfileEditorPage() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1">
+      <div className="relative flex-1">
         {isPreviewMode ? (
           <ProfilePreview sections={profileSections} isEmpty={isProfileEmpty} />
         ) : (
@@ -633,6 +634,14 @@ export default function ProfileEditorPage() {
             onSectionDelete={handleSectionDelete}
           />
         )}
+        
+        {/* Coming Soon Overlay */}
+        <ComingSoonOverlay
+          message="Portfolio editor is getting a major design upgrade! We're crafting an intuitive experience for creating stunning nursery profiles."
+          icon={<Palette className="w-8 h-8 text-purple-400 animate-bounce" />}
+          theme="gradient"
+          showBlur={true}
+        />
       </div>
     </div>
   );

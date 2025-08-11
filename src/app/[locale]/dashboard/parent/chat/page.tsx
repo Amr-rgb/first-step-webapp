@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
+import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
+import { Heart } from "lucide-react";
 
 const ParentChatPage = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -121,7 +123,7 @@ const ParentChatPage = () => {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -134,6 +136,14 @@ const ParentChatPage = () => {
         selectedChat={selectedChat}
         messages={messages}
         onSendMessage={handleSendMessage}
+      />
+      
+      {/* Coming Soon Overlay */}
+      <ComingSoonOverlay
+        message="Parent chat is being redesigned with real-time updates and photo sharing! Connect with your child's nursery like never before."
+        icon={<Heart className="w-8 h-8 text-pink-400 animate-bounce" />}
+        theme="gradient"
+        showBlur={true}
       />
     </div>
   );

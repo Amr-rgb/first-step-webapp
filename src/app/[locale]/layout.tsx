@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Smart childcare for every family.",
 };
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
@@ -33,26 +33,17 @@ export default async function RootLayout({
   }
 
   return (
-    <html
-      lang={locale}
-      dir={locale === "ar" ? "rtl" : "ltr"}
-      suppressHydrationWarning
-    >
-      <body
-        className={`${tajawal.className} min-h-screen flex flex-col antialiased`}
-        suppressHydrationWarning
-      >
-        <GoogleAnalytics />
-        <NextIntlClientProvider>
-          <CookieSync />
-          <Providers>{children}</Providers>
-          <Toaster />
-        </NextIntlClientProvider>
-        <Script
-          src="https://accounts.google.com/gsi/client"
-          strategy="afterInteractive"
-        />
-      </body>
-    </html>
+    <>
+      <GoogleAnalytics />
+      <NextIntlClientProvider>
+        <CookieSync />
+        <Providers>{children}</Providers>
+        <Toaster />
+      </NextIntlClientProvider>
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+      />
+    </>
   );
 }

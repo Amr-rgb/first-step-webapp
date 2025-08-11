@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
 import { chatService } from "@/services/chatService";
+import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
+import { Shield } from "lucide-react";
 
 const AdminChatPage = () => {
   const { data: session, status } = useSession();
@@ -193,7 +195,7 @@ const AdminChatPage = () => {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -206,6 +208,14 @@ const AdminChatPage = () => {
         selectedChat={selectedChat}
         messages={messages}
         onSendMessage={handleSendMessage}
+      />
+      
+      {/* Coming Soon Overlay */}
+      <ComingSoonOverlay
+        message="Admin chat dashboard is being enhanced with advanced moderation tools and analytics! Perfect communication management is on its way."
+        icon={<Shield className="w-8 h-8 text-emerald-400 animate-pulse" />}
+        theme="gradient"
+        showBlur={true}
       />
     </div>
   );
