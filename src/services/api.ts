@@ -778,6 +778,7 @@ export const paymentService = {
       const response = await apiClient.post("/payment/subscribe", {
         enrollment_id: enrollmentId,
       });
+
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

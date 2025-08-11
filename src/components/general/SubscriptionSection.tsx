@@ -13,12 +13,14 @@ const SubscriptionSection = () => {
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+
   const plans = [
     {
       id: 3,
       name: t("plans.annual.title"),
       price: "3,999",
       period: t("plans.annual.period"),
+      planId: 1, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -33,6 +35,7 @@ const SubscriptionSection = () => {
       name: t("plans.semiAnnual.title"),
       price: "2,599",
       period: t("plans.semiAnnual.period"),
+      planId: 2, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -48,6 +51,7 @@ const SubscriptionSection = () => {
       name: t("plans.quarterly.title"),
       price: "1,499",
       period: t("plans.quarterly.period"),
+      planId: 3, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -126,6 +130,7 @@ const SubscriptionSection = () => {
     );
   }
 
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -160,6 +165,7 @@ const SubscriptionSection = () => {
                 ) : (
                   t("banner.cta")
                 )}
+
               </Button>
               <p className="text-warning font-medium flex items-center">
                 {t("banner.limitedOffer")}
@@ -318,6 +324,7 @@ const SubscriptionSection = () => {
                       ) : (
                         plan.buttonText
                       )}
+
                     </Button>
                   </div>
                 </div>
@@ -350,6 +357,7 @@ const SubscriptionSection = () => {
                     ) : (
                       plan.buttonText
                     )}
+
                   </Button>
                 </div>
               </div>
