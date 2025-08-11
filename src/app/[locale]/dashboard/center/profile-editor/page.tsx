@@ -494,9 +494,9 @@ export default function ProfileEditorPage() {
       },
     ];
   }
-  function mapProfileSectionsToBackend(sections, centerId) {
+  function mapProfileSectionsToBackend(sections: any[], centerId: number) {
     // Helper to get section by type
-    const get = (type) => sections.find((s) => s.type === type);
+    const get = (type: any) => sections.find((s) => s.type === type);
 
     return {
       hero_section: {
@@ -634,7 +634,7 @@ export default function ProfileEditorPage() {
             onSectionDelete={handleSectionDelete}
           />
         )}
-        
+
         {/* Coming Soon Overlay */}
         <ComingSoonOverlay
           message="Portfolio editor is getting a major design upgrade! We're crafting an intuitive experience for creating stunning nursery profiles."

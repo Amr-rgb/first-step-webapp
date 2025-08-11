@@ -1,16 +1,10 @@
 import { Metadata } from "next";
-// import Advertisment from "@/components/general/Advertisment";
-import Headline from "@/components/general/Headline";
-// import VisionMission from "@/components/general/VisionMission";
-import Values from "@/components/general/Values";
-import FeaturesSection from "@/components/general/FeaturesSection";
-import SubscriptionSection from "@/components/general/SubscriptionSection";
-import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
-import FAQs from "@/components/general/FAQs";
-import Contact from "@/components/general/contact/Contact";
 import { websiteService } from "@/services/api";
-import HeroSection from "@/components/general/HeroSection";
-import PreviewVideo from "@/components/general/PreviewVideo";
+import { notFound } from "next/navigation";
+import Contact from "@/components/general/contact/Contact";
+import Image from "next/image";
+import FAQAccordion from "@/components/general/FAQAccordion";
+import { CommonQuestion } from "@/types";
 
 export const revalidate = 86400;
 
@@ -20,28 +14,34 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const params = await paramsPromise;
-
   return {
     title:
       params.locale === "ar"
-        ? "منصة First Step اختاري الحضانة المناسبة لطفلك بسهولة في السعودية"
-        : "First Step Platform - Find the Perfect Nursery for Your Child in Saudi Arabia",
+        ? "الأسئلة الشائعة | First Step - منصة الحضانات الموثوقة"
+        : "Frequently Asked Questions | First Step - Trusted Nursery Platform",
     description:
       params.locale === "ar"
-        ? "اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك."
-        : "Discover trusted nurseries and kindergartens in Saudi Arabia in one place. First Step helps you choose a nursery that provides balanced care and education for your child.",
+        ? "اطلع على الأسئلة الشائعة حول منصة First Step للحضانات والمراكز التأهيلية في المملكة العربية السعودية."
+        : "Browse frequently asked questions about First Step platform for nurseries and rehabilitation centers in Saudi Arabia.",
   };
 }
 
-export default async function HomePage({
+export default async function FAQsPage({
   params,
 }: {
-  params: Promise<{ locale: "ar" | "en" }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
 
-  let commonQuestions = await websiteService.getCommonQuestions(locale);
+  let commonQuestions: CommonQuestion[] = [];
 
+  try {
+    commonQuestions = await websiteService.getCommonQuestions(locale);
+  } catch (error) {
+    console.error("Failed to fetch FAQs:", error);
+  }
+
+  // If no FAQs from API, Give dummy data
   if (!commonQuestions || commonQuestions.length === 0) {
     // notFound();
 
@@ -236,18 +236,92 @@ export default async function HomePage({
   }
 
   return (
-    <main>
-      <HeroSection />
-      {/* <Advertisment slides={adSlides} /> */}
-      <Headline />
-      <PreviewVideo />
-      <FeaturesSection />
-      <SubscriptionSection />
-      {/* <VisionMission /> */}
-      <Values locale={locale} />
-      <BlogsWrapper locale={locale} number={4} />
-      <FAQs commonQuestions={commonQuestions} />
+    <div>
+      {/* Header Section */}
+      <div className="relative">
+        <Image
+          src="/assets/backgrounds/blog-bg.png"
+          alt="FAQs Header"
+          width={1440}
+          height={400}
+          className="w-full h-[400px] object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <div className="text-center text-white">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {locale === "ar"
+                ? "الأسئلة الشائعة"
+                : "Frequently Asked Questions"}
+            </h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto">
+              {locale === "ar"
+                ? "إجابات شاملة على الأسئلة الأكثر شيوعاً حول منصة First Step"
+                : "Comprehensive answers to the most common questions about First Step platform"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto">
+          {/* Introduction */}
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary-blue mb-4">
+              {locale === "ar" ? "كيف يمكننا مساعدتك؟" : "How can we help you?"}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              {locale === "ar"
+                ? "إليك مجموعة من الأسئلة الشائعة التي قد تساعدك في فهم خدماتنا والاستفادة من منصة First Step بشكل أفضل."
+                : "Here are some frequently asked questions that may help you better understand our services and make the most of the First Step platform."}
+            </p>
+          </div>
+
+          {/* FAQs Accordion */}
+          <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
+            <FAQAccordion
+              commonQuestions={commonQuestions}
+              locale={locale}
+              variant="default"
+            />
+          </div>
+
+          {/* Still Have Questions Section */}
+          <div className="mt-12 text-center">
+            <div className="bg-blue-50 rounded-lg p-8">
+              <h3 className="text-xl font-semibold text-primary-blue mb-4">
+                {locale === "ar"
+                  ? "لا زال لديك أسئلة؟"
+                  : "Still have questions?"}
+              </h3>
+              <p className="text-gray-700 mb-6">
+                {locale === "ar"
+                  ? "إذا لم تجد إجابة لسؤالك، لا تتردد في التواصل معنا. فريقنا مستعد لمساعدتك."
+                  : "If you couldn't find the answer to your question, don't hesitate to contact us. Our team is ready to help you."}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="mailto:info@firststep-app.com"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-primary-blue text-white font-medium rounded-lg hover:bg-primary-blue-700 transition-colors"
+                >
+                  {locale === "ar"
+                    ? "راسلنا عبر البريد الإلكتروني"
+                    : "Email Us"}
+                </a>
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-primary-blue text-primary-blue font-medium rounded-lg hover:bg-primary-blue hover:text-white transition-colors"
+                >
+                  {locale === "ar" ? "صفحة التواصل" : "Contact Page"}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Section */}
       <Contact />
-    </main>
+    </div>
   );
 }

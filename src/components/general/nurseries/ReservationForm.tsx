@@ -224,7 +224,7 @@ const ReservationForm = ({
     console.log("Selected plan ID:", selectedPlanId);
 
     try {
-      const data = await paymentService.subscribe(selectedPlanId);
+      const data = await paymentService.parentSubscribe(selectedPlanId);
       setIsSubmitting(false);
       if (data.success && data.payment_url) {
         // Redirect to Moyasar payment page, but after payment, Moyasar should redirect back to our reservation page with ?payment=success

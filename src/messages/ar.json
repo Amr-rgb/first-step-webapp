@@ -57,8 +57,8 @@
       "story": { "title": "قصتنا", "path": "/our-story" },
       "contact": { "title": "تواصل معنا", "path": "/contact" },
       "help": { "title": "المساعدة", "path": "/help" },
-      "privacy": { "title": "الخصوصية", "path": "/privacy" },
-      "terms": { "title": "الشروط والأحكام", "path": "/terms" }
+      "privacy-policy": { "title": "الخصوصية", "path": "/privacy" },
+      "terms-conditions": { "title": "الشروط والأحكام", "path": "/terms" }
     },
     "contactTitle": "تواصل معنا",
     "newsletter": {
@@ -1683,6 +1683,7 @@
         "popular": "الأكثر شعبية",
         "commission": "+ 12 % عمولة على كل حجز من خلال الموقع",
         "select": "اشترك الآن",
+        "processing": "جاري المعالجة...",
         "currency": "ر.س",
         "annual": {
           "title": "سنوي",
@@ -1702,6 +1703,11 @@
           "updates": "تحديثات مجانية",
           "discount": "وفر {discount} مع الاشتراك السنوي"
         }
+      },
+      "success": {
+        "title": "تم الاشتراك بنجاح!",
+        "message": "شكراً لك على اشتراكك. ستتلقى رسالة تأكيد قريباً.",
+        "continue": "متابعة"
       }
     },
     "HeroSection": {

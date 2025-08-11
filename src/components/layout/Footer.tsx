@@ -154,9 +154,9 @@ const TopRightSection = () => {
     "blog",
     "story",
     "contact",
-    "help",
-    "privacy",
-    "terms",
+    // "help",
+    "privacy-policy",
+    "terms-conditions",
   ];
   const links = keys.map((key, index) => {
     return {

@@ -1,9 +1,11 @@
 import { Metadata } from "next";
 // import Advertisment from "@/components/general/Advertisment";
 import Headline from "@/components/general/Headline";
-import StickyScrollServices from "@/components/general/StickyScrollServices";
+// import StickyScrollServices from "@/components/general/StickyScrollServices";
 import { websiteService } from "@/services/api";
 import Services from "@/components/general/Services";
+import ServicesClientWrapper from "@/components/general/ServicesClientWrapper";
+import { getParentServices, getCenterServices } from "@/data/services";
 
 export const revalidate = 86400;
 
@@ -30,17 +32,10 @@ export default async function ServicesPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  
+  const parentServices = getParentServices(resolvedParams.locale);
+  const centerServices = getCenterServices(resolvedParams.locale);
 
-  // const adSlides = await websiteService.getAdSlides(locale);
-  const services = await websiteService.getOurServices(locale);
-
-  return (
-    <main>
-      {/* <Advertisment slides={adSlides} /> */}
-      <Headline />
-      {/* <StickyScrollServices locale={locale as "en" | "ar"} /> */}
-      <Services services={services} />
-    </main>
-  );
+  return <ServicesClientWrapper parentServices={parentServices} centerServices={centerServices} />;
 }

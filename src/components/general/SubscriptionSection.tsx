@@ -10,11 +10,13 @@ import { paymentService } from "@/services/api";
 
 const SubscriptionSection = () => {
   const t = useTranslations("HomePage.Subscription");
-  const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
 
   const plans = [
     {
-      id: "annual",
+      id: 3,
       name: t("plans.annual.title"),
       price: "3,999",
       period: t("plans.annual.period"),
@@ -26,9 +28,10 @@ const SubscriptionSection = () => {
         t("plans.features.discount", { discount: "30%" }),
       ],
       buttonText: t("plans.select"),
+      planId: 3, // Annual plan ID
     },
     {
-      id: "semi-annual",
+      id: 2,
       name: t("plans.semiAnnual.title"),
       price: "2,599",
       period: t("plans.semiAnnual.period"),
@@ -41,9 +44,10 @@ const SubscriptionSection = () => {
       ],
       popular: true,
       buttonText: t("plans.select"),
+      planId: 2, // Semi-annual plan ID
     },
     {
-      id: "quarterly",
+      id: 1,
       name: t("plans.quarterly.title"),
       price: "1,499",
       period: t("plans.quarterly.period"),
@@ -54,55 +58,78 @@ const SubscriptionSection = () => {
         t("plans.features.updates"),
       ],
       buttonText: t("plans.select"),
+      planId: 1, // Quarterly plan ID
     },
   ];
 
-  const handlePlanSelection = async (planId: number, planName: string) => {
-    setIsSubmitting(planName);
+  const handlePayment = async (planId: number) => {
+    setIsSubmitting(planId);
     try {
-      console.log(`Subscribing to plan: ${planName} with ID: ${planId}`);
-      const data = await paymentService.subscribe(planId);
-
+      const data = await paymentService.centerSubscribe(planId);
+      setIsSubmitting(null);
       if (data.success && data.payment_url) {
-        // Redirect to payment page
+        // Redirect to Moyasar payment page
         window.location.href = data.payment_url;
       } else {
+        console.error("Payment initiation failed:", data);
         alert("Payment initiation failed. Please try again.");
       }
-    } catch (err: any) {
-      console.error("Payment error:", err);
-
-      // More specific error handling
-      if (err?.data?.message) {
-        alert(`Payment error: ${err.data.message}`);
-      } else if (err?.message) {
-        alert(`Payment error: ${err.message}`);
-      } else {
-        alert("Payment initiation failed. Please try again.");
-      }
-    } finally {
+    } catch (err) {
       setIsSubmitting(null);
+      console.error("Payment error:", err);
+      alert(
+        "Payment initiation failed. Please check your connection and try again."
+      );
     }
   };
 
-  const handleBannerClick = async () => {
-    setIsSubmitting("banner");
-    try {
-      // Use a default plan ID for the banner (you can change this)
-      const data = await paymentService.subscribe(1);
-
-      if (data.success && data.payment_url) {
-        window.location.href = data.payment_url;
-      } else {
-        alert("Payment initiation failed. Please try again.");
+  // Show success message if redirected from payment
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("payment") === "success") {
+        setSubmitSuccess(true);
       }
-    } catch (err: any) {
-      console.error("Payment error:", err);
-      alert("Payment initiation failed. Please try again.");
-    } finally {
-      setIsSubmitting(null);
     }
-  };
+  }, []);
+
+  if (submitSuccess) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
+            className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md mx-auto"
+          >
+            <div className="mb-6">
+              <Image
+                src="/assets/illustrations/success.png"
+                alt="Success"
+                width={100}
+                height={100}
+              />
+            </div>
+            <h2 className="text-2xl font-bold text-[#22336C] mb-4">
+              {t("success.title") || "Subscription Successful!"}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {t("success.message") ||
+                "Thank you for your subscription. You will receive a confirmation email shortly."}
+            </p>
+            <Button
+              onClick={() => setSubmitSuccess(false)}
+              className="bg-[#4D5EDB] hover:bg-[#3646a5] text-white"
+            >
+              {t("success.continue") || "Continue"}
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
 
   return (
     <section className="py-16 bg-white">
@@ -126,11 +153,19 @@ const SubscriptionSection = () => {
               <Button
                 size="sm"
                 variant="defaultNoGradient"
-                className="bg-white hover:bg-white/90 text-primary rounded-xl w-full"
-                onClick={handleBannerClick}
-                disabled={isSubmitting === "banner"}
+                className="bg-white hover:bg-white/90 text-primary rounded-xl w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handlePayment(2)} // Default to semi-annual plan for promo
+                disabled={isSubmitting === 2}
               >
-                {isSubmitting === "banner" ? "Processing..." : t("banner.cta")}
+                {isSubmitting === 2 ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {t("plans.processing") || "Processing..."}
+                  </div>
+                ) : (
+                  t("banner.cta")
+                )}
+
               </Button>
               <p className="text-warning font-medium flex items-center">
                 {t("banner.limitedOffer")}
@@ -277,15 +312,19 @@ const SubscriptionSection = () => {
                       ref={buttonRef}
                       size="sm"
                       variant="defaultNoGradient"
-                      className="w-full rounded-xl bg-white text-primary-blue hover:bg-white/90"
-                      onClick={() =>
-                        handlePlanSelection(plan.planId, plan.name)
-                      }
-                      disabled={isSubmitting === plan.name}
+                      className="w-full rounded-xl bg-white text-primary-blue hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => handlePayment(plan.planId)}
+                      disabled={isSubmitting === plan.planId}
                     >
-                      {isSubmitting === plan.name
-                        ? "Processing..."
-                        : plan.buttonText}
+                      {isSubmitting === plan.planId ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin"></div>
+                          {t("plans.processing")}
+                        </div>
+                      ) : (
+                        plan.buttonText
+                      )}
+
                     </Button>
                   </div>
                 </div>
@@ -306,13 +345,19 @@ const SubscriptionSection = () => {
                   <p className="font-medium">{t("plans.commission")}</p>
                   <Button
                     size="sm"
-                    className="w-full rounded-xl hover:bg-white/90"
-                    onClick={() => handlePlanSelection(plan.planId, plan.name)}
-                    disabled={isSubmitting === plan.name}
+                    className="w-full rounded-xl hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => handlePayment(plan.planId)}
+                    disabled={isSubmitting === plan.planId}
                   >
-                    {isSubmitting === plan.name
-                      ? "Processing..."
-                      : plan.buttonText}
+                    {isSubmitting === plan.planId ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin"></div>
+                        {t("plans.processing")}
+                      </div>
+                    ) : (
+                      plan.buttonText
+                    )}
+
                   </Button>
                 </div>
               </div>

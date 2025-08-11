@@ -290,6 +290,70 @@ export const websiteService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getTermsAndConditions: async (locale: string): Promise<Blog[]> => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/terms-and-condition?lang=${locale}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 86400,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch terms and conditions",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data.terms;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getPrivacy: async (locale: string): Promise<Blog[]> => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/privacy?lang=${locale}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 86400,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch privacy",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data.privacy;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const blogService = {
@@ -698,7 +762,7 @@ export const authService = {
 };
 
 export const paymentService = {
-  subscribe: async (planId: number) => {
+  centerSubscribe: async (planId: number) => {
     try {
       const response = await apiClient.post("/payment/subscribe", {
         plan_id: planId,
@@ -709,9 +773,12 @@ export const paymentService = {
     }
   },
 
-  getPlans: async () => {
+  parentSubscribe: async (enrollmentId: number) => {
     try {
-      const response = await apiClient.get("/payment/plans");
+      const response = await apiClient.post("/payment/subscribe", {
+        enrollment_id: enrollmentId,
+      });
+
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

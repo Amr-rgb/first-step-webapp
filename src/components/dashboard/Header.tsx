@@ -1,8 +1,22 @@
 "use client";
 
 import React, { useMemo, useState, useRef, useEffect } from "react";
-import { Bell, Settings, Search, Maximize2, Minimize2, X } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import {
+  Bell,
+  Settings,
+  Search,
+  Maximize2,
+  Minimize2,
+  X,
+  CreditCard,
+  User,
+  Shield,
+  FileText,
+  HelpCircle,
+  Mail,
+  LogOut,
+} from "lucide-react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useDashboardSearch } from "@/hooks/use-dashboard-search";
@@ -16,7 +30,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
+import { useAuthStore } from "@/store/authStore";
 
 type BreadcrumbItem = {
   title: string;
@@ -41,10 +65,14 @@ export default function Header({
   secondarySidebarOpen,
 }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("dashboard.header");
   const commonT = useTranslations("common");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const authStore = useAuthStore();
 
   // Dashboard search functionality
   const {
@@ -58,6 +86,66 @@ export default function Header({
     handleClose,
     handleOpen,
   } = useDashboardSearch();
+
+  // Menu items configuration
+  const menuItems = {
+    notifications: {
+      icon: Bell,
+      label: "الإشعارات",
+      type: "toggle" as const,
+      value: notificationsEnabled,
+      onChange: setNotificationsEnabled,
+    },
+    separator1: { type: "separator" as const },
+    // paymentLog: {
+    //   icon: CreditCard,
+    //   label: "سجل الدفع",
+    //   type: "link" as const,
+    //   href: "/dashboard/payment-log",
+    // },
+    // accountData: {
+    //   icon: User,
+    //   label: "تعديل بيانات الحساب",
+    //   type: "link" as const,
+    //   href: "/dashboard/account",
+    // },
+    // separator2: { type: "separator" as const },
+    privacyPolicy: {
+      icon: Shield,
+      label: "سياسة الخصوصية",
+      type: "link" as const,
+      href: "/privacy-policy",
+    },
+    termsConditions: {
+      icon: FileText,
+      label: "الشروط والأحكام",
+      type: "link" as const,
+      href: "/terms-conditions",
+    },
+    faqs: {
+      icon: HelpCircle,
+      label: "الاسئلة الشائعة",
+      type: "link" as const,
+      href: "/faqs",
+    },
+    contactUs: {
+      icon: Mail,
+      label: "تواصل معنا",
+      type: "link" as const,
+      href: "/contact",
+    },
+    separator3: { type: "separator" as const },
+    logout: {
+      icon: LogOut,
+      label: "تسجيل الخروج",
+      type: "action" as const,
+      variant: "destructive" as const,
+      onClick: () => {
+        authStore.clearAuth();
+        router.push("/sign-in");
+      },
+    },
+  };
 
   const handleCloseAndBlur = () => {
     handleClose();
@@ -328,7 +416,67 @@ export default function Header({
         </div>
 
         <Bell className="size-6 text-mid-gray cursor-pointer" />
-        <Settings className="size-6 text-mid-gray cursor-pointer" />
+
+        {/* Settings Dropdown Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center justify-center hover:bg-gray-100 rounded-lg p-1 transition-colors">
+              <Settings className="size-6 text-mid-gray cursor-pointer" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            {Object.entries(menuItems).map(([key, item]) => {
+              if (item.type === "separator") {
+                return <DropdownMenuSeparator key={key} />;
+              }
+
+              if (item.type === "toggle") {
+                return (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between p-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <item.icon className="size-4" />
+                      <span className="text-sm">{item.label}</span>
+                    </div>
+                    <Switch
+                      checked={item.value}
+                      onCheckedChange={item.onChange}
+                      className="data-[state=checked]:bg-secondary-mint-green"
+                    />
+                  </div>
+                );
+              }
+
+              if (item.type === "link") {
+                return (
+                  <DropdownMenuItem key={key} asChild>
+                    <Link href={item.href} className="flex items-center gap-2">
+                      <item.icon className="size-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              }
+
+              if (item.type === "action") {
+                return (
+                  <DropdownMenuItem
+                    key={key}
+                    variant={item.variant}
+                    onClick={item.onClick}
+                  >
+                    <item.icon className="size-4" />
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                );
+              }
+
+              return null;
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Fullscreen toggle (only on xl screens, far right) */}
         <button
