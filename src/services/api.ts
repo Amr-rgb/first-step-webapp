@@ -542,7 +542,7 @@ export const nurseryService = {
         },
       });
 
-      return response.data.portofilo || null;
+      return response.data || null;
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
       return null;
