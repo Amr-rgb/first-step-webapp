@@ -158,7 +158,7 @@ export default async function NurseryPage({
                   {portfolio.service_section_title || t("services.title")}
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {portfolio.services.map((service, index) => (
+                  {portfolio.services.map((service: string, index: number) => (
                     <div
                       key={index}
                       className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
@@ -220,18 +220,20 @@ export default async function NurseryPage({
                     </p>
                   )}
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {portfolio.images_activities.map((activity, index) => (
-                      <div
-                        key={index}
-                        className="rounded-lg overflow-hidden shadow-md"
-                      >
-                        <img
-                          src={activity}
-                          alt={`Activity ${index + 1}`}
-                          className="w-full h-48 object-cover"
-                        />
-                      </div>
-                    ))}
+                    {portfolio.images_activities.map(
+                      (activity: string, index: number) => (
+                        <div
+                          key={index}
+                          className="rounded-lg overflow-hidden shadow-md"
+                        >
+                          <img
+                            src={activity}
+                            alt={`Activity ${index + 1}`}
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               </section>
@@ -245,7 +247,7 @@ export default async function NurseryPage({
                   {t("team.title")}
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {portfolio.teams.map((member, index) => (
+                  {portfolio.teams.map((member: any, index: number) => (
                     <div
                       key={index}
                       className="bg-white p-6 rounded-lg shadow-md text-center"
