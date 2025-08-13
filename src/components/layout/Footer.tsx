@@ -76,9 +76,9 @@ const TopLeftSection = () => {
             }}
             className="w-full flex flex-col sm:flex-row gap-3"
           >
-            <div className="relative grow w-full sm:w-auto order-1 sm:order-1 flex bg-white rounded-lg">
+            <div className="relative grow w-full sm:w-auto order-1 sm:order-1 flex bg-white rounded-lg items-center">
               <Input
-                className="text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
+                className="!border-0 !shadow-none text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
                 type="email"
                 placeholder="Email"
                 value={email}

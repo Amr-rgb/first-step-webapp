@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import SearchBar from "../search/SearchBar";
 import FilterButtons from "../search/FilterButtons";
 import NurseryCard from "./NurseryCard";
-import { CenterRegisterPayload } from "@/types";
+import { NurseryResponse } from "@/types";
 import useDebounce from "@/hooks/useDebounce";
 import { useTranslations } from "next-intl";
 
@@ -15,7 +15,7 @@ const Nurseries = ({
   filter,
   locale,
 }: {
-  nurseries: CenterRegisterPayload[];
+  nurseries: NurseryResponse[];
   query: string;
   filter: string;
   locale: string;

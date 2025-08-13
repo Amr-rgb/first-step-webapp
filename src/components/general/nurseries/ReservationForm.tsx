@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -35,13 +35,6 @@ interface Program {
   name: string;
   price: string;
   planId: number;
-}
-
-interface BackendPlan {
-  id: number;
-  name: string;
-  type: string;
-  price: number;
 }
 
 // Default programs with fallback plan IDs
@@ -134,35 +127,8 @@ const ReservationForm = ({
       },
     ];
   }
-  const [plans, setPlans] = useState<BackendPlan[]>([]);
-
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const data = await paymentService.getPlans();
-        setPlans(data);
-      } catch (error) {
-        console.error("Failed to fetch plans:", error);
-      }
-    };
-
-    fetchPlans();
-  }, []);
-
-  // Create program list from backend plans or use default
+  // Create program list from default programs
   const createProgramList = (): Program[] => {
-    if (plans.length > 0) {
-      // Map backend plans to program format
-      return plans.map((plan, index) => ({
-        id: index + 1,
-        type: plan.type as ProgramType,
-        name: plan.name,
-        price: `${plan.price} ${locale === "ar" ? "ر.س" : "SAR"}`,
-        planId: plan.id, // Use the actual backend plan ID
-      }));
-    }
-
-    // Fallback to default programs
     return isWorldOfLearningJunior ? dynamicPrograms : defaultPrograms[locale];
   };
 

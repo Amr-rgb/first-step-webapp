@@ -1740,6 +1740,18 @@
       "text": "We strive to provide a safe and stimulating environment that enables children to discover their abilities and develop their skills.",
       "junior": "Our goal is to be the parents' first partner in their children's growth journey."
     },
+    "waitingPage": {
+      "parentTitle": "Something Beautiful is Coming!",
+      "parentSubtitle": "Beautiful things take time because they are made with love and care.",
+      "centerTitle": "We're Preparing Something Special!",
+      "centerSubtitle": "Outstanding profiles need time to be created with precision and expertise.",
+      "adminTitle": "We're Reviewing Carefully!",
+      "adminSubtitle": "We ensure high quality for all profiles displayed on the platform.",
+      "browseNurseries": "Browse Nurseries",
+      "completeProfile": "Complete Profile",
+      "goToDashboard": "Go to Dashboard",
+      "goToAdminDashboard": "Go to Admin Dashboard"
+    },
     "goals": {
       "title": "Our Goals"
     },

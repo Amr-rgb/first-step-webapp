@@ -2,7 +2,7 @@ import MuxPlayer from "@mux/mux-player-react";
 import { createBlurUp } from "@mux/blurup";
 
 const options = {};
-const muxPlaybackId = "01J3iEgcr7zrxGh1uQt6Wagp6M0286YVenlg8NgKKUMZQ";
+const muxPlaybackId = "T8It02oFFSo401wcc00tTcn4WCbRW3CjO1qE0202ZyuBexLk";
 
 const PreviewVideo = async () => {
   const { blurDataURL, aspectRatio } = await createBlurUp(
@@ -19,7 +19,7 @@ const PreviewVideo = async () => {
         <MuxPlayer
           playbackId={muxPlaybackId}
           metadata={{
-            video_id: "6YPfNrCnz4e57KTXAqAob2pW4XsauSWkYEcy5T8vcjk",
+            video_id: "5CtgfRTknowfMGd00gzeKiPIEhcXJ02DJppj9Doy1vUNk",
             video_title: "First Step Preview",
             viewer_user_id: "user-id-007",
           }}

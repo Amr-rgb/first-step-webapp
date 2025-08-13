@@ -1084,7 +1084,7 @@ export const adminService = {
     userIds: number[];
     title: string;
     date: string;
-    time: string;
+    time_start: string;
   }) => {
     try {
       const response = await apiClient.post(`/dashboard/notifiy-user`, payload);
