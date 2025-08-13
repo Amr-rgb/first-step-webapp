@@ -44,54 +44,121 @@ export default async function NurseryPage({
     },
   ];
 
-  // Fetch all nurseries to find the specific nursery
-  const nurseries = await nurseryService.getNurseries(locale);
-  const nursery = nurseries.find((n) => {
-    const dbName = n.nursery_name.toLowerCase().trim();
-    const searchName = readableName.toLowerCase().trim();
-    return (
-      dbName === searchName ||
-      dbName.includes(searchName) ||
-      searchName.includes(dbName)
-    );
-  });
+  // Fetch portfolio data for this nursery
+  const portfolioResponse = await nurseryService.getNurseryPortfolio(
+    readableName,
+    locale
+  );
+  const portfolio = portfolioResponse?.portofilo;
 
-  // Check if nursery exists and has basic information
+  // Check if nursery has a profile with portfolio data
   const hasProfile =
-    nursery &&
-    (nursery.name ||
-      nursery.nursery_name ||
-      (nursery.branches && nursery.branches.length > 0) ||
-      nursery.services?.length > 0 ||
-      nursery.phone ||
-      nursery.email ||
-      nursery.address);
+    portfolio &&
+    ((portfolio.hero_section &&
+      (portfolio.hero_section.title_of_hero ||
+        portfolio.hero_section.subtitle_of_hero ||
+        portfolio.hero_section.description ||
+        portfolio.hero_section.background_image)) ||
+      (portfolio.branches && portfolio.branches.length > 0) ||
+      (portfolio.Philosophy_Methodology_Goal &&
+        (portfolio.Philosophy_Methodology_Goal.philosophy ||
+          portfolio.Philosophy_Methodology_Goal.methodology ||
+          portfolio.Philosophy_Methodology_Goal.goals)) ||
+      (portfolio.services && portfolio.services.length > 0) ||
+      (portfolio.nursery_state &&
+        (portfolio.nursery_state.area ||
+          portfolio.nursery_state.class_rooms ||
+          portfolio.nursery_state.team_members)) ||
+      (portfolio.images_activities && portfolio.images_activities.length > 0) ||
+      (portfolio.teams && portfolio.teams.length > 0) ||
+      (portfolio.contact_info &&
+        (portfolio.contact_info.address ||
+          portfolio.contact_info.phone_number ||
+          portfolio.contact_info.email_address ||
+          portfolio.contact_info.working_hours ||
+          portfolio.contact_info.facebook ||
+          portfolio.contact_info.instagram ||
+          portfolio.contact_info.whatsapp)));
 
   return (
     <div>
       {hasProfile ? (
         <>
-          <Header
-            name={nursery?.name || nursery?.nursery_name || readableName}
-            slogan={nursery?.additional_service}
-            description={nursery?.additional_service}
-            backgroundImage={nursery?.logo}
-          />
+          {/* Hero Section */}
+          {portfolio.hero_section && (
+            <Header
+              name={portfolio.hero_section.title_of_hero || readableName}
+              slogan={portfolio.hero_section.subtitle_of_hero}
+              description={portfolio.hero_section.description}
+              backgroundImage={portfolio.hero_section.background_image}
+            />
+          )}
 
           {/* Branches Section */}
-          {nursery?.branches && nursery.branches.length > 0 && (
+          {portfolio.branches && portfolio.branches.length > 0 && (
             <Branches locale={locale} nurseryName={name} />
           )}
 
+          {/* Philosophy, Methodology & Goals Section */}
+          {portfolio.Philosophy_Methodology_Goal && (
+            <section className="py-16 bg-gray-50">
+              <div className="container mx-auto px-4">
+                <div className="max-w-4xl mx-auto">
+                  {portfolio.Philosophy_Methodology_Goal.philosophy && (
+                    <div className="mb-12">
+                      <h2 className="text-3xl font-bold text-center text-[#22336C] mb-8">
+                        {portfolio.Philosophy_Methodology_Goal.philosophy
+                          .title || t("philosophy.title")}
+                      </h2>
+                      <p className="text-lg text-gray-700 leading-relaxed text-center">
+                        {
+                          portfolio.Philosophy_Methodology_Goal.philosophy
+                            .content
+                        }
+                      </p>
+                    </div>
+                  )}
+
+                  {portfolio.Philosophy_Methodology_Goal.methodology && (
+                    <div className="mb-12">
+                      <h2 className="text-3xl font-bold text-center text-[#22336C] mb-8">
+                        {portfolio.Philosophy_Methodology_Goal.methodology
+                          .title || t("methodology.title")}
+                      </h2>
+                      <p className="text-lg text-gray-700 leading-relaxed text-center">
+                        {
+                          portfolio.Philosophy_Methodology_Goal.methodology
+                            .content
+                        }
+                      </p>
+                    </div>
+                  )}
+
+                  {portfolio.Philosophy_Methodology_Goal.goals && (
+                    <div>
+                      <h2 className="text-3xl font-bold text-center text-[#22336C] mb-8">
+                        {portfolio.Philosophy_Methodology_Goal.goals.title ||
+                          t("goals.title")}
+                      </h2>
+                      <p className="text-lg text-gray-700 leading-relaxed text-center">
+                        {portfolio.Philosophy_Methodology_Goal.goals.content}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Services Section */}
-          {nursery?.services && nursery.services.length > 0 && (
+          {portfolio.services && portfolio.services.length > 0 && (
             <section className="py-16 bg-white">
               <div className="container mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center text-[#22336C] mb-12">
-                  {t("services.title")}
+                  {portfolio.service_section_title || t("services.title")}
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {nursery.services.map((service, index) => (
+                  {portfolio.services.map((service, index) => (
                     <div
                       key={index}
                       className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
@@ -110,41 +177,99 @@ export default async function NurseryPage({
           )}
 
           {/* Stats Section */}
-          {nursery && (
+          {portfolio.nursery_state && (
             <section className="py-16 bg-[#22336C] text-white">
               <div className="container mx-auto px-4">
-                <div className="grid md:grid-cols-4 gap-8 text-center">
+                <div className="grid md:grid-cols-3 gap-8 text-center">
                   <div>
                     <div className="text-3xl font-bold mb-2">
-                      {nursery.branches?.length || 0}
+                      {portfolio.nursery_state.area}
                     </div>
-                    <div className="text-gray-300">{t("stats.branches")}</div>
+                    <div className="text-gray-300">{t("stats.area")}</div>
                   </div>
                   <div>
                     <div className="text-3xl font-bold mb-2">
-                      {nursery.services?.length || 0}
+                      {portfolio.nursery_state.class_rooms}
                     </div>
-                    <div className="text-gray-300">{t("stats.services")}</div>
+                    <div className="text-gray-300">{t("stats.classrooms")}</div>
                   </div>
                   <div>
                     <div className="text-3xl font-bold mb-2">
-                      {nursery.accepted_ages?.length || 0}
+                      {portfolio.nursery_state.team_members}
                     </div>
-                    <div className="text-gray-300">{t("stats.ageGroups")}</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold mb-2">
-                      {nursery.nursery_type?.length || 0}
+                    <div className="text-gray-300">
+                      {t("stats.teamMembers")}
                     </div>
-                    <div className="text-gray-300">{t("stats.types")}</div>
                   </div>
                 </div>
               </div>
             </section>
           )}
 
+          {/* Activities Section */}
+          {portfolio.images_activities &&
+            portfolio.images_activities.length > 0 && (
+              <section className="py-16 bg-white">
+                <div className="container mx-auto px-4">
+                  <h2 className="text-3xl font-bold text-center text-[#22336C] mb-4">
+                    {portfolio.activity_section_title || t("activities.title")}
+                  </h2>
+                  {portfolio.activity_section_subtitle && (
+                    <p className="text-lg text-gray-600 text-center mb-12">
+                      {portfolio.activity_section_subtitle}
+                    </p>
+                  )}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {portfolio.images_activities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="rounded-lg overflow-hidden shadow-md"
+                      >
+                        <img
+                          src={activity}
+                          alt={`Activity ${index + 1}`}
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+          {/* Team Section */}
+          {portfolio.teams && portfolio.teams.length > 0 && (
+            <section className="py-16 bg-gray-50">
+              <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center text-[#22336C] mb-12">
+                  {t("team.title")}
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {portfolio.teams.map((member, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-6 rounded-lg shadow-md text-center"
+                    >
+                      {member.image && (
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                        />
+                      )}
+                      <h3 className="text-xl font-semibold text-[#22336C] mb-2">
+                        {member.name}
+                      </h3>
+                      <p className="text-gray-600">{member.position}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Contact Section */}
-          {(nursery?.phone || nursery?.email || nursery?.address) && (
+          {portfolio.contact_info && (
             <section className="py-16 bg-gray-50">
               <div className="container mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center text-[#22336C] mb-12">
@@ -152,43 +277,49 @@ export default async function NurseryPage({
                 </h2>
                 <div className="max-w-2xl mx-auto">
                   <div className="space-y-6">
-                    {nursery.address && (
+                    {portfolio.contact_info.address && (
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 text-[#B12F53] mt-1">📍</div>
                         <div>
                           <h3 className="font-semibold text-[#22336C] mb-1">
                             {t("contact.address")}
                           </h3>
-                          <p className="text-gray-600">{nursery.address}</p>
+                          <p className="text-gray-600">
+                            {portfolio.contact_info.address}
+                          </p>
                         </div>
                       </div>
                     )}
 
-                    {nursery.phone && (
+                    {portfolio.contact_info.phone_number && (
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 text-[#B12F53] mt-1">📞</div>
                         <div>
                           <h3 className="font-semibold text-[#22336C] mb-1">
                             {t("contact.phone")}
                           </h3>
-                          <p className="text-gray-600">{nursery.phone}</p>
+                          <p className="text-gray-600">
+                            {portfolio.contact_info.phone_number}
+                          </p>
                         </div>
                       </div>
                     )}
 
-                    {nursery.email && (
+                    {portfolio.contact_info.email_address && (
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 text-[#B12F53] mt-1">✉️</div>
                         <div>
                           <h3 className="font-semibold text-[#22336C] mb-1">
                             {t("contact.email")}
                           </h3>
-                          <p className="text-gray-600">{nursery.email}</p>
+                          <p className="text-gray-600">
+                            {portfolio.contact_info.email_address}
+                          </p>
                         </div>
                       </div>
                     )}
 
-                    {nursery.work_hours_from && nursery.work_hours_to && (
+                    {portfolio.contact_info.working_hours && (
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 text-[#B12F53] mt-1">🕒</div>
                         <div>
@@ -196,8 +327,54 @@ export default async function NurseryPage({
                             {t("contact.workingHours")}
                           </h3>
                           <p className="text-gray-600">
-                            {nursery.work_hours_from} - {nursery.work_hours_to}
+                            {portfolio.contact_info.working_hours}
                           </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Social Media Links */}
+                    {(portfolio.contact_info.facebook ||
+                      portfolio.contact_info.instagram ||
+                      portfolio.contact_info.whatsapp) && (
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 text-[#B12F53] mt-1">🌐</div>
+                        <div>
+                          <h3 className="font-semibold text-[#22336C] mb-1">
+                            {t("contact.socialMedia")}
+                          </h3>
+                          <div className="flex gap-4">
+                            {portfolio.contact_info.facebook && (
+                              <a
+                                href={portfolio.contact_info.facebook}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#B12F53] hover:text-[#22336C] transition-colors"
+                              >
+                                Facebook
+                              </a>
+                            )}
+                            {portfolio.contact_info.instagram && (
+                              <a
+                                href={portfolio.contact_info.instagram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#B12F53] hover:text-[#22336C] transition-colors"
+                              >
+                                Instagram
+                              </a>
+                            )}
+                            {portfolio.contact_info.whatsapp && (
+                              <a
+                                href={portfolio.contact_info.whatsapp}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#B12F53] hover:text-[#22336C] transition-colors"
+                              >
+                                WhatsApp
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
