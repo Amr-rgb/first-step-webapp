@@ -10,6 +10,17 @@
   font-weight: 400;
 }
 
+@font-face {
+  font-family: "Noto Sans";
+  src: url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap");
+  font-weight: 400 700;
+  font-style: normal;
+}
+
+.noto-sans {
+  font-family: "Noto Sans", sans-serif;
+}
+
 @layer base {
   /* Title styles */
   h1,
