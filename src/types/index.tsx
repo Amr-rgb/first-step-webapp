@@ -183,6 +183,23 @@ export interface CenterRegisterPayload {
   commercial_record_path: File;
 }
 
+// Extended interface for nursery API response that includes user_id
+export interface NurseryResponse
+  extends Omit<
+    CenterRegisterPayload,
+    "logo" | "license_path" | "commercial_record_path"
+  > {
+  user_id: number;
+  logo?: string;
+  license_path?: string;
+  commercial_record_path?: string;
+  branches?: Array<{
+    id: number;
+    name: string;
+    nursery_name_branch: string;
+  }>;
+}
+
 // ===== Child Info Form Types =====
 export interface ChildData {
   childName: string;
@@ -291,4 +308,3 @@ export interface Message {
   timestamp: string; // ISO string
   read: boolean; // Tracks if the message has been read
 }
-

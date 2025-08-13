@@ -1740,6 +1740,26 @@
       "text": "We strive to provide a safe and stimulating environment that enables children to discover their abilities and develop their skills.",
       "junior": "Our goal is to be the parents' first partner in their children's growth journey."
     },
+    "goals": {
+      "title": "Our Goals"
+    },
+    "stats": {
+      "title": "Nursery Statistics",
+      "area": "Area (m²)",
+      "classrooms": "Classrooms",
+      "teamMembers": "Team Members"
+    },
+    "team": {
+      "title": "Our Team"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "workingHours": "Working Hours",
+      "socialMedia": "Social Media"
+    },
     "branches": {
       "title": "Nursery Branches",
       "qassim": "Qassim",

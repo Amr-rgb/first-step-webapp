@@ -10,6 +10,7 @@ import {
   ParentRegisterPayload,
   Service,
   Value,
+  NurseryResponse,
 } from "@/types";
 import axios from "axios";
 
@@ -31,14 +32,24 @@ apiClient.interceptors.request.use((config) => {
     url: config.url,
     method: config.method,
     hasToken: !!token,
-    headers: config.headers,
+    baseURL: config.baseURL,
+    headers: {
+      ...config.headers,
+      Authorization: token ? "Bearer ***" : "NOT_SET",
+      "X-Authorization": config.headers["X-Authorization"] ? "***" : "NOT_SET",
+      "X-Authorization-Secret": config.headers["X-Authorization-Secret"]
+        ? "***"
+        : "NOT_SET",
+    },
   });
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log("Added Authorization header:", config.headers.Authorization);
+    console.log("Added Authorization header with token");
   } else {
-    console.log("No token available for request");
+    console.log(
+      "No token available for request - this might cause authentication issues"
+    );
   }
   return config;
 });
@@ -455,7 +466,7 @@ export const nurseryService = {
   getNurseries: async (
     locale: string,
     params?: { key: string; value: string }[]
-  ): Promise<CenterRegisterPayload[]> => {
+  ): Promise<NurseryResponse[]> => {
     try {
       const query = params
         ? "?" +
@@ -502,15 +513,54 @@ export const nurseryService = {
         };
       }
 
-      return data.data as CenterRegisterPayload[];
+      return data.data as NurseryResponse[];
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
   },
 
-  getLatestNurseries: async (
-    locale: string
-  ): Promise<CenterRegisterPayload[]> => {
+  getNurseryPortfolio: async (nurseryName: string, locale: string) => {
+    try {
+      // First, get all nurseries to find the center_id for the given nursery name
+      const nurseries = await nurseryService.getNurseries(locale);
+      const nursery = nurseries.find(
+        (n) => n.nursery_name.toLowerCase() === nurseryName.toLowerCase()
+      );
+
+      if (!nursery || !nursery.user_id) {
+        return null;
+      }
+
+      // Then fetch the portfolio data for this center
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolios/show?center_id=${nursery.user_id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            lang: locale,
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          next: {
+            revalidate: 1,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+      return data.portofilo || null;
+    } catch (error) {
+      console.error("Error fetching nursery portfolio:", error);
+      return null;
+    }
+  },
+
+  getLatestNurseries: async (locale: string): Promise<NurseryResponse[]> => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/latest-search`,
@@ -537,7 +587,7 @@ export const nurseryService = {
       }
 
       const data = await res.json();
-      return data.data as CenterRegisterPayload[];
+      return data.data as NurseryResponse[];
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -764,23 +814,60 @@ export const authService = {
 export const paymentService = {
   centerSubscribe: async (planId: number) => {
     try {
+      console.log(
+        "Payment service - Making request to /payment/subscribe with plan_id:",
+        planId
+      );
+      console.log(
+        "Payment service - API Base URL:",
+        process.env.NEXT_PUBLIC_API_BASE_URL
+      );
+      console.log("Payment service - Request headers:", {
+        "Content-Type": "application/json",
+        "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION
+          ? "***"
+          : "NOT_SET",
+        "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET
+          ? "***"
+          : "NOT_SET",
+      });
+
       const response = await apiClient.post("/payment/subscribe", {
         plan_id: planId,
       });
+
+      console.log("Payment service - Response received:", {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data,
+        headers: response.headers,
+      });
+
       return response.data;
     } catch (error) {
+      console.error("Payment service - Error occurred:", error);
       throw ApiErrorHandler.handle(error);
     }
   },
 
   parentSubscribe: async (enrollmentId: number) => {
     try {
+      console.log(
+        "Payment service - Making request to /payment/subscribe with enrollment_id:",
+        enrollmentId
+      );
+
       const response = await apiClient.post("/payment/subscribe", {
         enrollment_id: enrollmentId,
       });
 
+      console.log(
+        "Payment service - Parent subscription response:",
+        response.data
+      );
       return response.data;
     } catch (error) {
+      console.error("Payment service - Parent subscription error:", error);
       throw ApiErrorHandler.handle(error);
     }
   },
