@@ -7,7 +7,7 @@ import Image from "next/image";
 
 interface ProfileWaitingPageProps {
   nurseryName: string;
-  locale?: "en" | "ar";
+  locale?: string;
   userRole?: "admin" | "parent" | "center";
 }
 
