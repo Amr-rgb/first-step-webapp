@@ -7,12 +7,13 @@ import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { animate } from "framer-motion";
 import { paymentService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
+import PaymentDebugger from "./PaymentDebugger";
 
 const SubscriptionSection = () => {
   const t = useTranslations("HomePage.Subscription");
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-
 
   const plans = [
     {
@@ -28,7 +29,6 @@ const SubscriptionSection = () => {
         t("plans.features.discount", { discount: "30%" }),
       ],
       buttonText: t("plans.select"),
-      planId: 3, // Annual plan ID
     },
     {
       id: 2,
@@ -44,7 +44,6 @@ const SubscriptionSection = () => {
       ],
       popular: true,
       buttonText: t("plans.select"),
-      planId: 2, // Semi-annual plan ID
     },
     {
       id: 1,
@@ -58,28 +57,71 @@ const SubscriptionSection = () => {
         t("plans.features.updates"),
       ],
       buttonText: t("plans.select"),
-      planId: 1, // Quarterly plan ID
     },
   ];
 
   const handlePayment = async (planId: number) => {
     setIsSubmitting(planId);
     try {
+      // Check if user is authenticated before making payment request
+      const isAuthenticated = useAuthStore.getState().isAuthenticated();
+      if (!isAuthenticated) {
+        setIsSubmitting(null);
+        alert("Please log in to subscribe to a plan.");
+        return;
+      }
+
+      console.log("Initiating payment for plan:", planId);
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+
       const data = await paymentService.centerSubscribe(planId);
       setIsSubmitting(null);
+
+      console.log("Payment response:", data);
+
       if (data.success && data.payment_url) {
         // Redirect to Moyasar payment page
+        console.log("Redirecting to payment URL:", data.payment_url);
         window.location.href = data.payment_url;
       } else {
-        console.error("Payment initiation failed:", data);
-        alert("Payment initiation failed. Please try again.");
+        console.error("Payment initiation failed - Invalid response:", data);
+        alert(
+          `Payment initiation failed: ${
+            data.message || "Invalid response from server"
+          }`
+        );
       }
-    } catch (err) {
+    } catch (err: any) {
       setIsSubmitting(null);
-      console.error("Payment error:", err);
-      alert(
-        "Payment initiation failed. Please check your connection and try again."
-      );
+      console.error("Payment error details:", {
+        error: err,
+        message: err.message,
+        status: err.status,
+        data: err.data,
+        url: err.url,
+        method: err.method,
+      });
+
+      // Provide more specific error messages based on the error type
+      let errorMessage =
+        "Payment initiation failed. Please check your connection and try again.";
+
+      if (err.status === 401) {
+        errorMessage = "Authentication required. Please log in again.";
+      } else if (err.status === 403) {
+        errorMessage = "You don't have permission to perform this action.";
+      } else if (err.status === 422) {
+        errorMessage =
+          "Invalid request. Please check your input and try again.";
+      } else if (err.status === 500) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (err.status === 0 || !err.status) {
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      alert(errorMessage);
     }
   };
 
@@ -130,13 +172,15 @@ const SubscriptionSection = () => {
     );
   }
 
-
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="mb-12 heading-3 text-primary-blue text-center">
           {t("title")}
         </h2>
+
+        {/* Debug component for development */}
+        {process.env.NODE_ENV === "development" && <PaymentDebugger />}
 
         {/* Promo Banner */}
         <div className="relative rounded-3xl overflow-hidden">
@@ -165,7 +209,6 @@ const SubscriptionSection = () => {
                 ) : (
                   t("banner.cta")
                 )}
-
               </Button>
               <p className="text-warning font-medium flex items-center">
                 {t("banner.limitedOffer")}
@@ -324,7 +367,6 @@ const SubscriptionSection = () => {
                       ) : (
                         plan.buttonText
                       )}
-
                     </Button>
                   </div>
                 </div>
@@ -357,7 +399,6 @@ const SubscriptionSection = () => {
                     ) : (
                       plan.buttonText
                     )}
-
                   </Button>
                 </div>
               </div>
