@@ -11,6 +11,7 @@ import {
   Service,
   Value,
   NurseryResponse,
+  PortfolioResponse,
 } from "@/types";
 import axios from "axios";
 
@@ -519,28 +520,36 @@ export const nurseryService = {
     }
   },
 
-  getNurseryPortfolio: async (nurseryName: string, locale: string) => {
+  getNurseryPortfolio: async (
+    nurseryName: string,
+    locale: string
+  ): Promise<PortfolioResponse | null> => {
     try {
       // First, get all nurseries to find the center_id for the given nursery name
       const nurseries = await nurseryService.getNurseries(locale);
-      const nursery = nurseries.find(
-        (n) => {
-          const dbName = n.nursery_name.toLowerCase().trim();
-          const searchName = nurseryName.toLowerCase().trim();
-          return dbName === searchName || dbName.includes(searchName) || searchName.includes(dbName);
-        }
-      );
+      const nursery = nurseries.find((n) => {
+        const dbName = n.nursery_name.toLowerCase().trim();
+        const searchName = nurseryName.toLowerCase().trim();
+        return (
+          dbName === searchName ||
+          dbName.includes(searchName) ||
+          searchName.includes(dbName)
+        );
+      });
 
       if (!nursery || !nursery.user_id) {
         return null;
       }
 
       // Then fetch the portfolio data for this center using apiClient
-      const response = await apiClient.get(`/portfolios/show?center_id=${nursery.user_id}`, {
-        headers: {
-          lang: locale,
-        },
-      });
+      const response = await apiClient.get(
+        `/portfolios/show?center_id=${nursery.user_id}`,
+        {
+          headers: {
+            lang: locale,
+          },
+        }
+      );
 
       return response.data || null;
     } catch (error) {
