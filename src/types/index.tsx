@@ -308,3 +308,81 @@ export interface Message {
   timestamp: string; // ISO string
   read: boolean; // Tracks if the message has been read
 }
+
+// -----------------------------
+// Portfolio Types for Nursery Details
+// -----------------------------
+
+export interface HeroSection {
+  title_of_hero: string;
+  subtitle_of_hero: string;
+  description: string;
+  background_image: string;
+}
+
+export interface Branch {
+  id: number;
+  name: string;
+  nursery_name_branch: string;
+}
+
+export interface PhilosophyMethodologyGoal {
+  philosophy?: {
+    content: string;
+  };
+  methodology?: {
+    content: string;
+  };
+  goals?: {
+    content: string;
+  };
+}
+
+export interface PortfolioService {
+  title: string;
+  description: string;
+  image_service?: string;
+}
+
+export interface NurseryState {
+  area?: string;
+  class_rooms?: string;
+  team_members?: string;
+}
+
+export interface TeamMember {
+  name: string;
+  mission: string;
+  image?: string;
+}
+
+export interface ContactInfo {
+  address?: string;
+  working_hours?: string;
+  phone_number?: string;
+  email_address?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  whatsapp?: string;
+}
+
+export interface PortfolioData {
+  hero_section?: HeroSection;
+  branches?: Branch[];
+  Philosophy_Methodology_Goal?: PhilosophyMethodologyGoal;
+  services?: PortfolioService[];
+  service_section_title?: string;
+  nursery_state?: NurseryState;
+  images_activities?: string[];
+  activity_section_title?: string;
+  activity_section_subtitle?: string;
+  teams?: TeamMember[];
+  contact_info?: ContactInfo;
+  ads_images?: string[];
+}
+
+export interface PortfolioResponse {
+  message: string;
+  data: PortfolioData;
+}
