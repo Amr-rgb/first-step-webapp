@@ -118,7 +118,7 @@ export default async function NurseryPage({
                 </h2>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {portfolio.services.map((service: string, index: number) => (
+                  {portfolio.services.map((service, index: number) => (
                     <div
                       key={index}
                       className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
@@ -127,7 +127,7 @@ export default async function NurseryPage({
                         <span className="text-white text-xl">🎯</span>
                       </div>
                       <h3 className="text-xl font-semibold text-[#22336C] mb-3">
-                        {service}
+                        {service.title}
                       </h3>
                     </div>
                   ))}
