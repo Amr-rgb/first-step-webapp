@@ -21,7 +21,7 @@ const SubscriptionSection = () => {
       name: t("plans.annual.title"),
       price: "3,999",
       period: t("plans.annual.period"),
-      planId: 1, // Add plan ID for payment
+      planId: 3, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
@@ -50,7 +50,7 @@ const SubscriptionSection = () => {
       name: t("plans.quarterly.title"),
       price: "1,499",
       period: t("plans.quarterly.period"),
-      planId: 3, // Add plan ID for payment
+      planId: 1, // Add plan ID for payment
       features: [
         t("plans.features.allFeatures"),
         t("plans.features.support"),
