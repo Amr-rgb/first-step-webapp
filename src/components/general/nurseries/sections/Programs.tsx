@@ -147,17 +147,18 @@ const Programs = ({
               </div>
 
               {/* Book Now Button */}
-              <button
-                className="w-full bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:opacity-90 transition transform hover:scale-105"
-                onClick={() => {
-                  if (!isPreview) {
-                    // Navigate to booking page
-                    window.location.href = `/${locale}/nurseries/${nurseryName}/reservation`;
-                  }
-                }}
-              >
-                {t("programs.bookNow")}
-              </button>
+              <div className="relative group">
+                <button
+                  className="w-full bg-gray-400 text-white font-bold py-4 px-8 rounded-xl shadow-lg opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  {t("programs.bookNow")}
+                </button>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  Wait until the nursery adds its plans or programs
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
