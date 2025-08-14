@@ -29,34 +29,6 @@ const Branches = ({ locale, nurseryName }: BranchesProps) => {
     "text-[#FFAD0D] fill-[#FFAD0D]",
   ];
 
-
-  // Remove the static Nursery Services Section
-  // Add dynamic Services component for World Of Learning Junior
-  if (nurseryName.toLowerCase().includes("world-of-learning-junior")) {
-    services = [
-      {
-        title: t("services.creativeChild.title"),
-        description: t("services.creativeChild.desc"),
-        image: "/assets/nursey-service/small child.png",
-      },
-      {
-        title: t("services.playground.title"),
-        description: t("services.playground.desc"),
-        image: "/assets/nursey-service/games.png",
-      },
-      {
-        title: t("services.unit.title"),
-        description: t("services.unit.desc"),
-        image: "/assets/nursey-service/wehdahh.png",
-      },
-      {
-        title: t("services.montessori.title"),
-        description: t("services.montessori.desc"),
-        image: "/assets/nursey-service/mentosory.png",
-      },
-    ];
-  }
-
   const isWorldOfLearningJunior = nurseryName
     .toLowerCase()
     .includes("world-of-learning-junior");
@@ -98,7 +70,6 @@ const Branches = ({ locale, nurseryName }: BranchesProps) => {
           </div>
         </section>
       )}
-
 
       {/* Nursery Services Section */}
       {services.length > 0 && <Services services={services} />}

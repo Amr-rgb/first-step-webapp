@@ -37,7 +37,7 @@ export default async function NurseryPage({
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* 1. Hero Section */}
       {portfolio.hero_section && (
         <Header
           name={portfolio.hero_section.title_of_hero || readableName}
@@ -47,12 +47,25 @@ export default async function NurseryPage({
         />
       )}
 
-      {/* Branches Section */}
+      {/* 2. Branches Section */}
       {portfolio.branches && portfolio.branches.length > 0 && (
         <Branches locale={locale} nurseryName={readableName} />
       )}
 
-      {/* Philosophy, Methodology, Goals Section */}
+      {/* 3. Advertisement Section */}
+      {portfolio.ads_images && portfolio.ads_images.length > 0 && (
+        <Advertisment
+          slides={portfolio.ads_images.map((image, index) => ({
+            id: index,
+            image: image,
+            title: `Advertisement ${index + 1}`,
+            created_at: new Date().toISOString(),
+            published_at: new Date().toISOString(),
+          }))}
+        />
+      )}
+
+      {/* 4. Philosophy Section */}
       {portfolio.Philosophy_Methodology_Goal && (
         <div className="container mx-auto px-4 py-16">
           <div className="grid md:grid-cols-3 gap-8">
@@ -92,7 +105,10 @@ export default async function NurseryPage({
         </div>
       )}
 
-      {/* Services Section */}
+      {/* 5. Programs Section */}
+      <Programs nurseryName={readableName} locale={locale} />
+
+      {/* 6. Services Section */}
       {portfolio.services && portfolio.services.length > 0 && (
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
@@ -120,7 +136,7 @@ export default async function NurseryPage({
         </div>
       )}
 
-      {/* Nursery Stats Section */}
+      {/* 7. Statistics Section */}
       {portfolio.nursery_state && (
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
@@ -157,7 +173,7 @@ export default async function NurseryPage({
         </div>
       )}
 
-      {/* Activities Section */}
+      {/* 8. Activities Section */}
       {portfolio.images_activities &&
         portfolio.images_activities.length > 0 && (
           <div className="container mx-auto px-4 py-16">
@@ -188,7 +204,7 @@ export default async function NurseryPage({
           </div>
         )}
 
-      {/* Team Section */}
+      {/* 9. Team Section */}
       {portfolio.teams && portfolio.teams.length > 0 && (
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
@@ -320,19 +336,6 @@ export default async function NurseryPage({
             </div>
           </div>
         </div>
-      )}
-
-      {/* Advertisement Section */}
-      {portfolio.ads_images && portfolio.ads_images.length > 0 && (
-        <Advertisment
-          slides={portfolio.ads_images.map((image, index) => ({
-            id: index,
-            image: image,
-            title: `Advertisement ${index + 1}`,
-            created_at: new Date().toISOString(),
-            published_at: new Date().toISOString(),
-          }))}
-        />
       )}
     </div>
   );
