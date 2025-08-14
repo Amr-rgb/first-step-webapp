@@ -50,20 +50,21 @@ export default async function TestPortfolioPage({
             </h2>
             <ul className="list-disc list-inside space-y-1 text-blue-700">
               {portfolio.hero_section && <li>Hero Section</li>}
-              {portfolio.branches?.length > 0 && (
+              {portfolio.branches && portfolio.branches.length > 0 && (
                 <li>Branches ({portfolio.branches.length})</li>
               )}
               {portfolio.Philosophy_Methodology_Goal && (
                 <li>Philosophy, Methodology & Goal</li>
               )}
-              {portfolio.services?.length > 0 && (
+              {portfolio.services && portfolio.services.length > 0 && (
                 <li>Services ({portfolio.services.length})</li>
               )}
               {portfolio.nursery_state && <li>Nursery Stats</li>}
-              {portfolio.images_activities?.length > 0 && (
-                <li>Activities ({portfolio.images_activities.length})</li>
-              )}
-              {portfolio.teams?.length > 0 && (
+              {portfolio.images_activities &&
+                portfolio.images_activities.length > 0 && (
+                  <li>Activities ({portfolio.images_activities.length})</li>
+                )}
+              {portfolio.teams && portfolio.teams.length > 0 && (
                 <li>Team ({portfolio.teams.length})</li>
               )}
               {portfolio.contact_info && <li>Contact Information</li>}
