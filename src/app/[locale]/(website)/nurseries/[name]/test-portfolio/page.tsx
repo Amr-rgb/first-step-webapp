@@ -67,7 +67,7 @@ export default async function TestPortfolioPage({
               Portfolio Data Structure:
             </h2>
             <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-              {JSON.stringify(portfolio, null, 2)}
+              {JSON.stringify(portfolioResponse, null, 2)}
             </pre>
           </div>
 

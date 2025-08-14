@@ -303,6 +303,35 @@ export const websiteService = {
     }
   },
 
+  getPlans: async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/plans-get`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw {
+          message: "Failed to fetch plans",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getTermsAndConditions: async (locale: string): Promise<Blog[]> => {
     try {
       const res = await fetch(

@@ -57,6 +57,7 @@ export default async function NurseryPage({
         <Branches locale={locale} nurseryName={readableName} />
       )}
 
+
       {/* 3. Advertisement Section */}
       {portfolio.ads_images && portfolio.ads_images.length > 0 && (
         <Advertisment

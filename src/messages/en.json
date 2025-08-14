@@ -1725,7 +1725,7 @@
         "title": "Child File Management and Communication with Parents",
         "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
       },
-     
+
       "taskOrganization": {
         "title": "Task Organization and Instant Notifications",
         "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."
@@ -1785,6 +1785,11 @@
         "title": "Subscription Successful!",
         "message": "Thank you for your subscription. You will receive a confirmation email shortly.",
         "continue": "Continue"
+      },
+      "errors": {
+        "authRequired": "You must be logged in to continue",
+        "fetchPlans": "Failed to load subscription plans. Please try again later.",
+        "paymentFailed": "Payment failed. Please try again."
       }
     },
     "HeroSection": {
