@@ -14,7 +14,7 @@ const ServiceTypeToggle = ({
   onToggle,
 }: ServiceTypeToggleProps) => {
   const locale = useLocale();
-  
+
   const TOGGLE_OPTIONS = [
     {
       label: locale === "ar" ? "ولي أمر" : "Parent",
@@ -31,7 +31,7 @@ const ServiceTypeToggle = ({
   ];
 
   const CARD_CLASSES =
-    "w-[180px] h-[240px] border-2 rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300";
+    "w-[140px] h-[200px] lg:w-[180px] lg:h-[240px] border-2 rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300";
 
   return (
     <div className="flex justify-center gap-8 pt-12">
@@ -56,9 +56,10 @@ const ServiceTypeToggle = ({
               alt={item.label}
               width={item.width}
               height={120}
-              className="mb-3"
+              className="h-20 w-auto md:h-24 lg:h-[120px] mb-3"
             />
-            <span className="text-lg font-medium text-gray-700">
+
+            <span className="text-base lg:text-lg font-medium text-gray-700">
               {item.label}
             </span>
           </motion.div>

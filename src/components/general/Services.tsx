@@ -37,7 +37,23 @@ const ServiceSection = ({
   const rotateY = useMotionValue(0);
   const scale = useMotionValue(1);
 
+  // Check if device is mobile
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Skip animation effects on mobile
+    if (isMobile) return;
+
     function updatePosition() {
       const isActive = isMouseActive && activeSectionIndex === index;
 
@@ -82,13 +98,14 @@ const ServiceSection = ({
     maxParallax,
     maxRotate,
     smoothFactor,
+    isMobile,
   ]);
 
   return (
     <motion.section
       ref={sectionRef}
       id={`section-${index}`}
-      className="group min-h-[700px] ltr:ml-20 rtl:mr-20 flex items-center border-b-2 border-gray-200 last:border-b-0"
+      className="group min-h-[700px] ltr:md:ml-20 rtl:md:mr-20 flex items-center border-b-2 border-gray-200 last:border-b-0"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -124,18 +141,26 @@ const ServiceSection = ({
           </motion.div>
           <motion.div
             className="flex-1 flex justify-center origin-center"
-            style={{
-              x: imageX,
-              y: imageY,
-              rotateX: rotateX,
-              rotateY: rotateY,
-              scale: scale,
-              perspective: "800px",
-              transformStyle: "preserve-3d",
-            }}
-            whileHover={{
-              transition: { duration: 0.3, ease: "easeOut" },
-            }}
+            style={
+              isMobile
+                ? {}
+                : {
+                    x: imageX,
+                    y: imageY,
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    scale: scale,
+                    perspective: "800px",
+                    transformStyle: "preserve-3d",
+                  }
+            }
+            whileHover={
+              isMobile
+                ? {}
+                : {
+                    transition: { duration: 0.3, ease: "easeOut" },
+                  }
+            }
           >
             <div className="rounded-xl overflow-hidden">
               <Image
@@ -275,6 +300,7 @@ const Services = ({ services }: { services: Service[] }) => {
   return (
     <div className="bg-[#f9f4eb] min-h-screen">
       <div ref={mainRef} className="relative container mx-auto px-4">
+        {/* Desktop Navigation */}
         <AnimatePresence>
           <motion.div
             className="fixed rtl:right-8 ltr:left-8 top-1/2 transform -translate-y-1/2 z-50 hidden md:block"
@@ -387,6 +413,65 @@ const Services = ({ services }: { services: Service[] }) => {
                   </div>
                 ))}
               </motion.div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          <motion.div
+            className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 md:hidden"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{
+              opacity: isNavVisible ? 1 : 0,
+              y: isNavVisible ? 0 : 50,
+            }}
+            transition={{
+              opacity: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+              y: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+            }}
+          >
+            <div className="relative bg-black rounded-full px-3 py-2">
+              <div className="flex items-center space-x-2">
+                {services.map((_, index) => (
+                  <motion.div
+                    key={index}
+                    className={`relative w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-300 ${
+                      activeSection === index ? "text-white" : "text-gray-500"
+                    }`}
+                    onClick={() => handleNavigation(index)}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <motion.span
+                      className="text-xs font-bold relative z-10"
+                      animate={{
+                        color: activeSection === index ? "#ffffff" : "#6b7280",
+                        scale: activeSection === index ? 1.08 : 1,
+                      }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </motion.span>
+                    <AnimatePresence>
+                      {activeSection === index && (
+                        <motion.div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            boxShadow:
+                              "0 0 16px 4px rgba(99,102,241,0.25), 0 0 0 2px #6366f1",
+                            background: "rgba(99,102,241,0.10)",
+                          }}
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.8, opacity: 0 }}
+                          transition={{ duration: 0.5, ease: "easeInOut" }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
