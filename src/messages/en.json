@@ -1675,6 +1675,18 @@
     "services": {
       "title": "Our Services"
     },
+    "programs": {
+      "title": "Our Programs",
+      "currency": "SAR",
+      "bookNow": "Book Now",
+      "noResults": "No programs found matching your filters",
+      "filters": {
+        "childAge": "Child's Age",
+        "branch": "Branch",
+        "programType": "Program Type",
+        "all": "All"
+      }
+    },
     "contact": {
       "title": "Contact Information",
       "info": "Contact Information",
