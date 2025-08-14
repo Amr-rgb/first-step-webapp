@@ -2,6 +2,7 @@ import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
+import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
@@ -139,39 +140,120 @@ export default async function NurseryPage({
 
       {/* 7. Statistics Section */}
       {portfolio.nursery_state && (
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-              {t("stats.title")}
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {portfolio.nursery_state.area && (
-              <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  {portfolio.nursery_state.area}
-                </h3>
-                <p className="text-gray-600">{t("stats.area")}</p>
-              </div>
-            )}
-            {portfolio.nursery_state.class_rooms && (
-              <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  {portfolio.nursery_state.class_rooms}
-                </h3>
-                <p className="text-gray-600">{t("stats.classrooms")}</p>
-              </div>
-            )}
-            {portfolio.nursery_state.team_members && (
-              <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  {portfolio.nursery_state.team_members}
-                </h3>
-                <p className="text-gray-600">{t("stats.teamMembers")}</p>
-              </div>
-            )}
-          </div>
-        </div>
+        <Stats
+          stats={[
+            ...(portfolio.nursery_state.area
+              ? [
+                  {
+                    icon: (
+                      <svg
+                        width="64"
+                        height="64"
+                        fill="none"
+                        viewBox="0 0 64 64"
+                      >
+                        <path
+                          d="M8 56V24L32 8l24 16v32H8Z"
+                          stroke="#B12F53"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M24 56V40h16v16"
+                          stroke="#B12F53"
+                          strokeWidth="3"
+                        />
+                      </svg>
+                    ),
+                    value: portfolio.nursery_state.area,
+                    label: t("stats.area"),
+                    color: "text-[#B12F53]",
+                  },
+                ]
+              : []),
+            ...(portfolio.nursery_state.class_rooms
+              ? [
+                  {
+                    icon: (
+                      <svg
+                        width="64"
+                        height="64"
+                        fill="none"
+                        viewBox="0 0 64 64"
+                      >
+                        <path
+                          d="M12 16h40v32H12z"
+                          stroke="#22336C"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M24 32h16M24 40h16"
+                          stroke="#22336C"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="20"
+                          cy="24"
+                          r="4"
+                          stroke="#22336C"
+                          strokeWidth="3"
+                        />
+                      </svg>
+                    ),
+                    value: portfolio.nursery_state.class_rooms,
+                    label: t("stats.classrooms"),
+                    color: "text-[#22336C]",
+                  },
+                ]
+              : []),
+            ...(portfolio.nursery_state.team_members
+              ? [
+                  {
+                    icon: (
+                      <svg
+                        width="64"
+                        height="64"
+                        fill="none"
+                        viewBox="0 0 64 64"
+                      >
+                        <circle
+                          cx="32"
+                          cy="20"
+                          r="8"
+                          stroke="#47B881"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M16 52c0-8.837 7.163-16 16-16s16 7.163 16 16"
+                          stroke="#47B881"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="16"
+                          cy="28"
+                          r="5"
+                          stroke="#47B881"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx="48"
+                          cy="28"
+                          r="5"
+                          stroke="#47B881"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                    ),
+                    value: portfolio.nursery_state.team_members,
+                    label: t("stats.teamMembers"),
+                    color: "text-[#47B881]",
+                  },
+                ]
+              : []),
+          ]}
+          buttonText={t("branches.cta")}
+          locale={locale}
+          nurseryName={readableName}
+        />
       )}
 
       {/* 8. Activities Section */}
