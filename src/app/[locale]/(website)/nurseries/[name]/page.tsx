@@ -2,6 +2,7 @@ import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
+import Team from "@/components/general/nurseries/sections/Team";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
 import { AdSlide, PortfolioResponse } from "@/types";
@@ -206,36 +207,14 @@ export default async function NurseryPage({
 
       {/* 9. Team Section */}
       {portfolio.teams && portfolio.teams.length > 0 && (
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-              {t("team.title")}
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolio.teams.map((member, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-lg p-6 text-center"
-              >
-                {member.image && (
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                  />
-                )}
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {member.name}
-                </h3>
-                <p className="text-gray-600">{member.mission}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Team
+          members={portfolio.teams.map((member) => ({
+            name: member.name,
+            role: member.mission,
+            image: member.image,
+          }))}
+        />
       )}
-
-     
     </div>
   );
 }

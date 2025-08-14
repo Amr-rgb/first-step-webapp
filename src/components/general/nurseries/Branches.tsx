@@ -228,67 +228,6 @@ const Branches = ({ locale, nurseryName }: BranchesProps) => {
           </Link>
         </div>
       </section>
-
-      {/* Nursery Team Section */}
-      {!isWorldOfLearningJunior && (
-        <section className="mt-20 mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#47B881] mb-8">
-            {t("team.title")}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-6xl mx-auto">
-            {/* Member 1 - Skeleton */}
-            <div className="flex flex-col items-center">
-              <div className="rounded-2xl w-40 h-44 mb-2 bg-gray-200 animate-pulse" />
-              <div className="text-[#22336C] font-bold">
-                {t("team.skeletonName")}
-              </div>
-              <div className="text-gray-500 text-sm">
-                {t("team.skeletonRole")}
-              </div>
-            </div>
-            {/* Member 2 - Real Image */}
-            <div className="flex flex-col items-center">
-              <img
-                src="https://picsum.photos/200/250?random=1"
-                alt="اسم الشخص"
-                className="rounded-2xl object-cover w-40 h-44 mb-2"
-              />
-              <div className="text-[#22336C] font-bold">اسم الشخص</div>
-              <div className="text-gray-500 text-sm">مهتمه في الحضانة</div>
-            </div>
-            {/* Member 3 - Real Image */}
-            <div className="flex flex-col items-center">
-              <img
-                src="https://picsum.photos/200/250?random=2"
-                alt="اسم الشخص"
-                className="rounded-2xl object-cover w-40 h-44 mb-2"
-              />
-              <div className="text-[#22336C] font-bold">اسم الشخص</div>
-              <div className="text-gray-500 text-sm">مهتمه في الحضانة</div>
-            </div>
-            {/* Member 4 - Real Image */}
-            <div className="flex flex-col items-center">
-              <img
-                src="https://picsum.photos/200/250?random=3"
-                alt="اسم الشخص"
-                className="rounded-2xl object-cover w-40 h-44 mb-2"
-              />
-              <div className="text-[#22336C] font-bold">اسم الشخص</div>
-              <div className="text-gray-500 text-sm">مهتمه في الحضانة</div>
-            </div>
-            {/* Member 5 - Skeleton */}
-            <div className="flex flex-col items-center">
-              <div className="rounded-2xl w-40 h-44 mb-2 bg-gray-200 animate-pulse" />
-              <div className="text-[#22336C] font-bold">
-                {t("team.skeletonName")}
-              </div>
-              <div className="text-gray-500 text-sm">
-                {t("team.skeletonRole")}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 };
