@@ -26,8 +26,11 @@ export default async function NurseryPage({
   // Use API data only
   const portfolio = portfolioResponse?.data;
 
-  // Check if portfolio exists and has data
-  const hasProfile =
+  // Check if portfolio exists and has any data
+  const hasProfile = portfolio && Object.keys(portfolio).length > 0;
+
+  // Additional check for meaningful data
+  const hasMeaningfulData =
     portfolio &&
     (portfolio.hero_section ||
       (portfolio.branches && portfolio.branches.length > 0) ||
@@ -36,7 +39,10 @@ export default async function NurseryPage({
       portfolio.nursery_state ||
       (portfolio.images_activities && portfolio.images_activities.length > 0) ||
       (portfolio.teams && portfolio.teams.length > 0) ||
-      portfolio.contact_info);
+      portfolio.contact_info ||
+      portfolio.ads_images ||
+      portfolio.service_section_title ||
+      portfolio.activity_section_title);
 
   // Early return if no portfolio data
   if (!portfolio) {
@@ -49,11 +55,11 @@ export default async function NurseryPage({
 
   return (
     <div>
-      {hasProfile ? (
+      {hasMeaningfulData ? (
         <>
           {/* Hero Section */}
           {portfolio.hero_section && (
-            <Header
+          <Header
               name={portfolio.hero_section.title_of_hero || readableName}
               slogan={portfolio.hero_section.subtitle_of_hero}
               description={portfolio.hero_section.description}
@@ -116,22 +122,6 @@ export default async function NurseryPage({
                 <h2 className="text-4xl font-bold text-gray-800 mb-4">
                   {portfolio.service_section_title || t("services.title")}
                 </h2>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {portfolio.services.map((service: string, index: number) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-                    >
-                      <div className="w-12 h-12 bg-[#B12F53] rounded-lg flex items-center justify-center mb-4">
-                        <span className="text-white text-xl">🎯</span>
-                      </div>
-                      <h3 className="text-xl font-semibold text-[#22336C] mb-3">
-                        {service}
-                      </h3>
-                    </div>
-                  ))}
-                </div>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {portfolio.services.map((service, index) => (

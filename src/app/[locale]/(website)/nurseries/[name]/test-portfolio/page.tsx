@@ -10,16 +10,46 @@ export default async function TestPortfolioPage({
   const readableName = slugToReadableName(name);
 
   // Fetch portfolio data for this nursery
-  const portfolio = await nurseryService.getNurseryPortfolio(
+  const portfolioResponse = await nurseryService.getNurseryPortfolio(
     readableName,
     locale
   );
+
+  // Extract the actual portfolio data from the response
+  const portfolio = portfolioResponse?.data;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">
         Portfolio Test for: {readableName}
       </h1>
+
+      <div className="bg-yellow-100 p-4 rounded-lg mb-6">
+        <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+          Debug Information:
+        </h2>
+        <p>
+          <strong>Readable Name:</strong> {readableName}
+        </p>
+        <p>
+          <strong>Portfolio Response:</strong>{" "}
+          {portfolioResponse ? "✅ Found" : "❌ Not Found"}
+        </p>
+        <p>
+          <strong>Portfolio Data:</strong>{" "}
+          {portfolio ? "✅ Found" : "❌ Not Found"}
+        </p>
+        <p>
+          <strong>Portfolio Keys:</strong>{" "}
+          {portfolio ? Object.keys(portfolio).join(", ") : "None"}
+        </p>
+        <p>
+          <strong>Portfolio Object:</strong>
+        </p>
+        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+          {JSON.stringify(portfolio, null, 2)}
+        </pre>
+      </div>
 
       {portfolio ? (
         <div className="space-y-6">
@@ -47,20 +77,21 @@ export default async function TestPortfolioPage({
             </h2>
             <ul className="list-disc list-inside space-y-1 text-blue-700">
               {portfolio.hero_section && <li>Hero Section</li>}
-              {portfolio.branches?.length > 0 && (
+              {portfolio.branches && portfolio.branches.length > 0 && (
                 <li>Branches ({portfolio.branches.length})</li>
               )}
               {portfolio.Philosophy_Methodology_Goal && (
                 <li>Philosophy, Methodology & Goal</li>
               )}
-              {portfolio.services?.length > 0 && (
+              {portfolio.services && portfolio.services.length > 0 && (
                 <li>Services ({portfolio.services.length})</li>
               )}
               {portfolio.nursery_state && <li>Nursery Stats</li>}
-              {portfolio.images_activities?.length > 0 && (
-                <li>Activities ({portfolio.images_activities.length})</li>
-              )}
-              {portfolio.teams?.length > 0 && (
+              {portfolio.images_activities &&
+                portfolio.images_activities.length > 0 && (
+                  <li>Activities ({portfolio.images_activities.length})</li>
+                )}
+              {portfolio.teams && portfolio.teams.length > 0 && (
                 <li>Team ({portfolio.teams.length})</li>
               )}
               {portfolio.contact_info && <li>Contact Information</li>}
@@ -95,4 +126,3 @@ export default async function TestPortfolioPage({
     </div>
   );
 }
-
