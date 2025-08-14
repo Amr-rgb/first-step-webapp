@@ -2,6 +2,7 @@ import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
+import Activities from "@/components/general/nurseries/sections/Activities";
 import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
@@ -259,32 +260,14 @@ export default async function NurseryPage({
       {/* 8. Activities Section */}
       {portfolio.images_activities &&
         portfolio.images_activities.length > 0 && (
-          <div className="container mx-auto px-4 py-16">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                {portfolio.activity_section_title || t("activities.title")}
-              </h2>
-              {portfolio.activity_section_subtitle && (
-                <p className="text-xl text-gray-600">
-                  {portfolio.activity_section_subtitle}
-                </p>
-              )}
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {portfolio.images_activities.map((image, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden"
-                >
-                  <img
-                    src={image}
-                    alt={`Activity ${index + 1}`}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <Activities
+            title={portfolio.activity_section_title}
+            subtitle={portfolio.activity_section_subtitle}
+            activities={portfolio.images_activities}
+            buttonText={t("branches.cta")}
+            locale={locale}
+            nurseryName={readableName}
+          />
         )}
 
       {/* 9. Team Section */}
