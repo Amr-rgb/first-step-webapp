@@ -1657,6 +1657,12 @@
     "goals": {
       "title": "Our Goals"
     },
+    "philosophy": {
+      "title": "Our Philosophy"
+    },
+    "methodology": {
+      "title": "Our Methodology"
+    },
     "stats": {
       "title": "Nursery Statistics",
       "area": "Area (m²)",

@@ -3,6 +3,7 @@ import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
 import Services from "@/components/general/nurseries/sections/Services";
+import Philosophy from "@/components/general/nurseries/sections/Philosophy";
 import Activities from "@/components/general/nurseries/sections/Activities";
 import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
@@ -71,42 +72,7 @@ export default async function NurseryPage({
 
       {/* 4. Philosophy Section */}
       {portfolio.Philosophy_Methodology_Goal && (
-        <div className="container mx-auto px-4 py-16">
-          <div className="grid md:grid-cols-3 gap-8">
-            {portfolio.Philosophy_Methodology_Goal.philosophy && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  {t("philosophy.title")}
-                </h3>
-                <p className="text-gray-600">
-                  {portfolio.Philosophy_Methodology_Goal.philosophy.content}
-                </p>
-              </div>
-            )}
-
-            {portfolio.Philosophy_Methodology_Goal.methodology && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  {t("methodology.title")}
-                </h3>
-                <p className="text-gray-600">
-                  {portfolio.Philosophy_Methodology_Goal.methodology.content}
-                </p>
-              </div>
-            )}
-
-            {portfolio.Philosophy_Methodology_Goal.goals && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  {t("goals.title")}
-                </h3>
-                <p className="text-gray-600">
-                  {portfolio.Philosophy_Methodology_Goal.goals.content}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        <Philosophy data={portfolio.Philosophy_Methodology_Goal} />
       )}
 
       {/* 5. Programs Section */}
