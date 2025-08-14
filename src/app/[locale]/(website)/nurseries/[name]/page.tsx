@@ -116,6 +116,22 @@ export default async function NurseryPage({
                 <h2 className="text-4xl font-bold text-gray-800 mb-4">
                   {portfolio.service_section_title || t("services.title")}
                 </h2>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {portfolio.services.map((service: string, index: number) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                    >
+                      <div className="w-12 h-12 bg-[#B12F53] rounded-lg flex items-center justify-center mb-4">
+                        <span className="text-white text-xl">🎯</span>
+                      </div>
+                      <h3 className="text-xl font-semibold text-[#22336C] mb-3">
+                        {service}
+                      </h3>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {portfolio.services.map((service, index) => (
@@ -187,6 +203,23 @@ export default async function NurseryPage({
                       {portfolio.activity_section_subtitle}
                     </p>
                   )}
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {portfolio.images_activities.map(
+                      (activity: string, index: number) => (
+                        <div
+                          key={index}
+                          className="rounded-lg overflow-hidden shadow-md"
+                        >
+                          <img
+                            src={activity}
+                            alt={`Activity ${index + 1}`}
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
+                      )
+                    )}
+                  </div>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {portfolio.images_activities.map((image, index) => (
@@ -215,7 +248,7 @@ export default async function NurseryPage({
                   </h2>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {portfolio.teams.map((member, index) => (
+                  {portfolio.teams.map((member: any, index: number) => (
                     <div
                       key={index}
                       className="bg-white rounded-lg shadow-lg p-6 text-center"
