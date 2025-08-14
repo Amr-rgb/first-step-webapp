@@ -2,6 +2,7 @@ import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
+import Services from "@/components/general/nurseries/sections/Services";
 import Activities from "@/components/general/nurseries/sections/Activities";
 import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
@@ -113,30 +114,13 @@ export default async function NurseryPage({
 
       {/* 6. Services Section */}
       {portfolio.services && portfolio.services.length > 0 && (
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-              {portfolio.service_section_title || t("services.title")}
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolio.services.map((service, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6">
-                {service.image_service && (
-                  <img
-                    src={service.image_service}
-                    alt={service.title}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                )}
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600">{service.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Services
+          services={portfolio.services.map((service) => ({
+            title: service.title,
+            description: service.description,
+            image: service.image_service || "",
+          }))}
+        />
       )}
 
       {/* 7. Statistics Section */}
