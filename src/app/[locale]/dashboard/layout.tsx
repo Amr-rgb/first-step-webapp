@@ -47,9 +47,7 @@ export default function DashboardLayout({
             secondarySidebarOpen={secondarySidebarOpen}
           />
 
-          <div className="overflow-auto h-[calc(100vh-80px)]">
-            <div className="px-4 md:px-10 py-10">{children}</div>
-          </div>
+          <div className="px-4 md:px-10 py-10">{children}</div>
         </div>
         {/* SecondarySidebar only on xl screens, toggleable */}
         <div className="hidden xl:block">
