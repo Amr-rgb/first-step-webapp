@@ -10,10 +10,13 @@ export default async function TestPortfolioPage({
   const readableName = slugToReadableName(name);
 
   // Fetch portfolio data for this nursery
-  const portfolio = await nurseryService.getNurseryPortfolio(
+  const portfolioResponse = await nurseryService.getNurseryPortfolio(
     readableName,
     locale
   );
+
+  // Extract the actual portfolio data from the response
+  const portfolio = portfolioResponse?.data;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,7 +40,7 @@ export default async function TestPortfolioPage({
               Portfolio Data Structure:
             </h2>
             <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-              {JSON.stringify(portfolio, null, 2)}
+              {JSON.stringify(portfolioResponse, null, 2)}
             </pre>
           </div>
 
@@ -95,4 +98,3 @@ export default async function TestPortfolioPage({
     </div>
   );
 }
-
