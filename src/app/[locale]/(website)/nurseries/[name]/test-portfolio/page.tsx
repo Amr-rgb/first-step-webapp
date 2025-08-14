@@ -10,10 +10,13 @@ export default async function TestPortfolioPage({
   const readableName = slugToReadableName(name);
 
   // Fetch portfolio data for this nursery
-  const portfolio = await nurseryService.getNurseryPortfolio(
+  const portfolioResponse = await nurseryService.getNurseryPortfolio(
     readableName,
     locale
   );
+
+  // Extract the actual portfolio data from the response
+  const portfolio = portfolioResponse?.data;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,7 +40,7 @@ export default async function TestPortfolioPage({
               Portfolio Data Structure:
             </h2>
             <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-              {JSON.stringify(portfolio, null, 2)}
+              {JSON.stringify(portfolioResponse, null, 2)}
             </pre>
           </div>
 
@@ -47,20 +50,21 @@ export default async function TestPortfolioPage({
             </h2>
             <ul className="list-disc list-inside space-y-1 text-blue-700">
               {portfolio.hero_section && <li>Hero Section</li>}
-              {portfolio.branches?.length > 0 && (
+              {portfolio.branches && portfolio.branches.length > 0 && (
                 <li>Branches ({portfolio.branches.length})</li>
               )}
               {portfolio.Philosophy_Methodology_Goal && (
                 <li>Philosophy, Methodology & Goal</li>
               )}
-              {portfolio.services?.length > 0 && (
+              {portfolio.services && portfolio.services.length > 0 && (
                 <li>Services ({portfolio.services.length})</li>
               )}
               {portfolio.nursery_state && <li>Nursery Stats</li>}
-              {portfolio.images_activities?.length > 0 && (
-                <li>Activities ({portfolio.images_activities.length})</li>
-              )}
-              {portfolio.teams?.length > 0 && (
+              {portfolio.images_activities &&
+                portfolio.images_activities.length > 0 && (
+                  <li>Activities ({portfolio.images_activities.length})</li>
+                )}
+              {portfolio.teams && portfolio.teams.length > 0 && (
                 <li>Team ({portfolio.teams.length})</li>
               )}
               {portfolio.contact_info && <li>Contact Information</li>}
@@ -95,4 +99,3 @@ export default async function TestPortfolioPage({
     </div>
   );
 }
-

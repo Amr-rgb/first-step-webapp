@@ -1643,7 +1643,7 @@
   },
   "nurseryDetails": {
     "slogan": "Here I take my first steps",
-    "contact": {
+    "contactInfo": {
       "title": "Contact Information",
       "ownerName": "Howaida Nabil Gazzaz",
       "ownerRole": "School Owner",
@@ -1766,11 +1766,12 @@
     },
     "contact": {
       "title": "Contact Information",
+      "info": "Contact Information",
       "address": "Address",
       "phone": "Phone",
       "email": "Email",
       "workingHours": "Working Hours",
-      "socialMedia": "Social Media"
+      "social": "Social Media"
     },
     "branches": {
       "title": "Nursery Branches",
