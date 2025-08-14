@@ -24,6 +24,33 @@ export default async function TestPortfolioPage({
         Portfolio Test for: {readableName}
       </h1>
 
+      <div className="bg-yellow-100 p-4 rounded-lg mb-6">
+        <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+          Debug Information:
+        </h2>
+        <p>
+          <strong>Readable Name:</strong> {readableName}
+        </p>
+        <p>
+          <strong>Portfolio Response:</strong>{" "}
+          {portfolioResponse ? "✅ Found" : "❌ Not Found"}
+        </p>
+        <p>
+          <strong>Portfolio Data:</strong>{" "}
+          {portfolio ? "✅ Found" : "❌ Not Found"}
+        </p>
+        <p>
+          <strong>Portfolio Keys:</strong>{" "}
+          {portfolio ? Object.keys(portfolio).join(", ") : "None"}
+        </p>
+        <p>
+          <strong>Portfolio Object:</strong>
+        </p>
+        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+          {JSON.stringify(portfolio, null, 2)}
+        </pre>
+      </div>
+
       {portfolio ? (
         <div className="space-y-6">
           <div className="bg-green-100 p-4 rounded-lg">

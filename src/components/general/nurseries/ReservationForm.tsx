@@ -100,36 +100,9 @@ const ReservationForm = ({
     (nurseryName.toLowerCase().includes("world-of-learning-junior") ||
       nurseryName.toLowerCase().includes("world-of-learning"));
 
-  // Dynamic programs for World of Learning Junior
-  let dynamicPrograms: Program[] = [];
-  if (isWorldOfLearningJunior) {
-    dynamicPrograms = [
-      {
-        id: 1,
-        type: "monthly",
-        name: t("nurseryDetails.programs.junior.monthly.title"),
-        price: t("nurseryDetails.programs.junior.monthly.price"),
-        planId: 1,
-      },
-      {
-        id: 3,
-        type: "daily",
-        name: t("nurseryDetails.programs.junior.daily.title"),
-        price: t("nurseryDetails.programs.junior.daily.price"),
-        planId: 3,
-      },
-      {
-        id: 4,
-        type: "hourly",
-        name: t("nurseryDetails.programs.junior.hourly.title"),
-        price: t("nurseryDetails.programs.junior.hourly.price"),
-        planId: 4,
-      },
-    ];
-  }
   // Create program list from default programs
   const createProgramList = (): Program[] => {
-    return isWorldOfLearningJunior ? dynamicPrograms : defaultPrograms[locale];
+    return defaultPrograms[locale];
   };
 
   const programList = createProgramList();
