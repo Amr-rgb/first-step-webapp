@@ -16,55 +16,14 @@ interface ProgramsProps {
   isPreview?: boolean;
 }
 
-const Programs = ({ programs, nurseryName, locale, isPreview = false }: ProgramsProps) => {
+const Programs = ({
+  programs,
+  nurseryName,
+  locale,
+  isPreview = false,
+}: ProgramsProps) => {
   const t = useTranslations("nurseryDetails.programs");
   let displayPrograms = programs;
-  if (
-    nurseryName &&
-    nurseryName.toLowerCase().includes("world-of-learning-junior")
-  ) {
-    displayPrograms = [
-      {
-        title: t("junior.monthly.title"),
-        image: "/assets/illustrations/monthly.png",
-        price: t("junior.monthly.price"),
-        features: [
-          t("junior.monthly.features.0"),
-          t("junior.monthly.features.1"),
-          t("junior.monthly.features.2"),
-          t("junior.monthly.features.3"),
-          t("junior.monthly.features.4"),
-        ],
-        buttonText: t("junior.monthly.buttonText"),
-      },
-      {
-        title: t("junior.daily.title"),
-        image: "/assets/illustrations/daily.png",
-        price: t("junior.daily.price"),
-        features: [
-          t("junior.daily.features.0"),
-          t("junior.daily.features.1"),
-          t("junior.daily.features.2"),
-          t("junior.daily.features.3"),
-          t("junior.daily.features.4"),
-        ],
-        buttonText: t("junior.daily.buttonText"),
-      },
-      {
-        title: t("junior.hourly.title"),
-        image: "/assets/illustrations/hourly.png",
-        price: t("junior.hourly.price"),
-        features: [
-          t("junior.hourly.features.0"),
-          t("junior.hourly.features.1"),
-          t("junior.hourly.features.2"),
-          t("junior.hourly.features.3"),
-          t("junior.hourly.features.4"),
-        ],
-        buttonText: t("junior.hourly.buttonText"),
-      },
-    ];
-  }
   if (!displayPrograms) return null;
   return (
     <section className="mt-16">
@@ -99,7 +58,9 @@ const Programs = ({ programs, nurseryName, locale, isPreview = false }: Programs
               </button>
             ) : (
               <Link
-                href={`/${locale}/nurseries/${nurseryName}/reservation?program=${encodeURIComponent(program.title)}`}
+                href={`/${locale}/nurseries/${nurseryName}/reservation?program=${encodeURIComponent(
+                  program.title
+                )}`}
                 passHref
                 legacyBehavior
               >
