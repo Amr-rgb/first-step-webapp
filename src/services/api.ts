@@ -538,19 +538,13 @@ export const nurseryService = {
       });
 
       if (!nursery || !nursery.id) {
-        console.log(`Nursery not found: ${nurseryName}`);
-        console.log(
-          "Available nurseries:",
-          nurseries.map((n) => ({ name: n.nursery_name, id: n.id }))
-        );
         return null;
       }
 
-      console.log(
-        `Found nursery: ${nursery.nursery_name} with ID: ${nursery.id}`
-      );
+      // Use the nursery.id for the portfolio endpoint
+      console.log(`Nursery: ${nursery.nursery_name}, ID: ${nursery.id}`);
 
-      // Then fetch the portfolio data for this center using the correct endpoint
+      // Fetch the portfolio data using the nursery.id
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${nursery.id}`,
         {
@@ -565,11 +559,6 @@ export const nurseryService = {
       );
 
       if (!res.ok) {
-        console.error(
-          `Portfolio API failed for nursery ID ${nursery.id}:`,
-          res.status,
-          res.statusText
-        );
         throw {
           message: "Failed to fetch portfolio data",
           errors: {},
@@ -578,15 +567,12 @@ export const nurseryService = {
       }
 
       const data = await res.json();
-      console.log(
-        `Portfolio data received for nursery ID ${nursery.id}:`,
-        data
-      );
+      console.log(`Portfolio Response:`, data);
 
-      // The API returns { "portofilo": { ... } } but we expect { "data": { ... } }
+      // The API returns { "data": { ... } } directly
       return {
         message: "Success",
-        data: data.portofilo || data,
+        data: data.data || data,
       };
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
@@ -638,6 +624,125 @@ export const nurseryService = {
       };
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
+      return null;
+    }
+  },
+
+  getNurseryDetails: async (
+    centerId: number,
+    locale: string
+  ): Promise<PortfolioResponse | null> => {
+    try {
+      console.log(`Fetching nursery details for center ID: ${centerId}`);
+
+      // Fetch the nursery details using the get-center endpoint
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-center/${centerId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            lang: locale,
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+        }
+      );
+
+      if (!res.ok) {
+        console.error(
+          `Nursery details API failed for center ID ${centerId}:`,
+          res.status,
+          res.statusText
+        );
+        throw {
+          message: "Failed to fetch nursery details",
+          errors: {},
+          status: res.status,
+        };
+      }
+
+      const data = await res.json();
+      console.log(`Nursery details received for center ID ${centerId}:`, data);
+
+      // Transform the data to match our expected format
+      const transformedData = {
+        hero_section: {
+          title_of_hero: data.data.nursery_name,
+          subtitle_of_hero: data.data.additional_service,
+          description: `Located in ${data.data.neighborhood}, ${
+            data.data.city?.name?.en || data.data.city
+          }`,
+          background_image: data.data.logo,
+        },
+        branches:
+          data.data.branches?.map((branch: any) => ({
+            id: branch.id,
+            name: branch.nursery_name,
+            nursery_name_branch: branch.nursery_name,
+          })) || [],
+        Philosophy_Methodology_Goal: {
+          philosophy: {
+            content:
+              data.data.additional_service ||
+              "Our philosophy focuses on providing quality care and education.",
+          },
+          methodology: {
+            content:
+              "We use modern educational methods tailored to each child's needs.",
+          },
+          goals: {
+            content:
+              "Our goal is to help children develop their full potential in a safe and nurturing environment.",
+          },
+        },
+        services:
+          data.data.services?.map((service: string) => ({
+            title: service,
+            description: `We provide ${service} services to support your child's development.`,
+            image_service: null,
+          })) || [],
+        service_section_title: "Our Services",
+        nursery_state: {
+          area: "Varies by branch",
+          class_rooms: `${data.data.branches?.length || 0} branches`,
+          team_members: `${data.data.branches?.reduce(
+            (total: number, branch: any) => total + (branch.teams?.length || 0),
+            0
+          )} team members`,
+        },
+        images_activities: [],
+        activity_section_title: "Our Activities",
+        activity_section_subtitle:
+          "Engaging activities for your child's development",
+        teams:
+          data.data.branches?.flatMap(
+            (branch: any) =>
+              branch.teams?.map((team: any) => ({
+                name: team.name,
+                mission: team.profession,
+                image: team.image,
+              })) || []
+          ) || [],
+        contact_info: {
+          address: data.data.address,
+          working_hours: `${data.data.work_days_from} - ${data.data.work_days_to}, ${data.data.work_hours_from} - ${data.data.work_hours_to}`,
+          phone_number: data.data.phone,
+          email_address: data.data.email,
+          facebook: undefined,
+          instagram: undefined,
+          twitter: undefined,
+          whatsapp: undefined,
+        },
+        ads_images: data.data.ads?.map((ad: any) => ad.image) || [],
+      };
+
+      return {
+        message: "Success",
+        data: transformedData,
+      };
+    } catch (error) {
+      console.error("Error fetching nursery details:", error);
       return null;
     }
   },
