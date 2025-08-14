@@ -76,7 +76,7 @@ export default async function NurseryPage({
       )}
 
       {/* 5. Programs Section */}
-      <Programs nurseryName={readableName} locale={locale} />
+      <Programs programs={[]} nurseryName={readableName} locale={locale} />
 
       {/* 6. Services Section */}
       {portfolio.services && portfolio.services.length > 0 && (
@@ -98,20 +98,20 @@ export default async function NurseryPage({
                   {
                     icon: (
                       <svg
-                        width="64"
-                        height="64"
+                        width="120"
+                        height="120"
                         fill="none"
                         viewBox="0 0 64 64"
                       >
                         <path
                           d="M8 56V24L32 8l24 16v32H8Z"
                           stroke="#B12F53"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                         <path
                           d="M24 56V40h16v16"
                           stroke="#B12F53"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                       </svg>
                     ),
@@ -126,27 +126,27 @@ export default async function NurseryPage({
                   {
                     icon: (
                       <svg
-                        width="64"
-                        height="64"
+                        width="120"
+                        height="120"
                         fill="none"
                         viewBox="0 0 64 64"
                       >
                         <path
                           d="M12 16h40v32H12z"
                           stroke="#22336C"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                         <path
                           d="M24 32h16M24 40h16"
                           stroke="#22336C"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                         <circle
                           cx="20"
                           cy="24"
                           r="4"
                           stroke="#22336C"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                       </svg>
                     ),
@@ -161,8 +161,8 @@ export default async function NurseryPage({
                   {
                     icon: (
                       <svg
-                        width="64"
-                        height="64"
+                        width="120"
+                        height="120"
                         fill="none"
                         viewBox="0 0 64 64"
                       >
@@ -171,26 +171,26 @@ export default async function NurseryPage({
                           cy="20"
                           r="8"
                           stroke="#47B881"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                         <path
                           d="M16 52c0-8.837 7.163-16 16-16s16 7.163 16 16"
                           stroke="#47B881"
-                          strokeWidth="3"
+                          strokeWidth="4"
                         />
                         <circle
                           cx="16"
                           cy="28"
                           r="5"
                           stroke="#47B881"
-                          strokeWidth="2"
+                          strokeWidth="3"
                         />
                         <circle
                           cx="48"
                           cy="28"
                           r="5"
                           stroke="#47B881"
-                          strokeWidth="2"
+                          strokeWidth="3"
                         />
                       </svg>
                     ),

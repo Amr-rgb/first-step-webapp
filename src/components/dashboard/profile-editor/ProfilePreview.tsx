@@ -195,7 +195,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
               {section.data.ctaText && (
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white px-12 py-4 text-lg font-bold rounded-xl shadow-lg hover:opacity-90 transition transform hover:scale-105"
                 >
                   {section.data.ctaText}
                 </Button>

@@ -27,61 +27,61 @@ const Philosophy = ({ data }: PhilosophyProps) => {
   }
 
   return (
-    <section className="mt-20 mb-10 px-4 md:px-8">
-      <div className="container mx-auto">
-        <div className="grid md:grid-cols-3 gap-8">
+    <section className="mt-20 mb-16 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-12">
           {data.philosophy && (
-            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <div className="bg-white rounded-3xl shadow-xl p-12 text-center transform hover:scale-105 transition-transform duration-300">
               {/* Philosophy Illustration */}
-              <div className="mb-6 flex justify-center">
+              <div className="mb-8 flex justify-center">
                 <img
                   src="/assets/illustrations/philosophy.png"
                   alt="Philosophy"
-                  className="w-24 h-24 object-contain"
+                  className="w-40 h-40 object-contain"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-[#B12F53] mb-4">
+              <h3 className="text-3xl font-bold text-[#B12F53] mb-6">
                 {t("philosophy.title")}
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed">
                 {data.philosophy.content}
               </p>
             </div>
           )}
 
           {data.methodology && (
-            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <div className="bg-white rounded-3xl shadow-xl p-12 text-center transform hover:scale-105 transition-transform duration-300">
               {/* Methodology Illustration */}
-              <div className="mb-6 flex justify-center">
+              <div className="mb-8 flex justify-center">
                 <img
                   src="/assets/illustrations/methodology.png"
                   alt="Methodology"
-                  className="w-24 h-24 object-contain"
+                  className="w-40 h-40 object-contain"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-[#B12F53] mb-4">
+              <h3 className="text-3xl font-bold text-[#B12F53] mb-6">
                 {t("methodology.title")}
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed">
                 {data.methodology.content}
               </p>
             </div>
           )}
 
           {data.goals && (
-            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <div className="bg-white rounded-3xl shadow-xl p-12 text-center transform hover:scale-105 transition-transform duration-300">
               {/* Goals Illustration */}
-              <div className="mb-6 flex justify-center">
+              <div className="mb-8 flex justify-center">
                 <img
                   src="/assets/illustrations/goal.png"
                   alt="Goals"
-                  className="w-24 h-24 object-contain"
+                  className="w-40 h-40 object-contain"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-[#B12F53] mb-4">
+              <h3 className="text-3xl font-bold text-[#B12F53] mb-6">
                 {t("goals.title")}
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed">
                 {data.goals.content}
               </p>
             </div>
