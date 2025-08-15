@@ -1,3 +1,8 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+
 interface Stat {
   icon: React.ReactNode;
   value: string | number;
@@ -9,27 +14,75 @@ interface StatsProps {
   stats: Stat[];
   buttonText?: string;
   isPreview?: boolean;
+  locale?: string;
+  nurseryName?: string;
 }
 
-const Stats = ({ stats, buttonText, isPreview = false }: StatsProps) => (
-  <section className="mt-16 mb-10">
-    {buttonText && (
-      <div className="flex justify-center mb-8">
-        <button className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white rounded-md px-8 py-2 font-bold text-sm shadow-md hover:opacity-90 transition">
-          {buttonText}
-        </button>
-      </div>
-    )}
-    <div className="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-24 text-center">
-      {stats.map((stat, idx) => (
-        <div key={idx} className="flex flex-col items-center">
-          <div className="mb-2">{stat.icon}</div>
-          <div className={`text-3xl font-bold ${stat.color}`}>{stat.value}</div>
-          <div className={`${stat.color} font-bold mt-1`}>{stat.label}</div>
+const Stats = ({
+  stats,
+  buttonText,
+  isPreview = false,
+  locale,
+  nurseryName,
+}: StatsProps) => {
+  const t = useTranslations("nurseryDetails");
+
+  // Don't render if no stats
+  if (!stats || stats.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="mt-20 mb-16 py-12 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4">
+        {buttonText && (
+          <div className="flex justify-center mb-12">
+            {isPreview ? (
+              <div className="relative group">
+                <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50 cursor-not-allowed">
+                  {buttonText}
+                </button>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  Wait until the nursery adds its plans or programs
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative group">
+                <button
+                  className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  {buttonText}
+                </button>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  Wait until the nursery adds its plans or programs
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+          {stats.map((stat, idx) => (
+            <div key={idx} className="flex flex-col items-center group">
+              <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                {stat.icon}
+              </div>
+              <div
+                className={`text-5xl md:text-6xl font-bold ${stat.color} mb-3`}
+              >
+                {stat.value}
+              </div>
+              <div className={`${stat.color} font-bold text-xl md:text-2xl`}>
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </section>
-);
+      </div>
+    </section>
+  );
+};
 
 export default Stats;

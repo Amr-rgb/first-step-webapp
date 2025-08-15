@@ -1,5 +1,5 @@
 import BranchesList from "./sections/BranchesList";
-import PhilosophyCards from "./sections/PhilosophyCards";
+import Philosophy from "./sections/Philosophy";
 import Programs from "./sections/Programs";
 import Services from "./sections/Services";
 import Stats from "./sections/Stats";
@@ -32,7 +32,21 @@ const NurseryPage = ({ config }: NurseryPageProps) => (
       />
     )}
     {config.philosophyCards && (
-      <PhilosophyCards sections={config.philosophyCards} />
+      <Philosophy
+        data={{
+          philosophy: {
+            content:
+              config.philosophyCards[0]?.text || "Our philosophy goes here",
+          },
+          methodology: {
+            content:
+              config.philosophyCards[1]?.text || "Our methodology goes here",
+          },
+          goals: {
+            content: config.philosophyCards[2]?.text || "Our goal goes here",
+          },
+        }}
+      />
     )}
     {config.programs && <Programs programs={config.programs} />}
     {config.services && <Services services={config.services} />}

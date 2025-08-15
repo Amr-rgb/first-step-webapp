@@ -189,7 +189,9 @@ export interface NurseryResponse
     CenterRegisterPayload,
     "logo" | "license_path" | "commercial_record_path"
   > {
+  id: number;
   user_id: number;
+  center_id?: number;
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
