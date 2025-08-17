@@ -6,12 +6,15 @@ import ProfileEditor from "@/components/dashboard/profile-editor/ProfileEditor";
 import ProfilePreview from "@/components/dashboard/profile-editor/ProfilePreview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Eye, Edit, Save, AlertCircle, Palette } from "lucide-react";
+import { Eye, Edit, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/authStore";
-import { getPortfolio, savePortfolio } from "@/services/dashboardApi";
-import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
+import {
+  getPortfolio,
+  savePortfolio,
+  savePricing,
+} from "@/services/dashboardApi";
 
 export interface ProfileSection {
   id: string;
@@ -39,6 +42,7 @@ export default function ProfileEditorPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
+  const [originalData, setOriginalData] = useState<any>(null);
 
   const [profileSections, setProfileSections] = useState<ProfileSection[]>([
     {
@@ -166,13 +170,21 @@ export default function ProfileEditorPage() {
     async function fetchPortfolio() {
       try {
         const result = await getPortfolio(centerId as number);
+        console.log("🔍 FETCHED PORTFOLIO DATA:", result);
         if (result.portofilo) {
-          setProfileSections(mapBackendToProfileSections(result.portofilo));
+          const mappedSections = mapBackendToProfileSections(result.portofilo);
+          setProfileSections(mappedSections);
+          // Store original data for change detection
+          setOriginalData(result.portofilo);
+          console.log("📋 MAPPED PROFILE SECTIONS:", mappedSections);
         } else {
           setProfileSections(getDefaultProfileSections());
+          setOriginalData(null);
         }
       } catch (e) {
+        console.error("❌ Error fetching portfolio:", e);
         setProfileSections(getDefaultProfileSections());
+        setOriginalData(null);
       }
     }
     fetchPortfolio();
@@ -259,13 +271,88 @@ export default function ProfileEditorPage() {
     setIsSaving(true);
     try {
       if (typeof centerId !== "number") throw new Error("No center id");
-      await savePortfolio(
-        centerId,
-        mapProfileSectionsToBackend(profileSections, centerId)
+
+      // Map profile sections to backend format
+      const portfolioData = mapProfileSectionsToBackend(
+        profileSections,
+        centerId
       );
-      setIsDirty(false);
-      toast.success(t("saveSuccess"));
+      console.log("📤 SENDING PORTFOLIO DATA:", portfolioData);
+
+      // Prepare data with files for API submission
+      const portfolioDataWithFiles =
+        preparePortfolioDataWithFiles(portfolioData);
+      console.log("📁 PORTFOLIO DATA WITH FILES PREPARED");
+
+      // Check if any sections have been updated by comparing with original data
+      const hasPortfolioUpdates = (() => {
+        if (!originalData) {
+          // If no original data, check if any sections are enabled with data
+          return profileSections.some(
+            (section) =>
+              section.enabled &&
+              section.data &&
+              Object.keys(section.data).length > 0
+          );
+        }
+
+        // Compare current data with original data
+        const currentData = mapProfileSectionsToBackend(
+          profileSections,
+          centerId
+        );
+        return JSON.stringify(currentData) !== JSON.stringify(originalData);
+      })();
+
+      // TODO: Add pricing data check when pricing functionality is implemented
+      const hasPricingUpdates = false; // This will be updated when pricing is connected
+      const pricingData = {}; // This will be populated when pricing functionality is implemented
+
+      const requests = [];
+
+      // Send portfolio update if there are changes
+      if (hasPortfolioUpdates) {
+        requests.push(
+          savePortfolio(centerId, portfolioDataWithFiles)
+            .then(() => console.log("✅ Portfolio updated successfully"))
+            .catch((error) => {
+              console.error("❌ Portfolio update failed:", error);
+              console.error("🔍 FULL ERROR RESPONSE:", error.response);
+              console.error(
+                "🔍 VALIDATION ERRORS:",
+                error.response?.data?.errors
+              );
+              console.error("📝 ERROR MESSAGE:", error.response?.data?.message);
+              console.error("📝 ERROR DATA:", error.response?.data);
+              throw new Error("Portfolio update failed");
+            })
+        );
+      }
+
+      // Send pricing update if there are changes
+      if (hasPricingUpdates) {
+        requests.push(
+          savePricing(centerId, pricingData)
+            .then(() => console.log("Pricing updated successfully"))
+            .catch((error) => {
+              console.error("Pricing update failed:", error);
+              throw new Error("Pricing update failed");
+            })
+        );
+      }
+
+      // Wait for all requests to complete
+      if (requests.length > 0) {
+        await Promise.all(requests);
+        // Update original data after successful save
+        setOriginalData(portfolioData);
+        setIsDirty(false);
+        toast.success(t("saveSuccess"));
+      } else {
+        toast.info("No changes to save");
+      }
     } catch (error) {
+      console.error("Save error:", error);
       toast.error(t("saveError"));
     } finally {
       setIsSaving(false);
@@ -498,12 +585,14 @@ export default function ProfileEditorPage() {
     // Helper to get section by type
     const get = (type: any) => sections.find((s) => s.type === type);
 
-    return {
+    console.log("🔄 MAPPING SECTIONS TO BACKEND:", sections);
+
+    const result = {
       hero_section: {
         title_of_hero: get("hero")?.data.title || "",
         subtitle_of_hero: get("hero")?.data.subtitle || "",
         description: get("hero")?.data.description || "",
-        background_image: get("hero")?.data.image || "",
+        background_image: get("hero")?.data.image instanceof File ? get("hero")?.data.image : null,
       },
       branches: get("branches")?.data.branches || [],
       Philosophy_Methodology_Goal: {
@@ -521,7 +610,11 @@ export default function ProfileEditorPage() {
         },
       },
       service_section_title: get("services")?.data.title || "",
-      services: get("services")?.data.services || [],
+      services: get("services")?.data.services?.map((service: any) => ({
+        title: service.title || "",
+        description: service.description || "",
+        image_service: service.image instanceof File ? service.image : null,
+      })) || [],
       nursery_state: {
         area: get("stats")?.data.area || "",
         class_rooms: get("stats")?.data.classrooms || "",
@@ -529,9 +622,13 @@ export default function ProfileEditorPage() {
       },
       activity_section_title: get("activities")?.data.title || "",
       activity_section_subtitle: get("activities")?.data.subtitle || "",
-      images_activities: get("activities")?.data.images || [],
-      ads_images: [], // Add logic if you have ads images in your UI
-      teams: get("team")?.data.members || [],
+      images_activities: get("activities")?.data.images?.filter((image: any) => image instanceof File) || [],
+      ads_images: [], // Will be populated when ads functionality is added
+      teams: get("team")?.data.members?.map((member: any) => ({
+        name: member.name || "",
+        mission: member.role || "",
+        image: member.image instanceof File ? member.image : null,
+      })) || [],
       contact_info: {
         address: get("contact")?.data.address || "",
         working_hours: get("contact")?.data.workingHours || "",
@@ -540,9 +637,137 @@ export default function ProfileEditorPage() {
         facebook: get("contact")?.data.socialMedia?.facebook || "",
         instagram: get("contact")?.data.socialMedia?.instagram || "",
         whatsapp: get("contact")?.data.socialMedia?.whatsapp || "",
+        twitter: get("contact")?.data.socialMedia?.twitter || "",
       },
       center_id: centerId,
     };
+
+    console.log("🔄 MAPPED RESULT:", result);
+    return result;
+  }
+
+    // Function to prepare portfolio data with files for API submission
+  function preparePortfolioDataWithFiles(data: any) {
+    const formData = new FormData();
+ 
+    // Add center_id
+    formData.append("center_id", data.center_id.toString());
+ 
+    // Hero section
+    if (data.hero_section) {
+      formData.append("hero_section[title_of_hero]", data.hero_section.title_of_hero || "");
+      formData.append("hero_section[subtitle_of_hero]", data.hero_section.subtitle_of_hero || "");
+      formData.append("hero_section[description]", data.hero_section.description || "");
+      
+      // Add background image file if it exists
+      if (data.hero_section.background_image instanceof File) {
+        formData.append("hero_section[background_image]", data.hero_section.background_image);
+      }
+    }
+ 
+    // Branches
+    if (data.branches && Array.isArray(data.branches)) {
+      data.branches.forEach((branch: any, index: number) => {
+        formData.append(`branches[${index}][branch_name]`, branch.branch_name || "");
+      });
+    }
+ 
+    // Philosophy, Methodology, Goals
+    if (data.Philosophy_Methodology_Goal) {
+      const pmg = data.Philosophy_Methodology_Goal;
+      if (pmg.philosophy) {
+        formData.append("Philosophy_Methodology_Goal[philosophy][title]", pmg.philosophy.title || "");
+        formData.append("Philosophy_Methodology_Goal[philosophy][content]", pmg.philosophy.content || "");
+      }
+      if (pmg.methodology) {
+        formData.append("Philosophy_Methodology_Goal[methodology][title]", pmg.methodology.title || "");
+        formData.append("Philosophy_Methodology_Goal[methodology][content]", pmg.methodology.content || "");
+      }
+      if (pmg.goals) {
+        formData.append("Philosophy_Methodology_Goal[goals][title]", pmg.goals.title || "");
+        formData.append("Philosophy_Methodology_Goal[goals][content]", pmg.goals.content || "");
+      }
+    }
+ 
+    // Services
+    formData.append("service_section_title", data.service_section_title || "");
+    if (data.services && Array.isArray(data.services)) {
+      data.services.forEach((service: any, index: number) => {
+        formData.append(`services[${index}][title]`, service.title || "");
+        formData.append(`services[${index}][description]`, service.description || "");
+        
+        // Add service image file if it exists
+        if (service.image_service instanceof File) {
+          formData.append(`services[${index}][image_service]`, service.image_service);
+        }
+      });
+    }
+ 
+    // Nursery state
+    if (data.nursery_state) {
+      formData.append("nursery_state[area]", data.nursery_state.area || "");
+      formData.append("nursery_state[class_rooms]", data.nursery_state.class_rooms || "");
+      formData.append("nursery_state[team_members]", data.nursery_state.team_members || "");
+    }
+ 
+    // Activity section
+    formData.append("activity_section_title", data.activity_section_title || "");
+    formData.append("activity_section_subtitle", data.activity_section_subtitle || "");
+ 
+    // Add activity image files only (no URLs)
+    if (data.images_activities && Array.isArray(data.images_activities)) {
+      data.images_activities.forEach((image: any, index: number) => {
+        if (image instanceof File) {
+          formData.append(`images_activities[${index}]`, image);
+        }
+      });
+    }
+ 
+    // Add ads image files only (no URLs)
+    if (data.ads_images && Array.isArray(data.ads_images)) {
+      data.ads_images.forEach((image: any, index: number) => {
+        if (image instanceof File) {
+          formData.append(`ads_images[${index}]`, image);
+        }
+      });
+    }
+ 
+    // Teams
+    if (data.teams && Array.isArray(data.teams)) {
+      data.teams.forEach((team: any, index: number) => {
+        formData.append(`teams[${index}][name]`, team.name || "");
+        formData.append(`teams[${index}][mission]`, team.mission || "");
+        
+        // Add team image file if it exists
+        if (team.image instanceof File) {
+          formData.append(`teams[${index}][image]`, team.image);
+        }
+      });
+    }
+ 
+    // Contact info
+    if (data.contact_info) {
+      formData.append("contact_info[address]", data.contact_info.address || "");
+      formData.append("contact_info[working_hours]", data.contact_info.working_hours || "");
+      formData.append("contact_info[phone_number]", data.contact_info.phone_number || "");
+      formData.append("contact_info[email_address]", data.contact_info.email_address || "");
+      formData.append("contact_info[facebook]", data.contact_info.facebook || "");
+      formData.append("contact_info[instagram]", data.contact_info.instagram || "");
+      formData.append("contact_info[whatsapp]", data.contact_info.whatsapp || "");
+      formData.append("contact_info[twitter]", data.contact_info.twitter || "");
+    }
+ 
+    console.log("📁 PREPARED FORMDATA WITH FILES");
+    console.log("📋 FORMDATA CONTENTS:");
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+ 
+    return formData;
   }
 
   const enabledSections = profileSections.filter((section) => section.enabled);
@@ -634,14 +859,6 @@ export default function ProfileEditorPage() {
             onSectionDelete={handleSectionDelete}
           />
         )}
-
-        {/* Coming Soon Overlay */}
-        <ComingSoonOverlay
-          message="Portfolio editor is getting a major design upgrade! We're crafting an intuitive experience for creating stunning nursery profiles."
-          icon={<Palette className="w-8 h-8 text-purple-400 animate-bounce" />}
-          theme="gradient"
-          showBlur={true}
-        />
       </div>
     </div>
   );
