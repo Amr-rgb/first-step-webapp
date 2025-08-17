@@ -1,11 +1,13 @@
 import { Metadata } from "next";
 // import Advertisment from "@/components/general/Advertisment";
-import Headline from "@/components/general/Headline";
+// import Headline from "@/components/general/Headline";
 // import StickyScrollServices from "@/components/general/StickyScrollServices";
-import { websiteService } from "@/services/api";
-import Services from "@/components/general/Services";
+// import { websiteService } from "@/services/api";
+// import Services from "@/components/general/Services";
 import ServicesClientWrapper from "@/components/general/ServicesClientWrapper";
 import { getParentServices, getCenterServices } from "@/data/services";
+import AppAd from "@/components/general/AppAd";
+import Contact from "@/components/general/contact/Contact";
 
 export const revalidate = 86400;
 
@@ -33,9 +35,18 @@ export default async function ServicesPage({
   params: Promise<{ locale: string }>;
 }) {
   const resolvedParams = await params;
-  
+
   const parentServices = getParentServices(resolvedParams.locale);
   const centerServices = getCenterServices(resolvedParams.locale);
 
-  return <ServicesClientWrapper parentServices={parentServices} centerServices={centerServices} />;
+  return (
+    <main>
+      <ServicesClientWrapper
+        parentServices={parentServices}
+        centerServices={centerServices}
+      />
+      <AppAd />
+      <Contact />
+    </main>
+  );
 }

@@ -1803,6 +1803,11 @@
         "button1": "Book for your child now",
         "button2": "Enroll your children with us"
       }
+    },
+    "AppAd": {
+      "title": "Download the First Step App Now",
+      "description": "Because you are not just choosing a nursery or educational center, you are building your child's future",
+      "download": "Now available on"
     }
   }
 }
