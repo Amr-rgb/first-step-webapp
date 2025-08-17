@@ -521,7 +521,10 @@ export default function ProfileEditorPage() {
           Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
         data: {
           title: "Our Branches",
-          branches: portofilo?.branches || [],
+          branches:
+            portofilo?.branches?.map((branch: any) => ({
+              name: branch.branch_name || branch.name || "",
+            })) || [],
         },
       },
       {
@@ -625,8 +628,11 @@ export default function ProfileEditorPage() {
           ? get("hero")?.data.image
           : null,
 
-      // Branches
-      branches: get("branches")?.data.branches || [],
+      // Branches - map from frontend 'name' to backend 'branch_name'
+      branches:
+        get("branches")?.data.branches?.map((branch: any) => ({
+          branch_name: branch.name || branch.branch_name || "",
+        })) || [],
 
       // Philosophy, Methodology, Goals
       Philosophy_Methodology_Goal: {
