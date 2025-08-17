@@ -1382,15 +1382,17 @@ export const getPortfolio = async (centerId: number) => {
 export const savePortfolio = async (centerId: number, data: any) => {
   // If data is FormData, send it directly
   if (data instanceof FormData) {
+    console.log("📤 SENDING FORMDATA TO API");
     const response = await apiClient.post(`/portfolios`, data, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   }
-  
+
   // Otherwise, send as JSON
+  console.log("📤 SENDING JSON TO API");
   const response = await apiClient.post(`/portfolios`, data);
   return response.data;
 };

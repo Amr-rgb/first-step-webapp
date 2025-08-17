@@ -441,17 +441,17 @@ const ProfileEditor = ({
                         }
                         rows={2}
                       />
-                                          <div>
-                      <Label>Service Image</Label>
-                      <ImageUploader
-                        value={service.image_service || service.image || null}
-                        onChange={(file) =>
-                          updateListItem(section.id, "services", index, {
-                            image_service: file,
-                          })
-                        }
-                      />
-                    </div>
+                      <div>
+                        <Label>Service Image</Label>
+                        <ImageUploader
+                          value={service.image_service || service.image || null}
+                          onChange={(file) =>
+                            updateListItem(section.id, "services", index, {
+                              image_service: file,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
                   </Card>
                 )
@@ -878,7 +878,9 @@ const ProfileEditor = ({
                     <ImageUploader
                       value={image.url || image || null}
                       onChange={(file) =>
-                        updateListItem(section.id, "images", index, { url: file })
+                        updateListItem(section.id, "images", index, {
+                          url: file,
+                        })
                       }
                     />
                   </div>

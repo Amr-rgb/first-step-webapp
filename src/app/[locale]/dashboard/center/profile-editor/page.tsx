@@ -279,10 +279,8 @@ export default function ProfileEditorPage() {
       );
       console.log("📤 SENDING PORTFOLIO DATA:", portfolioData);
 
-      // Prepare data with files for API submission
-      const portfolioDataWithFiles =
-        preparePortfolioDataWithFiles(portfolioData);
-      console.log("📁 PORTFOLIO DATA WITH FILES PREPARED");
+      // For now, send as JSON to test the structure
+      console.log("📁 SENDING AS JSON TO TEST STRUCTURE");
 
       // Check if any sections have been updated by comparing with original data
       const hasPortfolioUpdates = (() => {
@@ -313,17 +311,27 @@ export default function ProfileEditorPage() {
       // Send portfolio update if there are changes
       if (hasPortfolioUpdates) {
         requests.push(
-          savePortfolio(centerId, portfolioDataWithFiles)
+          savePortfolio(centerId, portfolioData)
             .then(() => console.log("✅ Portfolio updated successfully"))
             .catch((error) => {
               console.error("❌ Portfolio update failed:", error);
               console.error("🔍 FULL ERROR RESPONSE:", error.response);
+              console.error("🔍 ERROR STATUS:", error.response?.status);
+              console.error(
+                "🔍 ERROR STATUS TEXT:",
+                error.response?.statusText
+              );
+              console.error("🔍 ERROR HEADERS:", error.response?.headers);
               console.error(
                 "🔍 VALIDATION ERRORS:",
                 error.response?.data?.errors
               );
               console.error("📝 ERROR MESSAGE:", error.response?.data?.message);
               console.error("📝 ERROR DATA:", error.response?.data);
+              console.error(
+                "📝 FULL ERROR OBJECT:",
+                JSON.stringify(error, null, 2)
+              );
               throw new Error("Portfolio update failed");
             })
         );
@@ -588,13 +596,19 @@ export default function ProfileEditorPage() {
     console.log("🔄 MAPPING SECTIONS TO BACKEND:", sections);
 
     const result = {
-      hero_section: {
-        title_of_hero: get("hero")?.data.title || "",
-        subtitle_of_hero: get("hero")?.data.subtitle || "",
-        description: get("hero")?.data.description || "",
-        background_image: get("hero")?.data.image instanceof File ? get("hero")?.data.image : null,
-      },
+      // Hero section - map to individual columns
+      title_of_hero: get("hero")?.data.title || "",
+      subtitle_of_hero: get("hero")?.data.subtitle || "",
+      description: get("hero")?.data.description || "",
+      background_image:
+        get("hero")?.data.image instanceof File
+          ? get("hero")?.data.image
+          : null,
+
+      // Branches
       branches: get("branches")?.data.branches || [],
+
+      // Philosophy, Methodology, Goals
       Philosophy_Methodology_Goal: {
         philosophy: {
           title: get("philosophy")?.data.philosophyTitle || "",
@@ -609,26 +623,44 @@ export default function ProfileEditorPage() {
           content: get("philosophy")?.data.goal || "",
         },
       },
+
+      // Services
       service_section_title: get("services")?.data.title || "",
-      services: get("services")?.data.services?.map((service: any) => ({
-        title: service.title || "",
-        description: service.description || "",
-        image_service: service.image instanceof File ? service.image : null,
-      })) || [],
+      services:
+        get("services")?.data.services?.map((service: any) => ({
+          title: service.title || "",
+          description: service.description || "",
+          image_service:
+            service.image_service instanceof File
+              ? service.image_service
+              : null,
+        })) || [],
+
+      // Nursery state
       nursery_state: {
         area: get("stats")?.data.area || "",
         class_rooms: get("stats")?.data.classrooms || "",
         team_members: get("stats")?.data.teamMembers || "",
       },
+
+      // Activity section
       activity_section_title: get("activities")?.data.title || "",
       activity_section_subtitle: get("activities")?.data.subtitle || "",
-      images_activities: get("activities")?.data.images?.filter((image: any) => image instanceof File) || [],
+      images_activities:
+        get("activities")?.data.images?.filter(
+          (image: any) => image instanceof File
+        ) || [],
       ads_images: [], // Will be populated when ads functionality is added
-      teams: get("team")?.data.members?.map((member: any) => ({
-        name: member.name || "",
-        mission: member.role || "",
-        image: member.image instanceof File ? member.image : null,
-      })) || [],
+
+      // Teams
+      teams:
+        get("team")?.data.members?.map((member: any) => ({
+          name: member.name || "",
+          mission: member.role || "",
+          image: member.image instanceof File ? member.image : null,
+        })) || [],
+
+      // Contact info
       contact_info: {
         address: get("contact")?.data.address || "",
         working_hours: get("contact")?.data.workingHours || "",
@@ -639,81 +671,136 @@ export default function ProfileEditorPage() {
         whatsapp: get("contact")?.data.socialMedia?.whatsapp || "",
         twitter: get("contact")?.data.socialMedia?.twitter || "",
       },
+
       center_id: centerId,
     };
 
     console.log("🔄 MAPPED RESULT:", result);
+    console.log("🔍 SERVICES DATA:", result.services);
+    console.log("🔍 TEAMS DATA:", result.teams);
+    console.log("🔍 HERO SECTION:", result.hero_section);
     return result;
   }
 
-    // Function to prepare portfolio data with files for API submission
+  // Function to prepare portfolio data with files for API submission
   function preparePortfolioDataWithFiles(data: any) {
     const formData = new FormData();
- 
+
     // Add center_id
     formData.append("center_id", data.center_id.toString());
- 
+
     // Hero section
     if (data.hero_section) {
-      formData.append("hero_section[title_of_hero]", data.hero_section.title_of_hero || "");
-      formData.append("hero_section[subtitle_of_hero]", data.hero_section.subtitle_of_hero || "");
-      formData.append("hero_section[description]", data.hero_section.description || "");
-      
+      formData.append(
+        "hero_section[title_of_hero]",
+        data.hero_section.title_of_hero || ""
+      );
+      formData.append(
+        "hero_section[subtitle_of_hero]",
+        data.hero_section.subtitle_of_hero || ""
+      );
+      formData.append(
+        "hero_section[description]",
+        data.hero_section.description || ""
+      );
+
       // Add background image file if it exists
       if (data.hero_section.background_image instanceof File) {
-        formData.append("hero_section[background_image]", data.hero_section.background_image);
+        formData.append(
+          "hero_section[background_image]",
+          data.hero_section.background_image
+        );
       }
     }
- 
+
     // Branches
     if (data.branches && Array.isArray(data.branches)) {
       data.branches.forEach((branch: any, index: number) => {
-        formData.append(`branches[${index}][branch_name]`, branch.branch_name || "");
+        formData.append(
+          `branches[${index}][branch_name]`,
+          branch.branch_name || ""
+        );
       });
     }
- 
+
     // Philosophy, Methodology, Goals
     if (data.Philosophy_Methodology_Goal) {
       const pmg = data.Philosophy_Methodology_Goal;
       if (pmg.philosophy) {
-        formData.append("Philosophy_Methodology_Goal[philosophy][title]", pmg.philosophy.title || "");
-        formData.append("Philosophy_Methodology_Goal[philosophy][content]", pmg.philosophy.content || "");
+        formData.append(
+          "Philosophy_Methodology_Goal[philosophy][title]",
+          pmg.philosophy.title || ""
+        );
+        formData.append(
+          "Philosophy_Methodology_Goal[philosophy][content]",
+          pmg.philosophy.content || ""
+        );
       }
       if (pmg.methodology) {
-        formData.append("Philosophy_Methodology_Goal[methodology][title]", pmg.methodology.title || "");
-        formData.append("Philosophy_Methodology_Goal[methodology][content]", pmg.methodology.content || "");
+        formData.append(
+          "Philosophy_Methodology_Goal[methodology][title]",
+          pmg.methodology.title || ""
+        );
+        formData.append(
+          "Philosophy_Methodology_Goal[methodology][content]",
+          pmg.methodology.content || ""
+        );
       }
       if (pmg.goals) {
-        formData.append("Philosophy_Methodology_Goal[goals][title]", pmg.goals.title || "");
-        formData.append("Philosophy_Methodology_Goal[goals][content]", pmg.goals.content || "");
+        formData.append(
+          "Philosophy_Methodology_Goal[goals][title]",
+          pmg.goals.title || ""
+        );
+        formData.append(
+          "Philosophy_Methodology_Goal[goals][content]",
+          pmg.goals.content || ""
+        );
       }
     }
- 
+
     // Services
     formData.append("service_section_title", data.service_section_title || "");
     if (data.services && Array.isArray(data.services)) {
       data.services.forEach((service: any, index: number) => {
         formData.append(`services[${index}][title]`, service.title || "");
-        formData.append(`services[${index}][description]`, service.description || "");
-        
+        formData.append(
+          `services[${index}][description]`,
+          service.description || ""
+        );
+
         // Add service image file if it exists
         if (service.image_service instanceof File) {
-          formData.append(`services[${index}][image_service]`, service.image_service);
+          formData.append(
+            `services[${index}][image_service]`,
+            service.image_service
+          );
         }
       });
     }
- 
+
     // Nursery state
     if (data.nursery_state) {
       formData.append("nursery_state[area]", data.nursery_state.area || "");
-      formData.append("nursery_state[class_rooms]", data.nursery_state.class_rooms || "");
-      formData.append("nursery_state[team_members]", data.nursery_state.team_members || "");
+      formData.append(
+        "nursery_state[class_rooms]",
+        data.nursery_state.class_rooms || ""
+      );
+      formData.append(
+        "nursery_state[team_members]",
+        data.nursery_state.team_members || ""
+      );
     }
- 
+
     // Activity section
-    formData.append("activity_section_title", data.activity_section_title || "");
-    formData.append("activity_section_subtitle", data.activity_section_subtitle || "");
- 
+    formData.append(
+      "activity_section_title",
+      data.activity_section_title || ""
+    );
+    formData.append(
+      "activity_section_subtitle",
+      data.activity_section_subtitle || ""
+    );
+
     // Add activity image files only (no URLs)
     if (data.images_activities && Array.isArray(data.images_activities)) {
       data.images_activities.forEach((image: any, index: number) => {
@@ -722,7 +809,7 @@ export default function ProfileEditorPage() {
         }
       });
     }
- 
+
     // Add ads image files only (no URLs)
     if (data.ads_images && Array.isArray(data.ads_images)) {
       data.ads_images.forEach((image: any, index: number) => {
@@ -731,42 +818,62 @@ export default function ProfileEditorPage() {
         }
       });
     }
- 
+
     // Teams
     if (data.teams && Array.isArray(data.teams)) {
       data.teams.forEach((team: any, index: number) => {
         formData.append(`teams[${index}][name]`, team.name || "");
         formData.append(`teams[${index}][mission]`, team.mission || "");
-        
+
         // Add team image file if it exists
         if (team.image instanceof File) {
           formData.append(`teams[${index}][image]`, team.image);
         }
       });
     }
- 
+
     // Contact info
     if (data.contact_info) {
       formData.append("contact_info[address]", data.contact_info.address || "");
-      formData.append("contact_info[working_hours]", data.contact_info.working_hours || "");
-      formData.append("contact_info[phone_number]", data.contact_info.phone_number || "");
-      formData.append("contact_info[email_address]", data.contact_info.email_address || "");
-      formData.append("contact_info[facebook]", data.contact_info.facebook || "");
-      formData.append("contact_info[instagram]", data.contact_info.instagram || "");
-      formData.append("contact_info[whatsapp]", data.contact_info.whatsapp || "");
+      formData.append(
+        "contact_info[working_hours]",
+        data.contact_info.working_hours || ""
+      );
+      formData.append(
+        "contact_info[phone_number]",
+        data.contact_info.phone_number || ""
+      );
+      formData.append(
+        "contact_info[email_address]",
+        data.contact_info.email_address || ""
+      );
+      formData.append(
+        "contact_info[facebook]",
+        data.contact_info.facebook || ""
+      );
+      formData.append(
+        "contact_info[instagram]",
+        data.contact_info.instagram || ""
+      );
+      formData.append(
+        "contact_info[whatsapp]",
+        data.contact_info.whatsapp || ""
+      );
       formData.append("contact_info[twitter]", data.contact_info.twitter || "");
     }
- 
+
     console.log("📁 PREPARED FORMDATA WITH FILES");
     console.log("📋 FORMDATA CONTENTS:");
     for (let [key, value] of formData.entries()) {
       if (value instanceof File) {
-        console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        console.log(
+          `${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
+        );
       } else {
         console.log(`${key}: ${value}`);
       }
     }
- 
+
     return formData;
   }
 
