@@ -279,8 +279,27 @@ export default function ProfileEditorPage() {
       );
       console.log("📤 SENDING PORTFOLIO DATA:", portfolioData);
 
-      // For now, send as JSON to test the structure
-      console.log("📁 SENDING AS JSON TO TEST STRUCTURE");
+      // Check if there are any File objects (images) in the data
+      const hasImages = (() => {
+        const checkForFiles = (obj: any): boolean => {
+          if (obj instanceof File) return true;
+          if (Array.isArray(obj)) return obj.some(checkForFiles);
+          if (obj && typeof obj === "object") {
+            return Object.values(obj).some(checkForFiles);
+          }
+          return false;
+        };
+        return checkForFiles(portfolioData);
+      })();
+
+      let portfolioDataWithFiles: FormData | null = null;
+      if (hasImages) {
+        console.log("📁 PREPARING FORMDATA FOR IMAGES");
+        portfolioDataWithFiles = preparePortfolioDataWithFiles(portfolioData);
+        console.log("📁 SENDING FORMDATA WITH IMAGES");
+      } else {
+        console.log("📁 SENDING AS JSON (NO IMAGES)");
+      }
 
       // Check if any sections have been updated by comparing with original data
       const hasPortfolioUpdates = (() => {
@@ -310,8 +329,9 @@ export default function ProfileEditorPage() {
 
       // Send portfolio update if there are changes
       if (hasPortfolioUpdates) {
+        const dataToSend = hasImages ? portfolioDataWithFiles : portfolioData;
         requests.push(
-          savePortfolio(centerId, portfolioData)
+          savePortfolio(centerId, dataToSend)
             .then(() => console.log("✅ Portfolio updated successfully"))
             .catch((error) => {
               console.error("❌ Portfolio update failed:", error);
@@ -678,7 +698,12 @@ export default function ProfileEditorPage() {
     console.log("🔄 MAPPED RESULT:", result);
     console.log("🔍 SERVICES DATA:", result.services);
     console.log("🔍 TEAMS DATA:", result.teams);
-    console.log("🔍 HERO SECTION:", result.hero_section);
+    console.log("🔍 HERO SECTION:", {
+      title_of_hero: result.title_of_hero,
+      subtitle_of_hero: result.subtitle_of_hero,
+      description: result.description,
+      background_image: result.background_image,
+    });
     return result;
   }
 
@@ -689,28 +714,14 @@ export default function ProfileEditorPage() {
     // Add center_id
     formData.append("center_id", data.center_id.toString());
 
-    // Hero section
-    if (data.hero_section) {
-      formData.append(
-        "hero_section[title_of_hero]",
-        data.hero_section.title_of_hero || ""
-      );
-      formData.append(
-        "hero_section[subtitle_of_hero]",
-        data.hero_section.subtitle_of_hero || ""
-      );
-      formData.append(
-        "hero_section[description]",
-        data.hero_section.description || ""
-      );
+    // Hero section (now individual fields)
+    formData.append("title_of_hero", data.title_of_hero || "");
+    formData.append("subtitle_of_hero", data.subtitle_of_hero || "");
+    formData.append("description", data.description || "");
 
-      // Add background image file if it exists
-      if (data.hero_section.background_image instanceof File) {
-        formData.append(
-          "hero_section[background_image]",
-          data.hero_section.background_image
-        );
-      }
+    // Add background image file if it exists
+    if (data.background_image instanceof File) {
+      formData.append("background_image", data.background_image);
     }
 
     // Branches
