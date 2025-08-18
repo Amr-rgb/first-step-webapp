@@ -23,7 +23,7 @@ export interface ProfileSection {
     | "hero"
     | "about"
     | "services"
-    | "programs"
+    | "plans"
     | "team"
     | "activities"
     | "contact"
@@ -84,13 +84,13 @@ export default function ProfileEditorPage() {
       },
     },
     {
-      id: "programs",
-      name: "Programs (برامجنا)",
-      type: "programs",
-      enabled: false,
+      id: "plans",
+      name: "Plans (برامجنا)",
+      type: "plans",
+      enabled: false, // Only enable when there's data
       data: {
-        title: "برامجنا",
-        programs: [],
+        title: "Plans", // Static title - will be handled by locale
+        plans: [],
       },
     },
     {
@@ -243,7 +243,10 @@ export default function ProfileEditorPage() {
         vision: "",
       },
       services: { title: "Our Services", services: [] },
-      programs: { title: "Our Programs", programs: [] },
+      plans: {
+        title: "برامجنا",
+        plans: [],
+      },
       team: { title: "Meet Our Team", members: [] },
       activities: { title: "Activities", subtitle: "", images: [] },
       philosophy: {
@@ -321,9 +324,28 @@ export default function ProfileEditorPage() {
         return JSON.stringify(currentData) !== JSON.stringify(originalData);
       })();
 
-      // TODO: Add pricing data check when pricing functionality is implemented
-      const hasPricingUpdates = false; // This will be updated when pricing is connected
-      const pricingData = {}; // This will be populated when pricing functionality is implemented
+      // Check for pricing updates
+      const hasPricingUpdates = (() => {
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
+        );
+        if (!plansSection || !plansSection.enabled) return false;
+
+        // Check if plans section has data
+        return plansSection.data.plans && plansSection.data.plans.length > 0;
+      })();
+
+      // Prepare pricing data
+      const pricingData = (() => {
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
+        );
+        if (!plansSection || !plansSection.enabled) return {};
+
+        return {
+          plans: plansSection.data.plans || [],
+        };
+      })();
 
       const requests = [];
 
@@ -359,14 +381,59 @@ export default function ProfileEditorPage() {
 
       // Send pricing update if there are changes
       if (hasPricingUpdates) {
-        requests.push(
-          savePricing(centerId, pricingData)
-            .then(() => console.log("Pricing updated successfully"))
-            .catch((error) => {
-              console.error("Pricing update failed:", error);
-              throw new Error("Pricing update failed");
-            })
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
         );
+        if (plansSection && plansSection.data.plans) {
+          // Group plans by branch_id
+          const plansByBranch = plansSection.data.plans.reduce(
+            (acc: any, plan: any) => {
+              if (plan.branch_id) {
+                if (!acc[plan.branch_id]) {
+                  acc[plan.branch_id] = [];
+                }
+                acc[plan.branch_id].push(plan);
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Send pricing update for each branch
+          Object.entries(plansByBranch).forEach(([branchId, plans]) => {
+            // Convert educational program fields back to pricing format
+            const pricingData = (plans as any[]).map((plan: any) => ({
+              title: plan.program_name || "",
+              start_age: plan.age_group
+                ? parseInt(plan.age_group.split("-")[0])
+                : 0,
+              end_age: plan.age_group
+                ? parseInt(plan.age_group.split("-")[1])
+                : 0,
+              count: parseInt(plan.max_students) || 0,
+              enrollment_type: "month", // Default to monthly enrollment
+              price_amount: plan.price_per_month || "",
+            }));
+
+            requests.push(
+              savePricing(branchId, { pricing: pricingData })
+                .then(() =>
+                  console.log(
+                    `✅ Pricing updated successfully for branch ${branchId}`
+                  )
+                )
+                .catch((error) => {
+                  console.error(
+                    `❌ Pricing update failed for branch ${branchId}:`,
+                    error
+                  );
+                  throw new Error(
+                    `Pricing update failed for branch ${branchId}`
+                  );
+                })
+            );
+          });
+        }
       }
 
       // Wait for all requests to complete
@@ -429,13 +496,13 @@ export default function ProfileEditorPage() {
         },
       },
       {
-        id: "programs",
-        name: "Programs (برامجنا)",
-        type: "programs",
+        id: "plans",
+        name: "Plans (برامجنا)",
+        type: "plans",
         enabled: false,
         data: {
-          title: "برامجنا",
-          programs: [],
+          title: "Plans", // Static title - will be handled by locale
+          plans: [],
         },
       },
       {
@@ -546,6 +613,16 @@ export default function ProfileEditorPage() {
           goalTitle:
             portofilo?.Philosophy_Methodology_Goal?.goals?.title || "Our Goal",
           goal: portofilo?.Philosophy_Methodology_Goal?.goals?.content || "",
+        },
+      },
+      {
+        id: "plans",
+        name: "Plans (برامجنا)",
+        type: "plans",
+        enabled: false, // Only enable when there's data
+        data: {
+          title: "Plans", // Static title - will be handled by locale
+          plans: [], // Plans will be populated from pricing API
         },
       },
       {
