@@ -1460,6 +1460,143 @@
       "reminder": {
         "title": "Complete Your Nursery Profile",
         "description": "Add sections to showcase your nursery's story, services, and team. This will help parents learn more about what makes your nursery special."
+      },
+      "sections": {
+        "hero": {
+          "name": "Hero Section",
+          "title": "Nursery Name",
+          "subtitle": "Slogan",
+          "description": "Description",
+          "backgroundImage": "Background Image",
+          "ctaText": "Call-to-Action button"
+        },
+        "branches": {
+          "name": "Branches",
+          "title": "Our Branches",
+          "branchName": "Branch name"
+        },
+        "philosophy": {
+          "name": "Philosophy, Methodology & Goal",
+          "philosophyTitle": "Our Philosophy",
+          "philosophy": "Philosophy Content",
+          "methodologyTitle": "Our Methodology",
+          "methodology": "Methodology Content",
+          "goalTitle": "Our Goal",
+          "goal": "Goal Content"
+        },
+        "plans": {
+          "name": "Plans",
+          "title": "Plans",
+          "educationalPrograms": "Educational Programs",
+          "addProgram": "Add Program",
+          "program": "Program",
+          "branch": "Branch",
+          "selectBranch": "Select Branch",
+          "loadingBranches": "Loading branches...",
+          "programName": "Program Name",
+          "programNamePlaceholder": "Example: Early English Language Program",
+          "ageGroup": "Age Group",
+          "selectAgeGroup": "Select Age Group",
+          "programType": "Program Type",
+          "selectProgramType": "Select Program Type",
+          "durationWeeks": "Program Duration (weeks)",
+          "sessionsPerWeek": "Sessions per Week",
+          "maxStudents": "Maximum Students",
+          "description": "Program Description",
+          "descriptionPlaceholder": "Brief description of the program and its objectives...",
+          "monthlyPrice": "Monthly Price (SAR)",
+          "programTypes": {
+            "academic": "Academic",
+            "creative": "Creative",
+            "sports": "Sports",
+            "language": "Language",
+            "music": "Music",
+            "art": "Art"
+          },
+          "ageGroups": {
+            "0-1": "0-1 years",
+            "1-2": "1-2 years",
+            "2-3": "2-3 years",
+            "3-4": "3-4 years",
+            "4-5": "4-5 years",
+            "5-6": "5-6 years"
+          }
+        },
+        "services": {
+          "name": "Services",
+          "title": "Section Title",
+          "services": "Services",
+          "addService": "Add Service",
+          "service": "Service",
+          "serviceTitle": "Service title",
+          "serviceDescription": "Service description",
+          "serviceImage": "Service Image"
+        },
+        "stats": {
+          "name": "Nursery Stats",
+          "area": "Area (sqm)",
+          "classrooms": "Classrooms",
+          "teamMembers": "Team Members"
+        },
+        "activities": {
+          "name": "Activities",
+          "title": "Section Title",
+          "subtitle": "Subtitle",
+          "activityImages": "Activity Images",
+          "addImage": "Add Image",
+          "activityImage": "Activity Image",
+          "caption": "Caption (optional)"
+        },
+        "team": {
+          "name": "Our Team",
+          "title": "Section Title",
+          "members": "Team Members",
+          "addMember": "Add Member",
+          "member": "Team Member",
+          "fullName": "Full name",
+          "role": "Role/Position",
+          "profileImage": "Profile Image",
+          "bio": "Bio (optional)"
+        },
+        "contact": {
+          "name": "Contact Information",
+          "address": "Address",
+          "workingHours": "Working Hours",
+          "phoneNumber": "Phone Number",
+          "emailAddress": "Email Address"
+        }
+      },
+      "common": {
+        "enable": "Enable",
+        "enabled": "Enabled",
+        "delete": "Delete",
+        "remove": "Remove",
+        "changeImage": "Change Image",
+        "removeImage": "Remove Image",
+        "uploadImage": "Click to upload an image",
+        "uploading": "Uploading...",
+        "imageFormats": "PNG, JPG, JPEG up to 5MB",
+        "moreSections": "More sections coming soon!",
+        "moreSectionsDescription": "We're working on adding more customizable sections to help you create the perfect nursery profile.",
+        "previewHeader": "✨ Live Preview - This is how your nursery profile will appear to visitors",
+        "previewSubtitle": "Changes made in edit mode will be reflected here instantly",
+        "emptyProfile": {
+          "title": "Your Nursery Profile",
+          "comingSoon": "Coming Soon!",
+          "description": "Your nursery profile is still under construction. Start by adding sections from the editor to showcase your nursery's story, services, team, and more to create an amazing first impression for parents.",
+          "addSections": {
+            "title": "Add Sections",
+            "description": "Enable sections to tell your story"
+          },
+          "customizeContent": {
+            "title": "Customize Content",
+            "description": "Add your unique information"
+          },
+          "previewChanges": {
+            "title": "Preview Changes",
+            "description": "See how it looks instantly"
+          }
+        }
       }
     },
     "tables": {

@@ -309,14 +309,19 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                     >
                       <div className="text-center">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                          {plan.program_name || `البرنامج ${index + 1}`}
+                          {plan.program_name ||
+                            `${locale === "ar" ? "البرنامج" : "Program"} ${
+                              index + 1
+                            }`}
                         </h3>
 
                         <div className="space-y-3 mb-6">
                           {plan.age_group && (
                             <div className="text-sm text-gray-600">
                               <span className="font-medium">
-                                الفئة العمرية:
+                                {locale === "ar"
+                                  ? "الفئة العمرية:"
+                                  : "Age Range:"}
                               </span>{" "}
                               {plan.age_group}
                             </div>
@@ -324,29 +329,42 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
 
                           {plan.program_type && (
                             <div className="text-sm text-gray-600">
-                              <span className="font-medium">النوع:</span>{" "}
+                              <span className="font-medium">
+                                {locale === "ar" ? "النوع:" : "Type:"}
+                              </span>{" "}
                               {plan.program_type}
                             </div>
                           )}
 
                           {plan.duration_weeks && (
                             <div className="text-sm text-gray-600">
-                              <span className="font-medium">المدة:</span>{" "}
-                              {plan.duration_weeks} أسابيع
+                              <span className="font-medium">
+                                {locale === "ar" ? "المدة:" : "Duration:"}
+                              </span>{" "}
+                              {plan.duration_weeks}{" "}
+                              {locale === "ar" ? "أسابيع" : "weeks"}
                             </div>
                           )}
 
                           {plan.sessions_per_week && (
                             <div className="text-sm text-gray-600">
-                              <span className="font-medium">الجلسات:</span>{" "}
-                              {plan.sessions_per_week} في الأسبوع
+                              <span className="font-medium">
+                                {locale === "ar" ? "الجلسات:" : "Sessions:"}
+                              </span>{" "}
+                              {plan.sessions_per_week}{" "}
+                              {locale === "ar" ? "في الأسبوع" : "per week"}
                             </div>
                           )}
 
                           {plan.max_students && (
                             <div className="text-sm text-gray-600">
-                              <span className="font-medium">الحد الأقصى:</span>{" "}
-                              {plan.max_students} طالب
+                              <span className="font-medium">
+                                {locale === "ar"
+                                  ? "الحد الأقصى:"
+                                  : "Max Students:"}
+                              </span>{" "}
+                              {plan.max_students}{" "}
+                              {locale === "ar" ? "طالب" : "students"}
                             </div>
                           )}
 
@@ -359,11 +377,14 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
 
                         {plan.price_per_month && (
                           <div className="text-2xl font-bold text-blue-600 mb-4">
-                            {plan.price_per_month} ريال/شهر
+                            {plan.price_per_month}{" "}
+                            {locale === "ar" ? "ريال/شهر" : "SAR/month"}
                           </div>
                         )}
 
-                        <Button className="w-full">احجز الآن</Button>
+                        <Button className="w-full">
+                          {locale === "ar" ? "احجز الآن" : "Book Now"}
+                        </Button>
                       </div>
                     </Card>
                   ))}

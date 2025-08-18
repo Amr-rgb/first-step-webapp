@@ -576,10 +576,12 @@ const ProfileEditor = ({
 
       case "plans":
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label>البرامج التعليمية</Label>
+              <div className="flex items-center justify-between mb-4">
+                <Label className="text-base font-semibold text-gray-900">
+                  {t("sections.plans.educationalPrograms")}
+                </Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -597,17 +599,20 @@ const ProfileEditor = ({
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> إضافة برنامج
+                  <Plus className="w-4 h-4 mr-2" />{" "}
+                  {t("sections.plans.addProgram")}
                 </Button>
               </div>
               {(section.data.plans || []).map((plan: any, index: number) => (
                 <Card
                   key={index}
-                  className="p-4 border-2 border-dashed border-gray-200"
+                  className="p-6 border-2 border-dashed border-gray-200 mb-6"
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-5">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-medium">البرنامج {index + 1}</h4>
+                      <h4 className="font-semibold text-lg text-gray-900">
+                        {t("sections.plans.program")} {index + 1}
+                      </h4>
                       <Button
                         size="sm"
                         variant="outline"
@@ -620,8 +625,10 @@ const ProfileEditor = ({
                     </div>
 
                     {/* Branch Selection */}
-                    <div>
-                      <Label>الفرع</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.branch")}
+                      </Label>
                       <Select
                         value={plan.branch_id || ""}
                         onValueChange={(value) =>
@@ -630,13 +637,15 @@ const ProfileEditor = ({
                           })
                         }
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر الفرع" />
+                        <SelectTrigger className="h-10">
+                          <SelectValue
+                            placeholder={t("sections.plans.selectBranch")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           {loadingBranches ? (
                             <SelectItem value="" disabled>
-                              جاري التحميل...
+                              {t("sections.plans.loadingBranches")}
                             </SelectItem>
                           ) : (
                             branches.map((branch: any) => (
@@ -653,22 +662,27 @@ const ProfileEditor = ({
                     </div>
 
                     {/* Program Name */}
-                    <div>
-                      <Label>اسم البرنامج</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.programName")}
+                      </Label>
                       <Input
-                        placeholder="مثال: برنامج اللغة الإنجليزية المبكرة"
+                        placeholder={t("sections.plans.programNamePlaceholder")}
                         value={plan.program_name || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "plans", index, {
                             program_name: e.target.value,
                           })
                         }
+                        className="h-10"
                       />
                     </div>
 
                     {/* Age Group */}
-                    <div>
-                      <Label>الفئة العمرية</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.ageGroup")}
+                      </Label>
                       <Select
                         value={plan.age_group || ""}
                         onValueChange={(value) =>
@@ -677,23 +691,39 @@ const ProfileEditor = ({
                           })
                         }
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر الفئة العمرية" />
+                        <SelectTrigger className="h-10">
+                          <SelectValue
+                            placeholder={t("sections.plans.selectAgeGroup")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="0-1">0-1 سنة</SelectItem>
-                          <SelectItem value="1-2">1-2 سنة</SelectItem>
-                          <SelectItem value="2-3">2-3 سنة</SelectItem>
-                          <SelectItem value="3-4">3-4 سنة</SelectItem>
-                          <SelectItem value="4-5">4-5 سنة</SelectItem>
-                          <SelectItem value="5-6">5-6 سنة</SelectItem>
+                          <SelectItem value="0-1">
+                            {t("sections.plans.ageGroups.0-1")}
+                          </SelectItem>
+                          <SelectItem value="1-2">
+                            {t("sections.plans.ageGroups.1-2")}
+                          </SelectItem>
+                          <SelectItem value="2-3">
+                            {t("sections.plans.ageGroups.2-3")}
+                          </SelectItem>
+                          <SelectItem value="3-4">
+                            {t("sections.plans.ageGroups.3-4")}
+                          </SelectItem>
+                          <SelectItem value="4-5">
+                            {t("sections.plans.ageGroups.4-5")}
+                          </SelectItem>
+                          <SelectItem value="5-6">
+                            {t("sections.plans.ageGroups.5-6")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     {/* Program Type */}
-                    <div>
-                      <Label>نوع البرنامج</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.programType")}
+                      </Label>
                       <Select
                         value={plan.program_type || ""}
                         onValueChange={(value) =>
@@ -702,24 +732,40 @@ const ProfileEditor = ({
                           })
                         }
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر نوع البرنامج" />
+                        <SelectTrigger className="h-10">
+                          <SelectValue
+                            placeholder={t("sections.plans.selectProgramType")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="academic">أكاديمي</SelectItem>
-                          <SelectItem value="creative">إبداعي</SelectItem>
-                          <SelectItem value="sports">رياضي</SelectItem>
-                          <SelectItem value="language">لغوي</SelectItem>
-                          <SelectItem value="music">موسيقي</SelectItem>
-                          <SelectItem value="art">فني</SelectItem>
+                          <SelectItem value="academic">
+                            {t("sections.plans.programTypes.academic")}
+                          </SelectItem>
+                          <SelectItem value="creative">
+                            {t("sections.plans.programTypes.creative")}
+                          </SelectItem>
+                          <SelectItem value="sports">
+                            {t("sections.plans.programTypes.sports")}
+                          </SelectItem>
+                          <SelectItem value="language">
+                            {t("sections.plans.programTypes.language")}
+                          </SelectItem>
+                          <SelectItem value="music">
+                            {t("sections.plans.programTypes.music")}
+                          </SelectItem>
+                          <SelectItem value="art">
+                            {t("sections.plans.programTypes.art")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     {/* Duration and Sessions */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label>مدة البرنامج (أسابيع)</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">
+                          {t("sections.plans.durationWeeks")}
+                        </Label>
                         <Input
                           type="number"
                           placeholder="12"
@@ -729,10 +775,13 @@ const ProfileEditor = ({
                               duration_weeks: e.target.value,
                             })
                           }
+                          className="h-10"
                         />
                       </div>
-                      <div>
-                        <Label>الجلسات في الأسبوع</Label>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">
+                          {t("sections.plans.sessionsPerWeek")}
+                        </Label>
                         <Input
                           type="number"
                           placeholder="3"
@@ -742,13 +791,16 @@ const ProfileEditor = ({
                               sessions_per_week: e.target.value,
                             })
                           }
+                          className="h-10"
                         />
                       </div>
                     </div>
 
                     {/* Max Students */}
-                    <div>
-                      <Label>الحد الأقصى للطلاب</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.maxStudents")}
+                      </Label>
                       <Input
                         type="number"
                         placeholder="15"
@@ -758,14 +810,17 @@ const ProfileEditor = ({
                             max_students: e.target.value,
                           })
                         }
+                        className="h-10"
                       />
                     </div>
 
                     {/* Description */}
-                    <div>
-                      <Label>وصف البرنامج</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.description")}
+                      </Label>
                       <Textarea
-                        placeholder="وصف مختصر للبرنامج وأهدافه..."
+                        placeholder={t("sections.plans.descriptionPlaceholder")}
                         value={plan.description || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "plans", index, {
@@ -773,12 +828,15 @@ const ProfileEditor = ({
                           })
                         }
                         rows={3}
+                        className="resize-none"
                       />
                     </div>
 
                     {/* Price */}
-                    <div>
-                      <Label>السعر الشهري (ريال)</Label>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.monthlyPrice")}
+                      </Label>
                       <Input
                         type="number"
                         placeholder="800"
@@ -788,6 +846,7 @@ const ProfileEditor = ({
                             price_per_month: e.target.value,
                           })
                         }
+                        className="h-10"
                       />
                     </div>
                   </div>

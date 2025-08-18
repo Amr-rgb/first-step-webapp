@@ -1455,6 +1455,143 @@
       "reminder": {
         "title": "أكمل ملف الحضانة الشخصي",
         "description": "أضف أقسام لعرض قصة الحضانة وخدماتها وفريق العمل. سيساعد هذا أولياء الأمور على معرفة المزيد عن ما يجعل حضانتك مميزة."
+      },
+      "sections": {
+        "hero": {
+          "name": "قسم الترحيب",
+          "title": "اسم الحضانة",
+          "subtitle": "الشعار",
+          "description": "الوصف",
+          "backgroundImage": "صورة الخلفية",
+          "ctaText": "زر الدعوة للعمل"
+        },
+        "branches": {
+          "name": "الفروع",
+          "title": "فروعنا",
+          "branchName": "اسم الفرع"
+        },
+        "philosophy": {
+          "name": "الفلسفة والمنهجية والهدف",
+          "philosophyTitle": "فلسفتنا",
+          "philosophy": "محتوى الفلسفة",
+          "methodologyTitle": "منهجيتنا",
+          "methodology": "محتوى المنهجية",
+          "goalTitle": "هدفنا",
+          "goal": "محتوى الهدف"
+        },
+        "plans": {
+          "name": "البرامج",
+          "title": "البرامج",
+          "educationalPrograms": "البرامج التعليمية",
+          "addProgram": "إضافة برنامج",
+          "program": "البرنامج",
+          "branch": "الفرع",
+          "selectBranch": "اختر الفرع",
+          "loadingBranches": "جاري التحميل...",
+          "programName": "اسم البرنامج",
+          "programNamePlaceholder": "مثال: برنامج اللغة الإنجليزية المبكرة",
+          "ageGroup": "الفئة العمرية",
+          "selectAgeGroup": "اختر الفئة العمرية",
+          "programType": "نوع البرنامج",
+          "selectProgramType": "اختر نوع البرنامج",
+          "durationWeeks": "مدة البرنامج (أسابيع)",
+          "sessionsPerWeek": "الجلسات في الأسبوع",
+          "maxStudents": "الحد الأقصى للطلاب",
+          "description": "وصف البرنامج",
+          "descriptionPlaceholder": "وصف مختصر للبرنامج وأهدافه...",
+          "monthlyPrice": "السعر الشهري (ريال)",
+          "programTypes": {
+            "academic": "أكاديمي",
+            "creative": "إبداعي",
+            "sports": "رياضي",
+            "language": "لغوي",
+            "music": "موسيقي",
+            "art": "فني"
+          },
+          "ageGroups": {
+            "0-1": "0-1 سنة",
+            "1-2": "1-2 سنة",
+            "2-3": "2-3 سنة",
+            "3-4": "3-4 سنة",
+            "4-5": "4-5 سنة",
+            "5-6": "5-6 سنة"
+          }
+        },
+        "services": {
+          "name": "الخدمات",
+          "title": "عنوان القسم",
+          "services": "الخدمات",
+          "addService": "إضافة خدمة",
+          "service": "الخدمة",
+          "serviceTitle": "عنوان الخدمة",
+          "serviceDescription": "وصف الخدمة",
+          "serviceImage": "صورة الخدمة"
+        },
+        "stats": {
+          "name": "إحصائيات الحضانة",
+          "area": "المساحة (متر مربع)",
+          "classrooms": "الفصول الدراسية",
+          "teamMembers": "أعضاء الفريق"
+        },
+        "activities": {
+          "name": "الأنشطة",
+          "title": "عنوان القسم",
+          "subtitle": "العنوان الفرعي",
+          "activityImages": "صور الأنشطة",
+          "addImage": "إضافة صورة",
+          "activityImage": "صورة النشاط",
+          "caption": "التعليق (اختياري)"
+        },
+        "team": {
+          "name": "فريق العمل",
+          "title": "عنوان القسم",
+          "members": "أعضاء الفريق",
+          "addMember": "إضافة عضو",
+          "member": "عضو الفريق",
+          "fullName": "الاسم الكامل",
+          "role": "الدور/المنصب",
+          "profileImage": "صورة الملف الشخصي",
+          "bio": "السيرة الذاتية (اختياري)"
+        },
+        "contact": {
+          "name": "معلومات الاتصال",
+          "address": "العنوان",
+          "workingHours": "ساعات العمل",
+          "phoneNumber": "رقم الهاتف",
+          "emailAddress": "عنوان البريد الإلكتروني"
+        }
+      },
+      "common": {
+        "enable": "تفعيل",
+        "enabled": "مفعل",
+        "delete": "حذف",
+        "remove": "إزالة",
+        "changeImage": "تغيير الصورة",
+        "removeImage": "إزالة الصورة",
+        "uploadImage": "انقر لرفع صورة",
+        "uploading": "جاري الرفع...",
+        "imageFormats": "PNG, JPG, JPEG حتى 5 ميجابايت",
+        "moreSections": "المزيد من الأقسام قريباً!",
+        "moreSectionsDescription": "نحن نعمل على إضافة المزيد من الأقسام القابلة للتخصيص لمساعدتك في إنشاء ملف الحضانة المثالي.",
+        "previewHeader": "✨ معاينة مباشرة - هكذا سيظهر ملف الحضانة للزوار",
+        "previewSubtitle": "التغييرات التي تمت في وضع التحرير ستظهر هنا فوراً",
+        "emptyProfile": {
+          "title": "ملف الحضانة الشخصي",
+          "comingSoon": "قريباً!",
+          "description": "ملف الحضانة الشخصي لا يزال قيد الإنشاء. ابدأ بإضافة أقسام من المحرر لعرض قصة الحضانة وخدماتها وفريق العمل والمزيد لإنشاء انطباع أول رائع لأولياء الأمور.",
+          "addSections": {
+            "title": "إضافة أقسام",
+            "description": "تفعيل الأقسام لرواية قصتك"
+          },
+          "customizeContent": {
+            "title": "تخصيص المحتوى",
+            "description": "أضف معلوماتك الفريدة"
+          },
+          "previewChanges": {
+            "title": "معاينة التغييرات",
+            "description": "شاهد كيف تبدو فوراً"
+          }
+        }
       }
     },
     "tables": {
