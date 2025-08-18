@@ -24,6 +24,7 @@ import Philosophy from "@/components/general/nurseries/sections/Philosophy";
 import Branches from "@/components/general/nurseries/Branches";
 import Link from "next/link";
 import { Icons } from "@/components/general/icons";
+import { useTranslations } from "next-intl";
 
 interface ProfilePreviewProps {
   sections: ProfileSection[];
@@ -31,6 +32,14 @@ interface ProfilePreviewProps {
 }
 
 const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
+  const t = useTranslations("dashboard.profileEditor");
+
+  // Get locale from the current path
+  const locale =
+    typeof window !== "undefined"
+      ? window.location.pathname.split("/")[1]
+      : "en";
+
   if (isEmpty) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -281,15 +290,87 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
           <Services key={section.id} services={section.data.services} />
         ) : null;
 
-      case "programs":
-        return section.data.programs && section.data.programs.length > 0 ? (
-          <Programs
-            key={section.id}
-            programs={section.data.programs}
-            isPreview={true}
-            locale="en"
-            nurseryName="preview"
-          />
+      case "plans":
+        return section.data.plans && section.data.plans.length > 0 ? (
+          <section key={section.id} className="py-20 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                    {locale === "ar" ? "برامجنا" : "Plans"}
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {section.data.plans.map((plan: any, index: number) => (
+                    <Card
+                      key={index}
+                      className="p-6 border-2 border-blue-100 bg-white hover:shadow-lg transition-shadow"
+                    >
+                      <div className="text-center">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                          {plan.program_name || `البرنامج ${index + 1}`}
+                        </h3>
+
+                        <div className="space-y-3 mb-6">
+                          {plan.age_group && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                الفئة العمرية:
+                              </span>{" "}
+                              {plan.age_group}
+                            </div>
+                          )}
+
+                          {plan.program_type && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">النوع:</span>{" "}
+                              {plan.program_type}
+                            </div>
+                          )}
+
+                          {plan.duration_weeks && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">المدة:</span>{" "}
+                              {plan.duration_weeks} أسابيع
+                            </div>
+                          )}
+
+                          {plan.sessions_per_week && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">الجلسات:</span>{" "}
+                              {plan.sessions_per_week} في الأسبوع
+                            </div>
+                          )}
+
+                          {plan.max_students && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">الحد الأقصى:</span>{" "}
+                              {plan.max_students} طالب
+                            </div>
+                          )}
+
+                          {plan.description && (
+                            <div className="text-sm text-gray-600 mt-3 p-2 bg-gray-50 rounded">
+                              {plan.description}
+                            </div>
+                          )}
+                        </div>
+
+                        {plan.price_per_month && (
+                          <div className="text-2xl font-bold text-blue-600 mb-4">
+                            {plan.price_per_month} ريال/شهر
+                          </div>
+                        )}
+
+                        <Button className="w-full">احجز الآن</Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
         ) : null;
 
       case "team":
