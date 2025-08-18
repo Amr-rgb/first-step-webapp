@@ -7,9 +7,72 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash, CheckSquare, Square, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { centerService, getBranchPricing } from "@/services/dashboardApi";
+import { useQuery } from "@tanstack/react-query";
+
+// Custom hooks for fetching data
+const useBranches = () => {
+  return useQuery({
+    queryKey: ["branches"],
+    queryFn: async () => {
+      try {
+        const response = await centerService.getBranches();
+        return response || [];
+      } catch (error) {
+        console.error("❌ Error fetching branches:", error);
+        toast.error("Failed to fetch branches");
+        return [];
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+const useAllBranchPricing = (branches: any[]) => {
+  return useQuery({
+    queryKey: ["allBranchPricing", branches.map((b) => b.id)],
+    queryFn: async () => {
+      try {
+        const pricingPromises = branches.map(async (branch: any) => {
+          try {
+            const response = await getBranchPricing(branch.id.toString());
+            return {
+              branch_id: branch.id,
+              pricing: response.data || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching pricing for branch ${branch.id}:`,
+              error
+            );
+            return {
+              branch_id: branch.id,
+              pricing: [],
+            };
+          }
+        });
+
+        const results = await Promise.all(pricingPromises);
+        return results;
+      } catch (error) {
+        console.error("❌ Error fetching all pricing:", error);
+        return [];
+      }
+    },
+    enabled: branches.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
 
 interface ImageUploaderProps {
   value: string | File | null;
@@ -164,6 +227,57 @@ const ProfileEditor = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set()
   );
+
+  // Use React Query hooks
+  const { data: branches = [], isLoading: loadingBranches } = useBranches();
+  const { data: allPricingData = [], isLoading: loadingPricing } =
+    useAllBranchPricing(branches);
+
+  // Process pricing data when all queries are loaded
+  useEffect(() => {
+    if (
+      !loadingPricing &&
+      !loadingBranches &&
+      branches.length > 0 &&
+      allPricingData.length > 0
+    ) {
+      // Update plans section with existing pricing data
+      const plansSection = sections.find((section) => section.type === "plans");
+
+      if (plansSection) {
+        const allPlans = allPricingData.flatMap((result) =>
+          result.pricing.map((price: any) => ({
+            branch_id: result.branch_id,
+            program_name: price.title || "",
+            age_group:
+              price.start_age && price.end_age
+                ? `${price.start_age}-${price.end_age}`
+                : "",
+            program_type: "academic", // Default to academic
+            duration_weeks: "12", // Default duration
+            sessions_per_week: "3", // Default sessions
+            max_students: price.count?.toString() || "15",
+            description: "", // No description in pricing data
+            price_per_month: price.price_amount || "",
+          }))
+        );
+
+        if (allPlans.length > 0) {
+          onSectionUpdate(plansSection.id, { plans: allPlans });
+          // Enable the plans section if there's existing data
+          onSectionToggle(plansSection.id, true);
+        }
+      }
+    }
+  }, [
+    allPricingData,
+    branches,
+    sections,
+    onSectionUpdate,
+    onSectionToggle,
+    loadingPricing,
+    loadingBranches,
+  ]);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -460,132 +574,225 @@ const ProfileEditor = ({
           </div>
         );
 
-      case "programs":
+      case "plans":
         return (
           <div className="space-y-4">
             <div>
-              <Label>Section Title</Label>
-              <Input
-                placeholder="Our Programs"
-                value={section.data.title || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { title: e.target.value })
-                }
-              />
-            </div>
-            <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Programs</Label>
+                <Label>البرامج التعليمية</Label>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() =>
-                    addListItem(section.id, "programs", {
-                      title: "",
+                    addListItem(section.id, "plans", {
+                      branch_id: "",
+                      program_name: "",
+                      age_group: "",
+                      program_type: "",
+                      duration_weeks: "",
+                      sessions_per_week: "",
+                      max_students: "",
                       description: "",
-                      price: "",
-                      features: [],
-                      image: "",
-                      buttonText: "احجز الآن",
+                      price_per_month: "",
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Program
+                  <Plus className="w-4 h-4 mr-1" /> إضافة برنامج
                 </Button>
               </div>
-              {(section.data.programs || []).map(
-                (program: any, index: number) => (
-                  <Card
-                    key={index}
-                    className="p-4 border-2 border-dashed border-gray-200"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Program {index + 1}</h4>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            removeListItem(section.id, "programs", index)
-                          }
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Input
-                          placeholder="Program title"
-                          value={program.title || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              title: e.target.value,
-                            })
-                          }
-                        />
-                        <Input
-                          placeholder="Price (e.g., $50/month)"
-                          value={program.price || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              price: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <Textarea
-                        placeholder="Program description"
-                        value={program.description || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "programs", index, {
-                            description: e.target.value,
+              {(section.data.plans || []).map((plan: any, index: number) => (
+                <Card
+                  key={index}
+                  className="p-4 border-2 border-dashed border-gray-200"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">البرنامج {index + 1}</h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          removeListItem(section.id, "plans", index)
+                        }
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Branch Selection */}
+                    <div>
+                      <Label>الفرع</Label>
+                      <Select
+                        value={plan.branch_id || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            branch_id: value,
                           })
                         }
-                        rows={2}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر الفرع" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingBranches ? (
+                            <SelectItem value="" disabled>
+                              جاري التحميل...
+                            </SelectItem>
+                          ) : (
+                            branches.map((branch: any) => (
+                              <SelectItem
+                                key={branch.id}
+                                value={branch.id.toString()}
+                              >
+                                {branch.nursery_name_branch || branch.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Program Name */}
+                    <div>
+                      <Label>اسم البرنامج</Label>
+                      <Input
+                        placeholder="مثال: برنامج اللغة الإنجليزية المبكرة"
+                        value={plan.program_name || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            program_name: e.target.value,
+                          })
+                        }
                       />
+                    </div>
+
+                    {/* Age Group */}
+                    <div>
+                      <Label>الفئة العمرية</Label>
+                      <Select
+                        value={plan.age_group || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            age_group: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر الفئة العمرية" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0-1">0-1 سنة</SelectItem>
+                          <SelectItem value="1-2">1-2 سنة</SelectItem>
+                          <SelectItem value="2-3">2-3 سنة</SelectItem>
+                          <SelectItem value="3-4">3-4 سنة</SelectItem>
+                          <SelectItem value="4-5">4-5 سنة</SelectItem>
+                          <SelectItem value="5-6">5-6 سنة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Program Type */}
+                    <div>
+                      <Label>نوع البرنامج</Label>
+                      <Select
+                        value={plan.program_type || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            program_type: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر نوع البرنامج" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="academic">أكاديمي</SelectItem>
+                          <SelectItem value="creative">إبداعي</SelectItem>
+                          <SelectItem value="sports">رياضي</SelectItem>
+                          <SelectItem value="language">لغوي</SelectItem>
+                          <SelectItem value="music">موسيقي</SelectItem>
+                          <SelectItem value="art">فني</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Duration and Sessions */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label>Program Image</Label>
-                        <ImageUploader
-                          value={program.image || ""}
-                          onChange={(url) =>
-                            updateListItem(section.id, "programs", index, {
-                              image: url,
+                        <Label>مدة البرنامج (أسابيع)</Label>
+                        <Input
+                          type="number"
+                          placeholder="12"
+                          value={plan.duration_weeks || ""}
+                          onChange={(e) =>
+                            updateListItem(section.id, "plans", index, {
+                              duration_weeks: e.target.value,
                             })
                           }
                         />
                       </div>
                       <div>
-                        <Label className="text-sm">
-                          Features (comma-separated)
-                        </Label>
+                        <Label>الجلسات في الأسبوع</Label>
                         <Input
-                          placeholder="Feature 1, Feature 2, Feature 3"
-                          value={(program.features || []).join(", ")}
+                          type="number"
+                          placeholder="3"
+                          value={plan.sessions_per_week || ""}
                           onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              features: e.target.value
-                                .split(",")
-                                .map((f) => f.trim())
-                                .filter((f) => f),
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm">Button Text</Label>
-                        <Input
-                          placeholder="احجز الآن"
-                          value={program.buttonText || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              buttonText: e.target.value,
+                            updateListItem(section.id, "plans", index, {
+                              sessions_per_week: e.target.value,
                             })
                           }
                         />
                       </div>
                     </div>
-                  </Card>
-                )
-              )}
+
+                    {/* Max Students */}
+                    <div>
+                      <Label>الحد الأقصى للطلاب</Label>
+                      <Input
+                        type="number"
+                        placeholder="15"
+                        value={plan.max_students || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            max_students: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <Label>وصف البرنامج</Label>
+                      <Textarea
+                        placeholder="وصف مختصر للبرنامج وأهدافه..."
+                        value={plan.description || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            description: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Price */}
+                    <div>
+                      <Label>السعر الشهري (ريال)</Label>
+                      <Input
+                        type="number"
+                        placeholder="800"
+                        value={plan.price_per_month || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            price_per_month: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         );
@@ -1126,6 +1333,229 @@ const ProfileEditor = ({
                   </Card>
                 )
               )}
+            </div>
+          </div>
+        );
+
+      case "plans":
+        return (
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label>البرامج التعليمية</Label>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    addListItem(section.id, "plans", {
+                      branch_id: "",
+                      program_name: "",
+                      age_group: "",
+                      program_type: "",
+                      duration_weeks: "",
+                      sessions_per_week: "",
+                      max_students: "",
+                      description: "",
+                      price_per_month: "",
+                    })
+                  }
+                >
+                  <Plus className="w-4 h-4 mr-1" /> إضافة برنامج
+                </Button>
+              </div>
+              {(section.data.plans || []).map((plan: any, index: number) => (
+                <Card
+                  key={index}
+                  className="p-4 border-2 border-dashed border-gray-200"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">البرنامج {index + 1}</h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          removeListItem(section.id, "plans", index)
+                        }
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Branch Selection */}
+                    <div>
+                      <Label>الفرع</Label>
+                      <Select
+                        value={plan.branch_id || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            branch_id: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر الفرع" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingBranches ? (
+                            <SelectItem value="" disabled>
+                              جاري التحميل...
+                            </SelectItem>
+                          ) : (
+                            branches.map((branch: any) => (
+                              <SelectItem
+                                key={branch.id}
+                                value={branch.id.toString()}
+                              >
+                                {branch.nursery_name_branch || branch.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Program Name */}
+                    <div>
+                      <Label>اسم البرنامج</Label>
+                      <Input
+                        placeholder="مثال: برنامج اللغة الإنجليزية المبكرة"
+                        value={plan.program_name || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            program_name: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Age Group */}
+                    <div>
+                      <Label>الفئة العمرية</Label>
+                      <Select
+                        value={plan.age_group || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            age_group: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر الفئة العمرية" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0-1">0-1 سنة</SelectItem>
+                          <SelectItem value="1-2">1-2 سنة</SelectItem>
+                          <SelectItem value="2-3">2-3 سنة</SelectItem>
+                          <SelectItem value="3-4">3-4 سنة</SelectItem>
+                          <SelectItem value="4-5">4-5 سنة</SelectItem>
+                          <SelectItem value="5-6">5-6 سنة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Program Type */}
+                    <div>
+                      <Label>نوع البرنامج</Label>
+                      <Select
+                        value={plan.program_type || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            program_type: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر نوع البرنامج" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="academic">أكاديمي</SelectItem>
+                          <SelectItem value="creative">إبداعي</SelectItem>
+                          <SelectItem value="sports">رياضي</SelectItem>
+                          <SelectItem value="language">لغوي</SelectItem>
+                          <SelectItem value="music">موسيقي</SelectItem>
+                          <SelectItem value="art">فني</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Duration and Sessions */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>مدة البرنامج (أسابيع)</Label>
+                        <Input
+                          type="number"
+                          placeholder="12"
+                          value={plan.duration_weeks || ""}
+                          onChange={(e) =>
+                            updateListItem(section.id, "plans", index, {
+                              duration_weeks: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label>الجلسات في الأسبوع</Label>
+                        <Input
+                          type="number"
+                          placeholder="3"
+                          value={plan.sessions_per_week || ""}
+                          onChange={(e) =>
+                            updateListItem(section.id, "plans", index, {
+                              sessions_per_week: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* Max Students */}
+                    <div>
+                      <Label>الحد الأقصى للطلاب</Label>
+                      <Input
+                        type="number"
+                        placeholder="15"
+                        value={plan.max_students || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            max_students: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <Label>وصف البرنامج</Label>
+                      <Textarea
+                        placeholder="وصف مختصر للبرنامج وأهدافه..."
+                        value={plan.description || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            description: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Price */}
+                    <div>
+                      <Label>السعر الشهري (ريال)</Label>
+                      <Input
+                        type="number"
+                        placeholder="800"
+                        value={plan.price_per_month || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            price_per_month: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         );
