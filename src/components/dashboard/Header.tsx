@@ -107,7 +107,7 @@ export default function Header({
       icon: User,
       label: "تعديل بيانات الحساب",
       type: "link" as const,
-      href: "/dashboard/edit-profile",
+      href: "/dashboard/account",
     },
     separator2: { type: "separator" as const },
     privacyPolicy: {
