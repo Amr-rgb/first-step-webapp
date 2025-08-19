@@ -9,7 +9,6 @@ const prepareCenterFormData = (
   payload: Omit<CenterRegisterPayload, "password">
 ) => {
   // Append text fields only if they exist
-  if (payload.name) formData.append("name", payload.name);
   if (payload.email) formData.append("email", payload.email);
   if (payload.address) formData.append("address", payload.address);
   if (payload.phone) formData.append("phone", payload.phone);
@@ -45,6 +44,7 @@ const prepareCenterFormData = (
     formData.append("special_needs", payload.special_needs ? "1" : "0");
   }
 
+  if (payload.name) formData.append("name", payload.nursery_name);
   if (payload.nursery_name)
     formData.append("nursery_name", payload.nursery_name);
   if (payload.location) formData.append("location", payload.location);

@@ -91,8 +91,7 @@ const SignUpWrapper = () => {
       emergency_contact: data.emergency_contact === "yes",
       special_needs: data.accepted_ages.includes("disabled"),
 
-      name: data.nursery_name_ar,
-      nursery_name: data.nursery_name_en,
+      nursery_name: data.nursery_name,
       location: data.location,
       city: data.city,
       neighborhood: data.neighborhood,

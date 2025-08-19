@@ -827,7 +827,6 @@ export const authService = {
       const formData = new FormData();
 
       // Append text fields
-      formData.append("name", payload.name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("address", payload.address);
@@ -856,6 +855,7 @@ export const authService = {
       );
       formData.append("special_needs", payload.special_needs ? "1" : "0");
 
+      formData.append("name", payload.nursery_name);
       formData.append("nursery_name", payload.nursery_name);
       formData.append("location", payload.location);
       formData.append("city_id", payload.city);

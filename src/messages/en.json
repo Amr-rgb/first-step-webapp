@@ -413,13 +413,9 @@
       "1": {
         "title": "Basic Information",
         "form": {
-          "nursery_name_ar": {
-            "label": "Center Name In Arabic",
-            "placeholder": "Enter center name in arabic"
-          },
-          "nursery_name_en": {
-            "label": "Center Name In English",
-            "placeholder": "Enter center name in english"
+          "nursery_name": {
+            "label": "Center Name",
+            "placeholder": "Enter center name"
           },
           "phone": {
             "label": "Mobile Number",

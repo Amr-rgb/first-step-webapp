@@ -409,13 +409,9 @@
       "1": {
         "title": "المعلومات الأساسية",
         "form": {
-          "nursery_name_ar": {
-            "label": "اسم المركز بالعربية",
-            "placeholder": "أدخل اسم المركز بالعربية"
-          },
-          "nursery_name_en": {
-            "label": "اسم المركز بالإنجليزية",
-            "placeholder": "أدخل اسم المركز بالإنجليزية"
+          "nursery_name": {
+            "label": "اسم المركز",
+            "placeholder": "أدخل اسم المركز"
           },
           "phone": {
             "label": "رقم الجوال",

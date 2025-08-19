@@ -325,10 +325,7 @@ export type SignUpParentFormData = z.infer<
 const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Step 1: Basic Information
-    nursery_name_ar: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    nursery_name_en: z
+    nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
     email: z
@@ -378,10 +375,7 @@ export type BranchStep1FormData = z.infer<
 const createCenterStep1Schema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Step 1: Basic Information
-    nursery_name_ar: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    nursery_name_en: z
+    nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
     email: z
