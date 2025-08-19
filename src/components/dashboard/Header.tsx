@@ -104,12 +104,15 @@ export default function Header({
     //   type: "link" as const,
     //   href: "/dashboard/payment-log",
     // },
-    accountData: {
-      icon: User,
-      label: "تعديل بيانات الحساب",
-      type: "link" as const,
-      href: `/dashboard/${role}/account`,
-    },
+    accountData:
+      role !== "admin"
+        ? {
+            icon: User,
+            label: "تعديل بيانات الحساب",
+            type: "link" as const,
+            href: `/dashboard/${role}/account`,
+          }
+        : undefined,
     separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
@@ -427,11 +430,11 @@ export default function Header({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             {Object.entries(menuItems).map(([key, item]) => {
-              if (item.type === "separator") {
+              if (item?.type === "separator") {
                 return <DropdownMenuSeparator key={key} />;
               }
 
-              if (item.type === "toggle") {
+              if (item?.type === "toggle") {
                 return (
                   <div
                     key={key}
@@ -450,7 +453,7 @@ export default function Header({
                 );
               }
 
-              if (item.type === "link") {
+              if (item?.type === "link") {
                 return (
                   <DropdownMenuItem key={key} asChild>
                     <Link href={item.href} className="flex items-center gap-2">
@@ -461,7 +464,7 @@ export default function Header({
                 );
               }
 
-              if (item.type === "action") {
+              if (item?.type === "action") {
                 return (
                   <DropdownMenuItem
                     key={key}
