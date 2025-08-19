@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
@@ -67,20 +67,19 @@ export default function EditProfile({
     reValidateMode: "onChange",
   });
 
-  // Ensure form reflects latest initial data when it loads/changes
+  // Ensure form reflects latest initial data when it loads/changes, but avoid infinite loops
+  const lastSnapshotRef = useRef<string>("");
   useEffect(() => {
-    const refreshedDefaults: Record<string, any> = {};
+    const nextValues: Record<string, any> = {};
     fields.forEach((field) => {
-      refreshedDefaults[field.key] =
-        initialData[field.key] ||
-        (user?.[field.key as keyof typeof user] as any) ||
-        "";
+      nextValues[field.key] = initialData[field.key] ?? "";
     });
-
-    if (refreshedDefaults !== defaultValues) {
-      reset(refreshedDefaults);
+    const snapshot = JSON.stringify(nextValues);
+    if (snapshot !== lastSnapshotRef.current) {
+      reset(nextValues, { keepDirty: false, keepValues: false });
+      lastSnapshotRef.current = snapshot;
     }
-  }, [initialData, fields, reset, user]);
+  }, [initialData, fields, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -130,9 +129,9 @@ export default function EditProfile({
                         control={control}
                         render={({ field: controllerField }) => (
                           <CitySelector
-                            value={controllerField.value || ""}
+                            value={controllerField.value.toString() || ""}
                             onChange={(value) =>
-                              controllerField.onChange(value)
+                              controllerField.onChange(parseInt(value))
                             }
                             placeholder={field.placeholder}
                           />
