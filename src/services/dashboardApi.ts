@@ -746,10 +746,12 @@ export const centerService = {
     phone: string;
     city_id: number;
     neighborhood: string;
-    name: string;
   }) => {
     try {
-      const response = await apiClient.put(`/update-profile-center`, payload);
+      const response = await apiClient.put(`/update-profile-center`, {
+        ...payload,
+        name: payload.nursery_name,
+      });
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

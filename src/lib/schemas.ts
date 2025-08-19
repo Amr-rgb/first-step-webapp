@@ -959,9 +959,6 @@ export type TeamMemberFormData = z.infer<
 
 export const createCenterProfileSchema = (locale: "ar" | "en" = "ar") =>
   z.object({
-    name: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),

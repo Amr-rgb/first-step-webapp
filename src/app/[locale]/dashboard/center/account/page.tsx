@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore, useAuthUser } from "@/store/authStore";
 import { centerService } from "@/services/dashboardApi";
@@ -22,7 +21,6 @@ export default function CenterEditProfilePage() {
     queryFn: () => centerService.getCenterData(),
     enabled: !!user, // only run when user is available
     initialData: {
-      name: user?.name ?? "",
       email: user?.email ?? "",
       address: "",
       location: "",
@@ -40,7 +38,7 @@ export default function CenterEditProfilePage() {
       queryClient.invalidateQueries({ queryKey: ["centerData"] });
 
       useAuthStore.getState().updateUser({
-        name: updatedUser.center.name,
+        name: updatedUser.center.nurcery_name,
         email: updatedUser.center.email,
         address: updatedUser.center.adderss,
         nurcery_name: updatedUser.center.nurcery_name,
@@ -52,13 +50,6 @@ export default function CenterEditProfilePage() {
   });
 
   const centerProfileFields = [
-    {
-      key: "name",
-      label: t("fields.name"),
-      type: "text",
-      placeholder: t("placeholders.name"),
-      required: true,
-    },
     {
       key: "nursery_name",
       label: t("fields.nurseryName"),

@@ -73,6 +73,7 @@ export default function Header({
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const authStore = useAuthStore();
+  const role = authStore.user?.role;
 
   // Dashboard search functionality
   const {
@@ -107,7 +108,7 @@ export default function Header({
       icon: User,
       label: "تعديل بيانات الحساب",
       type: "link" as const,
-      href: "/dashboard/account",
+      href: `/dashboard/${role}/account`,
     },
     separator2: { type: "separator" as const },
     privacyPolicy: {
