@@ -1,12 +1,11 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
-import { useAuthUser } from "@/store/authStore";
 import { Label } from "../ui/label";
 
 import { CitySelector } from "@/components/forms/CitySelector";
@@ -40,16 +39,14 @@ export default function EditProfile({
   schema,
 }: EditProfileProps) {
   const t = useTranslations("dashboard.profile");
-  const user = useAuthUser();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const defaultValues: Record<string, any> = (() => {
     const data: Record<string, any> = {};
     fields.forEach((field) => {
-      data[field.key] =
-        initialData[field.key] ||
-        (user?.[field.key as keyof typeof user] as any) ||
-        "";
+      data[field.key] = "";
     });
     return data;
   })();
@@ -94,6 +91,24 @@ export default function EditProfile({
     reset(defaultValues);
     router.back();
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="h-6 w-40 bg-gray-200 rounded mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {Array.from({ length: Math.max(1, fields.length) }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-4 w-32 bg-gray-200 rounded" />
+                <div className="h-10 w-full bg-gray-200 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
