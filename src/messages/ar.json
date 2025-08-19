@@ -711,6 +711,50 @@
         "chat": "المحادثات"
       }
     },
+    "profile": {
+      "titles": {
+        "editParentProfile": "تعديل بيانات ولي الأمر",
+        "editCenterProfile": "تعديل بيانات الحساب"
+      },
+      "fields": {
+        "parentName": "اسم ولي الأمر",
+        "name": "اسم المركز",
+        "nurseryName": "اسم الحضانة",
+        "email": "البريد الإلكتروني",
+        "phone": "رقم الجوال",
+        "address": "العنوان",
+        "location": "الموقع",
+        "neighborhood": "الحي",
+        "city": "المدينة",
+        "nationalNumber": "الرقم الوطني"
+      },
+      "placeholders": {
+        "parentName": "مثال: أحمد محمد",
+        "name": "مثال: Wow",
+        "nurseryName": "مثال: حضانة النجوم",
+        "email": "مثال: mennaemarauxj@gmail.com",
+        "phone": "مثال: +966555555",
+        "address": "مثال: شارع عمة",
+        "location": "مثال: الرياض",
+        "neighborhood": "مثال: حي النخيل",
+        "city": "مثال: الرياض",
+        "nationalNumber": "مثال: 1234567890"
+      },
+      "buttons": {
+        "cancel": "إلغاء",
+        "save": "حفظ التعديلات",
+        "saving": "جاري الحفظ..."
+      },
+      "success": {
+        "saved": "تم الحفظ بنجاح"
+      },
+      "errors": {
+        "saveFailed": "فشل في حفظ البيانات"
+      },
+      "info": {
+        "cancelled": "تم إلغاء التغييرات"
+      }
+    },
     "center": {
       "branches": {
         "title": "الفروع",

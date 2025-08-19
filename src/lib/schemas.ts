@@ -956,3 +956,69 @@ export const createTeamMemberSchema = (locale: "ar" | "en" = "ar") =>
 export type TeamMemberFormData = z.infer<
   ReturnType<typeof createTeamMemberSchema>
 >;
+
+export const createCenterProfileSchema = (locale: "ar" | "en" = "ar") =>
+  z.object({
+    name: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    nursery_name: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    email: z
+      .string()
+      .email({ message: getErrorMessage("invalid-email", locale) }),
+    phone: z
+      .string()
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: getErrorMessage("invalid-phone", locale),
+      }),
+    city_id: z
+      .number()
+      .min(1, { message: getErrorMessage("general-field-required", locale) })
+      .refine(
+        (value) => {
+          // Check if it's a valid number (city ID)
+          const cityId = value;
+          return !isNaN(cityId) && cityId > 0;
+        },
+        {
+          message: getErrorMessage("general-field-required", locale),
+        }
+      ),
+    neighborhood: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    address: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    location: z
+      .string()
+      .url({ message: getErrorMessage("invalid-url", locale) }),
+  });
+
+export type CenterProfileForm = z.infer<
+  ReturnType<typeof createCenterProfileSchema>
+>;
+
+export const createParentProfileSchema = (locale: "ar" | "en" = "ar") =>
+  z.object({
+    name: z
+      .string()
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
+    phone: z
+      .string()
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: getErrorMessage("invalid-phone", locale),
+      }),
+    email: z.string().email({
+      message: getErrorMessage("invalid-email", locale),
+    }),
+    national_number: z.string().length(10, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+  });
+
+export type ParentProfileForm = z.infer<
+  ReturnType<typeof createParentProfileSchema>
+>;

@@ -316,6 +316,29 @@ export const parentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getUserData: async () => {
+    try {
+      const response = await apiClient.get(`/get-user`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateProfile: async (payload: {
+    email: string;
+    phone: string;
+    name: string;
+    national_number: string;
+  }) => {
+    try {
+      const response = await apiClient.put(`/update-profile-parent`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const centerService = {
@@ -700,6 +723,33 @@ export const centerService = {
   }) => {
     try {
       const response = await apiClient.post(`/notify-parents`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterData: async () => {
+    try {
+      const response = await apiClient.get(`/get-center`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateProfile: async (payload: {
+    email: string;
+    address: string;
+    location: string;
+    nursery_name: string;
+    phone: string;
+    city_id: number;
+    neighborhood: string;
+    name: string;
+  }) => {
+    try {
+      const response = await apiClient.put(`/update-profile-center`, payload);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

@@ -24,6 +24,7 @@ interface AuthState {
   token: string | null;
   user: User | null;
   setUserToken: (user: User, token: string) => void;
+  updateUser: (user: Partial<User>) => void;
   clearAuth: () => void;
   isAuthenticated: () => boolean;
   hasRole: (role: UserRole | UserRole[]) => boolean;
@@ -39,16 +40,40 @@ export const useAuthStore = create<AuthState>()(
         set({ user, token });
         // Also store in cookies for middleware access
         const authData = { user, token };
-        Cookies.set('auth-storage', JSON.stringify(authData), {
+        Cookies.set("auth-storage", JSON.stringify(authData), {
           expires: 7, // 7 days
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
         });
       },
+      updateUser: (user: Partial<User>) => {
+        const token = get().token;
+        if (!token) return;
+
+        // Get current user state and merge with new user data
+        const currentUser = get().user;
+        const updatedUser = { ...currentUser, ...user } as User;
+
+        set({ user: updatedUser });
+
+        const authData = { user: updatedUser, token };
+        Cookies.set("auth-storage", JSON.stringify(authData), {
+          expires: 7,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        });
+
+        // ✅ Also update persisted localStorage manually
+        localStorage.setItem(
+          "auth-storage",
+          JSON.stringify({ state: authData })
+        );
+      },
+
       clearAuth: () => {
         set({ user: null, token: null });
         // Also remove from cookies
-        Cookies.remove('auth-storage');
+        Cookies.remove("auth-storage");
       },
       isAuthenticated: () => !!get().token,
       hasRole: (role) => {

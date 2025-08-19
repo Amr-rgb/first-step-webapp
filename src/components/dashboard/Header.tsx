@@ -103,13 +103,13 @@ export default function Header({
     //   type: "link" as const,
     //   href: "/dashboard/payment-log",
     // },
-    // accountData: {
-    //   icon: User,
-    //   label: "تعديل بيانات الحساب",
-    //   type: "link" as const,
-    //   href: "/dashboard/account",
-    // },
-    // separator2: { type: "separator" as const },
+    accountData: {
+      icon: User,
+      label: "تعديل بيانات الحساب",
+      type: "link" as const,
+      href: "/dashboard/edit-profile",
+    },
+    separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
       label: "سياسة الخصوصية",

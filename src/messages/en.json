@@ -715,6 +715,50 @@
         "chat": "Chat"
       }
     },
+    "profile": {
+      "titles": {
+        "editParentProfile": "Edit Parent Profile",
+        "editCenterProfile": "Edit Account Details"
+      },
+      "fields": {
+        "parentName": "Parent Name",
+        "name": "Center Name",
+        "nurseryName": "Nursery Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "address": "Address",
+        "location": "Location",
+        "neighborhood": "Neighborhood",
+        "city": "City",
+        "nationalNumber": "National Number"
+      },
+      "placeholders": {
+        "parentName": "e.g., Ahmed Mohamed",
+        "name": "e.g., Wow",
+        "nurseryName": "e.g., Stars Nursery",
+        "email": "e.g., mennaemarauxj@gmail.com",
+        "phone": "e.g., +966555555",
+        "address": "e.g., Oma Street",
+        "location": "e.g., Riyadh",
+        "neighborhood": "e.g., Al-Nakheel District",
+        "city": "e.g., Riyadh",
+        "nationalNumber": "e.g., 1234567890"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving..."
+      },
+      "success": {
+        "saved": "Saved successfully"
+      },
+      "errors": {
+        "saveFailed": "Failed to save data"
+      },
+      "info": {
+        "cancelled": "Changes have been cancelled"
+      }
+    },
     "center": {
       "ad-or-blog-request": {
         "title": "Advertisements",
