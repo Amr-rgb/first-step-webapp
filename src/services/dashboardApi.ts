@@ -1430,7 +1430,27 @@ export const getPortfolio = async (centerId: number) => {
 };
 
 export const savePortfolio = async (centerId: number, data: any) => {
-  const response = await apiClient.post(`/portfolios/${centerId}`, data);
+  // If data is FormData, send it directly
+  if (data instanceof FormData) {
+    console.log("📤 SENDING FORMDATA TO API");
+    const response = await apiClient.post(`/portfolios`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  }
+
+  // Otherwise, send as JSON
+  console.log("📤 SENDING JSON TO API");
+  const response = await apiClient.post(`/portfolios`, data);
+  return response.data;
+};
+
+// TODO: Implement pricing API when endpoint is provided
+export const savePricing = async (centerId: number, data: any) => {
+  // Placeholder - replace with actual endpoint when provided
+  const response = await apiClient.post(`/pricing`, data);
   return response.data;
 };
 
