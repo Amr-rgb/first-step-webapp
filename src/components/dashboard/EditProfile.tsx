@@ -76,7 +76,10 @@ export default function EditProfile({
         (user?.[field.key as keyof typeof user] as any) ||
         "";
     });
-    reset(refreshedDefaults);
+
+    if (refreshedDefaults !== defaultValues) {
+      reset(refreshedDefaults);
+    }
   }, [initialData, fields, reset, user]);
 
   const onSubmit = handleSubmit(async (data) => {
