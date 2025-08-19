@@ -309,7 +309,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                     >
                       <div className="text-center">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                          {plan.program_name ||
+                          {plan.title ||
                             `${locale === "ar" ? "البرنامج" : "Program"} ${
                               index + 1
                             }`}
@@ -323,62 +323,48 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                                   ? "الفئة العمرية:"
                                   : "Age Range:"}
                               </span>{" "}
-                              {plan.age_group}
+                              {plan.age_start !== undefined &&
+                              plan.age_end !== undefined
+                                ? `${plan.age_start}-${plan.age_end} ${
+                                    locale === "ar" ? "سنة" : "years"
+                                  }`
+                                : plan.age_group}
                             </div>
                           )}
 
-                          {plan.program_type && (
+                          {plan.enrollment_type && (
                             <div className="text-sm text-gray-600">
                               <span className="font-medium">
-                                {locale === "ar" ? "النوع:" : "Type:"}
+                                {locale === "ar"
+                                  ? "نوع التسجيل:"
+                                  : "Enrollment:"}
                               </span>{" "}
-                              {plan.program_type}
+                              {plan.enrollment_type}
                             </div>
                           )}
 
-                          {plan.duration_weeks && (
+                          {plan.count && (
                             <div className="text-sm text-gray-600">
                               <span className="font-medium">
                                 {locale === "ar" ? "المدة:" : "Duration:"}
                               </span>{" "}
-                              {plan.duration_weeks}{" "}
-                              {locale === "ar" ? "أسابيع" : "weeks"}
-                            </div>
-                          )}
-
-                          {plan.sessions_per_week && (
-                            <div className="text-sm text-gray-600">
-                              <span className="font-medium">
-                                {locale === "ar" ? "الجلسات:" : "Sessions:"}
-                              </span>{" "}
-                              {plan.sessions_per_week}{" "}
-                              {locale === "ar" ? "في الأسبوع" : "per week"}
-                            </div>
-                          )}
-
-                          {plan.max_students && (
-                            <div className="text-sm text-gray-600">
-                              <span className="font-medium">
-                                {locale === "ar"
-                                  ? "الحد الأقصى:"
-                                  : "Max Students:"}
-                              </span>{" "}
-                              {plan.max_students}{" "}
-                              {locale === "ar" ? "طالب" : "students"}
-                            </div>
-                          )}
-
-                          {plan.description && (
-                            <div className="text-sm text-gray-600 mt-3 p-2 bg-gray-50 rounded">
-                              {plan.description}
+                              {plan.count}{" "}
+                              {plan.enrollment_type === "hour" &&
+                                (locale === "ar" ? "ساعة" : "hours")}
+                              {plan.enrollment_type === "day" &&
+                                (locale === "ar" ? "يوم" : "days")}
+                              {plan.enrollment_type === "month" &&
+                                (locale === "ar" ? "شهر" : "months")}
+                              {plan.enrollment_type === "year" &&
+                                (locale === "ar" ? "سنة" : "years")}
                             </div>
                           )}
                         </div>
 
-                        {plan.price_per_month && (
+                        {plan.price_amount && (
                           <div className="text-2xl font-bold text-blue-600 mb-4">
-                            {plan.price_per_month}{" "}
-                            {locale === "ar" ? "ريال/شهر" : "SAR/month"}
+                            {plan.price_amount}{" "}
+                            {locale === "ar" ? "ريال" : "SAR"}
                           </div>
                         )}
 

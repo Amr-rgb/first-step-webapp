@@ -1497,6 +1497,9 @@
           "programNamePlaceholder": "Example: Early English Language Program",
           "ageGroup": "Age Group",
           "selectAgeGroup": "Select Age Group",
+          "setAgeRangeManually": "Set age range manually:",
+          "fromAge": "From age:",
+          "toAge": "To age:",
           "programType": "Program Type",
           "selectProgramType": "Select Program Type",
           "durationWeeks": "Program Duration (weeks)",
@@ -1519,7 +1522,9 @@
             "2-3": "2-3 years",
             "3-4": "3-4 years",
             "4-5": "4-5 years",
-            "5-6": "5-6 years"
+            "5-6": "5-6 years",
+            "fromAge": "From age...",
+            "toAge": "To age..."
           }
         },
         "services": {

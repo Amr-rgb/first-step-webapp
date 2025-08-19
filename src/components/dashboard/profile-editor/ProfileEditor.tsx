@@ -43,33 +43,18 @@ const useAllBranchPricing = (branches: any[]) => {
     queryKey: ["allBranchPricing", branches.map((b) => b.id)],
     queryFn: async () => {
       try {
-        const pricingPromises = branches.map(async (branch: any) => {
-          try {
-            const response = await getBranchPricing(branch.id.toString());
-            return {
-              branch_id: branch.id,
-              pricing: response.data || [],
-            };
-          } catch (error) {
-            console.error(
-              `Error fetching pricing for branch ${branch.id}:`,
-              error
-            );
-            return {
-              branch_id: branch.id,
-              pricing: [],
-            };
-          }
-        });
-
-        const results = await Promise.all(pricingPromises);
-        return results;
+        // For now, skip fetching existing pricing data since the API only supports POST
+        // Users can create new pricing data manually
+        console.log(
+          "⚠️ Skipping pricing fetch - API only supports POST for pricing operations"
+        );
+        return [];
       } catch (error) {
         console.error("❌ Error fetching all pricing:", error);
         return [];
       }
     },
-    enabled: branches.length > 0,
+    enabled: false, // Disable automatic fetching for now
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -126,7 +111,32 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (value instanceof File) {
       return URL.createObjectURL(value);
     }
-    return value || undefined;
+
+    // Handle case where value might be a character array or malformed string
+    if (Array.isArray(value)) {
+      console.log("🖼️ Converting character array to string:", value);
+      // Convert character array to string
+      return value.join("");
+    }
+
+    // Handle case where value is an object with numeric keys (character array as object)
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const keys = Object.keys(value)
+        .filter((key) => !isNaN(Number(key)))
+        .sort((a, b) => Number(a) - Number(b));
+      if (keys.length > 0) {
+        console.log("🖼️ Converting object character array to string:", value);
+        return keys.map((key) => value[key]).join("");
+      }
+    }
+
+    // Ensure value is a string
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+
+    console.log("🖼️ Invalid image value:", value, "Type:", typeof value);
+    return undefined;
   };
 
   // Clean up object URLs when component unmounts
@@ -245,22 +255,20 @@ const ProfileEditor = ({
       const plansSection = sections.find((section) => section.type === "plans");
 
       if (plansSection) {
-        const allPlans = allPricingData.flatMap((result) =>
-          result.pricing.map((price: any) => ({
-            branch_id: result.branch_id,
-            program_name: price.title || "",
-            age_group:
-              price.start_age && price.end_age
-                ? `${price.start_age}-${price.end_age}`
-                : "",
-            program_type: "academic", // Default to academic
-            duration_weeks: "12", // Default duration
-            sessions_per_week: "3", // Default sessions
-            max_students: price.count?.toString() || "15",
-            description: "", // No description in pricing data
-            price_per_month: price.price_amount || "",
-          }))
-        );
+        const allPlans = allPricingData.flatMap((result: any) => {
+          if (result && result.pricing && Array.isArray(result.pricing)) {
+            return result.pricing.map((price: any) => ({
+              branch_id: result.branch_id,
+              title: price.title || "",
+              enrollment_type: price.enrollment_type || "month",
+              age_start: price.start_age || 1,
+              age_end: price.end_age || 5,
+              count: price.count || 1,
+              price_amount: price.price_amount || 100,
+            }));
+          }
+          return [];
+        });
 
         if (allPlans.length > 0) {
           onSectionUpdate(plansSection.id, { plans: allPlans });
@@ -588,14 +596,12 @@ const ProfileEditor = ({
                   onClick={() =>
                     addListItem(section.id, "plans", {
                       branch_id: "",
-                      program_name: "",
-                      age_group: "",
-                      program_type: "",
-                      duration_weeks: "",
-                      sessions_per_week: "",
-                      max_students: "",
-                      description: "",
-                      price_per_month: "",
+                      title: "",
+                      enrollment_type: "month",
+                      age_start: 1,
+                      age_end: 12, // Minimum required by API
+                      count: 1,
+                      price_amount: 100,
                     })
                   }
                 >
@@ -661,17 +667,17 @@ const ProfileEditor = ({
                       </Select>
                     </div>
 
-                    {/* Program Name */}
+                    {/* Program Title */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
                         {t("sections.plans.programName")}
                       </Label>
                       <Input
                         placeholder={t("sections.plans.programNamePlaceholder")}
-                        value={plan.program_name || ""}
+                        value={plan.title || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "plans", index, {
-                            program_name: e.target.value,
+                            title: e.target.value,
                           })
                         }
                         className="h-10"
@@ -679,171 +685,194 @@ const ProfileEditor = ({
                     </div>
 
                     {/* Age Group */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-700">
                         {t("sections.plans.ageGroup")}
                       </Label>
-                      <Select
-                        value={plan.age_group || ""}
-                        onValueChange={(value) =>
-                          updateListItem(section.id, "plans", index, {
-                            age_group: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger className="h-10">
-                          <SelectValue
-                            placeholder={t("sections.plans.selectAgeGroup")}
+
+                      {/* Range Slider */}
+                      <div className="space-y-4">
+                        <div className="relative h-6 flex items-center">
+                          <input
+                            type="range"
+                            min="1"
+                            max="50"
+                            step="1"
+                            value={plan.age_start || 1}
+                            onChange={(e) => {
+                              const start = parseInt(e.target.value);
+                              const end = plan.age_end || start;
+                              updateListItem(section.id, "plans", index, {
+                                age_start: Math.max(1, start),
+                                age_end: Math.max(start, end),
+                                age_group: `${Math.max(1, start)}-${Math.max(
+                                  start,
+                                  end
+                                )}`,
+                              });
+                            }}
+                            className="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-blue-400 [&::-webkit-slider-track]:to-gray-200 [&::-webkit-slider-track]:bg-[length:var(--range-progress,0%)_100%] [&::-webkit-slider-track]:bg-no-repeat [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-blue-400 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-blue-400 [&::-moz-range-track]:to-gray-200 [&::-moz-range-track]:bg-[length:var(--range-progress,0%)_100%] [&::-moz-range-track]:bg-no-repeat [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:bg-blue-400 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:cursor-pointer z-20"
+                            style={
+                              {
+                                "--range-progress": `${
+                                  ((plan.age_start || 0) / 50) * 100
+                                }%`,
+                              } as React.CSSProperties
+                            }
                           />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0-1">
-                            {t("sections.plans.ageGroups.0-1")}
-                          </SelectItem>
-                          <SelectItem value="1-2">
-                            {t("sections.plans.ageGroups.1-2")}
-                          </SelectItem>
-                          <SelectItem value="2-3">
-                            {t("sections.plans.ageGroups.2-3")}
-                          </SelectItem>
-                          <SelectItem value="3-4">
-                            {t("sections.plans.ageGroups.3-4")}
-                          </SelectItem>
-                          <SelectItem value="4-5">
-                            {t("sections.plans.ageGroups.4-5")}
-                          </SelectItem>
-                          <SelectItem value="5-6">
-                            {t("sections.plans.ageGroups.5-6")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                          <input
+                            type="range"
+                            min="12"
+                            max="50"
+                            step="1"
+                            value={plan.age_end || 12}
+                            onChange={(e) => {
+                              const end = parseInt(e.target.value);
+                              const start = plan.age_start || 1;
+                              updateListItem(section.id, "plans", index, {
+                                age_start: Math.min(start, end),
+                                age_end: Math.max(12, end), // Minimum 12 for API
+                                age_group: `${Math.min(start, end)}-${Math.max(
+                                  12,
+                                  end
+                                )}`,
+                              });
+                            }}
+                            className="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-blue-400 [&::-webkit-slider-track]:to-gray-200 [&::-webkit-slider-track]:bg-[length:var(--range-progress,0%)_100%] [&::-webkit-slider-track]:bg-no-repeat [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-track]:rounded-full [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-blue-400 [&::-moz-range-track]:to-gray-200 [&::-moz-range-track]:bg-[length:var(--range-progress,0%)_100%] [&::-moz-range-track]:bg-no-repeat [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:cursor-pointer z-20"
+                            style={
+                              {
+                                "--range-progress": `${
+                                  ((plan.age_end || 0) / 50) * 100
+                                }%`,
+                              } as React.CSSProperties
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      {/* Manual Input Fields */}
+                      <div className="space-y-2">
+                        <div className="text-xs text-gray-600 font-medium">
+                          {t("sections.plans.setAgeRangeManually")}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">
+                              {t("sections.plans.fromAge")}
+                            </Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="50"
+                              placeholder={t(
+                                "sections.plans.ageGroups.fromAge"
+                              )}
+                              value={plan.age_start || ""}
+                              onChange={(e) => {
+                                const start = parseInt(e.target.value) || 1;
+                                const end = plan.age_end || start;
+                                updateListItem(section.id, "plans", index, {
+                                  age_start: Math.max(1, start),
+                                  age_end: Math.max(start, end),
+                                  age_group: `${Math.max(1, start)}-${Math.max(
+                                    start,
+                                    end
+                                  )}`,
+                                });
+                              }}
+                              className="h-10 text-center"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">
+                              {t("sections.plans.toAge")}
+                            </Label>
+                            <Input
+                              type="number"
+                              min="12"
+                              max="50"
+                              placeholder={t("sections.plans.ageGroups.toAge")}
+                              value={plan.age_end || ""}
+                              onChange={(e) => {
+                                const end = parseInt(e.target.value) || 12;
+                                const start = plan.age_start || 1;
+                                updateListItem(section.id, "plans", index, {
+                                  age_start: Math.min(start, end),
+                                  age_end: Math.max(12, end), // Minimum 12 for API
+                                  age_group: `${Math.min(
+                                    start,
+                                    end
+                                  )}-${Math.max(12, end)}`,
+                                });
+                              }}
+                              className="h-10 text-center"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Program Type */}
+                    {/* Enrollment Type */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        {t("sections.plans.programType")}
+                        Enrollment Type
                       </Label>
                       <Select
-                        value={plan.program_type || ""}
+                        value={plan.enrollment_type || "month"}
                         onValueChange={(value) =>
                           updateListItem(section.id, "plans", index, {
-                            program_type: value,
+                            enrollment_type: value,
                           })
                         }
                       >
                         <SelectTrigger className="h-10">
-                          <SelectValue
-                            placeholder={t("sections.plans.selectProgramType")}
-                          />
+                          <SelectValue placeholder="Select enrollment type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="academic">
-                            {t("sections.plans.programTypes.academic")}
-                          </SelectItem>
-                          <SelectItem value="creative">
-                            {t("sections.plans.programTypes.creative")}
-                          </SelectItem>
-                          <SelectItem value="sports">
-                            {t("sections.plans.programTypes.sports")}
-                          </SelectItem>
-                          <SelectItem value="language">
-                            {t("sections.plans.programTypes.language")}
-                          </SelectItem>
-                          <SelectItem value="music">
-                            {t("sections.plans.programTypes.music")}
-                          </SelectItem>
-                          <SelectItem value="art">
-                            {t("sections.plans.programTypes.art")}
-                          </SelectItem>
+                          <SelectItem value="hour">Hour</SelectItem>
+                          <SelectItem value="day">Day</SelectItem>
+                          <SelectItem value="month">Month</SelectItem>
+                          <SelectItem value="year">Year</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    {/* Duration and Sessions */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-700">
-                          {t("sections.plans.durationWeeks")}
-                        </Label>
-                        <Input
-                          type="number"
-                          placeholder="12"
-                          value={plan.duration_weeks || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "plans", index, {
-                              duration_weeks: e.target.value,
-                            })
-                          }
-                          className="h-10"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-700">
-                          {t("sections.plans.sessionsPerWeek")}
-                        </Label>
-                        <Input
-                          type="number"
-                          placeholder="3"
-                          value={plan.sessions_per_week || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "plans", index, {
-                              sessions_per_week: e.target.value,
-                            })
-                          }
-                          className="h-10"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Max Students */}
+                    {/* Duration */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        {t("sections.plans.maxStudents")}
+                        Duration
                       </Label>
                       <Input
                         type="number"
-                        placeholder="15"
-                        value={plan.max_students || ""}
+                        placeholder="2"
+                        value={plan.count || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "plans", index, {
-                            max_students: e.target.value,
+                            count: parseInt(e.target.value) || 0,
                           })
                         }
                         className="h-10"
                       />
-                    </div>
-
-                    {/* Description */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-gray-700">
-                        {t("sections.plans.description")}
-                      </Label>
-                      <Textarea
-                        placeholder={t("sections.plans.descriptionPlaceholder")}
-                        value={plan.description || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "plans", index, {
-                            description: e.target.value,
-                          })
-                        }
-                        rows={3}
-                        className="resize-none"
-                      />
+                      <p className="text-xs text-gray-500">
+                        {plan.enrollment_type === "hour" && "hours"}
+                        {plan.enrollment_type === "day" && "days"}
+                        {plan.enrollment_type === "month" && "months"}
+                        {plan.enrollment_type === "year" && "years"}
+                      </p>
                     </div>
 
                     {/* Price */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        {t("sections.plans.monthlyPrice")}
+                        Price Amount
                       </Label>
                       <Input
                         type="number"
                         placeholder="800"
-                        value={plan.price_per_month || ""}
+                        value={plan.price_amount || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "plans", index, {
-                            price_per_month: e.target.value,
+                            price_amount: parseFloat(e.target.value) || 0,
                           })
                         }
                         className="h-10"
@@ -981,21 +1010,31 @@ const ProfileEditor = ({
               <div>
                 <Label>Classrooms</Label>
                 <Input
+                  type="number"
+                  min="1"
                   placeholder="10"
                   value={section.data.classrooms || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { classrooms: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    onSectionUpdate(section.id, {
+                      classrooms: value.toString(),
+                    });
+                  }}
                 />
               </div>
               <div>
                 <Label>Team Members</Label>
                 <Input
+                  type="number"
+                  min="1"
                   placeholder="25"
                   value={section.data.teamMembers || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { teamMembers: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    onSectionUpdate(section.id, {
+                      teamMembers: value.toString(),
+                    });
+                  }}
                 />
               </div>
             </div>
@@ -1217,11 +1256,18 @@ const ProfileEditor = ({
               <div>
                 <Label>Email Address</Label>
                 <Input
+                  type="email"
                   placeholder="info@nursery.com"
                   value={section.data.email || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { email: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    // Basic email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (email && !emailRegex.test(email)) {
+                      toast.error("Please enter a valid email address");
+                    }
+                    onSectionUpdate(section.id, { email });
+                  }}
                 />
               </div>
             </div>
@@ -1237,8 +1283,6 @@ const ProfileEditor = ({
             </div>
           </div>
         );
-
-      case "hero":
         return (
           <div className="space-y-4">
             <div>
@@ -1397,227 +1441,6 @@ const ProfileEditor = ({
         );
 
       case "plans":
-        return (
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label>البرامج التعليمية</Label>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    addListItem(section.id, "plans", {
-                      branch_id: "",
-                      program_name: "",
-                      age_group: "",
-                      program_type: "",
-                      duration_weeks: "",
-                      sessions_per_week: "",
-                      max_students: "",
-                      description: "",
-                      price_per_month: "",
-                    })
-                  }
-                >
-                  <Plus className="w-4 h-4 mr-1" /> إضافة برنامج
-                </Button>
-              </div>
-              {(section.data.plans || []).map((plan: any, index: number) => (
-                <Card
-                  key={index}
-                  className="p-4 border-2 border-dashed border-gray-200"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">البرنامج {index + 1}</h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          removeListItem(section.id, "plans", index)
-                        }
-                      >
-                        <Trash className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    {/* Branch Selection */}
-                    <div>
-                      <Label>الفرع</Label>
-                      <Select
-                        value={plan.branch_id || ""}
-                        onValueChange={(value) =>
-                          updateListItem(section.id, "plans", index, {
-                            branch_id: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر الفرع" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {loadingBranches ? (
-                            <SelectItem value="" disabled>
-                              جاري التحميل...
-                            </SelectItem>
-                          ) : (
-                            branches.map((branch: any) => (
-                              <SelectItem
-                                key={branch.id}
-                                value={branch.id.toString()}
-                              >
-                                {branch.nursery_name_branch || branch.name}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Program Name */}
-                    <div>
-                      <Label>اسم البرنامج</Label>
-                      <Input
-                        placeholder="مثال: برنامج اللغة الإنجليزية المبكرة"
-                        value={plan.program_name || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "plans", index, {
-                            program_name: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    {/* Age Group */}
-                    <div>
-                      <Label>الفئة العمرية</Label>
-                      <Select
-                        value={plan.age_group || ""}
-                        onValueChange={(value) =>
-                          updateListItem(section.id, "plans", index, {
-                            age_group: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر الفئة العمرية" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0-1">0-1 سنة</SelectItem>
-                          <SelectItem value="1-2">1-2 سنة</SelectItem>
-                          <SelectItem value="2-3">2-3 سنة</SelectItem>
-                          <SelectItem value="3-4">3-4 سنة</SelectItem>
-                          <SelectItem value="4-5">4-5 سنة</SelectItem>
-                          <SelectItem value="5-6">5-6 سنة</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Program Type */}
-                    <div>
-                      <Label>نوع البرنامج</Label>
-                      <Select
-                        value={plan.program_type || ""}
-                        onValueChange={(value) =>
-                          updateListItem(section.id, "plans", index, {
-                            program_type: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر نوع البرنامج" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="academic">أكاديمي</SelectItem>
-                          <SelectItem value="creative">إبداعي</SelectItem>
-                          <SelectItem value="sports">رياضي</SelectItem>
-                          <SelectItem value="language">لغوي</SelectItem>
-                          <SelectItem value="music">موسيقي</SelectItem>
-                          <SelectItem value="art">فني</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Duration and Sessions */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label>مدة البرنامج (أسابيع)</Label>
-                        <Input
-                          type="number"
-                          placeholder="12"
-                          value={plan.duration_weeks || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "plans", index, {
-                              duration_weeks: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label>الجلسات في الأسبوع</Label>
-                        <Input
-                          type="number"
-                          placeholder="3"
-                          value={plan.sessions_per_week || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "plans", index, {
-                              sessions_per_week: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {/* Max Students */}
-                    <div>
-                      <Label>الحد الأقصى للطلاب</Label>
-                      <Input
-                        type="number"
-                        placeholder="15"
-                        value={plan.max_students || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "plans", index, {
-                            max_students: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <Label>وصف البرنامج</Label>
-                      <Textarea
-                        placeholder="وصف مختصر للبرنامج وأهدافه..."
-                        value={plan.description || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "plans", index, {
-                            description: e.target.value,
-                          })
-                        }
-                        rows={3}
-                      />
-                    </div>
-
-                    {/* Price */}
-                    <div>
-                      <Label>السعر الشهري (ريال)</Label>
-                      <Input
-                        type="number"
-                        placeholder="800"
-                        value={plan.price_per_month || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "plans", index, {
-                            price_per_month: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
 
       default:
         return (
