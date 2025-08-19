@@ -19,16 +19,7 @@ export default function CenterEditProfilePage() {
   const { data: centerData, isLoading } = useQuery({
     queryKey: ["centerData"],
     queryFn: () => centerService.getCenterData(),
-    // enabled: !!user, // only run when user is available
-    initialData: {
-      email: user?.email ?? "",
-      address: "",
-      location: "",
-      nursery_name: "",
-      phone: "",
-      city_id: "",
-      neighborhood: "",
-    },
+    enabled: !!user, // only run when user is available
   });
 
   // ✅ Update profile with mutation

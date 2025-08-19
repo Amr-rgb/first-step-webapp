@@ -18,12 +18,6 @@ export default function ParentEditProfilePage() {
     queryKey: ["parentData", user?.id],
     queryFn: () => parentService.getUserData(),
     enabled: !!user,
-    initialData: {
-      name: user?.name ?? "",
-      email: user?.email ?? "",
-      phone: "",
-      national_number: user?.national_number ?? "",
-    },
   });
 
   // ✅ Mutation for update
