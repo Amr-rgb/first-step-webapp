@@ -8,7 +8,7 @@ import { CenterProfileForm, createCenterProfileSchema } from "@/lib/schemas";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CenterEditProfilePage() {
-  const t = useTranslations("dashboard.profile");
+  const t = useTranslations("dashboard.account");
   const locale = useLocale();
   const user = useAuthUser();
   const queryClient = useQueryClient();
@@ -107,7 +107,7 @@ export default function CenterEditProfilePage() {
   return (
     <div className="container mx-auto px-4 py-6">
       <EditProfile
-        title={t("titles.editCenterProfile")}
+        title={t("titles.editCenterAccount")}
         fields={centerProfileFields}
         onSave={handleSave}
         initialData={centerData.data}

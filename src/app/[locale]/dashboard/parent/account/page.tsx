@@ -8,7 +8,7 @@ import { createParentProfileSchema, ParentProfileForm } from "@/lib/schemas";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function ParentEditProfilePage() {
-  const t = useTranslations("dashboard.profile");
+  const t = useTranslations("dashboard.account");
   const locale = useLocale() as "ar" | "en";
   const user = useAuthUser();
   const queryClient = useQueryClient();
@@ -85,7 +85,7 @@ export default function ParentEditProfilePage() {
   return (
     <div className="container mx-auto px-4 py-6">
       <EditProfile
-        title={t("titles.editParentProfile")}
+        title={t("titles.editParentAccount")}
         fields={parentProfileFields}
         onSave={handleSave}
         initialData={parentData.data}

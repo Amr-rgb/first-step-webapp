@@ -1017,6 +1017,15 @@ export const authService = {
     }
   },
 
+  confirmPassword: async (password: string) => {
+    try {
+      const response = await apiClient.put("/verify-password", { password });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCities: async () => {
     try {
       const response = await apiClient.get("/cities");

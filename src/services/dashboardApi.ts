@@ -319,7 +319,7 @@ export const parentService = {
 
   getUserData: async () => {
     try {
-      const response = await apiClient.get(`/get-user`);
+      const response = await apiClient.get(`/parent/get-user`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -333,7 +333,10 @@ export const parentService = {
     national_number: string;
   }) => {
     try {
-      const response = await apiClient.put(`/update-profile-parent`, payload);
+      const response = await apiClient.put(
+        `/parent/update-profile-parent`,
+        payload
+      );
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

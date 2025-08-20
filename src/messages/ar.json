@@ -707,10 +707,10 @@
         "chat": "المحادثات"
       }
     },
-    "profile": {
+    "account": {
       "titles": {
-        "editParentProfile": "تعديل بيانات ولي الأمر",
-        "editCenterProfile": "تعديل بيانات الحساب"
+        "editParentAccount": "تعديل بيانات ولي الأمر",
+        "editCenterAccount": "تعديل بيانات الحساب"
       },
       "fields": {
         "parentName": "اسم ولي الأمر",
@@ -739,7 +739,8 @@
       "buttons": {
         "cancel": "إلغاء",
         "save": "حفظ التعديلات",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "confirm": "تأكيد"
       },
       "success": {
         "saved": "تم الحفظ بنجاح"
@@ -749,6 +750,11 @@
       },
       "info": {
         "cancelled": "تم إلغاء التغييرات"
+      },
+      "confirm": {
+        "title": "تأكيد كلمة المرور",
+        "passwordLabel": "أدخل كلمة المرور للتأكيد",
+        "passwordPlaceholder": "••••••••"
       }
     },
     "center": {

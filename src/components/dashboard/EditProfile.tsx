@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
@@ -15,6 +15,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ZodTypeAny } from "zod";
 import PhoneInput from "../forms/PhoneInput";
 import { useRouter } from "@/i18n/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { authService } from "@/services/api";
 
 interface ProfileField {
   key: string;
@@ -39,7 +47,7 @@ export default function EditProfile({
   initialData = {},
   schema,
 }: EditProfileProps) {
-  const t = useTranslations("dashboard.profile");
+  const t = useTranslations("dashboard.account");
   const user = useAuthUser();
   const router = useRouter();
 
@@ -59,6 +67,7 @@ export default function EditProfile({
     handleSubmit,
     control,
     reset,
+    getValues,
     formState: { errors, isSubmitting, dirtyFields },
   } = useForm<Record<string, any>>({
     resolver: zodResolver(schema),
@@ -66,6 +75,13 @@ export default function EditProfile({
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+
+  const [confirmOpen, setConfirmOpen] = useState(false as boolean);
+  const [confirmLoading, setConfirmLoading] = useState(false as boolean);
+  const [pendingData, setPendingData] = useState<Record<string, any> | null>(
+    null
+  );
+  const [password, setPassword] = useState("");
 
   // Ensure form reflects latest initial data when it loads/changes, but avoid infinite loops
   const lastSnapshotRef = useRef<string>("");
@@ -81,14 +97,42 @@ export default function EditProfile({
     }
   }, [initialData, fields, reset]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(() => {
+    // Get all form values
+    const allValues = getValues();
+    // Filter only the dirty fields
+    const dirtyValues = Object.keys(dirtyFields).reduce((acc, key) => {
+      acc[key] = allValues[key];
+      return acc;
+    }, {} as Record<string, any>);
+
+    setPendingData(dirtyValues);
+    setConfirmOpen(true);
+  });
+
+  const handleConfirmPassword = async () => {
+    if (!pendingData) return;
     try {
-      await onSave(data);
+      setConfirmLoading(true);
+      const res = await authService.confirmPassword(password);
+      if (
+        res?.message &&
+        res.message.toLowerCase().includes("does not match")
+      ) {
+        toast.error(res.message);
+        return;
+      }
+      await onSave(pendingData);
       toast.success(t("success.saved"));
+      setConfirmOpen(false);
+      setPassword("");
+      setPendingData(null);
     } catch (error: any) {
       toast.error(error?.message || t("errors.saveFailed"));
+    } finally {
+      setConfirmLoading(false);
     }
-  });
+  };
 
   const handleCancel = () => {
     reset(defaultValues);
@@ -102,6 +146,46 @@ export default function EditProfile({
         <div className="text-center mb-8">
           <h1 className="heading-4 text-primary mb-4">{title}</h1>
         </div>
+
+        <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {t("confirm.title") || "تأكيد كلمة المرور"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">
+                {t("confirm.passwordLabel") || "أدخل كلمة المرور للتأكيد"}
+              </Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("confirm.passwordPlaceholder") || "••••••••"}
+              />
+            </div>
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setConfirmOpen(false)}
+                disabled={confirmLoading}
+              >
+                {t("buttons.cancel")}
+              </Button>
+              <Button
+                onClick={handleConfirmPassword}
+                disabled={!password || confirmLoading}
+              >
+                {confirmLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : null}
+                {t("buttons.confirm") || "تأكيد"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Main Form Container */}
         <form onSubmit={onSubmit} className="">

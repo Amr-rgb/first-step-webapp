@@ -711,10 +711,10 @@
         "chat": "Chat"
       }
     },
-    "profile": {
+    "account": {
       "titles": {
-        "editParentProfile": "Edit Parent Profile",
-        "editCenterProfile": "Edit Account Details"
+        "editParentAccount": "Edit Parent Account",
+        "editCenterAccount": "Edit Account Details"
       },
       "fields": {
         "parentName": "Parent Name",
@@ -743,7 +743,8 @@
       "buttons": {
         "cancel": "Cancel",
         "save": "Save Changes",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "confirm": "Confirm"
       },
       "success": {
         "saved": "Saved successfully"
@@ -753,6 +754,11 @@
       },
       "info": {
         "cancelled": "Changes have been cancelled"
+      },
+      "confirm": {
+        "title": "Confirm Password",
+        "passwordLabel": "Enter your password to confirm",
+        "passwordPlaceholder": "••••••••"
       }
     },
     "center": {
