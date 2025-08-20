@@ -43,18 +43,33 @@ const useAllBranchPricing = (branches: any[]) => {
     queryKey: ["allBranchPricing", branches.map((b) => b.id)],
     queryFn: async () => {
       try {
-        // For now, skip fetching existing pricing data since the API only supports POST
-        // Users can create new pricing data manually
-        console.log(
-          "⚠️ Skipping pricing fetch - API only supports POST for pricing operations"
-        );
-        return [];
+        const pricingPromises = branches.map(async (branch: any) => {
+          try {
+            const response = await getBranchPricing(branch.id.toString());
+            return {
+              branch_id: branch.id,
+              pricing: response.data || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching pricing for branch ${branch.id}:`,
+              error
+            );
+            return {
+              branch_id: branch.id,
+              pricing: [],
+            };
+          }
+        });
+
+        const results = await Promise.all(pricingPromises);
+        return results;
       } catch (error) {
         console.error("❌ Error fetching all pricing:", error);
         return [];
       }
     },
-    enabled: false, // Disable automatic fetching for now
+    enabled: branches.length > 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -237,6 +252,7 @@ const ProfileEditor = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set()
   );
+  const [hasProcessedPricing, setHasProcessedPricing] = useState(false);
 
   // Use React Query hooks
   const { data: branches = [], isLoading: loadingBranches } = useBranches();
@@ -249,43 +265,55 @@ const ProfileEditor = ({
       !loadingPricing &&
       !loadingBranches &&
       branches.length > 0 &&
-      allPricingData.length > 0
+      allPricingData.length > 0 &&
+      !hasProcessedPricing
     ) {
       // Update plans section with existing pricing data
       const plansSection = sections.find((section) => section.type === "plans");
 
       if (plansSection) {
+        console.log("🔍 All pricing data:", allPricingData);
         const allPlans = allPricingData.flatMap((result: any) => {
+          console.log("🔍 Processing result:", result);
           if (result && result.pricing && Array.isArray(result.pricing)) {
-            return result.pricing.map((price: any) => ({
-              branch_id: result.branch_id,
-              title: price.title || "",
-              enrollment_type: price.enrollment_type || "month",
-              age_start: price.start_age || 1,
-              age_end: price.end_age || 5,
-              count: price.count || 1,
-              price_amount: price.price_amount || 100,
-            }));
+            return result.pricing.map((price: any) => {
+              console.log("🔍 Processing price:", price);
+              return {
+                branch_id: result.branch_id,
+                title: price.title || "",
+                enrollment_type: price.enrollment_type || "month",
+                age_start: price.start_age || 1,
+                age_end: price.end_age || 12,
+                count: price.count || 1,
+                price_amount: price.price_amount || 100,
+              };
+            });
           }
           return [];
         });
 
+        console.log("🔍 All plans processed:", allPlans);
         if (allPlans.length > 0) {
+          console.log("🔍 Updating plans section with:", allPlans);
           onSectionUpdate(plansSection.id, { plans: allPlans });
           // Enable the plans section if there's existing data
           onSectionToggle(plansSection.id, true);
         }
+        setHasProcessedPricing(true);
       }
     }
   }, [
     allPricingData,
     branches,
-    sections,
-    onSectionUpdate,
-    onSectionToggle,
     loadingPricing,
     loadingBranches,
+    hasProcessedPricing,
   ]);
+
+  // Reset the flag when branches change (indicating a new center)
+  useEffect(() => {
+    setHasProcessedPricing(false);
+  }, [branches]);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);

@@ -1400,7 +1400,7 @@ export const savePortfolio = async (centerId: number, data: any) => {
 // Pricing API functions
 export const getBranchPricing = async (branchId: string) => {
   try {
-    const response = await apiClient.post(`/branches/${branchId}/pricing`, {});
+    const response = await apiClient.get(`/branches-pricies/${branchId}`);
     return response.data;
   } catch (error) {
     throw ApiErrorHandler.handle(error);
