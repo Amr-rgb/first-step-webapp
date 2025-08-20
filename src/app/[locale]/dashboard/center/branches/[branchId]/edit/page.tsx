@@ -24,43 +24,54 @@ export default function DashboardEditBranch({
   const router = useRouter();
   const { branchId, locale } = use(params);
   const t = useTranslations("dashboard.center.branches");
-  
+
   const [isAdminFormOpen, setIsAdminFormOpen] = useState(false);
   const [branchData, setBranchData] = useState<BranchData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBranchData = (data: any) => {
-    console.log('Branch data received:', data);
+    console.log("Branch data received:", data);
     // Only update if data has actually changed to prevent unnecessary re-renders
-    setBranchData(prev => {
-      if (prev?.id === data.id && prev?.name === data.name && prev?.user_id === data.user_id) {
+    setBranchData((prev) => {
+      if (
+        prev?.id === data.id &&
+        prev?.name === data.name &&
+        prev?.user_id === data.user_id
+      ) {
         return prev; // Return previous state if nothing changed
       }
       return {
         id: data.id,
         name: data.name,
-        user_id: data.user_id
+        user_id: data.user_id,
       };
     });
   };
 
   const handleAdminSubmit = async (data: BranchAdminFormData) => {
     if (!branchId) return;
-    console.log('Submitting admin data:', data);
-    
+    console.log("Submitting admin data:", data);
+
     try {
       setIsSubmitting(true);
-      
+
       if (branchData?.user_id) {
         // Update existing admin
         await centerService.updateBranchAdmin(branchData.user_id, data);
-        toast.success(t("admin.success"));
+        toast.success(
+          t("admin.success", { branchName: branchData?.name || "" })
+        );
       } else {
-        // Assign new admin
-        await centerService.assignBranch(branchId, data);
-        toast.success(t("admin.success"));
+        // Assign new admin by updating branch with admin fields
+        await centerService.updateBranch(branchId, {
+          email: data.email,
+          password: data.password,
+        } as any);
+        toast.success(
+          t("admin.success", { branchName: branchData?.name || "" })
+        );
       }
-      
+
       // Close the form and refresh the page to show updated data
       setIsAdminFormOpen(false);
       router.refresh();
@@ -85,8 +96,8 @@ export default function DashboardEditBranch({
         <h1 className="heading-4 font-bold text-primary">
           {locale === "ar" ? "تعديل فرع" : "Edit Branch"}
         </h1>
-        
-        <Button 
+
+        <Button
           onClick={() => setIsAdminFormOpen(true)}
           variant="outline"
           className="whitespace-nowrap"
@@ -96,8 +107,8 @@ export default function DashboardEditBranch({
         </Button>
       </div>
 
-      <BranchWrapper 
-        mode="edit" 
+      <BranchWrapper
+        mode="edit"
         editBranchId={branchId}
         onBranchData={handleBranchData}
       />

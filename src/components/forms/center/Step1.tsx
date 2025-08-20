@@ -73,7 +73,7 @@ export function Step1BasicInfo({
           )}
         />
 
-        {(show ? !!control._formValues?.email : true) && (
+        {(show ? !!control._formValues?.email : !isBranch) && (
           <FormField
             control={control}
             name="email"

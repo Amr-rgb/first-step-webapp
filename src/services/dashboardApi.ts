@@ -6,10 +6,11 @@ import { ApiErrorHandler } from "@/lib/error-handling";
 
 const prepareCenterFormData = (
   formData: FormData,
-  payload: Omit<CenterRegisterPayload, "password">
+  payload: CenterRegisterPayload
 ) => {
   // Append text fields only if they exist
   if (payload.email) formData.append("email", payload.email);
+  if (payload.password) formData.append("password", payload.password);
   if (payload.address) formData.append("address", payload.address);
   if (payload.phone) formData.append("phone", payload.phone);
 
@@ -44,9 +45,10 @@ const prepareCenterFormData = (
     formData.append("special_needs", payload.special_needs ? "1" : "0");
   }
 
-  if (payload.name) formData.append("name", payload.nursery_name);
-  if (payload.nursery_name)
+  if (payload.nursery_name) {
+    formData.append("name", payload.nursery_name);
     formData.append("nursery_name", payload.nursery_name);
+  }
   if (payload.location) formData.append("location", payload.location);
   if (payload.city) formData.append("city_id", payload.city);
   if (payload.neighborhood)
@@ -340,10 +342,7 @@ export const centerService = {
     }
   },
 
-  updateBranch: async (
-    id: string,
-    payload: Omit<CenterRegisterPayload, "password">
-  ) => {
+  updateBranch: async (id: string, payload: CenterRegisterPayload) => {
     try {
       const formData = new FormData();
       prepareCenterFormData(formData, payload);
@@ -360,7 +359,7 @@ export const centerService = {
     }
   },
 
-  createBranch: async (payload: Omit<CenterRegisterPayload, "password">) => {
+  createBranch: async (payload: CenterRegisterPayload) => {
     try {
       const formData = new FormData();
       prepareCenterFormData(formData, payload);

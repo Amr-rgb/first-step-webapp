@@ -20,6 +20,7 @@ interface BranchWrapperProps {
   mode: "add" | "edit";
   onBranchData?: (data: any) => void;
   onBranchCreated?: (data: { id: string; name: string }) => void;
+  onBranchDraft?: (data: any, name: string) => void;
 }
 
 const BranchWrapper = ({
@@ -27,6 +28,7 @@ const BranchWrapper = ({
   mode,
   onBranchData,
   onBranchCreated,
+  onBranchDraft,
 }: BranchWrapperProps) => {
   const queryClient = useQueryClient();
 
@@ -47,7 +49,6 @@ const BranchWrapper = ({
     if (!fetchedBranch) return undefined;
     return {
       nursery_name: fetchedBranch.nursery_name || "",
-      email: fetchedBranch.email || "",
       phone: fetchedBranch.phone || "",
       neighborhood: fetchedBranch.neighborhood || "",
       nursery_type: fetchedBranch.nursery_type || [],
@@ -84,7 +85,6 @@ const BranchWrapper = ({
     defaultValues: {
       // step1
       nursery_name: "",
-      email: "",
       phone: "",
       neighborhood: "",
       nursery_type: [],
@@ -218,9 +218,10 @@ const BranchWrapper = ({
       if ("commercial_record_path" in values)
         result.commercial_record_path = values.commercial_record_path;
 
-      if ("nursery_name_ar" in values) result.name = values.nursery_name_ar;
-      if ("nursery_name_en" in values)
-        result.nursery_name = values.nursery_name_en;
+      if ("nursery_name" in values) {
+        result.name = values.nursery_name;
+        result.nursery_name = values.nursery_name;
+      }
 
       if ("email" in values) result.email = values.email;
       if ("address" in values) result.address = values.address;
@@ -280,7 +281,11 @@ const BranchWrapper = ({
       updateBranchMutation.mutate(expectedData);
       console.log(expectedData);
     } else {
-      mutation.mutate(expectedData);
+      // In add mode, lift the payload to parent and open admin dialog there
+      if (onBranchDraft) {
+        const branchName = allValues.nursery_name || "";
+        onBranchDraft(expectedData, branchName);
+      }
     }
   };
 
