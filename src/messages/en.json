@@ -1852,6 +1852,17 @@
         "teachers": "Number of Teachers",
         "programs": "Number of Programs"
       }
+    },
+    "plans": {
+      "title": "Our Educational Programs",
+      "subtitle": "Discover our diverse educational programs designed specifically to develop your child's skills",
+      "selectBranch": "Select Branch",
+      "noPrograms": "No Programs Available",
+      "noProgramsMessage": "Programs will be added soon. Please check back later.",
+      "bookNow": "Book Now",
+      "ageRange": "Age Range",
+      "duration": "Duration",
+      "price": "Price"
     }
   },
 

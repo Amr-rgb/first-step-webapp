@@ -4,6 +4,7 @@ import Header from "@/components/general/nurseries/Header";
 import Programs from "@/components/general/nurseries/sections/Programs";
 import Services from "@/components/general/nurseries/sections/Services";
 import Philosophy from "@/components/general/nurseries/sections/Philosophy";
+import Plans from "@/components/general/nurseries/sections/Plans";
 import Activities from "@/components/general/nurseries/sections/Activities";
 import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
@@ -57,7 +58,6 @@ export default async function NurseryPage({
         <Branches locale={locale} nurseryName={readableName} />
       )}
 
-
       {/* 3. Advertisement Section */}
       {portfolio.ads_images && portfolio.ads_images.length > 0 && (
         <Advertisment
@@ -76,7 +76,14 @@ export default async function NurseryPage({
         <Philosophy data={portfolio.Philosophy_Methodology_Goal} />
       )}
 
-      {/* 5. Programs Section */}
+      {/* 5. Plans Section */}
+      <Plans
+        nurseryName={readableName}
+        locale={locale}
+        portfolioData={portfolio}
+      />
+
+      {/* 6. Programs Section */}
       <Programs programs={[]} nurseryName={readableName} locale={locale} />
 
       {/* 6. Services Section */}
