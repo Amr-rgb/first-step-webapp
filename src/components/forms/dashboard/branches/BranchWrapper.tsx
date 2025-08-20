@@ -269,40 +269,6 @@ const BranchWrapper = ({
       if ("communication_methods" in values)
         result.communication_methods = values.communication_methods;
 
-      // Always include pricing even if unchanged (or you can make this conditional)
-      result.pricing = [
-        {
-          enrollment_type: "daily",
-          response_speed: "normal",
-          price_amount: 100,
-        },
-        {
-          enrollment_type: "daily",
-          response_speed: "emergency",
-          price_amount: 120,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "normal",
-          price_amount: 1200,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "emergency",
-          price_amount: 1400,
-        },
-        {
-          enrollment_type: "6_months",
-          response_speed: "normal",
-          price_amount: 6500,
-        },
-        {
-          enrollment_type: "hourly",
-          response_speed: "normal",
-          price_amount: 30,
-        },
-      ];
-
       return result;
     };
 

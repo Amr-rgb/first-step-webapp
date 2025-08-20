@@ -109,29 +109,6 @@ const prepareCenterFormData = (
     });
   }
 
-  if (payload.pricing?.length) {
-    payload.pricing.forEach((price, index) => {
-      if (price.enrollment_type) {
-        formData.append(
-          `pricing[${index}][enrollment_type]`,
-          price.enrollment_type
-        );
-      }
-      if (price.response_speed) {
-        formData.append(
-          `pricing[${index}][response_speed]`,
-          price.response_speed
-        );
-      }
-      if (price.price_amount) {
-        formData.append(
-          `pricing[${index}][price_amount]`,
-          price.price_amount.toString()
-        );
-      }
-    });
-  }
-
   // Append files only if they exist
   if (payload.logo) formData.append("logo", payload.logo);
   if (payload.license_path)

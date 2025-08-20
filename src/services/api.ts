@@ -901,21 +901,6 @@ export const authService = {
           );
       });
 
-      payload.pricing.forEach((price, index) => {
-        formData.append(
-          `pricing[${index}][enrollment_type]`,
-          price.enrollment_type
-        );
-        formData.append(
-          `pricing[${index}][response_speed]`,
-          price.response_speed
-        );
-        formData.append(
-          `pricing[${index}][price_amount]`,
-          price.price_amount.toString()
-        );
-      });
-
       // ✅ Append files
       payload.logo && formData.append("logo", payload.logo);
       payload.license_path &&
