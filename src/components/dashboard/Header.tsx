@@ -98,12 +98,15 @@ export default function Header({
       onChange: setNotificationsEnabled,
     },
     separator1: { type: "separator" as const },
-    // paymentLog: {
-    //   icon: CreditCard,
-    //   label: "سجل الدفع",
-    //   type: "link" as const,
-    //   href: "/dashboard/payment-log",
-    // },
+    billingControl:
+      role === "center"
+        ? {
+            icon: CreditCard,
+            label: "سجل الدفع",
+            type: "link" as const,
+            href: `/dashboard/${role}/billing`,
+          }
+        : undefined,
     accountData:
       role !== "admin"
         ? {
