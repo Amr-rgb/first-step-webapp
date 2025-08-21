@@ -1759,6 +1759,21 @@
         "authRequired": "يجب تسجيل الدخول للمتابعة",
         "fetchPlans": "تعذر تحميل خطط الاشتراك. يرجى المحاولة لاحقًا",
         "paymentFailed": "فشل إتمام عملية الدفع"
+      },
+      "dashboard": {
+        "currentSubscription": "الاشتراك الحالي",
+        "subscriptionDescription": "خطتك الحالية وتاريخ التجديد",
+        "subscriptionStatus": "حالة الاشتراك:",
+        "statusActive": "نشط",
+        "startDate": "تاريخ البدء:",
+        "subscriptionType": "نوع الاشتراك:",
+        "endDate": "تاريخ الانتهاء:",
+        "renewButton": "تجديد الاشتراك",
+        "otherPlans": "خطط أخرى",
+        "noActivePlan": "لا توجد خطة نشطة",
+        "loading": "جاري التحميل...",
+        "errorLoading": "حدث خطأ أثناء تحميل الخطط.",
+        "subscribeButton": "اشترك الآن"
       }
     },
     "HeroSection": {

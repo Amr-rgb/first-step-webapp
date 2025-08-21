@@ -736,6 +736,15 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getPlans: async () => {
+    try {
+      const response = await apiClient.get("/plans");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {

@@ -1836,6 +1836,21 @@
         "authRequired": "You must be logged in to continue",
         "fetchPlans": "Failed to load subscription plans. Please try again later.",
         "paymentFailed": "Payment failed. Please try again."
+      },
+      "dashboard": {
+        "currentSubscription": "Current Subscription",
+        "subscriptionDescription": "Your current plan and renewal date",
+        "subscriptionStatus": "Subscription Status:",
+        "statusActive": "Active",
+        "startDate": "Start Date:",
+        "subscriptionType": "Subscription Type:",
+        "endDate": "End Date:",
+        "renewButton": "Renew Subscription",
+        "otherPlans": "Other Plans",
+        "noActivePlan": "No active plan found",
+        "loading": "Loading...",
+        "errorLoading": "An error occurred while loading plans.",
+        "subscribeButton": "Subscribe"
       }
     },
     "HeroSection": {
