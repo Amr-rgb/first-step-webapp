@@ -6,52 +6,62 @@ const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  // Extract locale from pathname
+
+  // 1. Check for existing locale in pathname
   const localeMatch = pathname.match(/^\/(\w+)/);
-  const locale = localeMatch ? localeMatch[1] : 'en';
-  
-  // Check if this is a dashboard route
-  const isDashboardRoute = pathname.includes('/dashboard');
-  
+  let locale = localeMatch ? localeMatch[1] : null;
+
+  // 2. If no locale in path, check cookie
+  if (!locale) {
+    const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
+    locale = cookieLocale || "ar"; // Default to Arabic if no cookie
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}${pathname}`;
+    return NextResponse.redirect(url);
+  }
+
+  // 3. Persist locale into cookie
+  const response = intlMiddleware(request);
+  response.cookies.set("NEXT_LOCALE", locale, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365, // 1 year
+  });
+
+  // 4. Dashboard auth & role checks
+  const isDashboardRoute = pathname.includes("/dashboard");
+
   if (isDashboardRoute) {
-    // Get auth token from cookies
-    const token = request.cookies.get('auth-storage')?.value;
-    
+    const token = request.cookies.get("auth-storage")?.value;
+
     if (!token) {
-      // No token, redirect to home
       const url = request.nextUrl.clone();
       url.pathname = `/${locale}`;
       return NextResponse.redirect(url);
     }
-    
+
     try {
-      // Parse the stored auth data
       const authData = JSON.parse(token);
       const user = authData.user;
-      
+
       if (!user || !user.role) {
-        // No user or role, redirect to home
         const url = request.nextUrl.clone();
         url.pathname = `/${locale}`;
         return NextResponse.redirect(url);
       }
-      
+
       const role = user.role;
       const allowedRoles = ["admin", "center", "branch_admin", "parent"];
-      
+
       if (!allowedRoles.includes(role)) {
-        // Invalid role, redirect to home
         const url = request.nextUrl.clone();
         url.pathname = `/${locale}`;
         return NextResponse.redirect(url);
       }
-      
-      // Check role-based path restrictions
+
       const parentDashboard = `/${locale}/dashboard/parent`;
       const adminDashboard = `/${locale}/dashboard/admin`;
       const centerDashboard = `/${locale}/dashboard/center`;
-      
+
       if (role === "parent" && !pathname.startsWith(parentDashboard)) {
         const url = request.nextUrl.clone();
         url.pathname = parentDashboard;
@@ -69,21 +79,16 @@ export default function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
       }
     } catch (error) {
-      // Invalid token format, redirect to home
-      console.error('Error parsing auth token:', error);
+      console.error("Error parsing auth token:", error);
       const url = request.nextUrl.clone();
       url.pathname = `/${locale}`;
       return NextResponse.redirect(url);
     }
   }
-  
-  // Continue with internationalization middleware
-  return intlMiddleware(request);
+
+  return response;
 }
 
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 };
