@@ -1,5 +1,7 @@
 "use client";
-import { use, useState } from "react";
+import { useState } from "react";
+import { usePathname } from "@/i18n/navigation";
+import { useSubscriptionRequired } from "@/store/subscriptionStore";
 import Header from "@/components/dashboard/Header";
 import DashboardSideBar from "@/components/dashboard/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -8,15 +10,14 @@ import {
   useSecondarySidebarOpen,
   useSetSecondarySidebarOpen,
 } from "@/store/sidebarStore";
+import SubscriptionGate from "@/components/dashboard/SubscriptionGate";
 
 export default function DashboardLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = use(params);
+  const pathname = usePathname();
 
   // Sidebar open state (for main sidebar only)
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,6 +25,11 @@ export default function DashboardLayout({
   // Secondary sidebar state from global store
   const secondarySidebarOpen = useSecondarySidebarOpen();
   const setSecondarySidebarOpen = useSetSecondarySidebarOpen();
+
+  const allowedPathnames = ["/dashboard/center/billing"];
+  const subscriptionRequired = useSubscriptionRequired();
+  const isSubscriptionRequired =
+    !allowedPathnames.includes(pathname) && subscriptionRequired;
 
   // Authentication is now handled by middleware
   // No need for client-side guards
@@ -47,7 +53,9 @@ export default function DashboardLayout({
             secondarySidebarOpen={secondarySidebarOpen}
           />
 
-          <div className="px-4 md:px-10 py-10">{children}</div>
+          <div className="px-4 md:px-10 py-10">
+            {isSubscriptionRequired ? <SubscriptionGate /> : children}
+          </div>
         </div>
         {/* SecondarySidebar only on xl screens, toggleable */}
         <div className="hidden xl:block">

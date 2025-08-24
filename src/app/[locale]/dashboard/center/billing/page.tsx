@@ -10,6 +10,7 @@ import { arSA, enUS } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 
 export default function CenterBillingPage() {
   const locale = useLocale();
@@ -20,15 +21,18 @@ export default function CenterBillingPage() {
 
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
 
+  const { setSubscriptionRequired } = useSubscriptionStore.getState();
+
   // Ensure hooks order stays consistent across renders
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("payment") === "success") {
         alert(t("success.message"));
+        setSubscriptionRequired(false);
       }
     }
-  }, [t]);
+  }, [t, setSubscriptionRequired]);
 
   if (loading) return <div>{t("loading")}</div>;
   if (error) return <div>{t("errorLoading")}</div>;

@@ -1850,7 +1850,9 @@
         "noActivePlan": "No active plan found",
         "loading": "Loading...",
         "errorLoading": "An error occurred while loading plans.",
-        "subscribeButton": "Subscribe"
+        "subscribeButton": "Subscribe",
+        "subscriptionRequiredMessage": "Services have been suspended due to the expiration of the trial period. You can get the most out of the platform by subscribing to one of the available packages.",
+        "goToBilling": "Subscribe Now"
       }
     },
     "HeroSection": {

@@ -1773,7 +1773,9 @@
         "noActivePlan": "لا توجد خطة نشطة",
         "loading": "جاري التحميل...",
         "errorLoading": "حدث خطأ أثناء تحميل الخطط.",
-        "subscribeButton": "اشترك الآن"
+        "subscribeButton": "اشترك الآن",
+        "subscriptionRequiredMessage": "تم تعليق الخدمات لانتهاء الفترة التجريبية، يمكنك استعادة كافة المزايا المنصة من خلال الاشتراك في إحدى الباقات المتاحة.",
+        "goToBilling": "اشترك الان"
       }
     },
     "HeroSection": {

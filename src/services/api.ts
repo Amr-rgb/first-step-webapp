@@ -14,6 +14,7 @@ import {
   PortfolioResponse,
 } from "@/types";
 import axios from "axios";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -43,6 +44,30 @@ apiClient.interceptors.request.use((config) => {
         : "NOT_SET",
     },
   });
+
+  // Block protected requests if subscription is required
+  const { subscriptionRequired } = useSubscriptionStore.getState();
+  if (subscriptionRequired) {
+    const url = config.url || "";
+    // Allowlist endpoints that should remain accessible
+    const allowlist = [
+      "/plans",
+      "/plans-get",
+      "/payment/subscribe",
+      "/login",
+      "/auth/google",
+    ];
+    const isAllowed = allowlist.some((path) => url.includes(path));
+    if (!isAllowed) {
+      return Promise.reject({
+        message:
+          "No free trial available. Please select a subscription plan to continue.",
+        status: 403,
+        url: config.url,
+        method: config.method,
+      });
+    }
+  }
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -91,6 +116,20 @@ apiClient.interceptors.response.use(
     };
 
     console.error("API Error:", errorDetails);
+
+    // Set subscription gate flag when receiving specific 403 message
+    if (error.response?.status === 403) {
+      const msg =
+        error.response?.data?.message || error.response?.data?.error || "";
+      if (
+        typeof msg === "string" &&
+        msg.includes(
+          "No free trial available. Please select a subscription plan to continue."
+        )
+      ) {
+        useSubscriptionStore.getState().setSubscriptionRequired(true);
+      }
+    }
 
     // Ensure error response has the expected structure
     const formattedError = {
