@@ -41,6 +41,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
 import { useAuthStore } from "@/store/authStore";
+import { handleLogout } from "@/lib/auth-utils";
 
 type BreadcrumbItem = {
   title: string;
@@ -148,8 +149,7 @@ export default function Header({
       type: "action" as const,
       variant: "destructive" as const,
       onClick: () => {
-        authStore.clearAuth();
-        router.push("/sign-in");
+        handleLogout();
       },
     },
   };
