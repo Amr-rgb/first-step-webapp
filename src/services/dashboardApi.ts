@@ -745,6 +745,15 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getSubscriptionsLog: async () => {
+    try {
+      const response = await apiClient.get("/get-history-payment");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {

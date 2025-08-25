@@ -1634,6 +1634,28 @@
         "pendingBlogs": "Pending Blogs",
         "rejectedBlogs": "Rejected Blogs"
       },
+      "subscriptions": {
+        "title": "Subscriptions Log",
+        "currency": "SAR",
+        "headers": {
+          "type": "Subscription Type",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "paymentMethod": "Payment Method",
+          "amount": "Amount",
+          "status": "Subscription Status"
+        },
+        "types": {
+          "quarterly": "Quarterly",
+          "annual": "Annual",
+          "semiAnnual": "Semi-Annual"
+        },
+        "status": {
+          "active": "Active",
+          "paymentPending": "Payment Pending",
+          "expired": "Expired"
+        }
+      },
       "noResults": "No results."
     },
     "children": {

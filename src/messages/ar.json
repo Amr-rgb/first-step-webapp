@@ -1629,6 +1629,33 @@
         "pendingBlogs": "المدونات المعلقة",
         "rejectedBlogs": "المدونات المرفوضة"
       },
+      "subscriptions": {
+        "title": "سجل الاشتراكات",
+        "currency": "ر.س",
+        "headers": {
+          "type": "نوع الاشتراك",
+          "startDate": "تاريخ بداية الاشتراك",
+          "endDate": "تاريخ نهاية الاشتراك",
+          "paymentMethod": "طريقة الدفع",
+          "amount": "المبلغ",
+          "status": "حالة الاشتراك"
+        },
+        "types": {
+          "quarterly": "ربع سنوي",
+          "annual": "سنوي",
+          "semiAnnual": "نصف سنوي"
+        },
+        "paymentMethods": {
+          "tamara": "تمارا",
+          "creditCard": "بطاقة ائتمانية",
+          "mada": "مدى"
+        },
+        "status": {
+          "active": "ساري",
+          "paymentPending": "الدفع معلق",
+          "expired": "منتهي"
+        }
+      },
       "noResults": "لا توجد نتائج."
     },
     "children": {

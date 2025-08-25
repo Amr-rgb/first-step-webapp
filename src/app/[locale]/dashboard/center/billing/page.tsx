@@ -11,6 +11,13 @@ import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { DataTable } from "@/components/tables/DataTable";
+import {
+  Subscription,
+  useSubscriptionsColumns,
+} from "@/components/tables/data/subscriptions";
+import { useQuery } from "@tanstack/react-query";
+import { centerService } from "@/services/dashboardApi";
 
 export default function CenterBillingPage() {
   const locale = useLocale();
@@ -18,6 +25,7 @@ export default function CenterBillingPage() {
 
   const t = useTranslations("HomePage.Subscription.dashboard");
   const tBase = useTranslations("HomePage.Subscription");
+  const tTable = useTranslations("dashboard.tables.subscriptions");
 
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
 
@@ -205,6 +213,38 @@ export default function CenterBillingPage() {
           </Card>
         ))}
       </div>
+
+      {/* Subscriptions History Table */}
+      <div className="space-y-4">
+        <div className="text-gray font-medium mb-2">{tTable("title")}</div>
+        <SubscriptionsTable />
+      </div>
     </div>
   );
+}
+
+function SubscriptionsTable() {
+  const columns = useSubscriptionsColumns();
+  const { data = [], isLoading } = useQuery<Subscription[]>({
+    queryKey: ["center", "subscriptions-log"],
+    queryFn: async () => {
+      const res: any = await centerService.getSubscriptionsLog();
+      const mapDurationToType = (duration: number): string => {
+        if (duration >= 12) return "annual";
+        if (duration >= 6) return "semiAnnual";
+        return "quarterly";
+      };
+      return res.data.map((item: any) => ({
+        id: item.id,
+        type: mapDurationToType(Number(item.duration)),
+        startDate: item.start_of_subscription,
+        endDate: item.end_of_subscription,
+        paymentMethod: "Moyasser",
+        amount: Number(item.total),
+        status: item.status,
+      }));
+    },
+  });
+
+  return <DataTable columns={columns} data={data} isLoading={isLoading} />;
 }
