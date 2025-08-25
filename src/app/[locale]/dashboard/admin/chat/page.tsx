@@ -1,18 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
 import { chatService } from "@/services/chatService";
-import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
-import { Shield } from "lucide-react";
+import { pusherService } from "@/services/pusherService";
+import { useAuthStore } from "@/store/authStore";
 
 const AdminChatPage = () => {
-  const { data: session, status } = useSession();
+  const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatListItem[]>([]);
@@ -21,27 +20,21 @@ const AdminChatPage = () => {
   const [isSending, setIsSending] = useState(false);
 
   const currentUser: User = {
-    id: session?.user?.id?.toString() || "",
-    name: session?.user?.name || "Admin User",
+    id: user?.id?.toString() || "",
+    name: user?.name || "Admin User",
     type: "admin",
-    email: session?.user?.email || "",
+    email: user?.email || "",
   };
 
   // Fetch chat contacts
   const fetchChatContacts = useCallback(async () => {
+    if (!token) return;
+
     try {
-      const session = await fetch('/api/auth/session').then(res => res.json());
-      const token = session?.accessToken;
-      
-      if (!token) {
-        console.error('No access token found in session');
-        return;
-      }
-      
       setIsLoading(true);
       const contacts = await chatService.getChatContacts(token);
       setChats(contacts);
-      
+
       // Select the first chat by default if none selected
       if (contacts.length > 0 && !selectedChatId) {
         setSelectedChatId(contacts[0].id);
@@ -52,30 +45,28 @@ const AdminChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId]);
+  }, [selectedChatId, token]);
 
   // Fetch messages for the selected chat
   const fetchMessages = useCallback(async () => {
-    if (!selectedChatId) return;
-    
-    const token = await fetch('/api/auth/session')
-      .then(res => res.json())
-      .then((session: { accessToken?: string }) => session?.accessToken);
-    
-    if (!token) return;
-    
+    if (!selectedChatId || !token) return;
+
     try {
       setIsLoading(true);
-      const messages = await chatService.getMessages(selectedChatId, token);
-      setMessages(messages);
-      
+      const chatMessages = await chatService.getMessages(selectedChatId, token);
+      setMessages(chatMessages);
+
       // Update last message in chats list
-      if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1];
-        setChats(prevChats => 
-          prevChats.map(chat => 
-            chat.id === selectedChatId 
-              ? { ...chat, lastMessage: lastMessage.content, timestamp: lastMessage.timestamp }
+      if (chatMessages.length > 0) {
+        const lastMessage = chatMessages[chatMessages.length - 1];
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === selectedChatId
+              ? {
+                  ...chat,
+                  lastMessage: lastMessage.content,
+                  timestamp: lastMessage.timestamp,
+                }
               : chat
           )
         );
@@ -86,56 +77,54 @@ const AdminChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId]);
+  }, [selectedChatId, token]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
     let keepAliveInterval: NodeJS.Timeout;
-    
+
     const updateStatus = async (isOnline: boolean) => {
       try {
-        const token = await fetch('/api/auth/session')
-          .then(res => res.json())
-          .then(session => session?.accessToken);
-        
         if (!token) return;
-        
+
         await chatService.updateOnlineStatus(isOnline, token);
       } catch (error) {
-        console.error('Error updating online status:', error);
+        console.error("Error updating online status:", error);
       }
     };
-    
+
     // Set online
     updateStatus(true);
-    
+
     // Set up interval to keep alive (every 30 seconds)
     keepAliveInterval = setInterval(() => {
       updateStatus(true);
     }, 30000);
-    
+
     // Set up beforeunload to set offline
     const handleBeforeUnload = () => {
       updateStatus(false);
     };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
       clearInterval(keepAliveInterval);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       updateStatus(false);
+      // Disconnect Pusher when component unmounts
+      pusherService.disconnect();
     };
-  }, []);
+  }, [token]);
 
   // Load initial data
   useEffect(() => {
-    if (status === "authenticated") {
+    if (isAuthenticated()) {
       fetchChatContacts();
-    } else if (status === "unauthenticated") {
-      router.push("/signin");
+    } else {
+      router.push("/sign-in");
     }
-  }, [status, fetchChatContacts, router]);
+  }, [isAuthenticated, fetchChatContacts, router]);
 
   // Load messages when selected chat changes
   useEffect(() => {
@@ -144,43 +133,134 @@ const AdminChatPage = () => {
     }
   }, [selectedChatId, fetchMessages]);
 
+  // Set up Pusher real-time messaging for admin
+  useEffect(() => {
+    if (!currentUser.id) return;
+
+    // Initialize Pusher
+    pusherService.initialize();
+
+    // Subscribe to admin chat list channel
+    pusherService.subscribeToAdminChatList({
+      onChatUpdate: (chatData) => {
+        // Update chat list when a chat is updated
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === chatData.chatId
+              ? { ...chat, lastMessage: chatData.lastMessage, timestamp: new Date(chatData.timestamp) }
+              : chat
+          )
+        );
+      },
+      onNewChatCreated: (chatData) => {
+        // Add new chat to the list
+        const newChatItem: ChatListItem = {
+          id: chatData.chatId,
+          name: chatData.chatName,
+          type: chatData.type || 'parent',
+          lastMessage: chatData.lastMessage || '',
+          timestamp: new Date(chatData.timestamp),
+          unreadCount: 1,
+          isOnline: chatData.isOnline || false,
+        };
+        setChats(prev => [newChatItem, ...prev]);
+      },
+    });
+
+    // Subscribe to admin chat channel for all messages
+    pusherService.subscribeToAdminChat({
+      onNewMessage: (message) => {
+        const newMessage: Message = {
+          id: message.id.toString(),
+          content: message.message,
+          senderId: message.sender_id.toString(),
+          senderName: message.sender_name || 'User',
+          senderType: message.sender_type || 'parent',
+          timestamp: new Date(message.created_at),
+          chatId: message.receiver_id?.toString() || selectedChatId || '',
+          imageUrl: message.image_url,
+          videoUrl: message.video_url_path,
+        };
+        
+        // Add message if it's for the currently selected chat
+        if (selectedChatId && (message.receiver_id?.toString() === selectedChatId || message.sender_id?.toString() === selectedChatId)) {
+          setMessages(prev => [...prev, newMessage]);
+        }
+        
+        // Update last message in chats list
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            (chat.id === message.sender_id?.toString() || chat.id === message.receiver_id?.toString())
+              ? {
+                  ...chat,
+                  lastMessage: newMessage.content,
+                  timestamp: newMessage.timestamp,
+                  unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                }
+              : chat
+          )
+        );
+      },
+    });
+
+    // Subscribe to global user status
+    pusherService.subscribeToUserStatus({
+      onUserOnline: (userId) => {
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: true }
+              : chat
+          )
+        );
+      },
+      onUserOffline: (userId) => {
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: false }
+              : chat
+          )
+        );
+      },
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      pusherService.unsubscribeFromAdminChatList();
+      pusherService.unsubscribeFromAdminChat();
+      pusherService.unsubscribeFromUserStatus();
+    };
+  }, [currentUser.id, selectedChatId]);
+
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedChatId || !content.trim()) return;
-    
+    if (!selectedChatId || !content.trim() || !token) return;
+
     try {
       setIsSending(true);
-      
-      // Get token from session
-      const token = await fetch('/api/auth/session')
-        .then(res => res.json())
-        .then(session => session?.accessToken);
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      
+
       const newMessage = await chatService.sendMessage(
         selectedChatId,
         content,
         token
       );
-      
-      setMessages(prev => [...prev, newMessage]);
-      
+
+      setMessages((prev) => [...prev, newMessage]);
+
       // Update last message in chats list
-      setChats(prevChats => 
-        prevChats.map(chat => 
-          chat.id === selectedChatId 
-            ? { 
-                ...chat, 
-                lastMessage: newMessage.content, 
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === selectedChatId
+            ? {
+                ...chat,
+                lastMessage: newMessage.content,
                 timestamp: newMessage.timestamp,
-                unreadCount: 0 // Reset unread count
-              } 
+                unreadCount: 0, // Reset unread count
+              }
             : chat
         )
       );
@@ -195,7 +275,7 @@ const AdminChatPage = () => {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -208,14 +288,6 @@ const AdminChatPage = () => {
         selectedChat={selectedChat}
         messages={messages}
         onSendMessage={handleSendMessage}
-      />
-      
-      {/* Coming Soon Overlay */}
-      <ComingSoonOverlay
-        message="Admin chat dashboard is being enhanced with advanced moderation tools and analytics! Perfect communication management is on its way."
-        icon={<Shield className="w-8 h-8 text-emerald-400 animate-pulse" />}
-        theme="gradient"
-        showBlur={true}
       />
     </div>
   );

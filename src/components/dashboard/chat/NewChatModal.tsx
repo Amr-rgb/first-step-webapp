@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { dashboardIcons } from "@/components/general/icons";
 import { User } from "./types";
+import { chatService } from "@/services/chatService";
+import { useAuthStore } from "@/store/authStore";
+import { toast } from "sonner";
 
 interface Contact {
   id: string;
@@ -10,6 +13,14 @@ interface Contact {
   type: "center" | "parent";
   avatar?: string;
   isOnline?: boolean;
+  email?: string;
+  phone?: string;
+  children?: Array<{
+    id: number;
+    child_name: string;
+    parent_name: string;
+    mother_name: string;
+  }>;
 }
 
 interface NewChatModalProps {
@@ -23,80 +34,55 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
   onClose,
   onStartChat,
 }) => {
+  const { token } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Sample contacts based on user type
-    const sampleContacts: Contact[] = 
-      currentUser.type === "center" 
-        ? [
-            {
-              id: "parent-1",
-              name: "Sarah Johnson",
-              type: "parent",
-              isOnline: true,
-            },
-            {
-              id: "parent-2",
-              name: "Michael Brown",
-              type: "parent",
-              isOnline: false,
-            },
-            {
-              id: "parent-3",
-              name: "Emily Davis",
-              type: "parent",
-              isOnline: true,
-            },
-            {
-              id: "parent-4",
-              name: "David Wilson",
-              type: "parent",
-              isOnline: false,
-            },
-            {
-              id: "parent-5",
-              name: "Lisa Thompson",
-              type: "parent",
-              isOnline: true,
-            }
-          ]
-        : [
-            {
-              id: "center-1",
-              name: "Sunshine Daycare",
-              type: "center",
-              avatar: "/assets/logos/center-1.png",
-              isOnline: true,
-            },
-            {
-              id: "center-2",
-              name: "Little Angels Center",
-              type: "center",
-              avatar: "/assets/logos/center-2.png",
-              isOnline: true,
-            },
-            {
-              id: "center-3",
-              name: "Rainbow Kids Academy",
-              type: "center",
-              avatar: "/assets/logos/center-3.png",
-              isOnline: false,
-            },
-            {
-              id: "center-4",
-              name: "Happy Children Daycare",
-              type: "center",
-              avatar: "/assets/logos/center-4.png",
-              isOnline: true,
-            }
-          ];
+    const fetchContacts = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoading(true);
+        
+        if (currentUser.type === "center") {
+          // Fetch parents for center
+          const parents = await chatService.getCenterParents(token);
+          const parentContacts: Contact[] = parents.map(parent => ({
+            id: parent.id.toString(),
+            name: parent.name,
+            type: "parent" as const,
+            isOnline: parent.is_online === 1,
+            email: parent.email,
+            phone: parent.phone,
+            children: parent.children,
+          }));
+          setContacts(parentContacts);
+        } else if (currentUser.type === "parent") {
+          // Fetch centers for parent
+          const centers = await chatService.getCentersForParent(token);
+          const centerContacts: Contact[] = centers.map(center => ({
+            id: center.id.toString(),
+            name: center.name,
+            type: "center" as const,
+            isOnline: center.is_online === 1,
+            email: center.email,
+            phone: center.phone,
+          }));
+          setContacts(centerContacts);
+        }
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+        toast.error('Failed to load contacts');
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    setContacts(sampleContacts);
-    setFilteredContacts(sampleContacts);
-  }, [currentUser.type]);
+    fetchContacts();
+  }, [currentUser.type, token]);
 
   useEffect(() => {
     const filtered = contacts.filter(contact =>
@@ -171,7 +157,12 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
 
         {/* Contact List */}
         <div className="flex-1 overflow-y-auto p-6">
-          {filteredContacts.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-3"></div>
+              <p className="text-gray-500">Loading contacts...</p>
+            </div>
+          ) : filteredContacts.length === 0 ? (
             <div className="text-center py-8">
               <dashboardIcons.chat className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">
@@ -205,6 +196,11 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
                         <span className="ml-2 text-green-500 font-medium">• Online</span>
                       )}
                     </p>
+                    {contact.children && contact.children.length > 0 && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        Children: {contact.children.map(child => child.child_name).join(", ")}
+                      </p>
+                    )}
                   </div>
                   
                   {/* Start chat button */}
