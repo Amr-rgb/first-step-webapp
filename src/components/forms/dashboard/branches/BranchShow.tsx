@@ -63,7 +63,6 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
     defaultValues: {
       // step1
       nursery_name: "",
-      email: "",
       phone: "",
       neighborhood: "",
       nursery_type: [],
