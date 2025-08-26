@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { arSA, enUS } from "date-fns/locale";
@@ -33,16 +33,17 @@ interface Subscription {
 }
 
 export default function CentersSubscriptionsLog() {
+  const t = useTranslations("dashboard.admin.subscriptions");
+
   const {
     data: response,
     isLoading,
     error,
-  } = useQuery<{
-    data: Subscription[];
-  }>({
+  } = useQuery<{ data: Subscription[] }>({
     queryKey: ["centers-subscriptions-log"],
     queryFn: () => adminService.getCentersSubscriptionsLog(),
   });
+
   const subscriptions = response?.data || [];
 
   if (isLoading) {
@@ -58,7 +59,7 @@ export default function CentersSubscriptionsLog() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-6 text-center text-destructive">
-        Failed to load subscriptions. Please try again later.
+        {t("error")}
       </div>
     );
   }
@@ -66,7 +67,7 @@ export default function CentersSubscriptionsLog() {
   if (!subscriptions || subscriptions.length === 0) {
     return (
       <div className="container mx-auto px-4 py-6 text-center text-gray-500">
-        No subscription records found.
+        {t("noRecords")}
       </div>
     );
   }
@@ -84,37 +85,19 @@ export default function CentersSubscriptionsLog() {
 }
 
 interface CenterSubscriptionCardProps {
-  subscription: {
-    id: number;
-    name: string;
-    nursery_name: string;
-    logo: string;
-    total: string;
-    plan: string;
-    duration: number;
-    start_of_subscription: string;
-    end_of_subscription: string;
-    status: "active" | "expired" | string;
-    address: string;
-    neighborhood: string;
-    city: {
-      name: {
-        en: string;
-        ar: string;
-      };
-    };
-  };
+  subscription: Subscription;
 }
 
 function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
   const locale = useLocale();
+  const t = useTranslations("dashboard.admin.subscriptions");
   const isActive = subscription.status === "active";
 
-  // Format the address using address, neighborhood, and city_id
+  // Format the address
   const formattedAddress = [
     subscription.address,
     subscription.neighborhood,
-    subscription.city?.name[locale as keyof typeof subscription.city.name],
+    subscription.city?.name[locale as "ar" | "en"],
   ]
     .filter(Boolean)
     .join("، ");
@@ -125,7 +108,7 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
     return "quarterly";
   };
 
-  const planName = mapDurationToType(subscription.duration);
+  const planKey = mapDurationToType(subscription.duration);
 
   return (
     <Card className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4">
@@ -143,7 +126,9 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
             <CardTitle className="text-primary text-lg">
               {subscription.name || subscription.nursery_name}
             </CardTitle>
-            <p className="text-gray text-sm">العنوان: {formattedAddress}</p>
+            <p className="text-gray text-sm">
+              {t("address")} {formattedAddress}
+            </p>
           </div>
         </div>
 
@@ -153,11 +138,11 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
             variant="outline"
             className="mt-4 !border-destructive !text-destructive w-full md:w-auto"
           >
-            إلغاء اشتراك المركز
+            {t("cancelSubscription")}
           </Button>
         ) : (
           <Button size="long" className="mt-4 w-full md:w-auto">
-            ارسال تنبيه بالدفع
+            {t("sendPaymentReminder")}
           </Button>
         )}
       </CardHeader>
@@ -165,24 +150,28 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
       <CardContent className="flex-1 flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <div className="flex gap-2 items-center">
-            <span className="font-bold text-primary">نوع الاشتراك:</span>
-            <span>{planName}</span>
+            <span className="font-bold text-primary">
+              {t("subscriptionType")}
+            </span>
+            <span>{t(`planTypes.${planKey}`)}</span>
           </div>
         </div>
 
         <div className="flex gap-2 items-center">
-          <span className="font-bold text-primary">حالة الاشتراك:</span>
+          <span className="font-bold text-primary">
+            {t("subscriptionStatus")}
+          </span>
           <Badge
             className={
               isActive ? "bg-success text-white" : "bg-destructive text-white"
             }
           >
-            {isActive ? "نشط" : "منتهي"}
+            {t(`status.${isActive ? "active" : "expired"}`)}
           </Badge>
         </div>
 
         <div className="flex gap-2 text-mid-gray">
-          <span className="font-bold text-primary">البداية:</span>
+          <span className="font-bold text-primary">{t("startDate")}</span>
           <span>
             {format(
               new Date(subscription.start_of_subscription),
@@ -194,7 +183,7 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
           </span>
         </div>
         <div className="flex gap-2 text-mid-gray">
-          <span className="font-bold text-primary">النهاية:</span>
+          <span className="font-bold text-primary">{t("endDate")}</span>
           <span>
             {format(
               new Date(subscription.end_of_subscription),

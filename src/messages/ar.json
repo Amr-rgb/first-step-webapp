@@ -1064,6 +1064,26 @@
       }
     },
     "admin": {
+      "subscriptions": {
+        "title": "سجل الاشتراكات",
+        "noRecords": "لا توجد سجلات اشتراك.",
+        "cancelSubscription": "إلغاء اشتراك المركز",
+        "sendPaymentReminder": "إرسال تنبيه بالدفع",
+        "subscriptionType": "نوع الاشتراك:",
+        "subscriptionStatus": "حالة الاشتراك:",
+        "startDate": "تاريخ البداية:",
+        "endDate": "تاريخ النهاية:",
+        "address": "العنوان:",
+        "status": {
+          "active": "نشط",
+          "expired": "منتهي"
+        },
+        "planTypes": {
+          "annual": "سنوي",
+          "semiAnnual": "نصف سنوي",
+          "quarterly": "ربع سنوي"
+        }
+      },
       "blog": {
         "tabs": {
           "firstStep": "مدونات First step",

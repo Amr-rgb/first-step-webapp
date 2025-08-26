@@ -1069,6 +1069,26 @@
       }
     },
     "admin": {
+      "subscriptions": {
+        "title": "Subscriptions Log",
+        "noRecords": "No subscription records found.",
+        "cancelSubscription": "Cancel Center Subscription",
+        "sendPaymentReminder": "Send Payment Reminder",
+        "subscriptionType": "Subscription Type:",
+        "subscriptionStatus": "Subscription Status:",
+        "startDate": "Start Date:",
+        "endDate": "End Date:",
+        "address": "Address:",
+        "status": {
+          "active": "Active",
+          "expired": "Expired"
+        },
+        "planTypes": {
+          "annual": "Annual",
+          "semiAnnual": "Semi-Annual",
+          "quarterly": "Quarterly"
+        }
+      },
       "blog": {
         "tabs": {
           "firstStep": "First Step Blogs",
