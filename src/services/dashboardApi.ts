@@ -1182,6 +1182,15 @@ export const adminService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getCentersSubscriptionsLog: async () => {
+    try {
+      const response = await apiClient.get("/get-history-payment");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const sidebarService = {

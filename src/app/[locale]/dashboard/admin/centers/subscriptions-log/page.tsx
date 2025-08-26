@@ -2,70 +2,130 @@
 
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { arSA, enUS } from "date-fns/locale";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { adminService } from "@/services/dashboardApi";
 
-// Dummy data
-const centers = [
-  {
-    id: 1,
-    name: "اسم المركز",
-    address: "السعودية، المدينة، الحي، الشارع، رقم البناية",
-    subscriptionType: "ربع سنوي",
-    status: "منتهي",
-    startDate: "2025-05-20",
-    endDate: "2025-08-20",
-    logo: "https://images.unsplash.com/photo-1755845711249-32cfcdcabfeb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 2,
-    name: "اسم المركز",
-    address: "السعودية، المدينة، الحي، الشارع، رقم البناية",
-    subscriptionType: "ربع سنوي",
-    status: "ساري",
-    startDate: "2025-05-20",
-    endDate: "2025-08-20",
-    logo: "https://images.unsplash.com/photo-1755845711249-32cfcdcabfeb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 3,
-    name: "اسم المركز",
-    address: "السعودية، المدينة، الحي، الشارع، رقم البناية",
-    subscriptionType: "ربع سنوي",
-    status: "ساري",
-    startDate: "2025-05-20",
-    endDate: "2025-08-20",
-    logo: "https://images.unsplash.com/photo-1755845711249-32cfcdcabfeb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-];
+interface Subscription {
+  id: number;
+  name: string;
+  nursery_name: string;
+  logo: string;
+  total: string;
+  plan: string;
+  duration: number;
+  start_of_subscription: string;
+  end_of_subscription: string;
+  status: "active" | "expired" | string;
+  address: string;
+  neighborhood: string;
+  city: {
+    name: {
+      en: string;
+      ar: string;
+    };
+  };
+}
 
 export default function CentersSubscriptionsLog() {
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery<{
+    data: Subscription[];
+  }>({
+    queryKey: ["centers-subscriptions-log"],
+    queryFn: () => adminService.getCentersSubscriptionsLog(),
+  });
+  const subscriptions = response?.data || [];
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 space-y-6">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-48 w-full rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-6 text-center text-destructive">
+        Failed to load subscriptions. Please try again later.
+      </div>
+    );
+  }
+
+  if (!subscriptions || subscriptions.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-6 text-center text-gray-500">
+        No subscription records found.
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 space-y-6">
-      {centers.map((center) => (
-        <CenterSubscriptionCard key={center.id} center={center} />
+      {subscriptions.map((subscription) => (
+        <CenterSubscriptionCard
+          key={subscription.id}
+          subscription={subscription}
+        />
       ))}
     </div>
   );
 }
 
-interface Center {
-  id: number;
-  name: string;
-  address: string;
-  subscriptionType: string;
-  status: string;
-  startDate: string;
-  endDate: string;
-  logo: string;
+interface CenterSubscriptionCardProps {
+  subscription: {
+    id: number;
+    name: string;
+    nursery_name: string;
+    logo: string;
+    total: string;
+    plan: string;
+    duration: number;
+    start_of_subscription: string;
+    end_of_subscription: string;
+    status: "active" | "expired" | string;
+    address: string;
+    neighborhood: string;
+    city: {
+      name: {
+        en: string;
+        ar: string;
+      };
+    };
+  };
 }
 
-function CenterSubscriptionCard({ center }: { center: Center }) {
+function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
   const locale = useLocale();
-  const isActive = center.status === "ساري";
+  const isActive = subscription.status === "active";
+
+  // Format the address using address, neighborhood, and city_id
+  const formattedAddress = [
+    subscription.address,
+    subscription.neighborhood,
+    subscription.city?.name[locale as keyof typeof subscription.city.name],
+  ]
+    .filter(Boolean)
+    .join("، ");
+
+  const mapDurationToType = (duration: number): string => {
+    if (duration >= 12) return "annual";
+    if (duration >= 6) return "semiAnnual";
+    return "quarterly";
+  };
+
+  const planName = mapDurationToType(subscription.duration);
 
   return (
     <Card className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4">
@@ -73,17 +133,17 @@ function CenterSubscriptionCard({ center }: { center: Center }) {
         <div className="flex flex-row items-center gap-4">
           <Image
             className="size-20 object-center object-cover rounded-full bg-primary-blue/20"
-            src={center.logo || "/assets/logos/instagram-logo.png"}
-            width={81.66}
+            src={subscription.logo || "/assets/logos/logo.svg"}
+            width={80}
             height={80}
             alt="Nursery Logo"
           />
 
           <div>
             <CardTitle className="text-primary text-lg">
-              {center.name}
+              {subscription.name || subscription.nursery_name}
             </CardTitle>
-            <p className="text-gray text-sm">العنوان: {center.address}</p>
+            <p className="text-gray text-sm">العنوان: {formattedAddress}</p>
           </div>
         </div>
 
@@ -102,10 +162,12 @@ function CenterSubscriptionCard({ center }: { center: Center }) {
         )}
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col gap-6">
-        <div className="flex gap-2 items-center">
-          <span className="font-bold text-primary">نوع الاشتراك:</span>
-          <span>{center.subscriptionType}</span>
+      <CardContent className="flex-1 flex flex-col gap-4">
+        <div className="flex justify-between items-center">
+          <div className="flex gap-2 items-center">
+            <span className="font-bold text-primary">نوع الاشتراك:</span>
+            <span>{planName}</span>
+          </div>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -115,24 +177,32 @@ function CenterSubscriptionCard({ center }: { center: Center }) {
               isActive ? "bg-success text-white" : "bg-destructive text-white"
             }
           >
-            {center.status}
+            {isActive ? "نشط" : "منتهي"}
           </Badge>
         </div>
 
         <div className="flex gap-2 text-mid-gray">
           <span className="font-bold text-primary">البداية:</span>
           <span>
-            {format(new Date(center.startDate), "EEEE - yyyy/M/d", {
-              locale: locale === "ar" ? arSA : enUS,
-            })}
+            {format(
+              new Date(subscription.start_of_subscription),
+              "EEEE - yyyy/M/d",
+              {
+                locale: locale === "ar" ? arSA : enUS,
+              }
+            )}
           </span>
         </div>
         <div className="flex gap-2 text-mid-gray">
           <span className="font-bold text-primary">النهاية:</span>
           <span>
-            {format(new Date(center.endDate), "EEEE - yyyy/M/d", {
-              locale: locale === "ar" ? arSA : enUS,
-            })}
+            {format(
+              new Date(subscription.end_of_subscription),
+              "EEEE - yyyy/M/d",
+              {
+                locale: locale === "ar" ? arSA : enUS,
+              }
+            )}
           </span>
         </div>
       </CardContent>
