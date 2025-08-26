@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { arSA, enUS } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore, useAuthUser } from "@/store/authStore";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { DataTable } from "@/components/tables/DataTable";
 import {
@@ -21,6 +21,7 @@ import { centerService } from "@/services/dashboardApi";
 
 export default function CenterBillingPage() {
   const locale = useLocale();
+  const user = useAuthUser();
   const { plans, loading, error } = useCenterPlans();
 
   const t = useTranslations("HomePage.Subscription.dashboard");
@@ -121,7 +122,7 @@ export default function CenterBillingPage() {
                 <span>
                   {activePlan
                     ? format(
-                        new Date(activePlan.created_at),
+                        new Date(user?.subscription_start_date as string),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -149,7 +150,7 @@ export default function CenterBillingPage() {
                 <span>
                   {activePlan
                     ? format(
-                        new Date(activePlan.published_at),
+                        new Date(user?.subscription_end_date as string),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,

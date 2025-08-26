@@ -18,6 +18,18 @@ interface User {
   branch_id: number;
   logo: string | null;
   nurcery_name: string | null;
+  phone: string;
+  plan_id: number;
+  city_id: number;
+  center_id: number;
+  nursery_name: string;
+  location: string;
+  neighborhood: string;
+  subscription_end_date: string;
+  subscription_start_date: string;
+  subscription_status: string;
+  type_of_duration: string;
+  published_at: string;
 }
 
 interface AuthState {
