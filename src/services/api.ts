@@ -48,8 +48,9 @@ const isSubscriptionAllowed = (url: string): boolean => {
 
 // Utility function to check if error message indicates subscription requirement
 const isSubscriptionRequiredMessage = (message: string): boolean => {
-  return message.includes(
-    "No free trial available. Please select a subscription plan to continue."
+  return (
+    message.includes("No free trial available.") ||
+    message.includes("Your subscription is not active.")
   );
 };
 
