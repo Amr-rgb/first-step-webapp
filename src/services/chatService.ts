@@ -1,6 +1,8 @@
 import { ChatListItem, Message } from "@/components/dashboard/chat/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://development.firststep-app.com/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://development.firststep-app.com/api";
 
 interface ApiResponse<T> {
   data?: T;
@@ -59,23 +61,41 @@ interface ApiCenterParent {
   is_online?: number;
 }
 
-const mapApiMessageToMessage = (apiMessage: ApiMessage, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Message => ({
+const mapApiMessageToMessage = (
+  apiMessage: ApiMessage,
+  currentUserId: string,
+  currentUserType: "center" | "parent" | "admin"
+): Message => ({
   id: apiMessage.id.toString(),
   content: apiMessage.message,
   senderId: apiMessage.sender_id.toString(),
-  senderName: 'User', // This will be set from the contact info
-  senderType: apiMessage.sender_id.toString() === currentUserId ? currentUserType : (currentUserType === 'center' ? 'parent' : 'center'),
+  senderName: "User", // This will be set from the contact info
+  senderType:
+    apiMessage.sender_id.toString() === currentUserId
+      ? currentUserType
+      : currentUserType === "center"
+      ? "parent"
+      : "center",
   timestamp: new Date(apiMessage.created_at),
   chatId: apiMessage.receiver_id.toString(),
   imageUrl: apiMessage.image_url,
   videoUrl: apiMessage.video_url_path,
 });
 
-const mapApiContactToChatListItem = (apiContact: ApiContact, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): ChatListItem => ({
+const mapApiContactToChatListItem = (
+  apiContact: ApiContact,
+  currentUserId: string,
+  currentUserType: "center" | "parent" | "admin"
+): ChatListItem => ({
   id: apiContact.contact.id.toString(),
   name: apiContact.contact.name,
-  type: apiContact.contact.id.toString() === currentUserId ? currentUserType : (currentUserType === 'center' ? 'parent' : 'center'),
-  lastMessage: '', // Will be updated when messages are loaded
+  type:
+    apiContact.contact.id.toString() === currentUserId
+      ? currentUserType
+      : currentUserType === "center"
+      ? "parent"
+      : "center",
+  lastMessage: "", // Will be updated when messages are loaded
   timestamp: new Date(),
   unreadCount: apiContact.unread_count,
   isOnline: apiContact.is_online === 1,
@@ -89,21 +109,22 @@ export const chatService = {
     try {
       const response = await fetch(`${API_BASE_URL}/center/parents`, {
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
-          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch center parents');
+        throw new Error("Failed to fetch center parents");
       }
 
       const data: ApiParent[] = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching center parents:', error);
+      console.error("Error fetching center parents:", error);
       throw error;
     }
   },
@@ -113,65 +134,91 @@ export const chatService = {
     try {
       const response = await fetch(`${API_BASE_URL}/get-centers-parent`, {
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
-          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch centers for parent');
+        throw new Error("Failed to fetch centers for parent");
       }
 
       const data: ApiCenterParent[] = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching centers for parent:', error);
+      console.error("Error fetching centers for parent:", error);
       throw error;
     }
   },
 
-  async getChatContacts(authToken: string, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Promise<ChatListItem[]> {
+  async getChatContacts(
+    authToken: string,
+    currentUserId: string,
+    currentUserType: "center" | "parent" | "admin"
+  ): Promise<ChatListItem[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/chat-contacts`, {
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
-          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch chat contacts');
+        throw new Error("Failed to fetch chat contacts");
       }
 
       const data: ApiContact[] = await response.json();
-      return data.map(contact => mapApiContactToChatListItem(contact, currentUserId, currentUserType));
+      return data.map((contact) =>
+        mapApiContactToChatListItem(contact, currentUserId, currentUserType)
+      );
     } catch (error) {
-      console.error('Error fetching chat contacts:', error);
+      console.error("Error fetching chat contacts:", error);
       throw error;
     }
   },
 
-  async getMessages(contactId: string, authToken: string, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Promise<Message[]> {
+  async getMessages(
+    contactId: string,
+    authToken: string,
+    currentUserId: string,
+    currentUserType: "center" | "parent" | "admin"
+  ): Promise<Message[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/messages/${contactId}`, {
+      // For admin users, we need to include sender_id parameter
+      // For parent and center users, we only need the receiver_id (contactId)
+      let url = `${API_BASE_URL}/messages/${contactId}`;
+
+      if (currentUserType === "admin") {
+        url += `?sender_id=${currentUserId}`;
+      }
+
+      const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch messages');
+        throw new Error("Failed to fetch messages");
       }
 
       const data: ApiMessage[] = await response.json();
-      return data.map(msg => mapApiMessageToMessage(msg, currentUserId, currentUserType));
+      return data.map((msg) =>
+        mapApiMessageToMessage(msg, currentUserId, currentUserType)
+      );
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error("Error fetching messages:", error);
       throw error;
     }
   },
@@ -181,78 +228,99 @@ export const chatService = {
     message: string,
     authToken: string,
     currentUserId: string,
-    currentUserType: 'center' | 'parent' | 'admin',
+    currentUserType: "center" | "parent" | "admin",
     image?: File,
     videoUrl?: string
   ): Promise<Message> {
     const formData = new FormData();
-    formData.append('receiver_id', receiverId);
-    formData.append('message', message);
-    
+    formData.append("receiver_id", receiverId);
+    formData.append("message", message);
+
     if (image) {
-      formData.append('image', image);
+      formData.append("image", image);
     }
-    
+
     if (videoUrl) {
-      formData.append('video_url', videoUrl);
+      formData.append("video_url", videoUrl);
     }
 
     try {
       const response = await fetch(`${API_BASE_URL}/messages`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`,
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       const data = await response.json();
-      return mapApiMessageToMessage(data.message, currentUserId, currentUserType);
+      return mapApiMessageToMessage(
+        data.message,
+        currentUserId,
+        currentUserType
+      );
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       throw error;
     }
   },
 
   async markAsRead(messageId: string, authToken: string): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/messages/${messageId}/read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/messages/${messageId}/read`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to mark message as read');
+        throw new Error("Failed to mark message as read");
       }
     } catch (error) {
-      console.error('Error marking message as read:', error);
+      console.error("Error marking message as read:", error);
       throw error;
     }
   },
 
-  async updateOnlineStatus(isOnline: boolean, authToken: string): Promise<void> {
+  async updateOnlineStatus(
+    isOnline: boolean,
+    authToken: string
+  ): Promise<void> {
     try {
-      const endpoint = isOnline ? 'online' : 'offline';
+      const endpoint = isOnline ? "online" : "offline";
       const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to update online status to ${isOnline ? 'online' : 'offline'}`);
+        throw new Error(
+          `Failed to update online status to ${isOnline ? "online" : "offline"}`
+        );
       }
     } catch (error) {
-      console.error('Error updating online status:', error);
+      console.error("Error updating online status:", error);
       throw error;
     }
   },

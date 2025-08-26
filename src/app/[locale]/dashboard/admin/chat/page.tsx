@@ -32,7 +32,11 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
-      const contacts = await chatService.getChatContacts(token);
+      const contacts = await chatService.getChatContacts(
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setChats(contacts);
 
       // Select the first chat by default if none selected
@@ -53,7 +57,12 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
-      const chatMessages = await chatService.getMessages(selectedChatId, token);
+      const chatMessages = await chatService.getMessages(
+        selectedChatId,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -77,7 +86,7 @@ const AdminChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId, token]);
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
@@ -144,10 +153,14 @@ const AdminChatPage = () => {
     pusherService.subscribeToAdminChatList({
       onChatUpdate: (chatData) => {
         // Update chat list when a chat is updated
-        setChats(prevChats =>
-          prevChats.map(chat =>
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
             chat.id === chatData.chatId
-              ? { ...chat, lastMessage: chatData.lastMessage, timestamp: new Date(chatData.timestamp) }
+              ? {
+                  ...chat,
+                  lastMessage: chatData.lastMessage,
+                  timestamp: new Date(chatData.timestamp),
+                }
               : chat
           )
         );
@@ -157,13 +170,13 @@ const AdminChatPage = () => {
         const newChatItem: ChatListItem = {
           id: chatData.chatId,
           name: chatData.chatName,
-          type: chatData.type || 'parent',
-          lastMessage: chatData.lastMessage || '',
+          type: chatData.type || "parent",
+          lastMessage: chatData.lastMessage || "",
           timestamp: new Date(chatData.timestamp),
           unreadCount: 1,
           isOnline: chatData.isOnline || false,
         };
-        setChats(prev => [newChatItem, ...prev]);
+        setChats((prev) => [newChatItem, ...prev]);
       },
     });
 
@@ -174,28 +187,34 @@ const AdminChatPage = () => {
           id: message.id.toString(),
           content: message.message,
           senderId: message.sender_id.toString(),
-          senderName: message.sender_name || 'User',
-          senderType: message.sender_type || 'parent',
+          senderName: message.sender_name || "User",
+          senderType: message.sender_type || "parent",
           timestamp: new Date(message.created_at),
-          chatId: message.receiver_id?.toString() || selectedChatId || '',
+          chatId: message.receiver_id?.toString() || selectedChatId || "",
           imageUrl: message.image_url,
           videoUrl: message.video_url_path,
         };
-        
+
         // Add message if it's for the currently selected chat
-        if (selectedChatId && (message.receiver_id?.toString() === selectedChatId || message.sender_id?.toString() === selectedChatId)) {
-          setMessages(prev => [...prev, newMessage]);
+        if (
+          selectedChatId &&
+          (message.receiver_id?.toString() === selectedChatId ||
+            message.sender_id?.toString() === selectedChatId)
+        ) {
+          setMessages((prev) => [...prev, newMessage]);
         }
-        
+
         // Update last message in chats list
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            (chat.id === message.sender_id?.toString() || chat.id === message.receiver_id?.toString())
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === message.sender_id?.toString() ||
+            chat.id === message.receiver_id?.toString()
               ? {
                   ...chat,
                   lastMessage: newMessage.content,
                   timestamp: newMessage.timestamp,
-                  unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                  unreadCount:
+                    chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                 }
               : chat
           )
@@ -206,20 +225,16 @@ const AdminChatPage = () => {
     // Subscribe to global user status
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: true }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: true } : chat
           )
         );
       },
       onUserOffline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: false }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: false } : chat
           )
         );
       },
@@ -246,7 +261,9 @@ const AdminChatPage = () => {
       const newMessage = await chatService.sendMessage(
         selectedChatId,
         content,
-        token
+        token,
+        currentUser.id,
+        currentUser.type
       );
 
       setMessages((prev) => [...prev, newMessage]);
@@ -294,4 +311,3 @@ const AdminChatPage = () => {
 };
 
 export default AdminChatPage;
-
