@@ -1,6 +1,6 @@
 import { ChatListItem, Message } from "@/components/dashboard/chat/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://your-api-url.com/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://development.firststep-app.com/api';
 
 interface ApiResponse<T> {
   data?: T;
@@ -34,22 +34,47 @@ interface ApiContact {
   };
 }
 
-const mapApiMessageToMessage = (apiMessage: ApiMessage, currentUserId: string): Message => ({
+interface ApiParent {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  role: string;
+  is_online: number;
+  children: Array<{
+    id: number;
+    child_name: string;
+    parent_name: string;
+    mother_name: string;
+  }>;
+}
+
+interface ApiCenterParent {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  role?: string;
+  is_online?: number;
+}
+
+const mapApiMessageToMessage = (apiMessage: ApiMessage, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Message => ({
   id: apiMessage.id.toString(),
   content: apiMessage.message,
   senderId: apiMessage.sender_id.toString(),
   senderName: 'User', // This will be set from the contact info
-  senderType: apiMessage.sender_id.toString() === currentUserId ? 'center' : 'parent',
+  senderType: apiMessage.sender_id.toString() === currentUserId ? currentUserType : (currentUserType === 'center' ? 'parent' : 'center'),
   timestamp: new Date(apiMessage.created_at),
   chatId: apiMessage.receiver_id.toString(),
   imageUrl: apiMessage.image_url,
   videoUrl: apiMessage.video_url_path,
 });
 
-const mapApiContactToChatListItem = (apiContact: ApiContact, currentUserId: string): ChatListItem => ({
+const mapApiContactToChatListItem = (apiContact: ApiContact, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): ChatListItem => ({
   id: apiContact.contact.id.toString(),
   name: apiContact.contact.name,
-  type: apiContact.contact.id.toString() === currentUserId ? 'center' : 'parent',
+  type: apiContact.contact.id.toString() === currentUserId ? currentUserType : (currentUserType === 'center' ? 'parent' : 'center'),
   lastMessage: '', // Will be updated when messages are loaded
   timestamp: new Date(),
   unreadCount: apiContact.unread_count,
@@ -59,12 +84,62 @@ const mapApiContactToChatListItem = (apiContact: ApiContact, currentUserId: stri
 });
 
 export const chatService = {
-  async getChatContacts(authToken: string): Promise<ChatListItem[]> {
+  // Get all center parents (contacts for centers to chat with)
+  async getCenterParents(authToken: string): Promise<ApiParent[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/center/parents`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
+          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch center parents');
+      }
+
+      const data: ApiParent[] = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching center parents:', error);
+      throw error;
+    }
+  },
+
+  // Get center parent for specific parent (for parent dashboard)
+  async getCentersForParent(authToken: string): Promise<ApiCenterParent[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/get-centers-parent`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
+          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch centers for parent');
+      }
+
+      const data: ApiCenterParent[] = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching centers for parent:', error);
+      throw error;
+    }
+  },
+
+  async getChatContacts(authToken: string, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Promise<ChatListItem[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/chat-contacts`, {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
+          'X-Authorization': process.env.NEXT_PUBLIC_X_AUTHORIZATION || '',
+          'X-Authorization-Secret': process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || '',
         },
       });
 
@@ -73,14 +148,14 @@ export const chatService = {
       }
 
       const data: ApiContact[] = await response.json();
-      return data.map(contact => mapApiContactToChatListItem(contact, '1')); // TODO: Replace '1' with actual current user ID
+      return data.map(contact => mapApiContactToChatListItem(contact, currentUserId, currentUserType));
     } catch (error) {
       console.error('Error fetching chat contacts:', error);
       throw error;
     }
   },
 
-  async getMessages(contactId: string, authToken: string): Promise<Message[]> {
+  async getMessages(contactId: string, authToken: string, currentUserId: string, currentUserType: 'center' | 'parent' | 'admin'): Promise<Message[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/messages/${contactId}`, {
         headers: {
@@ -94,7 +169,7 @@ export const chatService = {
       }
 
       const data: ApiMessage[] = await response.json();
-      return data.map(msg => mapApiMessageToMessage(msg, '1')); // TODO: Replace '1' with actual current user ID
+      return data.map(msg => mapApiMessageToMessage(msg, currentUserId, currentUserType));
     } catch (error) {
       console.error('Error fetching messages:', error);
       throw error;
@@ -105,6 +180,8 @@ export const chatService = {
     receiverId: string,
     message: string,
     authToken: string,
+    currentUserId: string,
+    currentUserType: 'center' | 'parent' | 'admin',
     image?: File,
     videoUrl?: string
   ): Promise<Message> {
@@ -134,7 +211,7 @@ export const chatService = {
       }
 
       const data = await response.json();
-      return mapApiMessageToMessage(data.message, '1'); // TODO: Replace '1' with actual current user ID
+      return mapApiMessageToMessage(data.message, currentUserId, currentUserType);
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;

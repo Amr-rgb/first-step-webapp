@@ -1455,11 +1455,26 @@ export const savePortfolio = async (centerId: number, data: any) => {
   return response.data;
 };
 
-// TODO: Implement pricing API when endpoint is provided
-export const savePricing = async (centerId: number, data: any) => {
-  // Placeholder - replace with actual endpoint when provided
-  const response = await apiClient.post(`/pricing`, data);
-  return response.data;
+// Pricing API functions
+export const getBranchPricing = async (branchId: string) => {
+  try {
+    const response = await apiClient.get(`/branches-pricies/${branchId}`);
+    return response.data;
+  } catch (error) {
+    throw ApiErrorHandler.handle(error);
+  }
+};
+
+export const savePricing = async (branchId: string, data: any) => {
+  try {
+    const response = await apiClient.post(
+      `/branches/${branchId}/pricing`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    throw ApiErrorHandler.handle(error);
+  }
 };
 
 export interface Enrollment {

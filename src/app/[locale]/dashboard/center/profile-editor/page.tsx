@@ -23,7 +23,7 @@ export interface ProfileSection {
     | "hero"
     | "about"
     | "services"
-    | "programs"
+    | "plans"
     | "team"
     | "activities"
     | "contact"
@@ -84,13 +84,13 @@ export default function ProfileEditorPage() {
       },
     },
     {
-      id: "programs",
-      name: "Programs (برامجنا)",
-      type: "programs",
-      enabled: false,
+      id: "plans",
+      name: "Plans (برامجنا)",
+      type: "plans",
+      enabled: false, // Only enable when there's data
       data: {
-        title: "برامجنا",
-        programs: [],
+        title: "Plans", // Static title - will be handled by locale
+        plans: [],
       },
     },
     {
@@ -243,7 +243,10 @@ export default function ProfileEditorPage() {
         vision: "",
       },
       services: { title: "Our Services", services: [] },
-      programs: { title: "Our Programs", programs: [] },
+      plans: {
+        title: "برامجنا",
+        plans: [],
+      },
       team: { title: "Meet Our Team", members: [] },
       activities: { title: "Activities", subtitle: "", images: [] },
       philosophy: {
@@ -321,9 +324,28 @@ export default function ProfileEditorPage() {
         return JSON.stringify(currentData) !== JSON.stringify(originalData);
       })();
 
-      // TODO: Add pricing data check when pricing functionality is implemented
-      const hasPricingUpdates = false; // This will be updated when pricing is connected
-      const pricingData = {}; // This will be populated when pricing functionality is implemented
+      // Check for pricing updates
+      const hasPricingUpdates = (() => {
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
+        );
+        if (!plansSection || !plansSection.enabled) return false;
+
+        // Check if plans section has data
+        return plansSection.data.plans && plansSection.data.plans.length > 0;
+      })();
+
+      // Prepare pricing data
+      const pricingData = (() => {
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
+        );
+        if (!plansSection || !plansSection.enabled) return {};
+
+        return {
+          plans: plansSection.data.plans || [],
+        };
+      })();
 
       const requests = [];
 
@@ -359,14 +381,69 @@ export default function ProfileEditorPage() {
 
       // Send pricing update if there are changes
       if (hasPricingUpdates) {
-        requests.push(
-          savePricing(centerId, pricingData)
-            .then(() => console.log("Pricing updated successfully"))
-            .catch((error) => {
-              console.error("Pricing update failed:", error);
-              throw new Error("Pricing update failed");
-            })
+        const plansSection = profileSections.find(
+          (section) => section.type === "plans"
         );
+        if (plansSection && plansSection.data.plans) {
+          // Group plans by branch_id
+          const plansByBranch = plansSection.data.plans.reduce(
+            (acc: any, plan: any) => {
+              if (plan.branch_id) {
+                if (!acc[plan.branch_id]) {
+                  acc[plan.branch_id] = [];
+                }
+                acc[plan.branch_id].push(plan);
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Send pricing update for each branch
+          Object.entries(plansByBranch).forEach(([branchId, plans]) => {
+            // Convert educational program fields back to pricing format
+            const pricingData = (plans as any[])
+              .filter((plan: any) => {
+                // Only include plans with valid data
+                return (
+                  plan.title &&
+                  plan.age_start > 0 &&
+                  plan.age_end > 11 && // API requires end_age > 11
+                  plan.count > 0 &&
+                  plan.price_amount > 0
+                );
+              })
+              .map((plan: any) => ({
+                title: plan.title || "",
+                start_age: Math.max(1, plan.age_start || 1),
+                end_age: Math.max(12, plan.age_end || 12), // Ensure minimum of 12
+                count: plan.count || 1,
+                enrollment_type: plan.enrollment_type || "month",
+                price_amount: plan.price_amount || 100,
+              }));
+
+            // Only send if there are valid plans
+            if (pricingData.length > 0) {
+              requests.push(
+                savePricing(branchId, { pricing: pricingData })
+                  .then(() =>
+                    console.log(
+                      `✅ Pricing updated successfully for branch ${branchId}`
+                    )
+                  )
+                  .catch((error) => {
+                    console.error(
+                      `❌ Pricing update failed for branch ${branchId}:`,
+                      error
+                    );
+                    throw new Error(
+                      `Pricing update failed for branch ${branchId}`
+                    );
+                  })
+              );
+            }
+          });
+        }
       }
 
       // Wait for all requests to complete
@@ -429,13 +506,13 @@ export default function ProfileEditorPage() {
         },
       },
       {
-        id: "programs",
-        name: "Programs (برامجنا)",
-        type: "programs",
+        id: "plans",
+        name: "Plans (برامجنا)",
+        type: "plans",
         enabled: false,
         data: {
-          title: "برامجنا",
-          programs: [],
+          title: "Plans", // Static title - will be handled by locale
+          plans: [],
         },
       },
       {
@@ -455,8 +532,8 @@ export default function ProfileEditorPage() {
         enabled: false,
         data: {
           area: "2000",
-          classrooms: "10",
-          teamMembers: "25",
+          classrooms: "1",
+          teamMembers: "1",
         },
       },
       {
@@ -488,7 +565,7 @@ export default function ProfileEditorPage() {
         data: {
           address: "",
           phone: "",
-          email: "",
+          email: "info@nursery.com",
           workingHours: "",
           socialMedia: {},
         },
@@ -549,6 +626,16 @@ export default function ProfileEditorPage() {
         },
       },
       {
+        id: "plans",
+        name: "Plans (برامجنا)",
+        type: "plans",
+        enabled: false, // Only enable when there's data
+        data: {
+          title: "Plans", // Static title - will be handled by locale
+          plans: [], // Plans will be populated from pricing API
+        },
+      },
+      {
         id: "services",
         name: "Services",
         type: "services",
@@ -601,7 +688,7 @@ export default function ProfileEditorPage() {
         data: {
           address: portofilo?.contact_info?.address || "",
           phone: portofilo?.contact_info?.phone_number || "",
-          email: portofilo?.contact_info?.email_address || "",
+          email: portofilo?.contact_info?.email_address || "info@nursery.com",
           workingHours: portofilo?.contact_info?.working_hours || "",
           socialMedia: {
             facebook: portofilo?.contact_info?.facebook || "",
@@ -665,8 +752,11 @@ export default function ProfileEditorPage() {
       // Nursery state
       nursery_state: {
         area: get("stats")?.data.area || "",
-        class_rooms: get("stats")?.data.classrooms || "",
-        team_members: get("stats")?.data.teamMembers || "",
+        class_rooms: Math.max(1, parseInt(get("stats")?.data.classrooms) || 1),
+        team_members: Math.max(
+          1,
+          parseInt(get("stats")?.data.teamMembers) || 1
+        ),
       },
 
       // Activity section
@@ -691,7 +781,15 @@ export default function ProfileEditorPage() {
         address: get("contact")?.data.address || "",
         working_hours: get("contact")?.data.workingHours || "",
         phone_number: get("contact")?.data.phone || "",
-        email_address: get("contact")?.data.email || "",
+        email_address: (() => {
+          const email = get("contact")?.data.email || "";
+          // Basic email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (email && emailRegex.test(email)) {
+            return email;
+          }
+          return "info@nursery.com"; // Default valid email
+        })(),
         facebook: get("contact")?.data.socialMedia?.facebook || "",
         instagram: get("contact")?.data.socialMedia?.instagram || "",
         whatsapp: get("contact")?.data.socialMedia?.whatsapp || "",

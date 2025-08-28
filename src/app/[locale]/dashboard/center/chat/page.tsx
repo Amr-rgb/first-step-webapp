@@ -7,8 +7,7 @@ import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
 import { chatService } from "@/services/chatService";
-import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
-import { MessageCircle } from "lucide-react";
+import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const CenterChatPage = () => {
@@ -30,11 +29,11 @@ const CenterChatPage = () => {
 
   // Fetch chat contacts
   const fetchChatContacts = useCallback(async () => {
-    if (!token) return;
+    if (!token || !currentUser.id) return;
 
     try {
       setIsLoading(true);
-      const contacts = await chatService.getChatContacts(token);
+      const contacts = await chatService.getChatContacts(token, currentUser.id, currentUser.type);
       setChats(contacts);
 
       // Select the first chat by default if none selected
@@ -47,15 +46,15 @@ const CenterChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId, token]);
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
 
   // Fetch messages for the selected chat
   const fetchMessages = useCallback(async () => {
-    if (!selectedChatId || !token) return;
+    if (!selectedChatId || !token || !currentUser.id) return;
 
     try {
       setIsLoading(true);
-      const chatMessages = await chatService.getMessages(selectedChatId, token);
+      const chatMessages = await chatService.getMessages(selectedChatId, token, currentUser.id, currentUser.type);
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -79,7 +78,7 @@ const CenterChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId, token]);
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
@@ -114,6 +113,8 @@ const CenterChatPage = () => {
       clearInterval(keepAliveInterval);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       updateStatus(false);
+      // Disconnect Pusher when component unmounts
+      pusherService.disconnect();
     };
   }, [token]);
 
@@ -133,12 +134,89 @@ const CenterChatPage = () => {
     }
   }, [selectedChatId, fetchMessages]);
 
+  // Set up Pusher real-time messaging
+  useEffect(() => {
+    if (!selectedChatId || !currentUser.id) return;
+
+    // Initialize Pusher
+    pusherService.initialize();
+
+    // Subscribe to chat channel for real-time messages
+    pusherService.subscribeToChat(selectedChatId, {
+      onNewMessage: (message) => {
+        // Only add message if it's not from current user (to avoid duplicates)
+        if (message.sender_id.toString() !== currentUser.id) {
+          const newMessage: Message = {
+            id: message.id.toString(),
+            content: message.message,
+            senderId: message.sender_id.toString(),
+            senderName: message.sender_name || 'User',
+            senderType: message.sender_id.toString() === currentUser.id ? 'center' : 'parent',
+            timestamp: new Date(message.created_at),
+            chatId: selectedChatId,
+            imageUrl: message.image_url,
+            videoUrl: message.video_url_path,
+          };
+          
+          setMessages(prev => [...prev, newMessage]);
+          
+          // Update last message in chats list
+          setChats(prevChats =>
+            prevChats.map(chat =>
+              chat.id === selectedChatId
+                ? {
+                    ...chat,
+                    lastMessage: newMessage.content,
+                    timestamp: newMessage.timestamp,
+                    unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                  }
+                : chat
+            )
+          );
+        }
+      },
+      onUserOnline: (userId) => {
+        // Update user online status
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: true }
+              : chat
+          )
+        );
+      },
+      onUserOffline: (userId) => {
+        // Update user offline status
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: false }
+              : chat
+          )
+        );
+      },
+    });
+
+    // Subscribe to user status updates
+    pusherService.subscribeToUserStatus(currentUser.id, {
+      onStatusChange: (status) => {
+        console.log('User status changed:', status);
+      },
+    });
+
+    // Cleanup on component unmount or chat change
+    return () => {
+      pusherService.unsubscribeFromChat(selectedChatId);
+      pusherService.unsubscribeFromUserStatus(currentUser.id);
+    };
+  }, [selectedChatId, currentUser.id]);
+
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedChatId || !content.trim() || !token) return;
+    if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
 
     try {
       setIsSending(true);
@@ -146,7 +224,9 @@ const CenterChatPage = () => {
       const newMessage = await chatService.sendMessage(
         selectedChatId,
         content,
-        token
+        token,
+        currentUser.id,
+        currentUser.type
       );
 
       setMessages((prev) => [...prev, newMessage]);
@@ -178,16 +258,29 @@ const CenterChatPage = () => {
         throw new Error("No authentication token found");
       }
 
-      // In a real implementation, you would create a new chat with the participant
-      // For now, we'll just select the chat if it exists
+      // Check if chat already exists
       const existingChat = chats.find((chat) => chat.id === participantId);
       if (existingChat) {
         setSelectedChatId(participantId);
-      } else {
-        // Here you would typically call an API to create a new chat
-        // For now, we'll just show an error
-        toast.error("Could not start a new chat. Please try again.");
+        return;
       }
+
+      // Create new chat entry for immediate UI feedback
+      const newChatItem: ChatListItem = {
+        id: participantId,
+        name: "New Chat", // This will be updated when we fetch the actual contact info
+        type: "parent",
+        lastMessage: "",
+        timestamp: new Date(),
+        unreadCount: 0,
+        isOnline: false,
+      };
+
+      setChats(prev => [...prev, newChatItem]);
+      setSelectedChatId(participantId);
+      setMessages([]); // Start with empty messages
+      
+      toast.success("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);
       toast.error("Failed to create a new chat");
@@ -197,7 +290,7 @@ const CenterChatPage = () => {
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -210,14 +303,6 @@ const CenterChatPage = () => {
         selectedChat={selectedChat}
         messages={messages}
         onSendMessage={handleSendMessage}
-      />
-
-      {/* Coming Soon Overlay */}
-      <ComingSoonOverlay
-        message="Chat feature is being polished with amazing new capabilities! Stay tuned for seamless communication."
-        icon={<MessageCircle className="w-8 h-8 text-blue-400 animate-pulse" />}
-        theme="gradient"
-        showBlur={true}
       />
     </div>
   );

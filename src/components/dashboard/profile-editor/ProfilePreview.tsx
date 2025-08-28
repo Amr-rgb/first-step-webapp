@@ -24,6 +24,7 @@ import Philosophy from "@/components/general/nurseries/sections/Philosophy";
 import Branches from "@/components/general/nurseries/Branches";
 import Link from "next/link";
 import { Icons } from "@/components/general/icons";
+import { useTranslations } from "next-intl";
 
 interface ProfilePreviewProps {
   sections: ProfileSection[];
@@ -31,6 +32,14 @@ interface ProfilePreviewProps {
 }
 
 const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
+  const t = useTranslations("dashboard.profileEditor");
+
+  // Get locale from the current path
+  const locale =
+    typeof window !== "undefined"
+      ? window.location.pathname.split("/")[1]
+      : "en";
+
   if (isEmpty) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -281,15 +290,94 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
           <Services key={section.id} services={section.data.services} />
         ) : null;
 
-      case "programs":
-        return section.data.programs && section.data.programs.length > 0 ? (
-          <Programs
-            key={section.id}
-            programs={section.data.programs}
-            isPreview={true}
-            locale="en"
-            nurseryName="preview"
-          />
+      case "plans":
+        return section.data.plans && section.data.plans.length > 0 ? (
+          <section key={section.id} className="py-20 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                    {locale === "ar" ? "برامجنا" : "Plans"}
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {section.data.plans.map((plan: any, index: number) => (
+                    <Card
+                      key={index}
+                      className="p-6 border-2 border-blue-100 bg-white hover:shadow-lg transition-shadow"
+                    >
+                      <div className="text-center">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                          {plan.title ||
+                            `${locale === "ar" ? "البرنامج" : "Program"} ${
+                              index + 1
+                            }`}
+                        </h3>
+
+                        <div className="space-y-3 mb-6">
+                          {plan.age_group && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                {locale === "ar"
+                                  ? "الفئة العمرية:"
+                                  : "Age Range:"}
+                              </span>{" "}
+                              {plan.age_start !== undefined &&
+                              plan.age_end !== undefined
+                                ? `${plan.age_start}-${plan.age_end} ${
+                                    locale === "ar" ? "سنة" : "years"
+                                  }`
+                                : plan.age_group}
+                            </div>
+                          )}
+
+                          {plan.enrollment_type && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                {locale === "ar"
+                                  ? "نوع التسجيل:"
+                                  : "Enrollment:"}
+                              </span>{" "}
+                              {plan.enrollment_type}
+                            </div>
+                          )}
+
+                          {plan.count && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                {locale === "ar" ? "المدة:" : "Duration:"}
+                              </span>{" "}
+                              {plan.count}{" "}
+                              {plan.enrollment_type === "hour" &&
+                                (locale === "ar" ? "ساعة" : "hours")}
+                              {plan.enrollment_type === "day" &&
+                                (locale === "ar" ? "يوم" : "days")}
+                              {plan.enrollment_type === "month" &&
+                                (locale === "ar" ? "شهر" : "months")}
+                              {plan.enrollment_type === "year" &&
+                                (locale === "ar" ? "سنة" : "years")}
+                            </div>
+                          )}
+                        </div>
+
+                        {plan.price_amount && (
+                          <div className="text-2xl font-bold text-blue-600 mb-4">
+                            {plan.price_amount}{" "}
+                            {locale === "ar" ? "ريال" : "SAR"}
+                          </div>
+                        )}
+
+                        <Button className="w-full">
+                          {locale === "ar" ? "احجز الآن" : "Book Now"}
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
         ) : null;
 
       case "team":

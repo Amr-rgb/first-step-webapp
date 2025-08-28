@@ -8,7 +8,6 @@ import { useRef, useState, useEffect } from "react";
 import { animate } from "framer-motion";
 import { paymentService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
-import PaymentDebugger from "./PaymentDebugger";
 import { usePlans } from "@/hooks/usePlans";
 import { Skeleton } from "../ui/skeleton";
 
@@ -254,9 +253,7 @@ const SubscriptionSection = () => {
           {t("title")}
         </h2>
 
-        {/* Debug component for development */}
-        {process.env.NODE_ENV === "development" && <PaymentDebugger />}
-
+        
         {/* Promo Banner */}
         <div className="relative rounded-3xl overflow-hidden">
           <div className="z-20 relative flex flex-col items-center gap-y-8 text-center py-14.5 px-10 bg-[linear-gradient(to_right,_#2B399000_0%,_#2B3990FF_30%,_#2B3990FF_70%,_#2B399000_100%)]">

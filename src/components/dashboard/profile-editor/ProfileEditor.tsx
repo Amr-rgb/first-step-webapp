@@ -7,9 +7,72 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash, CheckSquare, Square, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { centerService, getBranchPricing } from "@/services/dashboardApi";
+import { useQuery } from "@tanstack/react-query";
+
+// Custom hooks for fetching data
+const useBranches = () => {
+  return useQuery({
+    queryKey: ["branches"],
+    queryFn: async () => {
+      try {
+        const response = await centerService.getBranches();
+        return response || [];
+      } catch (error) {
+        console.error("❌ Error fetching branches:", error);
+        toast.error("Failed to fetch branches");
+        return [];
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+const useAllBranchPricing = (branches: any[]) => {
+  return useQuery({
+    queryKey: ["allBranchPricing", branches.map((b) => b.id)],
+    queryFn: async () => {
+      try {
+        const pricingPromises = branches.map(async (branch: any) => {
+          try {
+            const response = await getBranchPricing(branch.id.toString());
+            return {
+              branch_id: branch.id,
+              pricing: response.data || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching pricing for branch ${branch.id}:`,
+              error
+            );
+            return {
+              branch_id: branch.id,
+              pricing: [],
+            };
+          }
+        });
+
+        const results = await Promise.all(pricingPromises);
+        return results;
+      } catch (error) {
+        console.error("❌ Error fetching all pricing:", error);
+        return [];
+      }
+    },
+    enabled: branches.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
 
 interface ImageUploaderProps {
   value: string | File | null;
@@ -63,7 +126,32 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (value instanceof File) {
       return URL.createObjectURL(value);
     }
-    return value || undefined;
+
+    // Handle case where value might be a character array or malformed string
+    if (Array.isArray(value)) {
+      console.log("🖼️ Converting character array to string:", value);
+      // Convert character array to string
+      return value.join("");
+    }
+
+    // Handle case where value is an object with numeric keys (character array as object)
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const keys = Object.keys(value)
+        .filter((key) => !isNaN(Number(key)))
+        .sort((a, b) => Number(a) - Number(b));
+      if (keys.length > 0) {
+        console.log("🖼️ Converting object character array to string:", value);
+        return keys.map((key) => value[key]).join("");
+      }
+    }
+
+    // Ensure value is a string
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+
+    console.log("🖼️ Invalid image value:", value, "Type:", typeof value);
+    return undefined;
   };
 
   // Clean up object URLs when component unmounts
@@ -164,6 +252,68 @@ const ProfileEditor = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set()
   );
+  const [hasProcessedPricing, setHasProcessedPricing] = useState(false);
+
+  // Use React Query hooks
+  const { data: branches = [], isLoading: loadingBranches } = useBranches();
+  const { data: allPricingData = [], isLoading: loadingPricing } =
+    useAllBranchPricing(branches);
+
+  // Process pricing data when all queries are loaded
+  useEffect(() => {
+    if (
+      !loadingPricing &&
+      !loadingBranches &&
+      branches.length > 0 &&
+      allPricingData.length > 0 &&
+      !hasProcessedPricing
+    ) {
+      // Update plans section with existing pricing data
+      const plansSection = sections.find((section) => section.type === "plans");
+
+      if (plansSection) {
+        console.log("🔍 All pricing data:", allPricingData);
+        const allPlans = allPricingData.flatMap((result: any) => {
+          console.log("🔍 Processing result:", result);
+          if (result && result.pricing && Array.isArray(result.pricing)) {
+            return result.pricing.map((price: any) => {
+              console.log("🔍 Processing price:", price);
+              return {
+                branch_id: result.branch_id,
+                title: price.title || "",
+                enrollment_type: price.enrollment_type || "month",
+                age_start: price.start_age || 1,
+                age_end: price.end_age || 12,
+                count: price.count || 1,
+                price_amount: price.price_amount || 100,
+              };
+            });
+          }
+          return [];
+        });
+
+        console.log("🔍 All plans processed:", allPlans);
+        if (allPlans.length > 0) {
+          console.log("🔍 Updating plans section with:", allPlans);
+          onSectionUpdate(plansSection.id, { plans: allPlans });
+          // Enable the plans section if there's existing data
+          onSectionToggle(plansSection.id, true);
+        }
+        setHasProcessedPricing(true);
+      }
+    }
+  }, [
+    allPricingData,
+    branches,
+    loadingPricing,
+    loadingBranches,
+    hasProcessedPricing,
+  ]);
+
+  // Reset the flag when branches change (indicating a new center)
+  useEffect(() => {
+    setHasProcessedPricing(false);
+  }, [branches]);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -460,132 +610,305 @@ const ProfileEditor = ({
           </div>
         );
 
-      case "programs":
+      case "plans":
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <Label>Section Title</Label>
-              <Input
-                placeholder="Our Programs"
-                value={section.data.title || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { title: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label>Programs</Label>
+              <div className="flex items-center justify-between mb-4">
+                <Label className="text-base font-semibold text-gray-900">
+                  {t("sections.plans.educationalPrograms")}
+                </Label>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() =>
-                    addListItem(section.id, "programs", {
+                    addListItem(section.id, "plans", {
+                      branch_id: "",
                       title: "",
-                      description: "",
-                      price: "",
-                      features: [],
-                      image: "",
-                      buttonText: "احجز الآن",
+                      enrollment_type: "month",
+                      age_start: 1,
+                      age_end: 12, // Minimum required by API
+                      count: 1,
+                      price_amount: 100,
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Program
+                  <Plus className="w-4 h-4 mr-2" />{" "}
+                  {t("sections.plans.addProgram")}
                 </Button>
               </div>
-              {(section.data.programs || []).map(
-                (program: any, index: number) => (
-                  <Card
-                    key={index}
-                    className="p-4 border-2 border-dashed border-gray-200"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Program {index + 1}</h4>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            removeListItem(section.id, "programs", index)
-                          }
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Input
-                          placeholder="Program title"
-                          value={program.title || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              title: e.target.value,
-                            })
-                          }
-                        />
-                        <Input
-                          placeholder="Price (e.g., $50/month)"
-                          value={program.price || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              price: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <Textarea
-                        placeholder="Program description"
-                        value={program.description || ""}
-                        onChange={(e) =>
-                          updateListItem(section.id, "programs", index, {
-                            description: e.target.value,
+              {(section.data.plans || []).map((plan: any, index: number) => (
+                <Card
+                  key={index}
+                  className="p-6 border-2 border-dashed border-gray-200 mb-6"
+                >
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-lg text-gray-900">
+                        {t("sections.plans.program")} {index + 1}
+                      </h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          removeListItem(section.id, "plans", index)
+                        }
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Branch Selection */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.branch")}
+                      </Label>
+                      <Select
+                        value={plan.branch_id || ""}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            branch_id: value,
                           })
                         }
-                        rows={2}
+                      >
+                        <SelectTrigger className="h-10">
+                          <SelectValue
+                            placeholder={t("sections.plans.selectBranch")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingBranches ? (
+                            <SelectItem value="" disabled>
+                              {t("sections.plans.loadingBranches")}
+                            </SelectItem>
+                          ) : (
+                            branches.map((branch: any) => (
+                              <SelectItem
+                                key={branch.id}
+                                value={branch.id.toString()}
+                              >
+                                {branch.nursery_name_branch || branch.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Program Title */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.programName")}
+                      </Label>
+                      <Input
+                        placeholder={t("sections.plans.programNamePlaceholder")}
+                        value={plan.title || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            title: e.target.value,
+                          })
+                        }
+                        className="h-10"
                       />
-                      <div>
-                        <Label>Program Image</Label>
-                        <ImageUploader
-                          value={program.image || ""}
-                          onChange={(url) =>
-                            updateListItem(section.id, "programs", index, {
-                              image: url,
-                            })
-                          }
-                        />
+                    </div>
+
+                    {/* Age Group */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">
+                        {t("sections.plans.ageGroup")}
+                      </Label>
+
+                      {/* Range Slider */}
+                      <div className="space-y-4">
+                        <div className="relative h-6 flex items-center">
+                          <input
+                            type="range"
+                            min="1"
+                            max="50"
+                            step="1"
+                            value={plan.age_start || 1}
+                            onChange={(e) => {
+                              const start = parseInt(e.target.value);
+                              const end = plan.age_end || start;
+                              updateListItem(section.id, "plans", index, {
+                                age_start: Math.max(1, start),
+                                age_end: Math.max(start, end),
+                                age_group: `${Math.max(1, start)}-${Math.max(
+                                  start,
+                                  end
+                                )}`,
+                              });
+                            }}
+                            className="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-blue-400 [&::-webkit-slider-track]:to-gray-200 [&::-webkit-slider-track]:bg-[length:var(--range-progress,0%)_100%] [&::-webkit-slider-track]:bg-no-repeat [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-blue-400 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-blue-400 [&::-moz-range-track]:to-gray-200 [&::-moz-range-track]:bg-[length:var(--range-progress,0%)_100%] [&::-moz-range-track]:bg-no-repeat [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:bg-blue-400 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:cursor-pointer z-20"
+                            style={
+                              {
+                                "--range-progress": `${
+                                  ((plan.age_start || 0) / 50) * 100
+                                }%`,
+                              } as React.CSSProperties
+                            }
+                          />
+                          <input
+                            type="range"
+                            min="12"
+                            max="50"
+                            step="1"
+                            value={plan.age_end || 12}
+                            onChange={(e) => {
+                              const end = parseInt(e.target.value);
+                              const start = plan.age_start || 1;
+                              updateListItem(section.id, "plans", index, {
+                                age_start: Math.min(start, end),
+                                age_end: Math.max(12, end), // Minimum 12 for API
+                                age_group: `${Math.min(start, end)}-${Math.max(
+                                  12,
+                                  end
+                                )}`,
+                              });
+                            }}
+                            className="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-blue-400 [&::-webkit-slider-track]:to-gray-200 [&::-webkit-slider-track]:bg-[length:var(--range-progress,0%)_100%] [&::-webkit-slider-track]:bg-no-repeat [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-track]:rounded-full [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-blue-400 [&::-moz-range-track]:to-gray-200 [&::-moz-range-track]:bg-[length:var(--range-progress,0%)_100%] [&::-moz-range-track]:bg-no-repeat [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:cursor-pointer z-20"
+                            style={
+                              {
+                                "--range-progress": `${
+                                  ((plan.age_end || 0) / 50) * 100
+                                }%`,
+                              } as React.CSSProperties
+                            }
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Label className="text-sm">
-                          Features (comma-separated)
-                        </Label>
-                        <Input
-                          placeholder="Feature 1, Feature 2, Feature 3"
-                          value={(program.features || []).join(", ")}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              features: e.target.value
-                                .split(",")
-                                .map((f) => f.trim())
-                                .filter((f) => f),
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm">Button Text</Label>
-                        <Input
-                          placeholder="احجز الآن"
-                          value={program.buttonText || ""}
-                          onChange={(e) =>
-                            updateListItem(section.id, "programs", index, {
-                              buttonText: e.target.value,
-                            })
-                          }
-                        />
+
+                      {/* Manual Input Fields */}
+                      <div className="space-y-2">
+                        <div className="text-xs text-gray-600 font-medium">
+                          {t("sections.plans.setAgeRangeManually")}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">
+                              {t("sections.plans.fromAge")}
+                            </Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="50"
+                              placeholder={t(
+                                "sections.plans.ageGroups.fromAge"
+                              )}
+                              value={plan.age_start || ""}
+                              onChange={(e) => {
+                                const start = parseInt(e.target.value) || 1;
+                                const end = plan.age_end || start;
+                                updateListItem(section.id, "plans", index, {
+                                  age_start: Math.max(1, start),
+                                  age_end: Math.max(start, end),
+                                  age_group: `${Math.max(1, start)}-${Math.max(
+                                    start,
+                                    end
+                                  )}`,
+                                });
+                              }}
+                              className="h-10 text-center"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">
+                              {t("sections.plans.toAge")}
+                            </Label>
+                            <Input
+                              type="number"
+                              min="12"
+                              max="50"
+                              placeholder={t("sections.plans.ageGroups.toAge")}
+                              value={plan.age_end || ""}
+                              onChange={(e) => {
+                                const end = parseInt(e.target.value) || 12;
+                                const start = plan.age_start || 1;
+                                updateListItem(section.id, "plans", index, {
+                                  age_start: Math.min(start, end),
+                                  age_end: Math.max(12, end), // Minimum 12 for API
+                                  age_group: `${Math.min(
+                                    start,
+                                    end
+                                  )}-${Math.max(12, end)}`,
+                                });
+                              }}
+                              className="h-10 text-center"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </Card>
-                )
-              )}
+
+                    {/* Enrollment Type */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Enrollment Type
+                      </Label>
+                      <Select
+                        value={plan.enrollment_type || "month"}
+                        onValueChange={(value) =>
+                          updateListItem(section.id, "plans", index, {
+                            enrollment_type: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select enrollment type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="hour">Hour</SelectItem>
+                          <SelectItem value="day">Day</SelectItem>
+                          <SelectItem value="month">Month</SelectItem>
+                          <SelectItem value="year">Year</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Duration */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Duration
+                      </Label>
+                      <Input
+                        type="number"
+                        placeholder="2"
+                        value={plan.count || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            count: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        className="h-10"
+                      />
+                      <p className="text-xs text-gray-500">
+                        {plan.enrollment_type === "hour" && "hours"}
+                        {plan.enrollment_type === "day" && "days"}
+                        {plan.enrollment_type === "month" && "months"}
+                        {plan.enrollment_type === "year" && "years"}
+                      </p>
+                    </div>
+
+                    {/* Price */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Price Amount
+                      </Label>
+                      <Input
+                        type="number"
+                        placeholder="800"
+                        value={plan.price_amount || ""}
+                        onChange={(e) =>
+                          updateListItem(section.id, "plans", index, {
+                            price_amount: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                        className="h-10"
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         );
@@ -715,21 +1038,31 @@ const ProfileEditor = ({
               <div>
                 <Label>Classrooms</Label>
                 <Input
+                  type="number"
+                  min="1"
                   placeholder="10"
                   value={section.data.classrooms || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { classrooms: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    onSectionUpdate(section.id, {
+                      classrooms: value.toString(),
+                    });
+                  }}
                 />
               </div>
               <div>
                 <Label>Team Members</Label>
                 <Input
+                  type="number"
+                  min="1"
                   placeholder="25"
                   value={section.data.teamMembers || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { teamMembers: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    onSectionUpdate(section.id, {
+                      teamMembers: value.toString(),
+                    });
+                  }}
                 />
               </div>
             </div>
@@ -951,11 +1284,18 @@ const ProfileEditor = ({
               <div>
                 <Label>Email Address</Label>
                 <Input
+                  type="email"
                   placeholder="info@nursery.com"
                   value={section.data.email || ""}
-                  onChange={(e) =>
-                    onSectionUpdate(section.id, { email: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    // Basic email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (email && !emailRegex.test(email)) {
+                      toast.error("Please enter a valid email address");
+                    }
+                    onSectionUpdate(section.id, { email });
+                  }}
                 />
               </div>
             </div>
@@ -971,8 +1311,6 @@ const ProfileEditor = ({
             </div>
           </div>
         );
-
-      case "hero":
         return (
           <div className="space-y-4">
             <div>
@@ -1129,6 +1467,8 @@ const ProfileEditor = ({
             </div>
           </div>
         );
+
+      case "plans":
 
       default:
         return (

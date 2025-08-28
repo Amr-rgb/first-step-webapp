@@ -1,129 +1,316 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
-import ComingSoonOverlay from "@/components/ui/coming-soon-overlay";
-import { Heart } from "lucide-react";
+import { chatService } from "@/services/chatService";
+import { pusherService } from "@/services/pusherService";
+import { useAuthStore } from "@/store/authStore";
 
 const ParentChatPage = () => {
+  const { user, token, isAuthenticated } = useAuthStore();
+  const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatListItem[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
 
   const currentUser: User = {
-    id: "parent-1",
-    name: "Sarah Johnson",
+    id: user?.id?.toString() || "",
+    name: user?.name || "Parent User",
     type: "parent",
+    email: user?.email || "",
   };
 
-  // Sample data for parent to see center conversations
-  useEffect(() => {
-    const sampleChats: ChatListItem[] = [
-      {
-        id: "chat-1",
-        name: "Sunshine Daycare",
-        type: "center",
-        lastMessage: "Emma had a great day today! 📸",
-        timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-        unreadCount: 1,
-        isOnline: true,
-        avatar: "/assets/logos/center-1.png",
-      },
-      {
-        id: "chat-2", 
-        name: "Little Angels Center",
-        type: "center",
-        lastMessage: "Thank you for updating Emma's pickup time.",
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        unreadCount: 0,
-        isOnline: true,
-        avatar: "/assets/logos/center-2.png",
-      },
-      {
-        id: "chat-3",
-        name: "Rainbow Kids Academy",
-        type: "center", 
-        lastMessage: "We're excited to have Emma join our summer program!",
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-        unreadCount: 0,
-        isOnline: false,
-        avatar: "/assets/logos/center-3.png",
+  // Fetch chat contacts
+  const fetchChatContacts = useCallback(async () => {
+    if (!token || !currentUser.id) return;
+
+    try {
+      setIsLoading(true);
+      const contacts = await chatService.getChatContacts(token, currentUser.id, currentUser.type);
+      setChats(contacts);
+
+      // Select the first chat by default if none selected
+      if (contacts.length > 0 && !selectedChatId) {
+        setSelectedChatId(contacts[0].id);
       }
-    ];
-    setChats(sampleChats);
-  }, []);
+    } catch (error) {
+      console.error("Error fetching chat contacts:", error);
+      toast.error("Failed to load chat contacts");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
+
+  // Fetch messages for the selected chat
+  const fetchMessages = useCallback(async () => {
+    if (!selectedChatId || !token || !currentUser.id) return;
+
+    try {
+      setIsLoading(true);
+      const chatMessages = await chatService.getMessages(selectedChatId, token, currentUser.id, currentUser.type);
+      setMessages(chatMessages);
+
+      // Update last message in chats list
+      if (chatMessages.length > 0) {
+        const lastMessage = chatMessages[chatMessages.length - 1];
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === selectedChatId
+              ? {
+                  ...chat,
+                  lastMessage: lastMessage.content,
+                  timestamp: lastMessage.timestamp,
+                }
+              : chat
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      toast.error("Failed to load messages");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
+
+  // Update online status when component mounts/unmounts
+  useEffect(() => {
+    let keepAliveInterval: NodeJS.Timeout;
+
+    const updateStatus = async (isOnline: boolean) => {
+      try {
+        if (!token) return;
+
+        await chatService.updateOnlineStatus(isOnline, token);
+      } catch (error) {
+        console.error("Error updating online status:", error);
+      }
+    };
+
+    // Set online
+    updateStatus(true);
+
+    // Set up interval to keep alive (every 30 seconds)
+    keepAliveInterval = setInterval(() => {
+      updateStatus(true);
+    }, 30000);
+
+    // Set up beforeunload to set offline
+    const handleBeforeUnload = () => {
+      updateStatus(false);
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      clearInterval(keepAliveInterval);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      updateStatus(false);
+      // Disconnect Pusher when component unmounts
+      pusherService.disconnect();
+    };
+  }, [token]);
+
+  // Load initial data
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchChatContacts();
+    } else {
+      router.push("/sign-in");
+    }
+  }, [isAuthenticated, fetchChatContacts, router]);
+
+  // Load messages when selected chat changes
+  useEffect(() => {
+    if (selectedChatId) {
+      fetchMessages();
+    }
+  }, [selectedChatId, fetchMessages]);
+
+  // Set up Pusher real-time messaging for parent
+  useEffect(() => {
+    if (!selectedChatId || !currentUser.id) return;
+
+    // Initialize Pusher
+    pusherService.initialize();
+
+    // Subscribe to current user's chat list updates
+    pusherService.subscribeToChatList(currentUser.id, {
+      onChatUpdate: (chatData) => {
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === chatData.chatId
+              ? { ...chat, lastMessage: chatData.lastMessage, timestamp: new Date(chatData.timestamp) }
+              : chat
+          )
+        );
+      },
+      onNewChatCreated: (chatData) => {
+        const newChatItem: ChatListItem = {
+          id: chatData.chatId,
+          name: chatData.chatName,
+          type: 'center',
+          lastMessage: chatData.lastMessage || '',
+          timestamp: new Date(chatData.timestamp),
+          unreadCount: 1,
+          isOnline: chatData.isOnline || false,
+        };
+        setChats(prev => [newChatItem, ...prev]);
+      },
+    });
+
+    // Subscribe to chat channel for real-time messages
+    pusherService.subscribeToChat(currentUser.id, {
+      onNewMessage: (message) => {
+        // Only add message if it's not from current user (to avoid duplicates)
+        if (message.sender_id.toString() !== currentUser.id) {
+          const newMessage: Message = {
+            id: message.id.toString(),
+            content: message.message,
+            senderId: message.sender_id.toString(),
+            senderName: message.sender_name || 'Center',
+            senderType: 'center',
+            timestamp: new Date(message.created_at),
+            chatId: selectedChatId,
+            imageUrl: message.image_url,
+            videoUrl: message.video_url_path,
+          };
+          
+          setMessages(prev => [...prev, newMessage]);
+          
+          // Update last message in chats list
+          setChats(prevChats =>
+            prevChats.map(chat =>
+              chat.id === message.sender_id.toString()
+                ? {
+                    ...chat,
+                    lastMessage: newMessage.content,
+                    timestamp: newMessage.timestamp,
+                    unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                  }
+                : chat
+            )
+          );
+        }
+      },
+    });
+
+    // Subscribe to global user status
+    pusherService.subscribeToUserStatus({
+      onUserOnline: (userId) => {
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: true }
+              : chat
+          )
+        );
+      },
+      onUserOffline: (userId) => {
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === userId
+              ? { ...chat, isOnline: false }
+              : chat
+          )
+        );
+      },
+    });
+
+    // Cleanup on component unmount or chat change
+    return () => {
+      pusherService.unsubscribeFromChat(currentUser.id);
+      pusherService.unsubscribeFromChatList(currentUser.id);
+      pusherService.unsubscribeFromUserStatus();
+    };
+  }, [selectedChatId, currentUser.id]);
 
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
-    
-    // Sample messages for demonstration
-    const sampleMessages: Message[] = [
-      {
-        id: "msg-1",
-        content: "Good morning! How is Emma settling in today?",
-        senderId: currentUser.id,
-        senderName: currentUser.name,
-        senderType: "parent",
-        timestamp: new Date(Date.now() - 1000 * 60 * 180), // 3 hours ago
-        chatId,
-      },
-      {
-        id: "msg-2", 
-        content: "Good morning Sarah! Emma is doing wonderfully. She joined our morning circle time and is now enjoying free play with her friends.",
-        senderId: "center-1",
-        senderName: "Sunshine Daycare", 
-        senderType: "center",
-        timestamp: new Date(Date.now() - 1000 * 60 * 150), // 2.5 hours ago
-        chatId,
-      },
-      {
-        id: "msg-3",
-        content: "That's wonderful to hear! She was so excited this morning. Has she eaten her snack?",
-        senderId: currentUser.id,
-        senderName: currentUser.name,
-        senderType: "parent", 
-        timestamp: new Date(Date.now() - 1000 * 60 * 120), // 2 hours ago
-        chatId,
-      },
-      {
-        id: "msg-4",
-        content: "Yes, she enjoyed her apple slices and crackers. She's such a good eater! I'll send you some photos from today's activities. 📸",
-        senderId: "center-1",
-        senderName: "Sunshine Daycare",
-        senderType: "center", 
-        timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-        chatId,
+  };
+
+  const handleSendMessage = async (content: string) => {
+    if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
+
+    try {
+      setIsSending(true);
+
+      const newMessage = await chatService.sendMessage(
+        selectedChatId,
+        content,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
+
+      setMessages((prev) => [...prev, newMessage]);
+
+      // Update last message in chats list
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === selectedChatId
+            ? {
+                ...chat,
+                lastMessage: newMessage.content,
+                timestamp: newMessage.timestamp,
+                unreadCount: 0, // Reset unread count
+              }
+            : chat
+        )
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleNewChat = async (participantId: string) => {
+    try {
+      if (!token) {
+        throw new Error("No authentication token found");
       }
-    ];
-    setMessages(sampleMessages);
-  };
 
-  const handleSendMessage = (content: string) => {
-    if (!selectedChatId) return;
-    
-    const newMessage: Message = {
-      id: `msg-${Date.now()}`,
-      content,
-      senderId: currentUser.id,
-      senderName: currentUser.name,
-      senderType: currentUser.type,
-      timestamp: new Date(),
-      chatId: selectedChatId,
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-  };
+      // Check if chat already exists
+      const existingChat = chats.find((chat) => chat.id === participantId);
+      if (existingChat) {
+        setSelectedChatId(participantId);
+        return;
+      }
 
-  const handleNewChat = (participantId: string) => {
-    // Logic to start a new chat with a center
-    console.log("Starting new chat with center:", participantId);
+      // Create new chat entry for immediate UI feedback
+      const newChatItem: ChatListItem = {
+        id: participantId,
+        name: "New Chat", // This will be updated when we fetch the actual contact info
+        type: "center",
+        lastMessage: "",
+        timestamp: new Date(),
+        unreadCount: 0,
+        isOnline: false,
+      };
+
+      setChats(prev => [...prev, newChatItem]);
+      setSelectedChatId(participantId);
+      setMessages([]); // Start with empty messages
+      
+      toast.success("New chat started!");
+    } catch (error) {
+      console.error("Error creating new chat:", error);
+      toast.error("Failed to create a new chat");
+    }
   };
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
   return (
-    <div className="relative flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
+    <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
       <ChatSidebar
         currentUser={currentUser}
         chats={chats}
@@ -136,14 +323,6 @@ const ParentChatPage = () => {
         selectedChat={selectedChat}
         messages={messages}
         onSendMessage={handleSendMessage}
-      />
-      
-      {/* Coming Soon Overlay */}
-      <ComingSoonOverlay
-        message="Parent chat is being redesigned with real-time updates and photo sharing! Connect with your child's nursery like never before."
-        icon={<Heart className="w-8 h-8 text-pink-400 animate-bounce" />}
-        theme="gradient"
-        showBlur={true}
       />
     </div>
   );

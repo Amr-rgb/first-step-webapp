@@ -918,6 +918,28 @@ export const nurseryService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getBranchesByNursery: async (nurseryName: string): Promise<any[]> => {
+    try {
+      const response = await apiClient.get(
+        `/api/branches?nursery_name=${nurseryName}`
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching branches by nursery:", error);
+      return [];
+    }
+  },
+
+  getBranchPricing: async (branchId: string): Promise<any[]> => {
+    try {
+      const response = await apiClient.get(`/branches-pricies/${branchId}`);
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching branch pricing:", error);
+      return [];
+    }
+  },
 };
 
 export const authService = {
