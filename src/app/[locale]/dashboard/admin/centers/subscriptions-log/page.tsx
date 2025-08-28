@@ -132,7 +132,7 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
           </div>
         </div>
 
-        {isActive ? (
+        {/* {isActive ? (
           <Button
             size="long"
             variant="outline"
@@ -144,7 +144,7 @@ function CenterSubscriptionCard({ subscription }: CenterSubscriptionCardProps) {
           <Button size="long" className="mt-4 w-full md:w-auto">
             {t("sendPaymentReminder")}
           </Button>
-        )}
+        )} */}
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col gap-4">
