@@ -2040,6 +2040,7 @@
         "subscriptionDescription": "Your current plan and renewal date",
         "subscriptionStatus": "Subscription Status:",
         "statusActive": "Active",
+        "statusFreeTrial": "Free Trial",
         "startDate": "Start Date:",
         "subscriptionType": "Subscription Type:",
         "endDate": "End Date:",
@@ -2050,7 +2051,8 @@
         "errorLoading": "An error occurred while loading plans.",
         "subscribeButton": "Subscribe",
         "subscriptionRequiredMessage": "Services have been suspended due to the expiration of the trial period. You can get the most out of the platform by subscribing to one of the available packages.",
-        "goToBilling": "Subscribe Now"
+        "goToBilling": "Subscribe Now",
+        "warning": "⚠ The trial period is about to expire, so please renew your subscription to continue enjoying the benefits of First Step."
       }
     },
     "HeroSection": {

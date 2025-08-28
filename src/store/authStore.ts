@@ -27,6 +27,7 @@ interface User {
   neighborhood: string;
   subscription_end_date: string;
   subscription_start_date: string;
+  free_trail_end_date: string;
   subscription_status: string;
   type_of_duration: string;
   published_at: string;

@@ -1957,6 +1957,7 @@
         "subscriptionDescription": "خطتك الحالية وتاريخ التجديد",
         "subscriptionStatus": "حالة الاشتراك:",
         "statusActive": "نشط",
+        "statusFreeTrial": "تجربة مجانية",
         "startDate": "تاريخ البدء:",
         "subscriptionType": "نوع الاشتراك:",
         "endDate": "تاريخ الانتهاء:",
@@ -1967,7 +1968,8 @@
         "errorLoading": "حدث خطأ أثناء تحميل الخطط.",
         "subscribeButton": "اشترك الآن",
         "subscriptionRequiredMessage": "تم تعليق الخدمات لانتهاء الفترة التجريبية، يمكنك استعادة كافة المزايا المنصة من خلال الاشتراك في إحدى الباقات المتاحة.",
-        "goToBilling": "اشترك الان"
+        "goToBilling": "اشترك الان",
+        "warning": "⚠ توشك الفترة التجريبية على الانتهاء، لذا يرجى الإسراع بتجديد اشتراكك للاستمرار في الاستفادة من مزايا First Step."
       }
     },
     "HeroSection": {

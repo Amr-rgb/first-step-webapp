@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { usePathname } from "@/i18n/navigation";
 import { useSubscriptionRequired } from "@/store/subscriptionStore";
+import { useAuthUser } from "@/store/authStore";
 import Header from "@/components/dashboard/Header";
 import DashboardSideBar from "@/components/dashboard/Sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -11,6 +12,7 @@ import {
   useSetSecondarySidebarOpen,
 } from "@/store/sidebarStore";
 import SubscriptionGate from "@/components/dashboard/SubscriptionGate";
+import WarningBar from "@/components/dashboard/WarningBar";
 
 export default function DashboardLayout({
   children,
@@ -18,6 +20,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const user = useAuthUser();
 
   // Sidebar open state (for main sidebar only)
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,6 +55,11 @@ export default function DashboardLayout({
             sidebarOpen={sidebarOpen}
             secondarySidebarOpen={secondarySidebarOpen}
           />
+
+          {/* Warning Bar */}
+          {user?.role === "center" || user?.role === "branch_admin" ? (
+            <WarningBar />
+          ) : null}
 
           <div className="px-4 md:px-10 py-10">
             {isSubscriptionRequired ? <SubscriptionGate /> : children}
