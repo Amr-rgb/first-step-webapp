@@ -692,11 +692,13 @@
       "admin": {
         "home": "Home",
         "centers": "Nurseries & Centers",
+        "centers-subscriptions": "Centers Subscriptions Log",
         "parents": "Parents",
         "bookings": "Bookings",
         "advertisement": "Advertisement",
         "blog": "Blog",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "chat": "chat"
       },
       "center": {
         "home": "Home",

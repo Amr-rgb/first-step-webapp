@@ -120,6 +120,11 @@ const getAdminNavbar = (t: any) => [
     icon: dashboardIcons.building,
   },
   {
+    title: t("admin.centers-subscriptions"),
+    url: "/dashboard/admin/centers-subscriptions",
+    icon: dashboardIcons.visa,
+  },
+  {
     title: t("admin.parents"),
     url: "/dashboard/admin/parents",
     icon: dashboardIcons.person,
@@ -239,10 +244,9 @@ const DashboardSideBar = () => {
             <SidebarMenu>
               {navbar.map((item) => {
                 const isActive =
-                  pathname === basePathname
-                    ? pathname === item.url
-                    : pathname.startsWith(item.url) &&
-                      item.url !== basePathname;
+                pathname === item.url ||
+                (pathname.startsWith(item.url + "/") && item.url !== basePathname);
+              
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
