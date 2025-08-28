@@ -49,6 +49,7 @@ export default function CenterBillingPage() {
   // Find the active plan
   const activePlan = plans.find((plan) => plan.auth_user_status === "active");
   const otherPlans = plans.filter((plan) => plan.auth_user_status !== "active");
+  const isFreeTrial = user?.subscription_status === "free";
 
   const handlePayment = async (planId: number) => {
     setIsSubmitting(planId);
@@ -114,13 +115,21 @@ export default function CenterBillingPage() {
                   {t("subscriptionStatus")}
                 </span>
                 <Badge variant="secondary" className="bg-success text-white">
-                  {t("statusActive")}
+                  {isFreeTrial ? t("statusFreeTrial") : t("statusActive")}
                 </Badge>
               </div>
               <div className="text-mid-gray flex gap-2">
                 <span className="font-bold text-primary">{t("startDate")}</span>
                 <span>
-                  {activePlan
+                  {isFreeTrial
+                    ? format(
+                        new Date(user?.created_at as string),
+                        "EEEE - yyyy/M/d",
+                        {
+                          locale: locale === "ar" ? arSA : enUS,
+                        }
+                      )
+                    : activePlan
                     ? format(
                         new Date(user?.subscription_start_date as string),
                         "EEEE - yyyy/M/d",
@@ -138,7 +147,11 @@ export default function CenterBillingPage() {
                   {t("subscriptionType")}
                 </span>
                 <span>
-                  {activePlan ? (
+                  {isFreeTrial ? (
+                    <span className="text-mid-gray">
+                      {t("statusFreeTrial")}
+                    </span>
+                  ) : activePlan ? (
                     <span className="text-mid-gray">{activePlan.name}</span>
                   ) : (
                     <span>-</span>
@@ -148,7 +161,15 @@ export default function CenterBillingPage() {
               <div className="text-mid-gray flex gap-2">
                 <span className="font-bold text-primary">{t("endDate")}</span>
                 <span>
-                  {activePlan
+                  {isFreeTrial
+                    ? format(
+                        new Date(user?.free_trail_end_date as string),
+                        "EEEE - yyyy/M/d",
+                        {
+                          locale: locale === "ar" ? arSA : enUS,
+                        }
+                      )
+                    : activePlan
                     ? format(
                         new Date(user?.subscription_end_date as string),
                         "EEEE - yyyy/M/d",
