@@ -1089,7 +1089,8 @@
           "annual": "Annual",
           "semiAnnual": "Semi-Annual",
           "quarterly": "Quarterly"
-        }
+        },
+        "error": "An error occurred while loading data"
       },
       "blog": {
         "tabs": {
