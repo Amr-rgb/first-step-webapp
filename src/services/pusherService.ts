@@ -19,6 +19,8 @@ class PusherService {
     callbacks: {
       onNewMessage?: (message: any) => void;
       onTyping?: (data: { userId: string; isTyping: boolean }) => void;
+      onUserOnline?: (userId: string) => void;
+      onUserOffline?: (userId: string) => void;
     }
   ) {
     if (!this.pusher) {
@@ -40,6 +42,14 @@ class PusherService {
 
     if (callbacks.onTyping) {
       channel.bind("user.typing", callbacks.onTyping);
+    }
+
+    if (callbacks.onUserOnline) {
+      channel.bind("user.online", callbacks.onUserOnline);
+    }
+
+    if (callbacks.onUserOffline) {
+      channel.bind("user.offline", callbacks.onUserOffline);
     }
 
     return channel;

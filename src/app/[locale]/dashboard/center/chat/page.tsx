@@ -33,7 +33,11 @@ const CenterChatPage = () => {
 
     try {
       setIsLoading(true);
-      const contacts = await chatService.getChatContacts(token, currentUser.id, currentUser.type);
+      const contacts = await chatService.getChatContacts(
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setChats(contacts);
 
       // Select the first chat by default if none selected
@@ -54,7 +58,12 @@ const CenterChatPage = () => {
 
     try {
       setIsLoading(true);
-      const chatMessages = await chatService.getMessages(selectedChatId, token, currentUser.id, currentUser.type);
+      const chatMessages = await chatService.getMessages(
+        selectedChatId,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -150,64 +159,77 @@ const CenterChatPage = () => {
             id: message.id.toString(),
             content: message.message,
             senderId: message.sender_id.toString(),
-            senderName: message.sender_name || 'User',
-            senderType: message.sender_id.toString() === currentUser.id ? 'center' : 'parent',
+            senderName: message.sender_name || "User",
+            senderType:
+              message.sender_id.toString() === currentUser.id
+                ? "center"
+                : "parent",
             timestamp: new Date(message.created_at),
             chatId: selectedChatId,
             imageUrl: message.image_url,
             videoUrl: message.video_url_path,
           };
-          
-          setMessages(prev => [...prev, newMessage]);
-          
+
+          setMessages((prev) => [...prev, newMessage]);
+
           // Update last message in chats list
-          setChats(prevChats =>
-            prevChats.map(chat =>
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
               chat.id === selectedChatId
                 ? {
                     ...chat,
                     lastMessage: newMessage.content,
                     timestamp: newMessage.timestamp,
-                    unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                    unreadCount:
+                      chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                   }
                 : chat
             )
           );
         }
       },
-      onUserOnline: (userId) => {
+      onUserOnline: (userId: string) => {
         // Update user online status
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: true }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: true } : chat
           )
         );
       },
-      onUserOffline: (userId) => {
+      onUserOffline: (userId: string) => {
         // Update user offline status
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: false }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: false } : chat
           )
         );
       },
     });
 
     // Subscribe to user status updates
-    pusherService.subscribeToUserStatus(currentUser.id, {
-      onStatusChange: (status) => {
-        console.log('User status changed:', status);
+    pusherService.subscribeToUserStatus({
+      onUserOnline: (userId: string) => {
+        // Update user online status
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: true } : chat
+          )
+        );
+      },
+      onUserOffline: (userId: string) => {
+        // Update user offline status
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: false } : chat
+          )
+        );
       },
     });
 
     // Cleanup on component unmount or chat change
     return () => {
       pusherService.unsubscribeFromChat(selectedChatId);
-      pusherService.unsubscribeFromUserStatus(currentUser.id);
+      pusherService.unsubscribeFromUserStatus();
     };
   }, [selectedChatId, currentUser.id]);
 
@@ -276,10 +298,10 @@ const CenterChatPage = () => {
         isOnline: false,
       };
 
-      setChats(prev => [...prev, newChatItem]);
+      setChats((prev) => [...prev, newChatItem]);
       setSelectedChatId(participantId);
       setMessages([]); // Start with empty messages
-      
+
       toast.success("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);
