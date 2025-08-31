@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
@@ -12,6 +14,8 @@ export default function CenterBlogsPage({
 }: {
   params: Promise<{ centerId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.blog.center");
   const { centerId } = use(params);
   const queryClient = useQueryClient();

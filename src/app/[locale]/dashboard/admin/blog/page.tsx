@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useState } from "react";
 import { Tabs } from "@/components/general/Tabs";
 import CentersBlogs from "@/components/dashboard/blog/CentersBlogs";
@@ -7,8 +9,12 @@ import AdminBlogs from "@/components/dashboard/blog/AdminBlogs";
 import { useTranslations } from "next-intl";
 
 export default function BlogPage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.blog");
-  const [activeTab, setActiveTab] = useState<"firstStep" | "centers">("firstStep");
+  const [activeTab, setActiveTab] = useState<"firstStep" | "centers">(
+    "firstStep"
+  );
 
   return (
     <div className="flex flex-col gap-y-6">

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
@@ -33,6 +35,8 @@ interface Subscription {
 }
 
 export default function CentersSubscriptionsLog() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.subscriptions");
 
   const {

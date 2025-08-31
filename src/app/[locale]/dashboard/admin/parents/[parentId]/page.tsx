@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -24,6 +26,8 @@ export default function DashboardChildrenPage({
 }: {
   params: Promise<{ parentId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { parentId } = use(params);
   const t = useTranslations("dashboard.admin.parents.details");
 

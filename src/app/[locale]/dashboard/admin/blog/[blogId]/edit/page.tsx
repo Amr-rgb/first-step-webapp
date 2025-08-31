@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AdminBlogRequestFormData } from "@/lib/schemas";
@@ -15,6 +17,8 @@ export default function BlogEdit({
 }: {
   params: Promise<{ blogId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.blog.edit");
   const { blogId } = use(params);
 

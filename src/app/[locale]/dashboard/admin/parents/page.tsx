@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useState } from "react";
 import { Tabs } from "@/components/general/Tabs";
 import Children from "@/components/dashboard/children/Children";
@@ -7,6 +9,8 @@ import Parents from "@/components/dashboard/Parents/Parents";
 import { useTranslations } from "next-intl";
 
 export default function ParentsPage() {
+  const meta = usePageMetadata();
+
   const [activeTab, setActiveTab] = useState<"parents" | "children">("parents");
   const t = useTranslations("dashboard.admin.parents");
 

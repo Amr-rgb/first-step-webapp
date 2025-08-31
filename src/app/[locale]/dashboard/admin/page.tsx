@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import TopBookings from "@/components/dashboard/admin-bookings/TopBooking";
@@ -150,6 +152,8 @@ const CARDS = [
 import { useAdminStats } from "@/hooks/useAdminStats";
 
 export default function AdminDashboardHome() {
+  const meta = usePageMetadata();
+
   const { stats, isLoading } = useAdminStats();
   const t = useTranslations("dashboard.admin");
   const locale = useLocale();

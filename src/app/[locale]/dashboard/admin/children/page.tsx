@@ -1,4 +1,12 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+import { getLocale } from "next-intl/server";
 import ChildrenCards from "@/components/dashboard/children/Children";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(locale as Locale, "dashboard/admin/children");
+}
 
 export default async function Children() {
   return (

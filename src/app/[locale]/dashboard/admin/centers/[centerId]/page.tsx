@@ -1,5 +1,13 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+import { getLocale } from "next-intl/server";
 import Branches from "@/components/dashboard/branches/Branches";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(locale as Locale, "dashboard/admin/centers");
+}
 
 export default async function CenterBranches({
   params,
