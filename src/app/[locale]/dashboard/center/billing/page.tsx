@@ -127,7 +127,7 @@ export default function CenterBillingPage() {
                 <span>
                   {isFreeTrial
                     ? format(
-                        new Date(user?.created_at as string),
+                        new Date((user?.created_at as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -135,7 +135,9 @@ export default function CenterBillingPage() {
                       )
                     : activePlan
                     ? format(
-                        new Date(user?.subscription_start_date as string),
+                        new Date(
+                          (user?.subscription_start_date as string) || 0
+                        ),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -167,7 +169,7 @@ export default function CenterBillingPage() {
                 <span>
                   {isFreeTrial
                     ? format(
-                        new Date(user?.free_trail_end_date as string),
+                        new Date((user?.free_trail_end_date as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -175,7 +177,7 @@ export default function CenterBillingPage() {
                       )
                     : activePlan
                     ? format(
-                        new Date(user?.subscription_end_date as string),
+                        new Date((user?.subscription_end_date as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
