@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ChildShow from "@/components/forms/dashboard/children/ChildShow";
@@ -114,6 +116,8 @@ export default function DashboardChildShow({
 }: {
   params: Promise<{ childId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { childId } = use(params);
 
   const { data: childData, isLoading } = useQuery({

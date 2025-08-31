@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +14,8 @@ export default function EditTeamMember({
 }: {
   params: Promise<{ memberId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.center.team");
   const { memberId } = use(params);
 

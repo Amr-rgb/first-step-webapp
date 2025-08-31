@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useLocale, useTranslations } from "next-intl";
 import { useCenterPlans } from "@/hooks/useCenterPlans";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -20,6 +22,8 @@ import { useQuery } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
 
 export default function CenterBillingPage() {
+  const meta = usePageMetadata();
+
   const locale = useLocale();
   const user = useAuthUser();
   const { plans, loading, error } = useCenterPlans();

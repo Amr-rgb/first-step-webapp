@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { Button } from "@/components/ui/button";
 import Ads from "@/components/dashboard/ad-or-blog-request/Ads";
 import DashboardBlogCard from "@/components/dashboard/blog/DashboardBlogCard";
@@ -158,6 +160,8 @@ const AdsSection = () => {
 };
 
 export default function CenterDashboardRequest() {
+  const meta = usePageMetadata();
+
   const { can } = usePermissions();
   const canViewtAd = can("view", "advertisements");
   const canViewtBlog = can("view", "blogs");

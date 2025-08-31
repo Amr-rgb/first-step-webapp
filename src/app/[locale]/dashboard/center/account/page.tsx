@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore, useAuthUser } from "@/store/authStore";
 import { centerService } from "@/services/dashboardApi";
@@ -8,6 +10,8 @@ import { CenterProfileForm, createCenterProfileSchema } from "@/lib/schemas";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CenterEditProfilePage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.account");
   const locale = useLocale();
   const user = useAuthUser();

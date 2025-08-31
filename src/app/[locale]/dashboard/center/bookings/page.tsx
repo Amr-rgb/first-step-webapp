@@ -1,7 +1,15 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+import { getLocale } from "next-intl/server";
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import Bookings from "@/components/dashboard/center-bookings/Bookings";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(locale as Locale, "dashboard/center/bookings");
+}
 
 export default async function CenterDashboardBookings() {
   const t = await getTranslations("dashboard.charts.bookings");

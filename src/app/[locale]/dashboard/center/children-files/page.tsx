@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useTranslations } from "next-intl";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import CircularProgressChart from "@/components/charts/CircularProgressChart";
@@ -19,6 +21,8 @@ const CircularProgressSkeleton = () => {
 };
 
 export default function CenterDashboardHome() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.charts.children");
   const isCenter = useHasRole("center");
   const { stats, isLoading } = useCenterStats(isCenter ? "center" : "branch");

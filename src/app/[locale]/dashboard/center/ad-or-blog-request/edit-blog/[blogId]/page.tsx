@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
@@ -11,6 +13,8 @@ export default function CenterBlogEdit({
 }: {
   params: Promise<{ blogId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.center.ad-or-blog-request.blog.edit");
   const locale = useLocale();
   const { blogId } = use(params);

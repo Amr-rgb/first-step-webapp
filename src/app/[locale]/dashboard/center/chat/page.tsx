@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -11,6 +13,8 @@ import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const CenterChatPage = () => {
+  const meta = usePageMetadata();
+
   const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);

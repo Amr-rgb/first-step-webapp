@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import Team from "@/components/dashboard/team/Team";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -50,6 +52,8 @@ const BranchSkeleton = () => {
 };
 
 export default function CenterDashboardTeam() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.center.team");
 
   const { data: branches = [], isLoading: isLoadingBranches } = useQuery({

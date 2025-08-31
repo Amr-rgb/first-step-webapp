@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -7,6 +9,8 @@ import Branches from "@/components/dashboard/branches/Branches";
 import { usePermissions } from "@/hooks/usePermissions";
 
 export default function CenterDashboardHome() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.center.branches");
   const { can } = usePermissions();
   const canAddBranch = can("create", "branches");

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -21,6 +23,8 @@ export default function DashboardEditBranch({
 }: {
   params: Promise<{ branchId: string; locale: "ar" | "en" }>;
 }) {
+  const meta = usePageMetadata();
+
   const router = useRouter();
   const { branchId, locale } = use(params);
   const t = useTranslations("dashboard.center.branches");
