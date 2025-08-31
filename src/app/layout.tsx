@@ -8,10 +8,10 @@ const tajawal = Tajawal({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "First Step",
-  description: "Smart childcare for every family.",
-};
+// export const metadata: Metadata = {
+//   title: "First Step",
+//   description: "Smart childcare for every family.",
+// };
 
 export default function RootLayout({
   children,

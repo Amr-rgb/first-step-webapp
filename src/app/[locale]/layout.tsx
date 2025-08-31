@@ -22,10 +22,10 @@ const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
 });
 
-export const metadata: Metadata = {
-  title: "First Step",
-  description: "Smart childcare for every family.",
-};
+// export const metadata: Metadata = {
+//   title: "First Step",
+//   description: "Smart childcare for every family.",
+// };
 
 export default async function LocaleLayout({
   children,
