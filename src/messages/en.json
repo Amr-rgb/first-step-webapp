@@ -2053,6 +2053,17 @@
         "subscriptionRequiredMessage": "Services have been suspended due to the expiration of the trial period. You can get the most out of the platform by subscribing to one of the available packages.",
         "goToBilling": "Subscribe Now",
         "warning": "⚠ The trial period is about to expire, so please renew your subscription to continue enjoying the benefits of First Step."
+      },
+      "warning": {
+        "title": "Active Subscription Detected",
+        "description": "You currently have an active subscription. Subscribing to a new plan will replace your current subscription.",
+        "currentPlan": "Current Plan:",
+        "freeTrial": "Free Trial",
+        "activeSubscription": "Active Subscription",
+        "expiresOn": "Expires on:",
+        "note": "Note: Your new subscription will start immediately and replace the current one. Any remaining time on your current plan will be forfeited.",
+        "cancel": "Cancel",
+        "continue": "Continue with New Plan"
       }
     },
     "HeroSection": {

@@ -10,11 +10,17 @@ import { paymentService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { usePlans } from "@/hooks/usePlans";
 import { Skeleton } from "../ui/skeleton";
+import { SubscriptionWarningModal } from "../modals/SubscriptionWarningModal";
 
 const SubscriptionSection = () => {
   const t = useTranslations("HomePage.Subscription");
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+
+  // Get current user from auth store
+  const currentUser = useAuthStore.getState().user;
 
   // Use the new usePlans hook instead of static plans
   const { plans, loading, error } = usePlans();
@@ -110,16 +116,42 @@ const SubscriptionSection = () => {
   }
 
   const handlePayment = async (planId: number) => {
+    // Check if user is authenticated first
+    const isAuthenticated = useAuthStore.getState().isAuthenticated();
+    if (!isAuthenticated) {
+      alert("Please log in to subscribe to a plan.");
+      return;
+    }
+
+    // Check if current plan is still active
+    const isPlanActive = () => {
+      if (currentUser?.subscription_status === "free") {
+        const freeTrialEndDate = new Date(
+          currentUser?.free_trail_end_date || 0
+        );
+        return freeTrialEndDate > new Date();
+      } else {
+        const subscriptionEndDate = new Date(
+          currentUser?.subscription_end_date || 0
+        );
+        return subscriptionEndDate > new Date();
+      }
+    };
+
+    if (isPlanActive()) {
+      // Show warning modal
+      setSelectedPlanId(planId);
+      setShowWarningModal(true);
+      return;
+    }
+
+    // Proceed with payment if no active plan
+    await proceedWithPayment(planId);
+  };
+
+  const proceedWithPayment = async (planId: number) => {
     setIsSubmitting(planId);
     try {
-      // Check if user is authenticated before making payment request
-      const isAuthenticated = useAuthStore.getState().isAuthenticated();
-      if (!isAuthenticated) {
-        setIsSubmitting(null);
-        alert("Please log in to subscribe to a plan.");
-        return;
-      }
-
       console.log("Initiating payment for plan:", planId);
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
@@ -253,7 +285,6 @@ const SubscriptionSection = () => {
           {t("title")}
         </h2>
 
-        
         {/* Promo Banner */}
         <div className="relative rounded-3xl overflow-hidden">
           <div className="z-20 relative flex flex-col items-center gap-y-8 text-center py-14.5 px-10 bg-[linear-gradient(to_right,_#2B399000_0%,_#2B3990FF_30%,_#2B3990FF_70%,_#2B399000_100%)]">
@@ -403,6 +434,20 @@ const SubscriptionSection = () => {
             })}
           </div>
         )}
+
+        {/* Warning Modal */}
+        <SubscriptionWarningModal
+          isOpen={showWarningModal}
+          onClose={() => setShowWarningModal(false)}
+          onConfirm={() => {
+            if (selectedPlanId) {
+              proceedWithPayment(selectedPlanId);
+              setShowWarningModal(false);
+              setSelectedPlanId(null);
+            }
+          }}
+          user={currentUser}
+        />
       </div>
     </section>
   );
