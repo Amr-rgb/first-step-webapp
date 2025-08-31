@@ -1,4 +1,12 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+import { getLocale } from "next-intl/server";
 import ChildWrapper from "@/components/forms/dashboard/children/ChildWrapper";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(locale as Locale, "dashboard/parent/children/add");
+}
 
 const initialValues = {
   name: "",

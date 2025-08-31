@@ -1,7 +1,16 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+
 import Children from "@/components/dashboard/children/Children";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { getLocale } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(locale as Locale, "dashboard/parent/children");
+}
 
 export default function ChildrenPage() {
   const t = useTranslations("dashboard.parent.children");

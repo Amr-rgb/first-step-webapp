@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import {
   Report,
   useParentReportsColumns,
@@ -56,6 +58,8 @@ interface DailyReportResponse {
 }
 
 const useDailyReports = () => {
+  const meta = usePageMetadata();
+
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
   const t = useTranslations("dashboard.parent.reports");

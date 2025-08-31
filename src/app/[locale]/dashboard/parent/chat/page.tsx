@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -11,6 +13,8 @@ import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const ParentChatPage = () => {
+  const meta = usePageMetadata();
+
   const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -32,7 +36,11 @@ const ParentChatPage = () => {
 
     try {
       setIsLoading(true);
-      const contacts = await chatService.getChatContacts(token, currentUser.id, currentUser.type);
+      const contacts = await chatService.getChatContacts(
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setChats(contacts);
 
       // Select the first chat by default if none selected
@@ -53,7 +61,12 @@ const ParentChatPage = () => {
 
     try {
       setIsLoading(true);
-      const chatMessages = await chatService.getMessages(selectedChatId, token, currentUser.id, currentUser.type);
+      const chatMessages = await chatService.getMessages(
+        selectedChatId,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -143,10 +156,14 @@ const ParentChatPage = () => {
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
       onChatUpdate: (chatData) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
             chat.id === chatData.chatId
-              ? { ...chat, lastMessage: chatData.lastMessage, timestamp: new Date(chatData.timestamp) }
+              ? {
+                  ...chat,
+                  lastMessage: chatData.lastMessage,
+                  timestamp: new Date(chatData.timestamp),
+                }
               : chat
           )
         );
@@ -155,13 +172,13 @@ const ParentChatPage = () => {
         const newChatItem: ChatListItem = {
           id: chatData.chatId,
           name: chatData.chatName,
-          type: 'center',
-          lastMessage: chatData.lastMessage || '',
+          type: "center",
+          lastMessage: chatData.lastMessage || "",
           timestamp: new Date(chatData.timestamp),
           unreadCount: 1,
           isOnline: chatData.isOnline || false,
         };
-        setChats(prev => [newChatItem, ...prev]);
+        setChats((prev) => [newChatItem, ...prev]);
       },
     });
 
@@ -174,25 +191,26 @@ const ParentChatPage = () => {
             id: message.id.toString(),
             content: message.message,
             senderId: message.sender_id.toString(),
-            senderName: message.sender_name || 'Center',
-            senderType: 'center',
+            senderName: message.sender_name || "Center",
+            senderType: "center",
             timestamp: new Date(message.created_at),
             chatId: selectedChatId,
             imageUrl: message.image_url,
             videoUrl: message.video_url_path,
           };
-          
-          setMessages(prev => [...prev, newMessage]);
-          
+
+          setMessages((prev) => [...prev, newMessage]);
+
           // Update last message in chats list
-          setChats(prevChats =>
-            prevChats.map(chat =>
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
               chat.id === message.sender_id.toString()
                 ? {
                     ...chat,
                     lastMessage: newMessage.content,
                     timestamp: newMessage.timestamp,
-                    unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                    unreadCount:
+                      chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                   }
                 : chat
             )
@@ -204,20 +222,16 @@ const ParentChatPage = () => {
     // Subscribe to global user status
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: true }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: true } : chat
           )
         );
       },
       onUserOffline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: false }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: false } : chat
           )
         );
       },
@@ -296,10 +310,10 @@ const ParentChatPage = () => {
         isOnline: false,
       };
 
-      setChats(prev => [...prev, newChatItem]);
+      setChats((prev) => [...prev, newChatItem]);
       setSelectedChatId(participantId);
       setMessages([]); // Start with empty messages
-      
+
       toast.success("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);

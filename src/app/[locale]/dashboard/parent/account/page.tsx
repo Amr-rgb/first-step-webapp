@@ -1,5 +1,6 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { parentService } from "@/services/dashboardApi";
@@ -8,6 +9,8 @@ import { createParentProfileSchema, ParentProfileForm } from "@/lib/schemas";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function ParentEditProfilePage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.account");
   const locale = useLocale() as "ar" | "en";
   const user = useAuthUser();
