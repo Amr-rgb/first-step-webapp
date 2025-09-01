@@ -700,7 +700,8 @@
         "bookings": "Bookings",
         "advertisement": "Advertisement",
         "blog": "Blog",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "chat": "Chat"
       },
       "center": {
         "home": "Home",

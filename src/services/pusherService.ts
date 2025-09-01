@@ -7,6 +7,10 @@ class PusherService {
   initialize() {
     if (this.pusher) return this.pusher;
 
+    if (process.env.NODE_ENV === "development") {
+      Pusher.logToConsole = true;
+    }
+
     this.pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
     });
@@ -26,20 +30,32 @@ class PusherService {
     }
 
     const channelName = `chat.${receiverId}`;
+    console.log("🔔 Subscribing to chat channel:", channelName);
+
     let channel = this.channels.get(channelName);
 
     if (!channel) {
       channel = this.pusher!.subscribe(channelName);
       this.channels.set(channelName, channel);
+      console.log("✅ Chat channel subscribed:", channelName);
     }
 
     // Bind events
     if (callbacks.onNewMessage) {
-      channel.bind("message.sent", callbacks.onNewMessage);
+      console.log("🔧 Binding new-message event to channel:", channelName);
+      channel.bind("new-message", (message: any) => {
+        console.log("📨 New message callback triggered:", message);
+        callbacks.onNewMessage!(message);
+      });
     }
 
     if (callbacks.onTyping) {
-      channel.bind("user.typing", callbacks.onTyping);
+      channel.bind(
+        "user.typing",
+        (data: { userId: string; isTyping: boolean }) => {
+          callbacks.onTyping!(data);
+        }
+      );
     }
 
     return channel;
@@ -57,20 +73,28 @@ class PusherService {
     }
 
     const channelName = `chat-list.${userId}`;
+    console.log("🔔 Subscribing to chat list channel:", channelName);
+
     let channel = this.channels.get(channelName);
 
     if (!channel) {
       channel = this.pusher!.subscribe(channelName);
       this.channels.set(channelName, channel);
+      console.log("✅ Chat list channel subscribed:", channelName);
     }
 
     // Bind events
     if (callbacks.onChatUpdate) {
-      channel.bind("chat.updated", callbacks.onChatUpdate);
+      channel.bind("chat-list-updated", (chatData: any) => {
+        console.log("📋 Chat list updated callback triggered:", chatData);
+        callbacks.onChatUpdate!(chatData);
+      });
     }
 
     if (callbacks.onNewChatCreated) {
-      channel.bind("chat.created", callbacks.onNewChatCreated);
+      channel.bind("chat.created", (chatData: any) => {
+        callbacks.onNewChatCreated!(chatData);
+      });
     }
 
     return channel;
@@ -120,7 +144,10 @@ class PusherService {
     }
 
     if (callbacks.onChatUpdate) {
-      channel.bind("chat.updated", callbacks.onChatUpdate);
+      channel.bind("chat-list-updated", (chatData: any) => {
+        console.log("📋 Admin chat list updated callback triggered:", chatData);
+        callbacks.onChatUpdate!(chatData);
+      });
     }
 
     if (callbacks.onNewChatCreated) {
@@ -144,7 +171,10 @@ class PusherService {
     }
 
     if (callbacks.onNewMessage) {
-      channel.bind("message.sent", callbacks.onNewMessage);
+      channel.bind("new-message", (message: any) => {
+        console.log("📨 Admin new message callback triggered:", message);
+        callbacks.onNewMessage!(message);
+      });
     }
 
     return channel;

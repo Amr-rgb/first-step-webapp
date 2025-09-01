@@ -32,7 +32,11 @@ const ParentChatPage = () => {
 
     try {
       setIsLoading(true);
-      const contacts = await chatService.getChatContacts(token, currentUser.id, currentUser.type);
+      const contacts = await chatService.getChatContacts(
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setChats(contacts);
 
       // Select the first chat by default if none selected
@@ -53,7 +57,12 @@ const ParentChatPage = () => {
 
     try {
       setIsLoading(true);
-      const chatMessages = await chatService.getMessages(selectedChatId, token, currentUser.id, currentUser.type);
+      const chatMessages = await chatService.getMessages(
+        selectedChatId,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -137,66 +146,105 @@ const ParentChatPage = () => {
   useEffect(() => {
     if (!selectedChatId || !currentUser.id) return;
 
+    console.log(
+      "🔧 Setting up Pusher for chat:",
+      selectedChatId,
+      "user:",
+      currentUser.id
+    );
+
     // Initialize Pusher
     pusherService.initialize();
 
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
       onChatUpdate: (chatData) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === chatData.chatId
-              ? { ...chat, lastMessage: chatData.lastMessage, timestamp: new Date(chatData.timestamp) }
-              : chat
-          )
-        );
+        console.log("📋 Processing chat list update:", chatData);
+        // The data structure is different - it contains contacts array
+        if (chatData.contacts && Array.isArray(chatData.contacts)) {
+          const updatedChats = chatData.contacts.map((contact: any) => ({
+            id: contact.contact_id.toString(),
+            name: contact.contact.name,
+            type: "center",
+            lastMessage: contact.latest_message?.text || "",
+            timestamp: new Date(
+              contact.latest_message?.created_at || Date.now()
+            ),
+            unreadCount: contact.unread_count || 0,
+            isOnline: contact.is_online === 1,
+          }));
+          console.log("📋 Updating chats with:", updatedChats);
+          setChats(updatedChats);
+        }
       },
       onNewChatCreated: (chatData) => {
         const newChatItem: ChatListItem = {
           id: chatData.chatId,
           name: chatData.chatName,
-          type: 'center',
-          lastMessage: chatData.lastMessage || '',
+          type: "center",
+          lastMessage: chatData.lastMessage || "",
           timestamp: new Date(chatData.timestamp),
           unreadCount: 1,
           isOnline: chatData.isOnline || false,
         };
-        setChats(prev => [newChatItem, ...prev]);
+        setChats((prev) => [newChatItem, ...prev]);
       },
     });
 
     // Subscribe to chat channel for real-time messages
+    console.log("🔧 Subscribing to user's own channel:", currentUser.id);
     pusherService.subscribeToChat(currentUser.id, {
       onNewMessage: (message) => {
+        console.log("📨 Processing new message from user channel:", message);
+        console.log(
+          "📨 Message sender_id:",
+          message.sender_id,
+          "Current user ID:",
+          currentUser.id
+        );
+        console.log(
+          "📨 Comparison result:",
+          message.sender_id.toString() !== currentUser.id
+        );
+
         // Only add message if it's not from current user (to avoid duplicates)
         if (message.sender_id.toString() !== currentUser.id) {
           const newMessage: Message = {
-            id: message.id.toString(),
+            id: Date.now().toString(), // Generate temporary ID since message.id doesn't exist
             content: message.message,
             senderId: message.sender_id.toString(),
-            senderName: message.sender_name || 'Center',
-            senderType: 'center',
+            senderName: "Center", // Default name since sender_name doesn't exist
+            senderType: "center",
             timestamp: new Date(message.created_at),
             chatId: selectedChatId,
             imageUrl: message.image_url,
-            videoUrl: message.video_url_path,
+            videoUrl: message.video_url,
           };
-          
-          setMessages(prev => [...prev, newMessage]);
-          
+
+          console.log("📨 Adding new message to state:", newMessage);
+          setMessages((prev) => {
+            console.log("📨 Previous messages count:", prev.length);
+            const newMessages = [...prev, newMessage];
+            console.log("📨 New messages count:", newMessages.length);
+            return newMessages;
+          });
+
           // Update last message in chats list
-          setChats(prevChats =>
-            prevChats.map(chat =>
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
               chat.id === message.sender_id.toString()
                 ? {
                     ...chat,
                     lastMessage: newMessage.content,
                     timestamp: newMessage.timestamp,
-                    unreadCount: chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
+                    unreadCount:
+                      chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                   }
                 : chat
             )
           );
+        } else {
+          console.log("📨 Message from current user, skipping");
         }
       },
     });
@@ -204,20 +252,16 @@ const ParentChatPage = () => {
     // Subscribe to global user status
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: true }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: true } : chat
           )
         );
       },
       onUserOffline: (userId) => {
-        setChats(prevChats =>
-          prevChats.map(chat =>
-            chat.id === userId
-              ? { ...chat, isOnline: false }
-              : chat
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === userId ? { ...chat, isOnline: false } : chat
           )
         );
       },
@@ -225,6 +269,10 @@ const ParentChatPage = () => {
 
     // Cleanup on component unmount or chat change
     return () => {
+      console.log(
+        "🔧 Cleaning up Pusher subscriptions for chat:",
+        selectedChatId
+      );
       pusherService.unsubscribeFromChat(currentUser.id);
       pusherService.unsubscribeFromChatList(currentUser.id);
       pusherService.unsubscribeFromUserStatus();
@@ -238,6 +286,12 @@ const ParentChatPage = () => {
   const handleSendMessage = async (content: string) => {
     if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
 
+    console.log("📤 Sending message:", {
+      content,
+      selectedChatId,
+      currentUser: currentUser.id,
+    });
+
     try {
       setIsSending(true);
 
@@ -249,6 +303,7 @@ const ParentChatPage = () => {
         currentUser.type
       );
 
+      console.log("📤 Message sent successfully:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
 
       // Update last message in chats list
@@ -265,7 +320,7 @@ const ParentChatPage = () => {
         )
       );
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("❌ Error sending message:", error);
       toast.error("Failed to send message");
     } finally {
       setIsSending(false);
@@ -296,10 +351,10 @@ const ParentChatPage = () => {
         isOnline: false,
       };
 
-      setChats(prev => [...prev, newChatItem]);
+      setChats((prev) => [...prev, newChatItem]);
       setSelectedChatId(participantId);
       setMessages([]); // Start with empty messages
-      
+
       toast.success("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);

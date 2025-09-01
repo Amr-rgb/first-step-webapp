@@ -32,19 +32,31 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
+      console.log("🔍 Fetching chat contacts for admin...");
+      console.log("📋 Current user:", {
+        id: currentUser.id,
+        type: currentUser.type,
+      });
+
       const contacts = await chatService.getChatContacts(
         token,
         currentUser.id,
         currentUser.type
       );
+
+      // Only log when contacts are loaded initially
+      if (contacts.length > 0) {
+        console.log("📞 [AdminChat] Loaded contacts:", contacts.length);
+      }
       setChats(contacts);
 
       // Select the first chat by default if none selected
       if (contacts.length > 0 && !selectedChatId) {
+        console.log("🎯 Auto-selecting first chat:", contacts[0].id);
         setSelectedChatId(contacts[0].id);
       }
     } catch (error) {
-      console.error("Error fetching chat contacts:", error);
+      console.error("❌ Error fetching chat contacts:", error);
       toast.error("Failed to load chat contacts");
     } finally {
       setIsLoading(false);
@@ -57,12 +69,16 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
+      console.log("💬 [AdminChat] Fetching messages for chat:", selectedChatId);
+
       const chatMessages = await chatService.getMessages(
         selectedChatId,
         token,
         currentUser.id,
         currentUser.type
       );
+
+      console.log("📨 [AdminChat] Messages:", chatMessages.length);
       setMessages(chatMessages);
 
       // Update last message in chats list
@@ -79,9 +95,11 @@ const AdminChatPage = () => {
               : chat
           )
         );
+      } else {
+        console.log("📭 [AdminChat] No messages found");
       }
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      console.error("❌ Error fetching messages:", error);
       toast.error("Failed to load messages");
     } finally {
       setIsLoading(false);
@@ -137,8 +155,14 @@ const AdminChatPage = () => {
 
   // Load messages when selected chat changes
   useEffect(() => {
+    // Only log when a chat is actually selected
+    if (selectedChatId) {
+      console.log("🔄 [AdminChat] Chat selected:", selectedChatId);
+    }
     if (selectedChatId) {
       fetchMessages();
+    } else {
+      console.log("⚠️ [AdminChat] No selectedChatId, skipping fetchMessages");
     }
   }, [selectedChatId, fetchMessages]);
 

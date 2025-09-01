@@ -9,7 +9,12 @@ interface MessageBubbleProps {
   currentUser: User;
 }
 
-const getAvatarContent = (user: { senderName: string; senderType: string; avatar?: string; logo?: string }) => {
+const getAvatarContent = (user: {
+  senderName: string;
+  senderType: string;
+  avatar?: string;
+  logo?: string;
+}) => {
   if (user.senderType === "admin") {
     return (
       <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">
@@ -17,7 +22,7 @@ const getAvatarContent = (user: { senderName: string; senderType: string; avatar
       </div>
     );
   }
-  
+
   if (user.senderType === "center") {
     if (user.logo) {
       return (
@@ -34,7 +39,7 @@ const getAvatarContent = (user: { senderName: string; senderType: string; avatar
       </div>
     );
   }
-  
+
   // Parent type - first two letters of name
   return (
     <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
@@ -68,7 +73,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           senderName: message.senderName,
           senderType: message.senderType,
           avatar: undefined, // You can add avatar support if needed
-          logo: message.senderType === "center" ? "/assets/logos/center-default.png" : undefined,
+          logo:
+            message.senderType === "center"
+              ? "/assets/logos/contact-logo.png"
+              : undefined,
         })}
       </div>
 
@@ -84,7 +92,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             {message.senderName}
           </p>
         )}
-        
+
         {/* Message Bubble */}
         <div
           className={`px-4 py-2 rounded-lg ${
@@ -95,7 +103,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         >
           <p className="text-sm">{message.content}</p>
         </div>
-        
+
         {/* Timestamp */}
         <p className="text-xs text-gray-500 mt-1">
           {formatTime(message.timestamp)}

@@ -160,6 +160,13 @@ export const chatService = {
     currentUserType: "center" | "parent" | "admin"
   ): Promise<ChatListItem[]> {
     try {
+      console.log("🔍 [chatService] Fetching chat contacts...");
+      console.log("🔗 [chatService] URL:", `${API_BASE_URL}/chat-contacts`);
+      console.log("👤 [chatService] User:", {
+        id: currentUserId,
+        type: currentUserType,
+      });
+
       const response = await fetch(`${API_BASE_URL}/chat-contacts`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -170,16 +177,26 @@ export const chatService = {
         },
       });
 
+      console.log("📡 [chatService] Response status:", response.status);
+      console.log("📡 [chatService] Response ok:", response.ok);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [chatService] Response error:", errorText);
         throw new Error("Failed to fetch chat contacts");
       }
 
       const data: ApiContact[] = await response.json();
-      return data.map((contact) =>
+      console.log("📄 [chatService] Raw API response:", data);
+
+      const mappedContacts = data.map((contact) =>
         mapApiContactToChatListItem(contact, currentUserId, currentUserType)
       );
+
+      console.log("🔄 [chatService] Mapped contacts:", mappedContacts);
+      return mappedContacts;
     } catch (error) {
-      console.error("Error fetching chat contacts:", error);
+      console.error("❌ [chatService] Error fetching chat contacts:", error);
       throw error;
     }
   },
@@ -191,13 +208,28 @@ export const chatService = {
     currentUserType: "center" | "parent" | "admin"
   ): Promise<Message[]> {
     try {
-      // For admin users, we need to include sender_id parameter
+      // For admin users, we need to call the messages endpoint differently
       // For parent and center users, we only need the receiver_id (contactId)
       let url = `${API_BASE_URL}/messages/${contactId}`;
 
+      // For admin users, we need to use the correct participant ID
+      // Based on Postman data, messages are stored with receiver_id = 11 and sender_id = 2
+      // So we need to use the receiver_id (11) as contactId and add sender_id (2) as parameter
+
+      // For admin users, we might not need sender_id parameter
       if (currentUserType === "admin") {
-        url += `?sender_id=${currentUserId}`;
+        console.log("👑 [chatService] Admin - Contact ID:", contactId);
+        url += `?sender_id=${contactId}`;
+        console.log("🔗 [chatService] Admin URL:", url);
       }
+
+      console.log("🔍 [chatService] Fetching messages...");
+      console.log("🔗 [chatService] Final URL:", url);
+      console.log("👤 [chatService] User:", {
+        id: currentUserId,
+        type: currentUserType,
+      });
+      console.log("📞 [chatService] Contact ID:", contactId);
 
       const response = await fetch(url, {
         headers: {
@@ -209,16 +241,28 @@ export const chatService = {
         },
       });
 
+      console.log("📡 [chatService] Response status:", response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [chatService] Error:", errorText);
         throw new Error("Failed to fetch messages");
       }
 
       const data: ApiMessage[] = await response.json();
-      return data.map((msg) =>
+      console.log("📄 [chatService] Messages count:", data.length);
+
+      const mappedMessages = data.map((msg) =>
         mapApiMessageToMessage(msg, currentUserId, currentUserType)
       );
+
+      console.log(
+        "✅ [chatService] Success - Messages:",
+        mappedMessages.length
+      );
+      return mappedMessages;
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      console.error("❌ [chatService] Error fetching messages:", error);
       throw error;
     }
   },
