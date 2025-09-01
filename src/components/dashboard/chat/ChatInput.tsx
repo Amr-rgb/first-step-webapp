@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { dashboardIcons } from "@/components/general/icons";
 
 interface ChatInputProps {
@@ -9,6 +10,7 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   const [inputValue, setInputValue] = useState("");
+  const t = useTranslations("chat.interface");
 
   const handleSendMessage = () => {
     if (inputValue.trim() !== "") {
@@ -30,7 +32,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         <div className="flex-1">
           <textarea
             rows={1}
-            placeholder="Type a message..."
+            placeholder={t("typeMessage")}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -63,7 +65,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         </button>
       </div>
       <div className="mt-2 text-xs text-gray-500">
-        Press Enter to send, Shift + Enter for new line
+        {t("pressEnter")}
       </div>
     </div>
   );

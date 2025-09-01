@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { dashboardIcons } from "@/components/general/icons";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
@@ -25,6 +26,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onSendMessage,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("chat.interface");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,14 +42,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="text-center">
           <dashboardIcons.chat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {currentUser.type === "admin"
-              ? "Select a conversation"
-              : "Select a conversation"}
+            {t("selectConversation")}
           </h3>
           <p className="text-gray-500">
             {currentUser.type === "admin"
-              ? "Choose a conversation from the sidebar to view and participate in messages between users"
-              : "Choose a chat from the sidebar to start messaging"}
+              ? t("selectConversationAdmin")
+              : t("selectConversationRegular")}
           </p>
         </div>
       </div>
@@ -115,7 +115,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               />
             </svg>
             <span className="text-xs font-medium">
-              Admin Mode: You can participate in any conversation
+              {t("adminMode")}
             </span>
           </div>
         </div>

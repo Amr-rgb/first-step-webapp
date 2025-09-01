@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { dashboardIcons } from "@/components/general/icons";
 import { ChatListItem, User } from "./types";
 import NewChatModal from "./NewChatModal";
@@ -21,6 +22,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onNewChat,
 }) => {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const t = useTranslations("chat.sidebar");
+  const tTypes = useTranslations("chat.types");
 
   const getAvatarContent = (chat: ChatListItem) => {
     if (chat.type === "admin") {
