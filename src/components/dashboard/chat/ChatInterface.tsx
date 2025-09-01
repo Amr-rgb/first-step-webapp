@@ -40,10 +40,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="text-center">
           <dashboardIcons.chat className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Select a conversation
+            {currentUser.type === "admin"
+              ? "Select a conversation"
+              : "Select a conversation"}
           </h3>
           <p className="text-gray-500">
-            Choose a chat from the sidebar to start messaging
+            {currentUser.type === "admin"
+              ? "Choose a conversation from the sidebar to view and participate in messages between users"
+              : "Choose a chat from the sidebar to start messaging"}
           </p>
         </div>
       </div>
@@ -94,6 +98,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* Chat Input */}
       <ChatInput onSendMessage={onSendMessage} />
+
+      {/* Admin Notice */}
+      {currentUser.type === "admin" && (
+        <div className="bg-blue-50 border-t border-blue-200 px-6 py-3">
+          <div className="flex items-center text-blue-700">
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-xs font-medium">
+              Admin Mode: You can participate in any conversation
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

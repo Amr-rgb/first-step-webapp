@@ -30,7 +30,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </div>
       );
     }
-    
+
     if (chat.type === "center") {
       if (chat.avatar) {
         return (
@@ -47,7 +47,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </div>
       );
     }
-    
+
     // Parent type - first two letters of name
     return (
       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center text-sm font-bold shadow-lg">
@@ -58,17 +58,24 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
   const formatTimestamp = (timestamp?: Date) => {
     if (!timestamp) return "";
-    
+
     const now = new Date();
     const diff = now.getTime() - timestamp.getTime();
     const hours = diff / (1000 * 60 * 60);
-    
+
     if (hours < 24) {
-      return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else if (hours < 168) { // 7 days
-      return timestamp.toLocaleDateString([], { weekday: 'short' });
+      return timestamp.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } else if (hours < 168) {
+      // 7 days
+      return timestamp.toLocaleDateString([], { weekday: "short" });
     } else {
-      return timestamp.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return timestamp.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+      });
     }
   };
 
@@ -78,7 +85,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Messages</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              {currentUser.type === "admin" ? "All Conversations" : "Messages"}
+            </h2>
             {currentUser.type !== "admin" && (
               <button
                 onClick={() => setShowNewChatModal(true)}
@@ -89,7 +98,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               </button>
             )}
           </div>
-          
+
           {/* Search Bar */}
           <div className="relative">
             <dashboardIcons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -106,12 +115,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           {chats.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <dashboardIcons.chat className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">No conversations yet</h3>
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                No conversations yet
+              </h3>
               <p className="text-gray-500 text-sm">
-                {currentUser.type === "admin" 
-                  ? "All conversations between parents and centers will appear here"
-                  : "Start a new conversation to begin messaging"
-                }
+                {currentUser.type === "admin"
+                  ? "All conversations between parents and centers will appear here. You can participate in any conversation."
+                  : "Start a new conversation to begin messaging"}
               </p>
             </div>
           ) : (
@@ -121,7 +131,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   key={chat.id}
                   onClick={() => onChatSelect(chat.id)}
                   className={`p-4 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
-                    selectedChatId === chat.id ? "bg-primary/5 border-r-2 border-primary" : ""
+                    selectedChatId === chat.id
+                      ? "bg-primary/5 border-r-2 border-primary"
+                      : ""
                   }`}
                 >
                   <div className="flex items-center space-x-3">
@@ -132,7 +144,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                       )}
                     </div>
-                    
+
                     {/* Chat Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
@@ -143,7 +155,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                           {formatTimestamp(chat.timestamp)}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-gray-600 truncate">
                           {chat.lastMessage || "No messages yet"}
@@ -154,17 +166,23 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                           </span>
                         )}
                       </div>
-                      
+
                       {/* Chat type indicator */}
                       <div className="flex items-center mt-1">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          chat.type === "center" 
-                            ? "bg-blue-100 text-blue-800"
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            chat.type === "center"
+                              ? "bg-blue-100 text-blue-800"
+                              : chat.type === "parent"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {chat.type === "center"
+                            ? "🏢 Center"
                             : chat.type === "parent"
-                            ? "bg-green-100 text-green-800" 
-                            : "bg-red-100 text-red-800"
-                        }`}>
-                          {chat.type === "center" ? "🏢 Center" : chat.type === "parent" ? "👨‍👩‍👧‍👦 Parent" : "👨‍💼 Admin"}
+                            ? "👨‍👩‍👧‍👦 Parent"
+                            : "👨‍💼 Admin"}
                         </span>
                       </div>
                     </div>

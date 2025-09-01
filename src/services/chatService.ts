@@ -61,6 +61,30 @@ interface ApiCenterParent {
   is_online?: number;
 }
 
+interface ApiAdminConversation {
+  users: {
+    user1: {
+      id: number;
+      name: string;
+    };
+    user2: {
+      id: number;
+      name: string;
+    };
+  };
+  messages: Array<{
+    id: number;
+    sender_id: number;
+    receiver_id: number;
+    sender_name: string;
+    receiver_name: string;
+    message: string;
+    image: string | null;
+    video_url: string | null;
+    created_at: string;
+  }>;
+}
+
 const mapApiMessageToMessage = (
   apiMessage: ApiMessage,
   currentUserId: string,
@@ -365,6 +389,142 @@ export const chatService = {
       }
     } catch (error) {
       console.error("Error updating online status:", error);
+      throw error;
+    }
+  },
+
+  // Admin-specific methods
+  async getAdminConversations(authToken: string): Promise<ChatListItem[]> {
+    try {
+      console.log("🔍 [chatService] Fetching admin conversations...");
+      console.log("🔗 [chatService] URL:", `${API_BASE_URL}/get-chats`);
+
+      const response = await fetch(`${API_BASE_URL}/get-chats`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+        },
+      });
+
+      console.log("📡 [chatService] Response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [chatService] Response error:", errorText);
+        throw new Error("Failed to fetch admin conversations");
+      }
+
+      const data: ApiAdminConversation[] = await response.json();
+      console.log("📄 [chatService] Raw admin conversations:", data);
+
+      const mappedConversations = data.map((conversation, index) => {
+        const lastMessage =
+          conversation.messages[conversation.messages.length - 1];
+        const conversationId = `${conversation.users.user1.id}-${conversation.users.user2.id}`;
+
+        return {
+          id: conversationId,
+          name: `${conversation.users.user1.name} & ${conversation.users.user2.name}`,
+          type: "admin" as const,
+          lastMessage: lastMessage?.message || "",
+          timestamp: lastMessage
+            ? new Date(lastMessage.created_at)
+            : new Date(),
+          unreadCount: 0, // Admin doesn't have unread counts
+          isOnline: false, // We'll update this from user status
+          participants: [
+            {
+              id: conversation.users.user1.id.toString(),
+              name: conversation.users.user1.name,
+              type: "center" as const, // Assuming user1 is center, user2 is parent
+            },
+            {
+              id: conversation.users.user2.id.toString(),
+              name: conversation.users.user2.name,
+              type: "parent" as const,
+            },
+          ],
+        };
+      });
+
+      console.log(
+        "🔄 [chatService] Mapped admin conversations:",
+        mappedConversations
+      );
+      return mappedConversations;
+    } catch (error) {
+      console.error(
+        "❌ [chatService] Error fetching admin conversations:",
+        error
+      );
+      throw error;
+    }
+  },
+
+  async getAdminConversationMessages(
+    conversationId: string,
+    authToken: string
+  ): Promise<Message[]> {
+    try {
+      console.log("🔍 [chatService] Fetching admin conversation messages...");
+      console.log("🔗 [chatService] Conversation ID:", conversationId);
+
+      const response = await fetch(`${API_BASE_URL}/get-chats`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+          "X-Authorization-Secret":
+            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [chatService] Error:", errorText);
+        throw new Error("Failed to fetch admin conversation messages");
+      }
+
+      const data: ApiAdminConversation[] = await response.json();
+
+      // Find the specific conversation
+      const conversation = data.find((conv) => {
+        const convId = `${conv.users.user1.id}-${conv.users.user2.id}`;
+        return convId === conversationId;
+      });
+
+      if (!conversation) {
+        throw new Error("Conversation not found");
+      }
+
+      const mappedMessages = conversation.messages.map((msg) => ({
+        id: msg.id.toString(),
+        content: msg.message,
+        senderId: msg.sender_id.toString(),
+        senderName: msg.sender_name,
+        senderType:
+          msg.sender_name === "center"
+            ? ("center" as const)
+            : ("parent" as const),
+        timestamp: new Date(msg.created_at),
+        chatId: conversationId,
+        imageUrl: msg.image,
+        videoUrl: msg.video_url,
+      }));
+
+      console.log(
+        "✅ [chatService] Admin conversation messages:",
+        mappedMessages.length
+      );
+      return mappedMessages;
+    } catch (error) {
+      console.error(
+        "❌ [chatService] Error fetching admin conversation messages:",
+        error
+      );
       throw error;
     }
   },

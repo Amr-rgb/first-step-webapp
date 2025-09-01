@@ -180,6 +180,48 @@ class PusherService {
     return channel;
   }
 
+  subscribeToAdminConversations(callbacks: {
+    onNewMessage?: (message: any) => void;
+    onConversationUpdate?: (conversationData: any) => void;
+  }) {
+    if (!this.pusher) {
+      this.initialize();
+    }
+
+    const channelName = "admin.conversations";
+    console.log("🔔 Subscribing to admin conversations channel:", channelName);
+
+    let channel = this.channels.get(channelName);
+
+    if (!channel) {
+      channel = this.pusher!.subscribe(channelName);
+      this.channels.set(channelName, channel);
+      console.log("✅ Admin conversations channel subscribed:", channelName);
+    }
+
+    if (callbacks.onNewMessage) {
+      channel.bind("new-message", (message: any) => {
+        console.log(
+          "📨 Admin conversations new message callback triggered:",
+          message
+        );
+        callbacks.onNewMessage!(message);
+      });
+    }
+
+    if (callbacks.onConversationUpdate) {
+      channel.bind("conversation-updated", (conversationData: any) => {
+        console.log(
+          "📋 Admin conversations update callback triggered:",
+          conversationData
+        );
+        callbacks.onConversationUpdate!(conversationData);
+      });
+    }
+
+    return channel;
+  }
+
   unsubscribeFromChat(receiverId: string) {
     const channelName = `chat.${receiverId}`;
     const channel = this.channels.get(channelName);
@@ -227,6 +269,17 @@ class PusherService {
     if (channel) {
       this.pusher?.unsubscribe(channelName);
       this.channels.delete(channelName);
+    }
+  }
+
+  unsubscribeFromAdminConversations() {
+    const channelName = "admin.conversations";
+    const channel = this.channels.get(channelName);
+
+    if (channel) {
+      this.pusher?.unsubscribe(channelName);
+      this.channels.delete(channelName);
+      console.log("🔧 Unsubscribed from admin conversations channel");
     }
   }
 

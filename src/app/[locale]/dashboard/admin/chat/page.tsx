@@ -26,64 +26,66 @@ const AdminChatPage = () => {
     email: user?.email || "",
   };
 
-  // Fetch chat contacts
-  const fetchChatContacts = useCallback(async () => {
+  // Fetch admin conversations
+  const fetchAdminConversations = useCallback(async () => {
     if (!token) return;
 
     try {
       setIsLoading(true);
-      console.log("🔍 Fetching chat contacts for admin...");
+      console.log("🔍 Fetching admin conversations...");
       console.log("📋 Current user:", {
         id: currentUser.id,
         type: currentUser.type,
       });
 
-      const contacts = await chatService.getChatContacts(
-        token,
-        currentUser.id,
-        currentUser.type
-      );
+      const conversations = await chatService.getAdminConversations(token);
 
-      // Only log when contacts are loaded initially
-      if (contacts.length > 0) {
-        console.log("📞 [AdminChat] Loaded contacts:", contacts.length);
+      // Only log when conversations are loaded initially
+      if (conversations.length > 0) {
+        console.log(
+          "📞 [AdminChat] Loaded conversations:",
+          conversations.length
+        );
       }
-      setChats(contacts);
+      setChats(conversations);
 
-      // Select the first chat by default if none selected
-      if (contacts.length > 0 && !selectedChatId) {
-        console.log("🎯 Auto-selecting first chat:", contacts[0].id);
-        setSelectedChatId(contacts[0].id);
+      // Select the first conversation by default if none selected
+      if (conversations.length > 0 && !selectedChatId) {
+        console.log(
+          "🎯 Auto-selecting first conversation:",
+          conversations[0].id
+        );
+        setSelectedChatId(conversations[0].id);
       }
     } catch (error) {
-      console.error("❌ Error fetching chat contacts:", error);
-      toast.error("Failed to load chat contacts");
+      console.error("❌ Error fetching admin conversations:", error);
+      toast.error("Failed to load conversations");
     } finally {
       setIsLoading(false);
     }
   }, [selectedChatId, token]);
 
-  // Fetch messages for the selected chat
+  // Fetch messages for the selected conversation
   const fetchMessages = useCallback(async () => {
     if (!selectedChatId || !token) return;
 
     try {
       setIsLoading(true);
-      console.log("💬 [AdminChat] Fetching messages for chat:", selectedChatId);
-
-      const chatMessages = await chatService.getMessages(
-        selectedChatId,
-        token,
-        currentUser.id,
-        currentUser.type
+      console.log(
+        "💬 [AdminChat] Fetching messages for conversation:",
+        selectedChatId
       );
 
-      console.log("📨 [AdminChat] Messages:", chatMessages.length);
-      setMessages(chatMessages);
+      const conversationMessages =
+        await chatService.getAdminConversationMessages(selectedChatId, token);
 
-      // Update last message in chats list
-      if (chatMessages.length > 0) {
-        const lastMessage = chatMessages[chatMessages.length - 1];
+      console.log("📨 [AdminChat] Messages:", conversationMessages.length);
+      setMessages(conversationMessages);
+
+      // Update last message in conversations list
+      if (conversationMessages.length > 0) {
+        const lastMessage =
+          conversationMessages[conversationMessages.length - 1];
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.id === selectedChatId
@@ -104,7 +106,7 @@ const AdminChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId, token, currentUser.id, currentUser.type]);
+  }, [selectedChatId, token]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
@@ -147,11 +149,11 @@ const AdminChatPage = () => {
   // Load initial data
   useEffect(() => {
     if (isAuthenticated()) {
-      fetchChatContacts();
+      fetchAdminConversations();
     } else {
       router.push("/sign-in");
     }
-  }, [isAuthenticated, fetchChatContacts, router]);
+  }, [isAuthenticated, fetchAdminConversations, router]);
 
   // Load messages when selected chat changes
   useEffect(() => {
@@ -166,83 +168,66 @@ const AdminChatPage = () => {
     }
   }, [selectedChatId, fetchMessages]);
 
-  // Set up Pusher real-time messaging for admin
+  // Set up Pusher real-time messaging for admin conversations
   useEffect(() => {
     if (!currentUser.id) return;
+
+    console.log("🔧 Setting up Pusher for admin conversations");
 
     // Initialize Pusher
     pusherService.initialize();
 
-    // Subscribe to admin chat list channel
-    pusherService.subscribeToAdminChatList({
-      onChatUpdate: (chatData) => {
-        // Update chat list when a chat is updated
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.id === chatData.chatId
-              ? {
-                  ...chat,
-                  lastMessage: chatData.lastMessage,
-                  timestamp: new Date(chatData.timestamp),
-                }
-              : chat
-          )
-        );
-      },
-      onNewChatCreated: (chatData) => {
-        // Add new chat to the list
-        const newChatItem: ChatListItem = {
-          id: chatData.chatId,
-          name: chatData.chatName,
-          type: chatData.type || "parent",
-          lastMessage: chatData.lastMessage || "",
-          timestamp: new Date(chatData.timestamp),
-          unreadCount: 1,
-          isOnline: chatData.isOnline || false,
-        };
-        setChats((prev) => [newChatItem, ...prev]);
-      },
-    });
-
-    // Subscribe to admin chat channel for all messages
-    pusherService.subscribeToAdminChat({
+    // Subscribe to admin conversations channel
+    pusherService.subscribeToAdminConversations({
       onNewMessage: (message) => {
+        console.log("📨 Admin conversations new message:", message);
+
         const newMessage: Message = {
           id: message.id.toString(),
           content: message.message,
           senderId: message.sender_id.toString(),
           senderName: message.sender_name || "User",
-          senderType: message.sender_type || "parent",
+          senderType:
+            message.sender_name === "center"
+              ? "center"
+              : message.sender_name === "Admin user"
+              ? "admin"
+              : "parent",
           timestamp: new Date(message.created_at),
-          chatId: message.receiver_id?.toString() || selectedChatId || "",
-          imageUrl: message.image_url,
-          videoUrl: message.video_url_path,
+          chatId: `${message.sender_id}-${message.receiver_id}`,
+          imageUrl: message.image,
+          videoUrl: message.video_url,
         };
 
-        // Add message if it's for the currently selected chat
+        // Determine the conversation ID - it could be either direction
+        const conversationId1 = `${message.sender_id}-${message.receiver_id}`;
+        const conversationId2 = `${message.receiver_id}-${message.sender_id}`;
+
+        // Check if this message belongs to the currently selected conversation
         if (
-          selectedChatId &&
-          (message.receiver_id?.toString() === selectedChatId ||
-            message.sender_id?.toString() === selectedChatId)
+          selectedChatId === conversationId1 ||
+          selectedChatId === conversationId2
         ) {
           setMessages((prev) => [...prev, newMessage]);
         }
 
-        // Update last message in chats list
+        // Update last message in conversations list for both possible conversation IDs
         setChats((prevChats) =>
           prevChats.map((chat) =>
-            chat.id === message.sender_id?.toString() ||
-            chat.id === message.receiver_id?.toString()
+            chat.id === conversationId1 || chat.id === conversationId2
               ? {
                   ...chat,
                   lastMessage: newMessage.content,
                   timestamp: newMessage.timestamp,
-                  unreadCount:
-                    chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                 }
               : chat
           )
         );
+      },
+      onConversationUpdate: (conversationData) => {
+        console.log("📋 Admin conversations update:", conversationData);
+        // Refresh conversations when updated
+        fetchAdminConversations();
       },
     });
 
@@ -250,27 +235,34 @@ const AdminChatPage = () => {
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
         setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.id === userId ? { ...chat, isOnline: true } : chat
-          )
+          prevChats.map((chat) => {
+            // Check if the user is a participant in this conversation
+            const isParticipant = chat.participants?.some(
+              (p) => p.id === userId
+            );
+            return isParticipant ? { ...chat, isOnline: true } : chat;
+          })
         );
       },
       onUserOffline: (userId) => {
         setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.id === userId ? { ...chat, isOnline: false } : chat
-          )
+          prevChats.map((chat) => {
+            // Check if the user is a participant in this conversation
+            const isParticipant = chat.participants?.some(
+              (p) => p.id === userId
+            );
+            return isParticipant ? { ...chat, isOnline: false } : chat;
+          })
         );
       },
     });
 
     // Cleanup on component unmount
     return () => {
-      pusherService.unsubscribeFromAdminChatList();
-      pusherService.unsubscribeFromAdminChat();
+      pusherService.unsubscribeFromAdminConversations();
       pusherService.unsubscribeFromUserStatus();
     };
-  }, [currentUser.id, selectedChatId]);
+  }, [currentUser.id, selectedChatId, fetchAdminConversations]);
 
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
@@ -281,18 +273,42 @@ const AdminChatPage = () => {
 
     try {
       setIsSending(true);
+      console.log("📤 Admin sending message to conversation:", selectedChatId);
+
+      // For admin, we need to determine which participant to send the message to
+      // We'll send to the first participant that's not the admin
+      const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+      if (!selectedChat || !selectedChat.participants) {
+        toast.error("Cannot determine conversation participants");
+        return;
+      }
+
+      // Find the first participant that's not the admin (assuming admin is not in participants)
+      const targetParticipant = selectedChat.participants[0];
+      if (!targetParticipant) {
+        toast.error("No valid participant found");
+        return;
+      }
+
+      console.log(
+        "📤 Admin sending message to participant:",
+        targetParticipant.id,
+        "in conversation:",
+        selectedChatId
+      );
 
       const newMessage = await chatService.sendMessage(
-        selectedChatId,
+        targetParticipant.id,
         content,
         token,
         currentUser.id,
         currentUser.type
       );
 
+      console.log("📤 Admin message sent successfully:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
 
-      // Update last message in chats list
+      // Update last message in conversations list
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat.id === selectedChatId
@@ -306,7 +322,7 @@ const AdminChatPage = () => {
         )
       );
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("❌ Error sending admin message:", error);
       toast.error("Failed to send message");
     } finally {
       setIsSending(false);
