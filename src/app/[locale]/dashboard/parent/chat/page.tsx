@@ -283,6 +283,10 @@ const ParentChatPage = () => {
     setSelectedChatId(chatId);
   };
 
+  const handleBackToChats = () => {
+    setSelectedChatId(null);
+  };
+
   const handleSendMessage = async (content: string) => {
     if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
 
@@ -366,19 +370,31 @@ const ParentChatPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
-      <ChatSidebar
-        currentUser={currentUser}
-        chats={chats}
-        selectedChatId={selectedChatId}
-        onChatSelect={handleChatSelect}
-        onNewChat={handleNewChat}
-      />
-      <ChatInterface
-        currentUser={currentUser}
-        selectedChat={selectedChat}
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
+      {/* Sidebar - Hidden on mobile when chat is selected */}
+      <div
+        className={`${
+          selectedChatId ? "hidden md:block" : "block"
+        } w-full md:w-80`}
+      >
+        <ChatSidebar
+          currentUser={currentUser}
+          chats={chats}
+          selectedChatId={selectedChatId}
+          onChatSelect={handleChatSelect}
+          onNewChat={handleNewChat}
+        />
+      </div>
+
+      {/* Chat Interface - Hidden on mobile when no chat is selected */}
+      <div className={`${selectedChatId ? "block" : "hidden md:block"} flex-1`}>
+        <ChatInterface
+          currentUser={currentUser}
+          selectedChat={selectedChat}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          onBackToChats={handleBackToChats}
+        />
+      </div>
     </div>
   );
 };

@@ -268,6 +268,10 @@ const AdminChatPage = () => {
     setSelectedChatId(chatId);
   };
 
+  const handleBackToChats = () => {
+    setSelectedChatId(null);
+  };
+
   const handleSendMessage = async (content: string) => {
     // Admin cannot send messages - they are only viewing conversations
     toast.info("Admin can only view conversations, not send messages");
@@ -278,19 +282,31 @@ const AdminChatPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
-      <ChatSidebar
-        currentUser={currentUser}
-        chats={chats}
-        selectedChatId={selectedChatId}
-        onChatSelect={handleChatSelect}
-        onNewChat={() => {}} // Admin cannot start new chats
-      />
-      <ChatInterface
-        currentUser={currentUser}
-        selectedChat={selectedChat}
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
+      {/* Sidebar - Hidden on mobile when chat is selected */}
+      <div
+        className={`${
+          selectedChatId ? "hidden md:block" : "block"
+        } w-full md:w-80`}
+      >
+        <ChatSidebar
+          currentUser={currentUser}
+          chats={chats}
+          selectedChatId={selectedChatId}
+          onChatSelect={handleChatSelect}
+          onNewChat={() => {}} // Admin cannot start new chats
+        />
+      </div>
+
+      {/* Chat Interface - Hidden on mobile when no chat is selected */}
+      <div className={`${selectedChatId ? "block" : "hidden md:block"} flex-1`}>
+        <ChatInterface
+          currentUser={currentUser}
+          selectedChat={selectedChat}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          onBackToChats={handleBackToChats}
+        />
+      </div>
     </div>
   );
 };
