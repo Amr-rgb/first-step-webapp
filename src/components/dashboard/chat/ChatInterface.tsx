@@ -46,7 +46,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </h3>
           <p className="text-gray-500">
             {currentUser.type === "admin"
-              ? t("selectConversationAdmin")
+              ? "Choose a conversation from the sidebar to view messages between users"
               : t("selectConversationRegular")}
           </p>
         </div>
@@ -96,8 +96,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Chat Input */}
-      <ChatInput onSendMessage={onSendMessage} />
+      {/* Chat Input - Only show for non-admin users */}
+      {currentUser.type !== "admin" && (
+        <ChatInput onSendMessage={onSendMessage} />
+      )}
 
       {/* Admin Notice */}
       {currentUser.type === "admin" && (
@@ -115,7 +117,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               />
             </svg>
             <span className="text-xs font-medium">
-              {t("adminMode")}
+              Admin View: You can only view conversations between users
             </span>
           </div>
         </div>

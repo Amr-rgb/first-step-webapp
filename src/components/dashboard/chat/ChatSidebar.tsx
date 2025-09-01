@@ -121,11 +121,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <h3 className="text-lg font-medium text-gray-600 mb-2">
                 No conversations yet
               </h3>
-              <p className="text-gray-500 text-sm">
-                {currentUser.type === "admin"
-                  ? "All conversations between parents and centers will appear here. You can participate in any conversation."
-                  : "Start a new conversation to begin messaging"}
-              </p>
+                             <p className="text-gray-500 text-sm">
+                 {currentUser.type === "admin"
+                   ? "All conversations between parents and centers will appear here. You can view any conversation."
+                   : "Start a new conversation to begin messaging"}
+               </p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">

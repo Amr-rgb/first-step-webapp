@@ -269,64 +269,9 @@ const AdminChatPage = () => {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedChatId || !content.trim() || !token) return;
-
-    try {
-      setIsSending(true);
-      console.log("📤 Admin sending message to conversation:", selectedChatId);
-
-      // For admin, we need to determine which participant to send the message to
-      // We'll send to the first participant that's not the admin
-      const selectedChat = chats.find((chat) => chat.id === selectedChatId);
-      if (!selectedChat || !selectedChat.participants) {
-        toast.error("Cannot determine conversation participants");
-        return;
-      }
-
-      // Find the first participant that's not the admin (assuming admin is not in participants)
-      const targetParticipant = selectedChat.participants[0];
-      if (!targetParticipant) {
-        toast.error("No valid participant found");
-        return;
-      }
-
-      console.log(
-        "📤 Admin sending message to participant:",
-        targetParticipant.id,
-        "in conversation:",
-        selectedChatId
-      );
-
-      const newMessage = await chatService.sendMessage(
-        targetParticipant.id,
-        content,
-        token,
-        currentUser.id,
-        currentUser.type
-      );
-
-      console.log("📤 Admin message sent successfully:", newMessage);
-      setMessages((prev) => [...prev, newMessage]);
-
-      // Update last message in conversations list
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.id === selectedChatId
-            ? {
-                ...chat,
-                lastMessage: newMessage.content,
-                timestamp: newMessage.timestamp,
-                unreadCount: 0, // Reset unread count
-              }
-            : chat
-        )
-      );
-    } catch (error) {
-      console.error("❌ Error sending admin message:", error);
-      toast.error("Failed to send message");
-    } finally {
-      setIsSending(false);
-    }
+    // Admin cannot send messages - they are only viewing conversations
+    toast.info("Admin can only view conversations, not send messages");
+    return;
   };
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;

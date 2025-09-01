@@ -1973,7 +1973,7 @@
       "selectConversation": "Select a conversation",
       "selectConversationAdmin": "Choose a conversation from the sidebar to view and participate in messages between users",
       "selectConversationRegular": "Choose a chat from the sidebar to start messaging",
-      "adminMode": "Admin Mode: You can participate in any conversation",
+      "adminMode": "Admin View: You can only view conversations between users",
       "typeMessage": "Type a message...",
       "sendButton": "Send message",
       "pressEnter": "Press Enter to send, Shift + Enter for new line"
