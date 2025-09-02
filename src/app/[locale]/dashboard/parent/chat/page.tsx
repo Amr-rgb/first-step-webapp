@@ -150,23 +150,37 @@ const ParentChatPage = () => {
   useEffect(() => {
     if (!selectedChatId || !currentUser.id) return;
 
+    console.log(
+      "🔧 Setting up Pusher for chat:",
+      selectedChatId,
+      "user:",
+      currentUser.id
+    );
+
     // Initialize Pusher
     pusherService.initialize();
 
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
       onChatUpdate: (chatData) => {
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.id === chatData.chatId
-              ? {
-                  ...chat,
-                  lastMessage: chatData.lastMessage,
-                  timestamp: new Date(chatData.timestamp),
-                }
-              : chat
-          )
-        );
+
+        console.log("📋 Processing chat list update:", chatData);
+        // The data structure is different - it contains contacts array
+        if (chatData.contacts && Array.isArray(chatData.contacts)) {
+          const updatedChats = chatData.contacts.map((contact: any) => ({
+            id: contact.contact_id.toString(),
+            name: contact.contact.name,
+            type: "center",
+            lastMessage: contact.latest_message?.text || "",
+            timestamp: new Date(
+              contact.latest_message?.created_at || Date.now()
+            ),
+            unreadCount: contact.unread_count || 0,
+            isOnline: contact.is_online === 1,
+          }));
+          console.log("📋 Updating chats with:", updatedChats);
+          setChats(updatedChats);
+        }
       },
       onNewChatCreated: (chatData) => {
         const newChatItem: ChatListItem = {
@@ -183,23 +197,43 @@ const ParentChatPage = () => {
     });
 
     // Subscribe to chat channel for real-time messages
+    console.log("🔧 Subscribing to user's own channel:", currentUser.id);
     pusherService.subscribeToChat(currentUser.id, {
       onNewMessage: (message) => {
+        console.log("📨 Processing new message from user channel:", message);
+        console.log(
+          "📨 Message sender_id:",
+          message.sender_id,
+          "Current user ID:",
+          currentUser.id
+        );
+        console.log(
+          "📨 Comparison result:",
+          message.sender_id.toString() !== currentUser.id
+        );
+
         // Only add message if it's not from current user (to avoid duplicates)
         if (message.sender_id.toString() !== currentUser.id) {
           const newMessage: Message = {
-            id: message.id.toString(),
+            id: Date.now().toString(), // Generate temporary ID since message.id doesn't exist
             content: message.message,
             senderId: message.sender_id.toString(),
-            senderName: message.sender_name || "Center",
+
+            senderName: "Center", // Default name since sender_name doesn't exist
             senderType: "center",
             timestamp: new Date(message.created_at),
             chatId: selectedChatId,
             imageUrl: message.image_url,
-            videoUrl: message.video_url_path,
+            videoUrl: message.video_url,
           };
 
-          setMessages((prev) => [...prev, newMessage]);
+          console.log("📨 Adding new message to state:", newMessage);
+          setMessages((prev) => {
+            console.log("📨 Previous messages count:", prev.length);
+            const newMessages = [...prev, newMessage];
+            console.log("📨 New messages count:", newMessages.length);
+            return newMessages;
+          });
 
           // Update last message in chats list
           setChats((prevChats) =>
@@ -215,6 +249,8 @@ const ParentChatPage = () => {
                 : chat
             )
           );
+        } else {
+          console.log("📨 Message from current user, skipping");
         }
       },
     });
@@ -239,6 +275,10 @@ const ParentChatPage = () => {
 
     // Cleanup on component unmount or chat change
     return () => {
+      console.log(
+        "🔧 Cleaning up Pusher subscriptions for chat:",
+        selectedChatId
+      );
       pusherService.unsubscribeFromChat(currentUser.id);
       pusherService.unsubscribeFromChatList(currentUser.id);
       pusherService.unsubscribeFromUserStatus();
@@ -249,8 +289,18 @@ const ParentChatPage = () => {
     setSelectedChatId(chatId);
   };
 
+  const handleBackToChats = () => {
+    setSelectedChatId(null);
+  };
+
   const handleSendMessage = async (content: string) => {
     if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
+
+    console.log("📤 Sending message:", {
+      content,
+      selectedChatId,
+      currentUser: currentUser.id,
+    });
 
     try {
       setIsSending(true);
@@ -263,6 +313,7 @@ const ParentChatPage = () => {
         currentUser.type
       );
 
+      console.log("📤 Message sent successfully:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
 
       // Update last message in chats list
@@ -279,7 +330,7 @@ const ParentChatPage = () => {
         )
       );
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("❌ Error sending message:", error);
       toast.error("Failed to send message");
     } finally {
       setIsSending(false);
@@ -325,19 +376,31 @@ const ParentChatPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
-      <ChatSidebar
-        currentUser={currentUser}
-        chats={chats}
-        selectedChatId={selectedChatId}
-        onChatSelect={handleChatSelect}
-        onNewChat={handleNewChat}
-      />
-      <ChatInterface
-        currentUser={currentUser}
-        selectedChat={selectedChat}
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
+      {/* Sidebar - Hidden on mobile when chat is selected */}
+      <div
+        className={`${
+          selectedChatId ? "hidden md:block" : "block"
+        } w-full md:w-80`}
+      >
+        <ChatSidebar
+          currentUser={currentUser}
+          chats={chats}
+          selectedChatId={selectedChatId}
+          onChatSelect={handleChatSelect}
+          onNewChat={handleNewChat}
+        />
+      </div>
+
+      {/* Chat Interface - Hidden on mobile when no chat is selected */}
+      <div className={`${selectedChatId ? "block" : "hidden md:block"} flex-1`}>
+        <ChatInterface
+          currentUser={currentUser}
+          selectedChat={selectedChat}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          onBackToChats={handleBackToChats}
+        />
+      </div>
     </div>
   );
 };

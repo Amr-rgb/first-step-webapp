@@ -2148,5 +2148,44 @@
       "teachers": "عدد المعلمات",
       "programs": "عدد البرامج"
     }
+  },
+  "chat": {
+    "sidebar": {
+      "title": "الرسائل",
+      "adminTitle": "جميع المحادثات",
+      "searchPlaceholder": "البحث في المحادثات...",
+      "noConversations": "لا توجد محادثات بعد",
+      "noConversationsAdmin": "جميع المحادثات بين الآباء والمراكز ستظهر هنا. يمكنك المشاركة في أي محادثة.",
+      "noConversationsRegular": "ابدأ محادثة جديدة للبدء في المراسلة",
+      "newChatButton": "بدء محادثة جديدة"
+    },
+    "interface": {
+      "selectConversation": "اختر محادثة",
+      "selectConversationAdmin": "اختر محادثة من الشريط الجانبي لعرض والمشاركة في الرسائل بين المستخدمين",
+      "selectConversationRegular": "اختر محادثة من الشريط الجانبي للبدء في المراسلة",
+      "adminMode": "وضع الإدارة: يمكنك المشاركة في أي محادثة",
+      "typeMessage": "اكتب رسالة...",
+      "sendButton": "إرسال الرسالة",
+      "pressEnter": "اضغط Enter للإرسال، Shift + Enter لسطر جديد"
+    },
+    "messages": {
+      "noMessages": "لا توجد رسائل بعد",
+      "loading": "جاري تحميل الرسائل...",
+      "sending": "جاري الإرسال...",
+      "failedToLoad": "فشل في تحميل الرسائل",
+      "failedToSend": "فشل في إرسال الرسالة",
+      "failedToLoadConversations": "فشل في تحميل المحادثات",
+      "cannotDetermineParticipants": "لا يمكن تحديد المشاركين في المحادثة",
+      "noValidParticipant": "لم يتم العثور على مشارك صالح"
+    },
+    "types": {
+      "center": "مركز",
+      "parent": "ولي أمر", 
+      "admin": "مدير"
+    },
+    "status": {
+      "online": "متصل",
+      "offline": "غير متصل"
+    }
   }
 }
