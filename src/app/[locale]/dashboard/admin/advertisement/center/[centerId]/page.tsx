@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +14,8 @@ export default function CenterAdvertisementsPage({
 }: {
   params: Promise<{ centerId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { centerId } = use(params);
   const { data, isLoading, error } = useQuery({
     queryKey: ["centerAds", centerId],
@@ -19,7 +23,7 @@ export default function CenterAdvertisementsPage({
   });
 
   const t = useTranslations("dashboard.admin.advertisement.center");
-  
+
   if (isLoading) return <div>{t("loading")}</div>;
   if (error) return <div className="text-red-500">{t("errorLoading")}</div>;
 
@@ -66,7 +70,9 @@ export default function CenterAdvertisementsPage({
           </div>
         </div>
         <div className="space-y-4">
-          <p className="heading-4 text-primary font-medium">{t("acceptedAds")}</p>
+          <p className="heading-4 text-primary font-medium">
+            {t("acceptedAds")}
+          </p>
           <div className="flex flex-col gap-y-6 lg:px-5 xl:px-9">
             {ads
               .filter((ad: any) => ad.status === "approved")
@@ -82,7 +88,9 @@ export default function CenterAdvertisementsPage({
           </div>
         </div>
         <div className="space-y-4">
-          <p className="heading-4 text-primary font-medium">{t("rejectedAds")}</p>
+          <p className="heading-4 text-primary font-medium">
+            {t("rejectedAds")}
+          </p>
           <div className="flex flex-col gap-y-6 lg:px-5 xl:px-9">
             {ads
               .filter((ad: any) => ad.status === "rejected")

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Tabs } from "@/components/general/Tabs";
@@ -7,6 +9,8 @@ import AdminAds from "@/components/dashboard/advertisement/AdminAds";
 import CentersAdvertisements from "@/components/dashboard/advertisement/CentersAdvertisements";
 
 export default function Advertisement() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.advertisement");
   const [activeTab, setActiveTab] = useState<"firstStep" | "centers">(
     "firstStep"

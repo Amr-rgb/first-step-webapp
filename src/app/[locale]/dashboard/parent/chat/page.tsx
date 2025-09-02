@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -11,6 +13,8 @@ import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const ParentChatPage = () => {
+  const meta = usePageMetadata();
+
   const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -159,6 +163,7 @@ const ParentChatPage = () => {
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
       onChatUpdate: (chatData) => {
+
         console.log("📋 Processing chat list update:", chatData);
         // The data structure is different - it contains contacts array
         if (chatData.contacts && Array.isArray(chatData.contacts)) {
@@ -213,6 +218,7 @@ const ParentChatPage = () => {
             id: Date.now().toString(), // Generate temporary ID since message.id doesn't exist
             content: message.message,
             senderId: message.sender_id.toString(),
+
             senderName: "Center", // Default name since sender_name doesn't exist
             senderType: "center",
             timestamp: new Date(message.created_at),

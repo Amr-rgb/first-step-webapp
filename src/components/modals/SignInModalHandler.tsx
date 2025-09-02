@@ -181,6 +181,8 @@ const SignInModalHandler = () => {
       globalModalState.setIsOpen(true);
     }
 
+    globalModalState.setIsOpen(false);
+
     return () => {
       window.removeEventListener(
         "signInModalToggle",

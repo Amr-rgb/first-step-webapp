@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -11,6 +13,8 @@ import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const AdminChatPage = () => {
+  const meta = usePageMetadata();
+
   const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -32,6 +36,7 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
+
       console.log("🔍 Fetching admin conversations...");
       console.log("📋 Current user:", {
         id: currentUser.id,
@@ -71,15 +76,12 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
-      console.log(
-        "💬 [AdminChat] Fetching messages for conversation:",
-        selectedChatId
-      );
+
+    
 
       const conversationMessages =
         await chatService.getAdminConversationMessages(selectedChatId, token);
 
-      console.log("📨 [AdminChat] Messages:", conversationMessages.length);
       setMessages(conversationMessages);
 
       // Update last message in conversations list
@@ -177,6 +179,7 @@ const AdminChatPage = () => {
     // Initialize Pusher
     pusherService.initialize();
 
+
     // Subscribe to admin conversations channel
     pusherService.subscribeToAdminConversations({
       onNewMessage: (message) => {
@@ -187,6 +190,7 @@ const AdminChatPage = () => {
           content: message.message,
           senderId: message.sender_id.toString(),
           senderName: message.sender_name || "User",
+
           senderType:
             message.sender_name === "center"
               ? "center"
@@ -211,6 +215,7 @@ const AdminChatPage = () => {
           setMessages((prev) => [...prev, newMessage]);
         }
 
+
         // Update last message in conversations list for both possible conversation IDs
         setChats((prevChats) =>
           prevChats.map((chat) =>
@@ -219,6 +224,7 @@ const AdminChatPage = () => {
                   ...chat,
                   lastMessage: newMessage.content,
                   timestamp: newMessage.timestamp,
+
                 }
               : chat
           )
@@ -235,6 +241,7 @@ const AdminChatPage = () => {
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
         setChats((prevChats) =>
+
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -246,6 +253,7 @@ const AdminChatPage = () => {
       },
       onUserOffline: (userId) => {
         setChats((prevChats) =>
+
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -267,6 +275,7 @@ const AdminChatPage = () => {
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
   };
+
 
   const handleBackToChats = () => {
     setSelectedChatId(null);

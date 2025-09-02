@@ -6,11 +6,11 @@ import { ApiErrorHandler } from "@/lib/error-handling";
 
 const prepareCenterFormData = (
   formData: FormData,
-  payload: Omit<CenterRegisterPayload, "password">
+  payload: CenterRegisterPayload
 ) => {
   // Append text fields only if they exist
-  if (payload.name) formData.append("name", payload.name);
   if (payload.email) formData.append("email", payload.email);
+  if (payload.password) formData.append("password", payload.password);
   if (payload.address) formData.append("address", payload.address);
   if (payload.phone) formData.append("phone", payload.phone);
 
@@ -45,8 +45,10 @@ const prepareCenterFormData = (
     formData.append("special_needs", payload.special_needs ? "1" : "0");
   }
 
-  if (payload.nursery_name)
+  if (payload.nursery_name) {
+    formData.append("name", payload.nursery_name);
     formData.append("nursery_name", payload.nursery_name);
+  }
   if (payload.location) formData.append("location", payload.location);
   if (payload.city) formData.append("city_id", payload.city);
   if (payload.neighborhood)
@@ -105,29 +107,6 @@ const prepareCenterFormData = (
       }
       if (meal.components) {
         formData.append(`second_meals[${index}][components]`, meal.components);
-      }
-    });
-  }
-
-  if (payload.pricing?.length) {
-    payload.pricing.forEach((price, index) => {
-      if (price.enrollment_type) {
-        formData.append(
-          `pricing[${index}][enrollment_type]`,
-          price.enrollment_type
-        );
-      }
-      if (price.response_speed) {
-        formData.append(
-          `pricing[${index}][response_speed]`,
-          price.response_speed
-        );
-      }
-      if (price.price_amount) {
-        formData.append(
-          `pricing[${index}][price_amount]`,
-          price.price_amount.toString()
-        );
       }
     });
   }
@@ -316,6 +295,32 @@ export const parentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getUserData: async () => {
+    try {
+      const response = await apiClient.get(`/parent/get-user`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateProfile: async (payload: {
+    email: string;
+    phone: string;
+    name: string;
+    national_number: string;
+  }) => {
+    try {
+      const response = await apiClient.put(
+        `/parent/update-profile-parent`,
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const centerService = {
@@ -337,10 +342,7 @@ export const centerService = {
     }
   },
 
-  updateBranch: async (
-    id: string,
-    payload: Omit<CenterRegisterPayload, "password">
-  ) => {
+  updateBranch: async (id: string, payload: CenterRegisterPayload) => {
     try {
       const formData = new FormData();
       prepareCenterFormData(formData, payload);
@@ -357,7 +359,7 @@ export const centerService = {
     }
   },
 
-  createBranch: async (payload: Omit<CenterRegisterPayload, "password">) => {
+  createBranch: async (payload: CenterRegisterPayload) => {
     try {
       const formData = new FormData();
       prepareCenterFormData(formData, payload);
@@ -700,6 +702,53 @@ export const centerService = {
   }) => {
     try {
       const response = await apiClient.post(`/notify-parents`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterData: async () => {
+    try {
+      const response = await apiClient.get(`/get-center`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateProfile: async (payload: {
+    email: string;
+    address: string;
+    location: string;
+    nursery_name: string;
+    phone: string;
+    city_id: number;
+    neighborhood: string;
+  }) => {
+    try {
+      const response = await apiClient.put(`/update-profile-center`, {
+        ...payload,
+        name: payload.nursery_name,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getPlans: async () => {
+    try {
+      const response = await apiClient.get("/plans");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getSubscriptionsLog: async () => {
+    try {
+      const response = await apiClient.get("/get-history-payment");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -1128,6 +1177,15 @@ export const adminService = {
       const response = await apiClient.put(
         `/dashboard/centers/${centerId}/reject`
       );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCentersSubscriptionsLog: async () => {
+    try {
+      const response = await apiClient.get("/get-history-payment");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

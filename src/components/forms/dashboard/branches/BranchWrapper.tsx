@@ -20,6 +20,7 @@ interface BranchWrapperProps {
   mode: "add" | "edit";
   onBranchData?: (data: any) => void;
   onBranchCreated?: (data: { id: string; name: string }) => void;
+  onBranchDraft?: (data: any, name: string) => void;
 }
 
 const BranchWrapper = ({
@@ -27,6 +28,7 @@ const BranchWrapper = ({
   mode,
   onBranchData,
   onBranchCreated,
+  onBranchDraft,
 }: BranchWrapperProps) => {
   const queryClient = useQueryClient();
 
@@ -46,11 +48,9 @@ const BranchWrapper = ({
   const transformedInitialValues: BranchFormData | undefined = useMemo(() => {
     if (!fetchedBranch) return undefined;
     return {
-      nursery_name_ar: fetchedBranch.name || "",
-      email: fetchedBranch.email || "",
+      nursery_name: fetchedBranch.nursery_name || "",
       phone: fetchedBranch.phone || "",
       neighborhood: fetchedBranch.neighborhood || "",
-      nursery_name_en: fetchedBranch.nursery_name_branch || "",
       nursery_type: fetchedBranch.nursery_type || [],
       address: fetchedBranch.address || "",
       city: fetchedBranch.city_id || "",
@@ -84,9 +84,7 @@ const BranchWrapper = ({
     resolver: zodResolver(branchSchema),
     defaultValues: {
       // step1
-      nursery_name_ar: "",
-      nursery_name_en: "",
-      email: "",
+      nursery_name: "",
       phone: "",
       neighborhood: "",
       nursery_type: [],
@@ -220,9 +218,10 @@ const BranchWrapper = ({
       if ("commercial_record_path" in values)
         result.commercial_record_path = values.commercial_record_path;
 
-      if ("nursery_name_ar" in values) result.name = values.nursery_name_ar;
-      if ("nursery_name_en" in values)
-        result.nursery_name = values.nursery_name_en;
+      if ("nursery_name" in values) {
+        result.name = values.nursery_name;
+        result.nursery_name = values.nursery_name;
+      }
 
       if ("email" in values) result.email = values.email;
       if ("address" in values) result.address = values.address;
@@ -271,40 +270,6 @@ const BranchWrapper = ({
       if ("communication_methods" in values)
         result.communication_methods = values.communication_methods;
 
-      // Always include pricing even if unchanged (or you can make this conditional)
-      result.pricing = [
-        {
-          enrollment_type: "daily",
-          response_speed: "normal",
-          price_amount: 100,
-        },
-        {
-          enrollment_type: "daily",
-          response_speed: "emergency",
-          price_amount: 120,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "normal",
-          price_amount: 1200,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "emergency",
-          price_amount: 1400,
-        },
-        {
-          enrollment_type: "6_months",
-          response_speed: "normal",
-          price_amount: 6500,
-        },
-        {
-          enrollment_type: "hourly",
-          response_speed: "normal",
-          price_amount: 30,
-        },
-      ];
-
       return result;
     };
 
@@ -316,7 +281,11 @@ const BranchWrapper = ({
       updateBranchMutation.mutate(expectedData);
       console.log(expectedData);
     } else {
-      mutation.mutate(expectedData);
+      // In add mode, lift the payload to parent and open admin dialog there
+      if (onBranchDraft) {
+        const branchName = allValues.nursery_name || "";
+        onBranchDraft(expectedData, branchName);
+      }
     }
   };
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ChildWrapper from "@/components/forms/dashboard/children/ChildWrapper";
@@ -43,6 +45,8 @@ export default function EditChild({
 }: {
   params: Promise<{ childId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { childId } = use(params);
 
   const { data: childData, isLoading } = useQuery({

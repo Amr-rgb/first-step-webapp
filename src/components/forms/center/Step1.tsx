@@ -54,16 +54,16 @@ export function Step1BasicInfo({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 gap-x-10 md:gap-y-4">
         <FormField
           control={control}
-          name="nursery_name_ar"
+          name="nursery_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                {t("nursery_name_ar.label")}
+                {t("nursery_name.label")}
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("nursery_name_ar.placeholder")}
+                  placeholder={t("nursery_name.placeholder")}
                   {...field}
                   disabled={disabled}
                 />
@@ -73,28 +73,7 @@ export function Step1BasicInfo({
           )}
         />
 
-        <FormField
-          control={control}
-          name="nursery_name_en"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("nursery_name_en.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("nursery_name_en.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {(show ? !!control._formValues?.email : true) && (
+        {(show ? !!control._formValues?.email : !isBranch) && (
           <FormField
             control={control}
             name="email"

@@ -1,13 +1,13 @@
 import { useTranslations } from "next-intl";
-import { useAuthStore, useAuthToken, useAuthUser } from "@/store/authStore";
+import { useAuthToken, useAuthUser } from "@/store/authStore";
 import { Link } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { openSignInModal } from "@/components/modals/SignInModalHandler";
+import { handleLogout } from "@/lib/auth-utils";
 
 const NavbarButton = () => {
   const token = useAuthToken();
   const user = useAuthUser();
-  const authStore = useAuthStore();
   const tBtns = useTranslations("navbar.buttons");
 
   // Determine dashboard path based on user role
@@ -53,11 +53,7 @@ const NavbarButton = () => {
               </Link>
             </Button>
           )}
-          <Button
-            size={"sm"}
-            variant="outline"
-            onClick={() => authStore.clearAuth()}
-          >
+          <Button size={"sm"} variant="outline" onClick={() => handleLogout()}>
             {tBtns("logout")}
           </Button>
         </>

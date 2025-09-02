@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useRouter } from "next/navigation";
 import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
 import { adminService } from "@/services/dashboardApi";
@@ -9,6 +11,8 @@ import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AdminBlogAddPage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin.blog.add");
   const router = useRouter();
   const queryClient = useQueryClient();

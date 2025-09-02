@@ -91,8 +91,7 @@ const SignUpWrapper = () => {
       emergency_contact: data.emergency_contact === "yes",
       special_needs: data.accepted_ages.includes("disabled"),
 
-      name: data.nursery_name_ar,
-      nursery_name: data.nursery_name_en,
+      nursery_name: data.nursery_name,
       location: data.location,
       city: data.city,
       neighborhood: data.neighborhood,
@@ -103,39 +102,6 @@ const SignUpWrapper = () => {
       provides_food: data.meals_and_periods.provides_food === "yes",
 
       accepted_ages: data.accepted_ages,
-
-      pricing: [
-        {
-          enrollment_type: "daily",
-          response_speed: "normal",
-          price_amount: 100,
-        },
-        {
-          enrollment_type: "daily",
-          response_speed: "emergency",
-          price_amount: 120,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "normal",
-          price_amount: 1200,
-        },
-        {
-          enrollment_type: "monthly",
-          response_speed: "emergency",
-          price_amount: 1400,
-        },
-        {
-          enrollment_type: "6_months",
-          response_speed: "normal",
-          price_amount: 6500,
-        },
-        {
-          enrollment_type: "hourly",
-          response_speed: "normal",
-          price_amount: 30,
-        },
-      ],
     };
 
     mutation.mutate(expectedData);

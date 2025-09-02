@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
@@ -9,6 +11,8 @@ import Bookings from "@/components/dashboard/admin-bookings/Bookings";
 import { useTranslations } from "next-intl";
 
 export default function BookingsPage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.admin");
   const { data: stats, isLoading } = useQuery({
     queryKey: ["adminStats"],

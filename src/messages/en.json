@@ -413,13 +413,9 @@
       "1": {
         "title": "Basic Information",
         "form": {
-          "nursery_name_ar": {
-            "label": "Center Name In Arabic",
-            "placeholder": "Enter center name in arabic"
-          },
-          "nursery_name_en": {
-            "label": "Center Name In English",
-            "placeholder": "Enter center name in english"
+          "nursery_name": {
+            "label": "Center Name",
+            "placeholder": "Enter center name"
           },
           "phone": {
             "label": "Mobile Number",
@@ -696,11 +692,13 @@
       "admin": {
         "home": "Home",
         "centers": "Nurseries & Centers",
+        "centers-subscriptions": "Centers Subscriptions Log",
         "parents": "Parents",
         "bookings": "Bookings",
         "advertisement": "Advertisement",
         "blog": "Blog",
         "notifications": "Notifications",
+
         "chat": "Chat"
       },
       "center": {
@@ -714,6 +712,56 @@
         "notifications": "Notifications",
         "team": "Team",
         "chat": "Chat"
+      }
+    },
+    "account": {
+      "titles": {
+        "editParentAccount": "Edit Parent Account",
+        "editCenterAccount": "Edit Account Details"
+      },
+      "fields": {
+        "parentName": "Parent Name",
+        "name": "Center Name",
+        "nurseryName": "Nursery Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "address": "Address",
+        "location": "Location",
+        "neighborhood": "Neighborhood",
+        "city": "City",
+        "nationalNumber": "National Number"
+      },
+      "placeholders": {
+        "parentName": "e.g., Ahmed Mohamed",
+        "name": "e.g., Wow",
+        "nurseryName": "e.g., Stars Nursery",
+        "email": "e.g., mennaemarauxj@gmail.com",
+        "phone": "e.g., +966555555",
+        "address": "e.g., Oma Street",
+        "location": "e.g., Riyadh",
+        "neighborhood": "e.g., Al-Nakheel District",
+        "city": "e.g., Riyadh",
+        "nationalNumber": "e.g., 1234567890"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "confirm": "Confirm"
+      },
+      "success": {
+        "saved": "Saved successfully"
+      },
+      "errors": {
+        "saveFailed": "Failed to save data"
+      },
+      "info": {
+        "cancelled": "Changes have been cancelled"
+      },
+      "confirm": {
+        "title": "Confirm Password",
+        "passwordLabel": "Enter your password to confirm",
+        "passwordPlaceholder": "••••••••"
       }
     },
     "center": {
@@ -1024,6 +1072,27 @@
       }
     },
     "admin": {
+      "subscriptions": {
+        "title": "Subscriptions Log",
+        "noRecords": "No subscription records found.",
+        "cancelSubscription": "Cancel Center Subscription",
+        "sendPaymentReminder": "Send Payment Reminder",
+        "subscriptionType": "Subscription Type:",
+        "subscriptionStatus": "Subscription Status:",
+        "startDate": "Start Date:",
+        "endDate": "End Date:",
+        "address": "Address:",
+        "status": {
+          "active": "Active",
+          "expired": "Expired"
+        },
+        "planTypes": {
+          "annual": "Annual",
+          "semiAnnual": "Semi-Annual",
+          "quarterly": "Quarterly"
+        },
+        "error": "An error occurred while loading data"
+      },
       "blog": {
         "tabs": {
           "firstStep": "First Step Blogs",
@@ -1731,6 +1800,28 @@
         "pendingBlogs": "Pending Blogs",
         "rejectedBlogs": "Rejected Blogs"
       },
+      "subscriptions": {
+        "title": "Subscriptions Log",
+        "currency": "SAR",
+        "headers": {
+          "type": "Subscription Type",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "paymentMethod": "Payment Method",
+          "amount": "Amount",
+          "status": "Subscription Status"
+        },
+        "types": {
+          "quarterly": "Quarterly",
+          "annual": "Annual",
+          "semiAnnual": "Semi-Annual"
+        },
+        "status": {
+          "active": "Active",
+          "paymentPending": "Payment Pending",
+          "expired": "Expired"
+        }
+      },
       "noResults": "No results."
     },
     "children": {
@@ -1944,6 +2035,25 @@
         "authRequired": "You must be logged in to continue",
         "fetchPlans": "Failed to load subscription plans. Please try again later.",
         "paymentFailed": "Payment failed. Please try again."
+      },
+      "dashboard": {
+        "currentSubscription": "Current Subscription",
+        "subscriptionDescription": "Your current plan and renewal date",
+        "subscriptionStatus": "Subscription Status:",
+        "statusActive": "Active",
+        "statusFreeTrial": "Free Trial",
+        "startDate": "Start Date:",
+        "subscriptionType": "Subscription Type:",
+        "endDate": "End Date:",
+        "renewButton": "Renew Subscription",
+        "otherPlans": "Other Plans",
+        "noActivePlan": "No active plan found",
+        "loading": "Loading...",
+        "errorLoading": "An error occurred while loading plans.",
+        "subscribeButton": "Subscribe",
+        "subscriptionRequiredMessage": "Services have been suspended due to the expiration of the trial period. You can get the most out of the platform by subscribing to one of the available packages.",
+        "goToBilling": "Subscribe Now",
+        "warning": "⚠ The trial period is about to expire, so please renew your subscription to continue enjoying the benefits of First Step."
       }
     },
     "HeroSection": {
@@ -1957,6 +2067,11 @@
         "button1": "Book for your child now",
         "button2": "Enroll your children with us"
       }
+    },
+    "AppAd": {
+      "title": "Download the First Step App Now",
+      "description": "Because you are not just choosing a nursery or educational center, you are building your child's future",
+      "download": "Now available on"
     }
   },
   "chat": {

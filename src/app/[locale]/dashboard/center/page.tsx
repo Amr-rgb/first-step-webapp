@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
@@ -278,6 +280,8 @@ const hasMinimalData = (stats: any) => {
 };
 
 export default function CenterDashboardHome() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.charts");
   const isCenter = useHasRole("center");
   const { stats, isLoading } = useCenterStats(isCenter ? "center" : "branch");

@@ -14,6 +14,61 @@ import {
   PortfolioResponse,
 } from "@/types";
 import axios from "axios";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
+
+// Utility function to check if an endpoint is allowed without subscription
+const isSubscriptionAllowed = (url: string): boolean => {
+  const allowlist = [
+    "/plans",
+    "/plans-get",
+    "/payment/subscribe",
+    "/login",
+    "/auth/google",
+    "/register-parent",
+    "/register-center",
+    "/forget-password",
+    "/check-otp",
+    "/rest-password",
+    "/cities",
+    "/sliders",
+    "/common-question",
+    "/our-value-keys",
+    "/services",
+    "/contact-us",
+    "/subscripe",
+    "/terms-and-condition",
+    "/privacy",
+    "/blogs",
+    "/center-filter",
+    "/latest-search",
+  ];
+
+  return allowlist.some((path) => url.includes(path));
+};
+
+// Utility function to check if error message indicates subscription requirement
+const isSubscriptionRequiredMessage = (message: string): boolean => {
+  return (
+    message.includes("No free trial available.") ||
+    message.includes("Your subscription is not active.")
+  );
+};
+
+// Utility function to format API errors consistently
+const formatApiError = (error: any, status: number, data: any) => {
+  return {
+    message:
+      data?.message ||
+      data?.error ||
+      error.message ||
+      "An unexpected error occurred",
+    errors: data?.errors || {},
+    status: status,
+    data: data,
+    url: error.config?.url,
+    method: error.config?.method,
+  };
+};
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -26,47 +81,93 @@ export const apiClient = axios.create({
 });
 
 // Optional: Add interceptors (useful later for auth tokens, error handling)
-apiClient.interceptors.request.use((config) => {
-  // Retrieve token (e.g., from Zustand store or localStorage)
-  const token = useAuthStore.getState().token; // Example with Zustand
-  console.log("API Request Interceptor:", {
-    url: config.url,
-    method: config.method,
-    hasToken: !!token,
-    baseURL: config.baseURL,
-    headers: {
-      ...config.headers,
-      Authorization: token ? "Bearer ***" : "NOT_SET",
-      "X-Authorization": config.headers["X-Authorization"] ? "***" : "NOT_SET",
-      "X-Authorization-Secret": config.headers["X-Authorization-Secret"]
-        ? "***"
-        : "NOT_SET",
-    },
-  });
+apiClient.interceptors.request.use(
+  (config) => {
+    // Get token from auth store (only in browser environment)
+    let token: string | null = null;
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log("Added Authorization header with token");
-  } else {
-    console.log(
-      "No token available for request - this might cause authentication issues"
-    );
+    if (typeof window !== "undefined") {
+      try {
+        token = useAuthStore.getState().token;
+      } catch (error) {
+        // Store not available, continue without token
+        console.warn("Auth store not available in interceptor");
+      }
+    }
+
+    // Add authorization header if token exists
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Check subscription requirements (only in browser environment)
+    if (typeof window !== "undefined") {
+      try {
+        const { subscriptionRequired } = useSubscriptionStore.getState();
+        if (subscriptionRequired) {
+          const url = config.url || "";
+          if (!isSubscriptionAllowed(url)) {
+            // Create a structured subscription error
+            const subscriptionError = {
+              message:
+                "No free trial available. Please select a subscription plan to continue.",
+              status: 403,
+              url: config.url,
+              method: config.method,
+              isSubscriptionError: true,
+              type: "SUBSCRIPTION_REQUIRED",
+            };
+
+            return Promise.reject(subscriptionError);
+          }
+        }
+      } catch (error) {
+        // Store not available, continue without subscription check
+        console.warn("Subscription store not available in interceptor");
+      }
+    }
+
+    return config;
+  },
+  (error) => {
+    // Handle request interceptor errors
+    if (process.env.NODE_ENV === "development") {
+      console.error("Request Interceptor Error:", error);
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-// Add response interceptor for debugging
+// Add response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log("API Response:", {
-      url: response.config.url,
-      status: response.status,
-      headers: response.headers,
-    });
     return response;
   },
   (error) => {
-    // Handle network errors
+    // Check if this is a subscription error from request interceptor first
+    if (error.isSubscriptionError && error.type === "SUBSCRIPTION_REQUIRED") {
+      // This is a subscription error from request interceptor, not a network error
+      if (typeof window !== "undefined") {
+        try {
+          useSubscriptionStore.getState().setSubscriptionRequired(true);
+        } catch (storeError) {
+          console.warn("Could not update subscription store:", storeError);
+        }
+      }
+
+      // Return the subscription error directly with consistent structure
+      return Promise.reject({
+        message: error.message,
+        errors: {},
+        status: error.status,
+        url: error.url,
+        method: error.method,
+        isSubscriptionError: true,
+        type: error.type,
+      });
+    }
+
+    // Handle network errors (no response from server)
     if (!error.response) {
       const networkError = {
         message: "Network error - Please check your internet connection",
@@ -74,34 +175,43 @@ apiClient.interceptors.response.use(
         status: 0,
         url: error.config?.url,
         method: error.config?.method,
+        isNetworkError: true,
       };
-      console.error("Network Error:", networkError);
+
+      if (process.env.NODE_ENV === "development") {
+        console.error("Network Error:", networkError);
+      }
+
       return Promise.reject(networkError);
     }
 
-    // Handle API errors
-    const errorDetails = {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data || {},
-      headers: error.response?.headers,
-      message: error.message,
-    };
+    // Handle API errors with response
+    const { status, data } = error.response;
 
-    console.error("API Error:", errorDetails);
+    // Check for subscription gate (403 status from server)
+    if (status === 403 && typeof window !== "undefined") {
+      try {
+        const msg = data?.message || data?.error || "";
+        if (typeof msg === "string" && isSubscriptionRequiredMessage(msg)) {
+          useSubscriptionStore.getState().setSubscriptionRequired(true);
+        }
+      } catch (storeError) {
+        console.warn("Could not update subscription store:", storeError);
+      }
+    }
 
-    // Ensure error response has the expected structure
-    const formattedError = {
-      message:
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred",
-      errors: error.response?.data?.errors || {},
-      status: error.response?.status,
-      data: error.response?.data,
-    };
+    // Format error response consistently
+    const formattedError = formatApiError(error, status, data);
+
+    // Log errors in development only
+    if (process.env.NODE_ENV === "development") {
+      console.error("API Error:", {
+        status,
+        message: formattedError.message,
+        url: formattedError.url,
+        method: formattedError.method,
+      });
+    }
 
     return Promise.reject(formattedError);
   }
@@ -849,7 +959,6 @@ export const authService = {
       const formData = new FormData();
 
       // Append text fields
-      formData.append("name", payload.name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("address", payload.address);
@@ -878,6 +987,7 @@ export const authService = {
       );
       formData.append("special_needs", payload.special_needs ? "1" : "0");
 
+      formData.append("name", payload.nursery_name);
       formData.append("nursery_name", payload.nursery_name);
       formData.append("location", payload.location);
       formData.append("city_id", payload.city);
@@ -921,21 +1031,6 @@ export const authService = {
             `second_meals[${index}][components]`,
             meal.components
           );
-      });
-
-      payload.pricing.forEach((price, index) => {
-        formData.append(
-          `pricing[${index}][enrollment_type]`,
-          price.enrollment_type
-        );
-        formData.append(
-          `pricing[${index}][response_speed]`,
-          price.response_speed
-        );
-        formData.append(
-          `pricing[${index}][price_amount]`,
-          price.price_amount.toString()
-        );
       });
 
       // ✅ Append files
@@ -1033,6 +1128,15 @@ export const authService = {
       const response = await apiClient.post("/auth/google", {
         token,
       });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  confirmPassword: async (password: string) => {
+    try {
+      const response = await apiClient.put("/verify-password", { password });
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

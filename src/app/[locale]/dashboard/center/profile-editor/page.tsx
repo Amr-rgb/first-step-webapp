@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ProfileEditor from "@/components/dashboard/profile-editor/ProfileEditor";
@@ -35,6 +37,8 @@ export interface ProfileSection {
 }
 
 export default function ProfileEditorPage() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.profileEditor");
   const user = useAuthUser();
   const centerId = user?.id; // Assuming user.id is the center id

@@ -1,5 +1,16 @@
+import { Metadata } from "next";
+import { Locale, makePageMetadata } from "@/lib/metadata";
+import { getLocale } from "next-intl/server";
 import CenterAdRequest from "@/components/forms/dashboard/adblog-request/CenterAdRequest";
 import { useTranslations } from "next-intl";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return makePageMetadata(
+    locale as Locale,
+    "dashboard/center/ad-or-blog-request/ad-request"
+  );
+}
 
 export default function CenterAdRequestPage() {
   const t = useTranslations("dashboard.center.ad-or-blog-request.ad");

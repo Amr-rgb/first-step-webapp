@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +14,8 @@ export default function AdvertisementEdit({
 }: {
   params: Promise<{ adId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { adId } = use(params);
 
   const { data, isLoading, error } = useQuery({
@@ -21,7 +25,7 @@ export default function AdvertisementEdit({
   });
 
   const t = useTranslations("dashboard.admin.advertisement.edit");
-  
+
   if (isLoading) return <div>{t("loading")}</div>;
   if (error) return <div className="text-red-500">{t("errorLoading")}</div>;
   if (!data) return null;

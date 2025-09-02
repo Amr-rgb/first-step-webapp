@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import { use } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
@@ -48,6 +50,8 @@ export default function DailyReportDetails({
 }: {
   params: Promise<{ reportId: string }>;
 }) {
+  const meta = usePageMetadata();
+
   const { reportId } = use(params);
   const t = useTranslations("dashboard.center-reports.report");
 

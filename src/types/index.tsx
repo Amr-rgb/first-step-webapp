@@ -371,7 +371,9 @@ export interface ContactInfo {
 
 export interface PortfolioData {
   hero_section?: HeroSection;
-  branches?: Branch[];
+  branches?: {
+    branch_name: string;
+  }[];
   Philosophy_Methodology_Goal?: PhilosophyMethodologyGoal;
   services?: PortfolioService[];
   service_section_title?: string;

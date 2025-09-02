@@ -41,6 +41,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
 import { useAuthStore } from "@/store/authStore";
+import { handleLogout } from "@/lib/auth-utils";
 
 type BreadcrumbItem = {
   title: string;
@@ -73,6 +74,7 @@ export default function Header({
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const authStore = useAuthStore();
+  const role = authStore.user?.role;
 
   // Dashboard search functionality
   const {
@@ -97,19 +99,25 @@ export default function Header({
       onChange: setNotificationsEnabled,
     },
     separator1: { type: "separator" as const },
-    // paymentLog: {
-    //   icon: CreditCard,
-    //   label: "سجل الدفع",
-    //   type: "link" as const,
-    //   href: "/dashboard/payment-log",
-    // },
-    // accountData: {
-    //   icon: User,
-    //   label: "تعديل بيانات الحساب",
-    //   type: "link" as const,
-    //   href: "/dashboard/account",
-    // },
-    // separator2: { type: "separator" as const },
+    billingControl:
+      role === "center"
+        ? {
+            icon: CreditCard,
+            label: "سجل الدفع",
+            type: "link" as const,
+            href: `/dashboard/${role}/billing`,
+          }
+        : undefined,
+    accountData:
+      role !== "admin"
+        ? {
+            icon: User,
+            label: "تعديل بيانات الحساب",
+            type: "link" as const,
+            href: `/dashboard/${role}/account`,
+          }
+        : undefined,
+    separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
       label: "سياسة الخصوصية",
@@ -141,8 +149,7 @@ export default function Header({
       type: "action" as const,
       variant: "destructive" as const,
       onClick: () => {
-        authStore.clearAuth();
-        router.push("/sign-in");
+        handleLogout();
       },
     },
   };
@@ -426,11 +433,11 @@ export default function Header({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             {Object.entries(menuItems).map(([key, item]) => {
-              if (item.type === "separator") {
+              if (item?.type === "separator") {
                 return <DropdownMenuSeparator key={key} />;
               }
 
-              if (item.type === "toggle") {
+              if (item?.type === "toggle") {
                 return (
                   <div
                     key={key}
@@ -449,7 +456,7 @@ export default function Header({
                 );
               }
 
-              if (item.type === "link") {
+              if (item?.type === "link") {
                 return (
                   <DropdownMenuItem key={key} asChild>
                     <Link href={item.href} className="flex items-center gap-2">
@@ -460,7 +467,7 @@ export default function Header({
                 );
               }
 
-              if (item.type === "action") {
+              if (item?.type === "action") {
                 return (
                   <DropdownMenuItem
                     key={key}

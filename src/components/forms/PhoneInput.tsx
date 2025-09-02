@@ -19,13 +19,11 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 }) => {
   return (
     <div className="relative flex items-center">
-      <span className="absolute ltr:left-3 rtl:right-3 text-gray-500">
-        +966
-      </span>
+      <span className="absolute left-3 text-gray-500">+966</span>
       <Input
         dir={locale === "ar" ? "rtl" : "ltr"}
         type="tel"
-        className={`ltr:pr-0 ltr:pl-14 rtl:pl-0 rtl:pr-14 ${className || ""}`}
+        className={`pr-0 pl-14 ${className || ""}`}
         onChange={onChange}
         value={value}
         disabled={readOnly}

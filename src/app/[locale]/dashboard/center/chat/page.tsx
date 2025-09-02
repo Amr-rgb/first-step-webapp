@@ -1,5 +1,7 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -11,6 +13,8 @@ import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
 const CenterChatPage = () => {
+  const meta = usePageMetadata();
+
   const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -179,6 +183,7 @@ const CenterChatPage = () => {
             id: Date.now().toString(), // Generate temporary ID since message.id doesn't exist
             content: message.message,
             senderId: message.sender_id.toString(),
+
             senderName: "Parent", // Default name since sender_name doesn't exist
             senderType: "parent",
             timestamp: new Date(message.created_at),
@@ -186,6 +191,7 @@ const CenterChatPage = () => {
             imageUrl: message.image_url,
             videoUrl: message.video_url,
           };
+
 
           console.log("📨 Adding new message to state:", newMessage);
           setMessages((prev) => {
@@ -198,6 +204,7 @@ const CenterChatPage = () => {
           // Update last message in chats list
           setChats((prevChats) =>
             prevChats.map((chat) =>
+
               chat.id === message.sender_id.toString()
                 ? {
                     ...chat,
@@ -236,6 +243,7 @@ const CenterChatPage = () => {
           setChats(updatedChats);
         }
       },
+
       onNewChatCreated: (chatData) => {
         const newChatItem: ChatListItem = {
           id: chatData.chatId,
@@ -259,7 +267,9 @@ const CenterChatPage = () => {
           )
         );
       },
-      onUserOffline: (userId) => {
+      onUserOffline: (userId: string) => {
+        // Update user offline status
+
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.id === userId ? { ...chat, isOnline: false } : chat
@@ -267,6 +277,7 @@ const CenterChatPage = () => {
         );
       },
     });
+
 
     // Cleanup on component unmount or chat change
     return () => {

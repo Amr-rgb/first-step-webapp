@@ -1,10 +1,14 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import MemberFormWrapper from "@/components/forms/dashboard/team/MemberFormWrapper";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 
 export default function AddTeamMember() {
+  const meta = usePageMetadata();
+
   const t = useTranslations("dashboard.center.team");
   const searchParams = useSearchParams();
   const branchId = searchParams.get("branch_id");
