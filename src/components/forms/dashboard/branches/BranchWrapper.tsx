@@ -157,9 +157,14 @@ const BranchWrapper = ({
     },
     onSuccess: (data) => {
       toast.success("Branch updated successfully");
+
+      // Invalidate all related queries to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ["branch", editBranchId] });
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      queryClient.invalidateQueries({ queryKey: ["branches", undefined] });
+
       setApiErrors({});
-      router.back();
+      router.back(); // Commented out to prevent redirect
     },
     onError: handleApiError,
   });
