@@ -5,7 +5,8 @@ import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { Child } from "@/components/tables/data/children";
 import { useTranslations } from "next-intl";
 import { centerService } from "@/services/dashboardApi";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +20,32 @@ const Children = () => {
     queryKey: ["children"],
     queryFn: centerService.getChildrenFiles,
   });
+
+  const flattenedChildren = useMemo((): Child[] => {
+    if (!Array.isArray(children)) return [];
+    return children.flatMap((child: any): Child[] => {
+      const enrollments = Array.isArray(child?.enrollments)
+        ? child.enrollments
+        : [];
+      if (enrollments.length === 0) return [child] as Child[];
+
+      return enrollments.map((enrollment: any) => {
+        const row: Child = {
+          id: child.id,
+          child_name: child.child_name,
+          birthday_date: child.birthday_date,
+          parent_name: child.parent_name,
+          branch_name: enrollment.branch_name ?? child.branch_name,
+          enrollments: [
+            {
+              status: enrollment.status,
+            },
+          ],
+        };
+        return row;
+      });
+    });
+  }, [children]);
 
   return (
     <div>
@@ -46,7 +73,7 @@ const Children = () => {
 
         <DataTable
           columns={columns}
-          data={children}
+          data={flattenedChildren}
           globalFilterValue={searchQuery}
           setGlobalFilterValue={setSearchQuery}
           isLoading={isLoading}
