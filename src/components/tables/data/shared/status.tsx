@@ -5,6 +5,8 @@ export type ReservationStatus =
   | "waitingForPayment"
   | "waitingForConfirmation"
   | "rejected"
+  | "cancelled"
+  | "paid"
   | "selectChild";
 
 export function useReservationStatus() {
@@ -18,6 +20,10 @@ export function useReservationStatus() {
         return "waitingForConfirmation";
       case "rejected":
         return "rejected";
+      case "cancelled":
+        return "cancelled";
+      case "paid":
+        return "paid";
       default:
         return status as ReservationStatus;
     }

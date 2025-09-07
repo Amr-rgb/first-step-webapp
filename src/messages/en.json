@@ -677,7 +677,9 @@
       "rejected": "Rejected",
       "waitingForConfirmation": "Waiting for Confirmation",
       "waitingForPayment": "Waiting for Payment",
-      "confirmed": "Payment Confirmed"
+      "confirmed": "Payment Confirmed",
+      "cancelled": "Cancelled",
+      "paid": "Paid"
     }
   },
   "dashboard": {
@@ -1731,6 +1733,8 @@
           "waitingForPayment": "Waiting for Payment",
           "waitingForConfirmation": "Waiting for Confirmation",
           "rejected": "Rejected",
+          "cancelled": "Cancelled",
+          "paid": "Paid",
           "selectChild": "Select Child"
         }
       },
@@ -2170,7 +2174,7 @@
     },
     "types": {
       "center": "Center",
-      "parent": "Parent", 
+      "parent": "Parent",
       "admin": "Admin"
     },
     "status": {

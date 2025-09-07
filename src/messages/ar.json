@@ -673,7 +673,9 @@
       "rejected": "مرفوض",
       "waitingForConfirmation": "بانتظار التأكيد",
       "waitingForPayment": "بانتظار الدفع",
-      "confirmed": "تم الدفع"
+      "confirmed": "تم الدفع",
+      "cancelled": "ملغي",
+      "paid": "تم الدفع"
     }
   },
   "dashboard": {
@@ -1725,6 +1727,8 @@
           "waitingForPayment": "في انتظار الدفع",
           "waitingForConfirmation": "في انتظار التأكيد",
           "rejected": "مرفوض",
+          "cancelled": "ملغي",
+          "paid": "تم الدفع",
           "selectChild": "اختر الطفل"
         }
       },
@@ -2245,7 +2249,7 @@
     },
     "types": {
       "center": "مركز",
-      "parent": "ولي أمر", 
+      "parent": "ولي أمر",
       "admin": "مدير"
     },
     "status": {
