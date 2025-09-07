@@ -40,4 +40,5 @@ export interface ChatListItem {
   unreadCount: number;
   isOnline?: boolean;
   email?: string;
+  participants?: User[];
 }

@@ -698,7 +698,8 @@
         "advertisement": "Advertisement",
         "blog": "Blog",
         "notifications": "Notifications",
-        "chat": "chat"
+
+        "chat": "Chat"
       },
       "center": {
         "home": "Home",
@@ -2082,6 +2083,45 @@
       "title": "Download the First Step App Now",
       "description": "Because you are not just choosing a nursery or educational center, you are building your child's future",
       "download": "Now available on"
+    }
+  },
+  "chat": {
+    "sidebar": {
+      "title": "Messages",
+      "adminTitle": "All Conversations",
+      "searchPlaceholder": "Search conversations...",
+      "noConversations": "No conversations yet",
+      "noConversationsAdmin": "All conversations between parents and centers will appear here. You can participate in any conversation.",
+      "noConversationsRegular": "Start a new conversation to begin messaging",
+      "newChatButton": "Start new conversation"
+    },
+    "interface": {
+      "selectConversation": "Select a conversation",
+      "selectConversationAdmin": "Choose a conversation from the sidebar to view and participate in messages between users",
+      "selectConversationRegular": "Choose a chat from the sidebar to start messaging",
+      "adminMode": "Admin View: You can only view conversations between users",
+      "typeMessage": "Type a message...",
+      "sendButton": "Send message",
+      "pressEnter": "Press Enter to send, Shift + Enter for new line"
+    },
+    "messages": {
+      "noMessages": "No messages yet",
+      "loading": "Loading messages...",
+      "sending": "Sending...",
+      "failedToLoad": "Failed to load messages",
+      "failedToSend": "Failed to send message",
+      "failedToLoadConversations": "Failed to load conversations",
+      "cannotDetermineParticipants": "Cannot determine conversation participants",
+      "noValidParticipant": "No valid participant found"
+    },
+    "types": {
+      "center": "Center",
+      "parent": "Parent", 
+      "admin": "Admin"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
     }
   }
 }
