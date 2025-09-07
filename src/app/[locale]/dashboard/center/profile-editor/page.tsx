@@ -51,7 +51,7 @@ export default function ProfileEditorPage() {
   const [profileSections, setProfileSections] = useState<ProfileSection[]>([
     {
       id: "hero",
-      name: "Hero Section",
+      name: t("sections.hero.name"),
       type: "hero",
       enabled: false,
       data: {
@@ -65,51 +65,51 @@ export default function ProfileEditorPage() {
     },
     {
       id: "branches",
-      name: "Branches",
+      name: t("sections.branches.name"),
       type: "branches",
       enabled: false,
       data: {
-        title: "Our Branches",
+        title: t("sections.branches.title"),
         branches: [],
       },
     },
     {
       id: "philosophy",
-      name: "Philosophy, Methodology & Goal",
+      name: t("sections.philosophy.name"),
       type: "philosophy",
       enabled: false,
       data: {
-        philosophyTitle: "Our Philosophy",
+        philosophyTitle: t("sections.philosophy.philosophyTitle"),
         philosophy: "",
-        methodologyTitle: "Our Methodology",
+        methodologyTitle: t("sections.philosophy.methodologyTitle"),
         methodology: "",
-        goalTitle: "Our Goal",
+        goalTitle: t("sections.philosophy.goalTitle"),
         goal: "",
       },
     },
     {
       id: "plans",
-      name: "Plans (برامجنا)",
+      name: t("sections.plans.name"),
       type: "plans",
       enabled: false, // Only enable when there's data
       data: {
-        title: "Plans", // Static title - will be handled by locale
+        title: t("sections.plans.title"), // Static title - will be handled by locale
         plans: [],
       },
     },
     {
       id: "services",
-      name: "Services",
+      name: t("sections.services.name"),
       type: "services",
       enabled: false,
       data: {
-        title: "Our Services",
+        title: t("sections.services.title"),
         services: [],
       },
     },
     {
       id: "stats",
-      name: "Nursery Stats",
+      name: t("sections.stats.name"),
       type: "stats",
       enabled: false,
       data: {
@@ -120,28 +120,28 @@ export default function ProfileEditorPage() {
     },
     {
       id: "activities",
-      name: "Activities",
+      name: t("sections.activities.name"),
       type: "activities",
       enabled: false,
       data: {
-        title: "Activities",
+        title: t("sections.activities.title"),
         subtitle: "",
         images: [],
       },
     },
     {
       id: "team",
-      name: "Our Team",
+      name: t("sections.team.name"),
       type: "team",
       enabled: false,
       data: {
-        title: "Meet Our Team",
+        title: t("sections.team.title"),
         members: [],
       },
     },
     {
       id: "contact",
-      name: "Contact Information",
+      name: t("sections.contact.name"),
       type: "contact",
       enabled: false,
       data: {
@@ -473,7 +473,7 @@ export default function ProfileEditorPage() {
     return [
       {
         id: "hero",
-        name: "Hero Section",
+        name: t("sections.hero.name"),
         type: "hero",
         enabled: false,
         data: {
@@ -487,51 +487,51 @@ export default function ProfileEditorPage() {
       },
       {
         id: "branches",
-        name: "Branches",
+        name: t("sections.branches.name"),
         type: "branches",
         enabled: false,
         data: {
-          title: "Our Branches",
+          title: t("sections.branches.title"),
           branches: [],
         },
       },
       {
         id: "philosophy",
-        name: "Philosophy, Methodology & Goal",
+        name: t("sections.philosophy.name"),
         type: "philosophy",
         enabled: false,
         data: {
-          philosophyTitle: "Our Philosophy",
+          philosophyTitle: t("sections.philosophy.philosophyTitle"),
           philosophy: "",
-          methodologyTitle: "Our Methodology",
+          methodologyTitle: t("sections.philosophy.methodologyTitle"),
           methodology: "",
-          goalTitle: "Our Goal",
+          goalTitle: t("sections.philosophy.goalTitle"),
           goal: "",
         },
       },
       {
         id: "plans",
-        name: "Plans (برامجنا)",
+        name: t("sections.plans.name"),
         type: "plans",
         enabled: false,
         data: {
-          title: "Plans", // Static title - will be handled by locale
+          title: t("sections.plans.title"), // Static title - will be handled by locale
           plans: [],
         },
       },
       {
         id: "services",
-        name: "Services",
+        name: t("sections.services.name"),
         type: "services",
         enabled: false,
         data: {
-          title: "Our Services",
+          title: t("sections.services.title"),
           services: [],
         },
       },
       {
         id: "stats",
-        name: "Nursery Stats",
+        name: t("sections.stats.name"),
         type: "stats",
         enabled: false,
         data: {
@@ -542,28 +542,28 @@ export default function ProfileEditorPage() {
       },
       {
         id: "activities",
-        name: "Activities",
+        name: t("sections.activities.name"),
         type: "activities",
         enabled: false,
         data: {
-          title: "Activities",
+          title: t("sections.activities.title"),
           subtitle: "",
           images: [],
         },
       },
       {
         id: "team",
-        name: "Our Team",
+        name: t("sections.team.name"),
         type: "team",
         enabled: false,
         data: {
-          title: "Meet Our Team",
+          title: t("sections.team.title"),
           members: [],
         },
       },
       {
         id: "contact",
-        name: "Contact Information",
+        name: t("sections.contact.name"),
         type: "contact",
         enabled: false,
         data: {
@@ -582,7 +582,7 @@ export default function ProfileEditorPage() {
     return [
       {
         id: "hero",
-        name: "Hero Section",
+        name: t("sections.hero.name"),
         type: "hero",
         enabled: !!portofilo?.hero_section,
         data: {
@@ -596,12 +596,12 @@ export default function ProfileEditorPage() {
       },
       {
         id: "branches",
-        name: "Branches",
+        name: t("sections.branches.name"),
         type: "branches",
         enabled:
           Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
         data: {
-          title: "Our Branches",
+          title: t("sections.branches.title"),
           branches:
             portofilo?.branches?.map((branch: any) => ({
               name: branch.branch_name || branch.name || "",
@@ -610,49 +610,51 @@ export default function ProfileEditorPage() {
       },
       {
         id: "philosophy",
-        name: "Philosophy, Methodology & Goal",
+        name: t("sections.philosophy.name"),
         type: "philosophy",
         enabled: !!portofilo?.Philosophy_Methodology_Goal,
         data: {
           philosophyTitle:
             portofilo?.Philosophy_Methodology_Goal?.philosophy?.title ||
-            "Our Philosophy",
+            t("sections.philosophy.philosophyTitle"),
           philosophy:
             portofilo?.Philosophy_Methodology_Goal?.philosophy?.content || "",
           methodologyTitle:
             portofilo?.Philosophy_Methodology_Goal?.methodology?.title ||
-            "Our Methodology",
+            t("sections.philosophy.methodologyTitle"),
           methodology:
             portofilo?.Philosophy_Methodology_Goal?.methodology?.content || "",
           goalTitle:
-            portofilo?.Philosophy_Methodology_Goal?.goals?.title || "Our Goal",
+            portofilo?.Philosophy_Methodology_Goal?.goals?.title ||
+            t("sections.philosophy.goalTitle"),
           goal: portofilo?.Philosophy_Methodology_Goal?.goals?.content || "",
         },
       },
       {
         id: "plans",
-        name: "Plans (برامجنا)",
+        name: t("sections.plans.name"),
         type: "plans",
         enabled: false, // Only enable when there's data
         data: {
-          title: "Plans", // Static title - will be handled by locale
+          title: t("sections.plans.title"), // Static title - will be handled by locale
           plans: [], // Plans will be populated from pricing API
         },
       },
       {
         id: "services",
-        name: "Services",
+        name: t("sections.services.name"),
         type: "services",
         enabled:
           Array.isArray(portofilo?.services) && portofilo.services.length > 0,
         data: {
-          title: portofilo?.service_section_title || "Our Services",
+          title:
+            portofilo?.service_section_title || t("sections.services.title"),
           services: portofilo?.services || [],
         },
       },
       {
         id: "stats",
-        name: "Nursery Stats",
+        name: t("sections.stats.name"),
         type: "stats",
         enabled: !!portofilo?.nursery_state,
         data: {
@@ -663,30 +665,31 @@ export default function ProfileEditorPage() {
       },
       {
         id: "activities",
-        name: "Activities",
+        name: t("sections.activities.name"),
         type: "activities",
         enabled:
           Array.isArray(portofilo?.images_activities) &&
           portofilo.images_activities.length > 0,
         data: {
-          title: portofilo?.activity_section_title || "Activities",
+          title:
+            portofilo?.activity_section_title || t("sections.activities.title"),
           subtitle: portofilo?.activity_section_subtitle || "",
           images: portofilo?.images_activities || [],
         },
       },
       {
         id: "team",
-        name: "Our Team",
+        name: t("sections.team.name"),
         type: "team",
         enabled: Array.isArray(portofilo?.teams) && portofilo.teams.length > 0,
         data: {
-          title: "Meet Our Team",
+          title: t("sections.team.title"),
           members: portofilo?.teams || [],
         },
       },
       {
         id: "contact",
-        name: "Contact Information",
+        name: t("sections.contact.name"),
         type: "contact",
         enabled: !!portofilo?.contact_info,
         data: {

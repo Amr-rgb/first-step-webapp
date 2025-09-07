@@ -83,8 +83,9 @@ interface ImageUploaderProps {
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   value,
   onChange,
-  placeholder = "Upload image",
+  placeholder,
 }) => {
+  const t = useTranslations("profileEditor.common");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -185,7 +186,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <div className="relative w-full h-32 overflow-hidden rounded-md border border-gray-200 bg-white">
               <img
                 src={getDisplayUrl()}
-                alt="Preview"
+                alt={t("placeholders.preview")}
                 className="w-full h-full object-contain p-1"
                 onError={(e) => {
                   console.error("Failed to load image:", value);
@@ -202,7 +203,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             {!isUploading && (
               <div className="absolute inset-0 bg-white/0 hover:bg-white/50 flex items-center justify-center transition-all">
                 <span className="text-gray-700 bg-white/90 px-3 py-1 rounded-full text-sm border border-gray-200 shadow-sm">
-                  Change Image
+                  {t("buttons.changeImage")}
                 </span>
               </div>
             )}
@@ -211,7 +212,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           <>
             <Upload className="w-6 h-6 text-gray-400 mb-2" />
             <p className="text-sm text-gray-500 text-center">
-              {isUploading ? "Uploading..." : "Click to upload an image"}
+              {isUploading
+                ? t("placeholders.uploading")
+                : t("placeholders.clickToUpload")}
             </p>
             <p className="text-xs text-gray-400 mt-1">
               PNG, JPG, JPEG up to 5MB
@@ -228,7 +231,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           onClick={() => onChange(null)}
           disabled={isUploading}
         >
-          Remove Image
+          {t("buttons.removeImage")}
         </Button>
       )}
     </div>
@@ -376,9 +379,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Nursery Name</Label>
+              <Label>{t("fieldLabels.nurseryName")}</Label>
               <Input
-                placeholder="Enter nursery name"
+                placeholder={t("placeholders.enterNurseryName")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -386,9 +389,9 @@ const ProfileEditor = ({
               />
             </div>
             <div>
-              <Label>Slogan</Label>
+              <Label>{t("fieldLabels.slogan")}</Label>
               <Input
-                placeholder="Enter slogan"
+                placeholder={t("placeholders.enterSlogan")}
                 value={section.data.subtitle || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { subtitle: e.target.value })
@@ -396,9 +399,9 @@ const ProfileEditor = ({
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("fieldLabels.description")}</Label>
               <Textarea
-                placeholder="Enter hero description"
+                placeholder={t("placeholders.enterHeroDescription")}
                 value={section.data.description || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { description: e.target.value })
@@ -407,16 +410,16 @@ const ProfileEditor = ({
               />
             </div>
             <div>
-              <Label>Background Image</Label>
+              <Label>{t("fieldLabels.backgroundImage")}</Label>
               <ImageUploader
                 value={section.data.image || ""}
                 onChange={(url) => onSectionUpdate(section.id, { image: url })}
               />
             </div>
             <div>
-              <Label>Call-to-Action button</Label>
+              <Label>{t("fieldLabels.ctaButton")}</Label>
               <Input
-                placeholder="Get Started"
+                placeholder={t("placeholders.getStarted")}
                 value={section.data.ctaText || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { ctaText: e.target.value })
@@ -431,9 +434,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Title</Label>
+              <Label>{t("fieldLabels.title")}</Label>
               <Input
-                placeholder="About Our Nursery"
+                placeholder={t("placeholders.aboutOurNursery")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -441,9 +444,9 @@ const ProfileEditor = ({
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("fieldLabels.description")}</Label>
               <Textarea
-                placeholder="Tell your story..."
+                placeholder={t("placeholders.tellYourStory")}
                 value={section.data.description || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { description: e.target.value })
@@ -453,9 +456,9 @@ const ProfileEditor = ({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Mission</Label>
+                <Label>{t("fieldLabels.mission")}</Label>
                 <Textarea
-                  placeholder="Our mission..."
+                  placeholder={t("placeholders.ourMission")}
                   value={section.data.mission || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { mission: e.target.value })
@@ -464,9 +467,9 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Vision</Label>
+                <Label>{t("fieldLabels.vision")}</Label>
                 <Textarea
-                  placeholder="Our vision..."
+                  placeholder={t("placeholders.ourVision")}
                   value={section.data.vision || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { vision: e.target.value })
@@ -477,7 +480,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Gallery Images</Label>
+                <Label>{t("fieldLabels.galleryImages")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -485,13 +488,13 @@ const ProfileEditor = ({
                     addListItem(section.id, "images", { url: "", caption: "" })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Image
+                  <Plus className="w-4 h-4 mr-1" /> {t("buttons.addImage")}
                 </Button>
               </div>
               {(section.data.images || []).map((image: any, index: number) => (
                 <div key={index} className="flex gap-2 items-end">
                   <div className="w-full">
-                    <Label>Gallery Image</Label>
+                    <Label>{t("fieldLabels.galleryImage")}</Label>
                     <ImageUploader
                       value={image.url || ""}
                       onChange={(url) =>
@@ -501,7 +504,7 @@ const ProfileEditor = ({
                   </div>
                   <div className="flex-1">
                     <Input
-                      placeholder="Caption (optional)"
+                      placeholder={t("placeholders.captionOptional")}
                       value={image.caption || ""}
                       onChange={(e) =>
                         updateListItem(section.id, "images", index, {
@@ -527,9 +530,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Section Title</Label>
+              <Label>{t("fieldLabels.sectionTitle")}</Label>
               <Input
-                placeholder="Our Services"
+                placeholder={t("placeholders.ourServices")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -538,7 +541,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Services</Label>
+                <Label>{t("fieldLabels.services")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -550,7 +553,7 @@ const ProfileEditor = ({
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Service
+                  <Plus className="w-4 h-4 mr-1" /> {t("buttons.addService")}
                 </Button>
               </div>
               {(section.data.services || []).map(
@@ -561,7 +564,9 @@ const ProfileEditor = ({
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Service {index + 1}</h4>
+                        <h4 className="font-medium">
+                          {t("fieldLabels.service")} {index + 1}
+                        </h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -573,7 +578,7 @@ const ProfileEditor = ({
                         </Button>
                       </div>
                       <Input
-                        placeholder="Service title"
+                        placeholder={t("placeholders.serviceTitle")}
                         value={service.title || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "services", index, {
@@ -582,7 +587,7 @@ const ProfileEditor = ({
                         }
                       />
                       <Textarea
-                        placeholder="Service description"
+                        placeholder={t("placeholders.serviceDescription")}
                         value={service.description || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "services", index, {
@@ -592,7 +597,7 @@ const ProfileEditor = ({
                         rows={2}
                       />
                       <div>
-                        <Label>Service Image</Label>
+                        <Label>{t("fieldLabels.serviceImage")}</Label>
                         <ImageUploader
                           value={service.image_service || service.image || null}
                           onChange={(file) =>
@@ -843,7 +848,7 @@ const ProfileEditor = ({
                     {/* Enrollment Type */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        Enrollment Type
+                        {t("fieldLabels.enrollmentType")}
                       </Label>
                       <Select
                         value={plan.enrollment_type || "month"}
@@ -854,13 +859,23 @@ const ProfileEditor = ({
                         }
                       >
                         <SelectTrigger className="h-10">
-                          <SelectValue placeholder="Select enrollment type" />
+                          <SelectValue
+                            placeholder={t("placeholders.selectEnrollmentType")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="hour">Hour</SelectItem>
-                          <SelectItem value="day">Day</SelectItem>
-                          <SelectItem value="month">Month</SelectItem>
-                          <SelectItem value="year">Year</SelectItem>
+                          <SelectItem value="hour">
+                            {t("placeholders.hourly")}
+                          </SelectItem>
+                          <SelectItem value="day">
+                            {t("placeholders.daily")}
+                          </SelectItem>
+                          <SelectItem value="month">
+                            {t("placeholders.monthly")}
+                          </SelectItem>
+                          <SelectItem value="year">
+                            {t("placeholders.yearly")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -868,7 +883,7 @@ const ProfileEditor = ({
                     {/* Duration */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        Duration
+                        {t("placeholders.duration")}
                       </Label>
                       <Input
                         type="number"
@@ -882,17 +897,21 @@ const ProfileEditor = ({
                         className="h-10"
                       />
                       <p className="text-xs text-gray-500">
-                        {plan.enrollment_type === "hour" && "hours"}
-                        {plan.enrollment_type === "day" && "days"}
-                        {plan.enrollment_type === "month" && "months"}
-                        {plan.enrollment_type === "year" && "years"}
+                        {plan.enrollment_type === "hour" &&
+                          t("placeholders.hours")}
+                        {plan.enrollment_type === "day" &&
+                          t("placeholders.days")}
+                        {plan.enrollment_type === "month" &&
+                          t("placeholders.months")}
+                        {plan.enrollment_type === "year" &&
+                          t("placeholders.years")}
                       </p>
                     </div>
 
                     {/* Price */}
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">
-                        Price Amount
+                        {t("placeholders.priceAmount")}
                       </Label>
                       <Input
                         type="number"
@@ -918,31 +937,41 @@ const ProfileEditor = ({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <h4 className="font-medium mb-2">Our Philosophy</h4>
+                <h4 className="font-medium mb-2">
+                  {t("placeholders.ourPhilosophy")}
+                </h4>
                 <input
                   type="hidden"
-                  value="Our Philosophy"
+                  value={t("placeholders.ourPhilosophy")}
                   onChange={() => {}}
                 />
               </div>
               <div>
-                <h4 className="font-medium mb-2">Our Methodology</h4>
+                <h4 className="font-medium mb-2">
+                  {t("placeholders.ourMethodology")}
+                </h4>
                 <input
                   type="hidden"
-                  value="Our Methodology"
+                  value={t("placeholders.ourMethodology")}
                   onChange={() => {}}
                 />
               </div>
               <div>
-                <h4 className="font-medium mb-2">Our Goal</h4>
-                <input type="hidden" value="Our Goal" onChange={() => {}} />
+                <h4 className="font-medium mb-2">
+                  {t("placeholders.ourGoal")}
+                </h4>
+                <input
+                  type="hidden"
+                  value={t("placeholders.ourGoal")}
+                  onChange={() => {}}
+                />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label>Philosophy Content</Label>
+                <Label>{t("placeholders.philosophyContent")}</Label>
                 <Textarea
-                  placeholder="Our philosophy..."
+                  placeholder={t("placeholders.ourPhilosophy")}
                   value={section.data.philosophy || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { philosophy: e.target.value })
@@ -951,9 +980,9 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Methodology Content</Label>
+                <Label>{t("placeholders.methodologyContent")}</Label>
                 <Textarea
-                  placeholder="Our methodology..."
+                  placeholder={t("placeholders.ourMethodology")}
                   value={section.data.methodology || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { methodology: e.target.value })
@@ -962,9 +991,9 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Goal Content</Label>
+                <Label>{t("placeholders.goalContent")}</Label>
                 <Textarea
-                  placeholder="Our goal..."
+                  placeholder={t("placeholders.ourGoal")}
                   value={section.data.goal || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { goal: e.target.value })
@@ -979,10 +1008,12 @@ const ProfileEditor = ({
       case "branches":
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Our Branches</h3>
+            <h3 className="text-lg font-semibold">
+              {t("placeholders.ourBranches")}
+            </h3>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Branches</Label>
+                <Label>{t("placeholders.branches")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -997,7 +1028,7 @@ const ProfileEditor = ({
                 (branch: any, index: number) => (
                   <div key={index} className="flex gap-2 items-end">
                     <Input
-                      placeholder="Branch name"
+                      placeholder={t("placeholders.branchName")}
                       value={branch.name || ""}
                       onChange={(e) =>
                         updateListItem(section.id, "branches", index, {
@@ -1026,9 +1057,9 @@ const ProfileEditor = ({
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label>Area (sqm)</Label>
+                <Label>{t("fieldLabels.area")}</Label>
                 <Input
-                  placeholder="2000"
+                  placeholder={t("placeholders.enterArea")}
                   value={section.data.area || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { area: e.target.value })
@@ -1036,11 +1067,11 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Classrooms</Label>
+                <Label>{t("fieldLabels.classrooms")}</Label>
                 <Input
                   type="number"
                   min="1"
-                  placeholder="10"
+                  placeholder={t("placeholders.enterClassrooms")}
                   value={section.data.classrooms || ""}
                   onChange={(e) => {
                     const value = Math.max(1, parseInt(e.target.value) || 1);
@@ -1051,11 +1082,11 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Team Members</Label>
+                <Label>{t("fieldLabels.teamMembers")}</Label>
                 <Input
                   type="number"
                   min="1"
-                  placeholder="25"
+                  placeholder={t("placeholders.enterTeamMembers")}
                   value={section.data.teamMembers || ""}
                   onChange={(e) => {
                     const value = Math.max(1, parseInt(e.target.value) || 1);
@@ -1073,9 +1104,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Section Title</Label>
+              <Label>{t("fieldLabels.sectionTitle")}</Label>
               <Input
-                placeholder="Meet Our Team"
+                placeholder={t("sections.team.title")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -1084,7 +1115,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Team Members</Label>
+                <Label>{t("fieldLabels.members")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -1097,7 +1128,7 @@ const ProfileEditor = ({
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Member
+                  <Plus className="w-4 h-4 mr-1" /> {t("buttons.addMember")}
                 </Button>
               </div>
               {(section.data.members || []).map(
@@ -1108,7 +1139,9 @@ const ProfileEditor = ({
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Team Member {index + 1}</h4>
+                        <h4 className="font-medium">
+                          {t("fieldLabels.member")} {index + 1}
+                        </h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -1121,7 +1154,7 @@ const ProfileEditor = ({
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <Input
-                          placeholder="Full name"
+                          placeholder={t("placeholders.fullName")}
                           value={member.name || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "members", index, {
@@ -1130,7 +1163,7 @@ const ProfileEditor = ({
                           }
                         />
                         <Input
-                          placeholder="Role/Position"
+                          placeholder={t("placeholders.rolePosition")}
                           value={member.role || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "members", index, {
@@ -1140,7 +1173,7 @@ const ProfileEditor = ({
                         />
                       </div>
                       <div>
-                        <Label>Profile Image</Label>
+                        <Label>{t("fieldLabels.profileImage")}</Label>
                         <ImageUploader
                           value={member.image || null}
                           onChange={(file) =>
@@ -1151,7 +1184,7 @@ const ProfileEditor = ({
                         />
                       </div>
                       <Textarea
-                        placeholder="Bio (optional)"
+                        placeholder={t("placeholders.bioOptional")}
                         value={member.bio || ""}
                         onChange={(e) =>
                           updateListItem(section.id, "members", index, {
@@ -1172,9 +1205,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Section Title</Label>
+              <Label>{t("placeholders.sectionTitle")}</Label>
               <Input
-                placeholder="Our Activities"
+                placeholder={t("placeholders.ourActivities")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -1182,9 +1215,9 @@ const ProfileEditor = ({
               />
             </div>
             <div>
-              <Label>Subtitle</Label>
+              <Label>{t("placeholders.subtitle")}</Label>
               <Input
-                placeholder="Discover what we do"
+                placeholder={t("placeholders.discoverWhatWeDo")}
                 value={section.data.subtitle || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { subtitle: e.target.value })
@@ -1193,7 +1226,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Activity Images</Label>
+                <Label>{t("placeholders.activityImages")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -1201,13 +1234,13 @@ const ProfileEditor = ({
                     addListItem(section.id, "images", { url: "", caption: "" })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Image
+                  <Plus className="w-4 h-4 mr-1" /> {t("buttons.addImage")}
                 </Button>
               </div>
               {(section.data.images || []).map((image: any, index: number) => (
                 <div key={index} className="flex gap-2 items-end">
                   <div className="w-full">
-                    <Label>Activity Image</Label>
+                    <Label>{t("placeholders.activityImage")}</Label>
                     <ImageUploader
                       value={image.url || image || null}
                       onChange={(file) =>
@@ -1219,7 +1252,7 @@ const ProfileEditor = ({
                   </div>
                   <div className="flex-1">
                     <Input
-                      placeholder="Caption (optional)"
+                      placeholder={t("placeholders.captionOptional")}
                       value={image.caption || ""}
                       onChange={(e) =>
                         updateListItem(section.id, "images", index, {
@@ -1246,9 +1279,9 @@ const ProfileEditor = ({
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Address</Label>
+                <Label>{t("fieldLabels.address")}</Label>
                 <Textarea
-                  placeholder="Full address"
+                  placeholder={t("placeholders.enterAddress")}
                   value={section.data.address || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { address: e.target.value })
@@ -1257,9 +1290,9 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Working Hours</Label>
+                <Label>{t("fieldLabels.workingHours")}</Label>
                 <Textarea
-                  placeholder="Mon-Fri: 8AM-6PM"
+                  placeholder={t("placeholders.enterWorkingHours")}
                   value={section.data.workingHours || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, {
@@ -1272,9 +1305,9 @@ const ProfileEditor = ({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Phone Number</Label>
+                <Label>{t("fieldLabels.phoneNumber")}</Label>
                 <Input
-                  placeholder="+1 (555) 123-4567"
+                  placeholder={t("placeholders.enterPhone")}
                   value={section.data.phone || ""}
                   onChange={(e) =>
                     onSectionUpdate(section.id, { phone: e.target.value })
@@ -1282,17 +1315,17 @@ const ProfileEditor = ({
                 />
               </div>
               <div>
-                <Label>Email Address</Label>
+                <Label>{t("fieldLabels.emailAddress")}</Label>
                 <Input
                   type="email"
-                  placeholder="info@nursery.com"
+                  placeholder={t("placeholders.enterEmail")}
                   value={section.data.email || ""}
                   onChange={(e) => {
                     const email = e.target.value;
                     // Basic email validation
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (email && !emailRegex.test(email)) {
-                      toast.error("Please enter a valid email address");
+                      toast.error(t("validation.email"));
                     }
                     onSectionUpdate(section.id, { email });
                   }}
@@ -1301,7 +1334,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <p className="text-sm text-gray-500 mt-4">
-                Social media links have been removed as per requirements.
+                {t("common.socialMediaRemoved")}
               </p>
               <input
                 type="hidden"
@@ -1311,61 +1344,76 @@ const ProfileEditor = ({
             </div>
           </div>
         );
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label>Hero Title</Label>
-              <Input
-                placeholder="Welcome to our nursery"
-                value={section.data.title || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { title: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label>Hero Subtitle</Label>
-              <Input
-                placeholder="We provide a safe and nurturing environment for your child"
-                value={section.data.subtitle || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { subtitle: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label>Hero Image</Label>
-              <ImageUploader
-                value={section.data.image || ""}
-                onChange={(url) => onSectionUpdate(section.id, { image: url })}
-              />
-            </div>
-          </div>
-        );
 
       case "philosophy":
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Philosophy Title</Label>
-              <Input
-                placeholder="Our Philosophy"
-                value={section.data.title || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { title: e.target.value })
-                }
-              />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <h4 className="font-medium mb-2">
+                  {t("fieldLabels.philosophyTitle")}
+                </h4>
+                <input
+                  type="hidden"
+                  value={t("fieldLabels.philosophyTitle")}
+                  onChange={() => {}}
+                />
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">
+                  {t("fieldLabels.methodologyTitle")}
+                </h4>
+                <input
+                  type="hidden"
+                  value={t("fieldLabels.methodologyTitle")}
+                  onChange={() => {}}
+                />
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">
+                  {t("fieldLabels.goalTitle")}
+                </h4>
+                <input
+                  type="hidden"
+                  value={t("fieldLabels.goalTitle")}
+                  onChange={() => {}}
+                />
+              </div>
             </div>
-            <div>
-              <Label>Philosophy Text</Label>
-              <Textarea
-                placeholder="Our philosophy is to provide a safe and nurturing environment for your child"
-                value={section.data.text || ""}
-                onChange={(e) =>
-                  onSectionUpdate(section.id, { text: e.target.value })
-                }
-                rows={4}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>{t("fieldLabels.philosophy")}</Label>
+                <Textarea
+                  placeholder={t("placeholders.ourPhilosophy")}
+                  value={section.data.philosophy || ""}
+                  onChange={(e) =>
+                    onSectionUpdate(section.id, { philosophy: e.target.value })
+                  }
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label>{t("fieldLabels.methodology")}</Label>
+                <Textarea
+                  placeholder={t("placeholders.ourMethodology")}
+                  value={section.data.methodology || ""}
+                  onChange={(e) =>
+                    onSectionUpdate(section.id, { methodology: e.target.value })
+                  }
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label>{t("fieldLabels.goal")}</Label>
+                <Textarea
+                  placeholder={t("placeholders.ourGoal")}
+                  value={section.data.goal || ""}
+                  onChange={(e) =>
+                    onSectionUpdate(section.id, { goal: e.target.value })
+                  }
+                  rows={3}
+                />
+              </div>
             </div>
           </div>
         );
@@ -1374,9 +1422,9 @@ const ProfileEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label>Branches Title</Label>
+              <Label>{t("fieldLabels.sectionTitle")}</Label>
               <Input
-                placeholder="Our Branches"
+                placeholder={t("sections.branches.title")}
                 value={section.data.title || ""}
                 onChange={(e) =>
                   onSectionUpdate(section.id, { title: e.target.value })
@@ -1385,7 +1433,7 @@ const ProfileEditor = ({
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Branches</Label>
+                <Label>{t("fieldLabels.branches")}</Label>
                 <Button
                   size="sm"
                   variant="outline"
@@ -1398,7 +1446,7 @@ const ProfileEditor = ({
                     })
                   }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> Add Branch
+                  <Plus className="w-4 h-4 mr-1" /> {t("buttons.addBranch")}
                 </Button>
               </div>
               {(section.data.branches || []).map(
@@ -1409,7 +1457,9 @@ const ProfileEditor = ({
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Branch {index + 1}</h4>
+                        <h4 className="font-medium">
+                          {t("placeholders.branches")} {index + 1}
+                        </h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -1422,7 +1472,7 @@ const ProfileEditor = ({
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <Input
-                          placeholder="Branch name"
+                          placeholder={t("placeholders.branchName")}
                           value={branch.name || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "branches", index, {
@@ -1431,7 +1481,7 @@ const ProfileEditor = ({
                           }
                         />
                         <Input
-                          placeholder="Branch address"
+                          placeholder={t("placeholders.branchAddress")}
                           value={branch.address || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "branches", index, {
@@ -1442,7 +1492,7 @@ const ProfileEditor = ({
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <Input
-                          placeholder="Branch phone"
+                          placeholder={t("placeholders.branchPhone")}
                           value={branch.phone || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "branches", index, {
@@ -1451,7 +1501,7 @@ const ProfileEditor = ({
                           }
                         />
                         <Input
-                          placeholder="Branch email"
+                          placeholder={t("placeholders.branchEmail")}
                           value={branch.email || ""}
                           onChange={(e) =>
                             updateListItem(section.id, "branches", index, {
@@ -1476,7 +1526,7 @@ const ProfileEditor = ({
             <div className="w-12 h-12 mx-auto mb-2 opacity-50 flex items-center justify-center">
               <Plus className="w-8 h-8" />
             </div>
-            <p>Section type not implemented yet</p>
+            <p>{t("placeholders.sectionNotImplemented")}</p>
           </div>
         );
     }
@@ -1486,11 +1536,10 @@ const ProfileEditor = ({
     <div className="p-6 space-y-6">
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Available Sections
+          {t("common.availableSections")}
         </h2>
         <p className="text-gray-600">
-          Toggle sections on/off and customize their content. Changes will be
-          reflected in the preview instantly.
+          {t("common.availableSectionsDescription")}
         </p>
       </div>
 
@@ -1541,12 +1590,12 @@ const ProfileEditor = ({
                   {section.enabled ? (
                     <>
                       <CheckSquare className="w-4 h-4 mr-2" />
-                      Enabled
+                      {t("common.enabled")}
                     </>
                   ) : (
                     <>
                       <Square className="w-4 h-4 mr-2" />
-                      Enable
+                      {t("common.enable")}
                     </>
                   )}
                 </Button>
@@ -1568,12 +1617,9 @@ const ProfileEditor = ({
             <Plus className="w-12 h-12 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-600 mb-2">
-            More sections coming soon!
+            {t("common.moreSections")}
           </h3>
-          <p className="text-gray-500">
-            We're working on adding more customizable sections to help you
-            create the perfect nursery profile.
-          </p>
+          <p className="text-gray-500">{t("common.moreSectionsDescription")}</p>
         </div>
       </Card>
     </div>
