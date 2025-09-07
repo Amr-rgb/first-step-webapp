@@ -20,6 +20,7 @@ import {
 } from "@/components/tables/data/subscriptions";
 import { useQuery } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
+import { SubscriptionWarningModal } from "@/components/modals/SubscriptionWarningModal";
 
 export default function CenterBillingPage() {
   const meta = usePageMetadata();
@@ -33,6 +34,8 @@ export default function CenterBillingPage() {
   const tTable = useTranslations("dashboard.tables.subscriptions");
 
   const [isSubmitting, setIsSubmitting] = useState<number | null>(null);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
   const { setSubscriptionRequired } = useSubscriptionStore.getState();
 
@@ -56,15 +59,38 @@ export default function CenterBillingPage() {
   const isFreeTrial = user?.subscription_status === "free";
 
   const handlePayment = async (planId: number) => {
+    // Check if user is authenticated first
+    const isAuthenticated = useAuthStore.getState().isAuthenticated();
+    if (!isAuthenticated) {
+      alert("Please log in to subscribe to a plan.");
+      return;
+    }
+
+    // Check if current plan is still active
+    const isPlanActive = () => {
+      if (user?.subscription_status === "free") {
+        const freeTrialEndDate = new Date(user?.free_trail_end_date || 0);
+        return freeTrialEndDate > new Date();
+      } else {
+        const subscriptionEndDate = new Date(user?.subscription_end_date || 0);
+        return subscriptionEndDate > new Date();
+      }
+    };
+
+    if (isPlanActive()) {
+      // Show warning modal
+      setSelectedPlanId(planId);
+      setShowWarningModal(true);
+      return;
+    }
+
+    // Proceed with payment if no active plan
+    await proceedWithPayment(planId);
+  };
+
+  const proceedWithPayment = async (planId: number) => {
     setIsSubmitting(planId);
     try {
-      const isAuthenticated = useAuthStore.getState().isAuthenticated();
-      if (!isAuthenticated) {
-        setIsSubmitting(null);
-        alert("Please log in to subscribe to a plan.");
-        return;
-      }
-
       const data = await paymentService.centerSubscribe(planId);
       setIsSubmitting(null);
 
@@ -127,7 +153,7 @@ export default function CenterBillingPage() {
                 <span>
                   {isFreeTrial
                     ? format(
-                        new Date(user?.created_at as string),
+                        new Date((user?.created_at as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -135,7 +161,9 @@ export default function CenterBillingPage() {
                       )
                     : activePlan
                     ? format(
-                        new Date(user?.subscription_start_date as string),
+                        new Date(
+                          (user?.subscription_start_date as string) || 0
+                        ),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -167,7 +195,7 @@ export default function CenterBillingPage() {
                 <span>
                   {isFreeTrial
                     ? format(
-                        new Date(user?.free_trail_end_date as string),
+                        new Date((user?.free_trail_end_date as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -175,7 +203,7 @@ export default function CenterBillingPage() {
                       )
                     : activePlan
                     ? format(
-                        new Date(user?.subscription_end_date as string),
+                        new Date((user?.subscription_end_date as string) || 0),
                         "EEEE - yyyy/M/d",
                         {
                           locale: locale === "ar" ? arSA : enUS,
@@ -245,6 +273,21 @@ export default function CenterBillingPage() {
         <div className="text-gray font-medium mb-2">{tTable("title")}</div>
         <SubscriptionsTable />
       </div>
+
+      {/* Warning Modal */}
+      <SubscriptionWarningModal
+        isOpen={showWarningModal}
+        onClose={() => setShowWarningModal(false)}
+        onConfirm={() => {
+          if (selectedPlanId) {
+            proceedWithPayment(selectedPlanId);
+            setShowWarningModal(false);
+            setSelectedPlanId(null);
+          }
+        }}
+        user={user}
+        planName={activePlan?.name}
+      />
     </div>
   );
 }

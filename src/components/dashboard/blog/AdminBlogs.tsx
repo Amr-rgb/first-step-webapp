@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Blog } from "@/types";
+import EmptyState from "@/components/common/EmptyState";
 
 const AdminBlogs = () => {
   const t = useTranslations("dashboard.admin.blog");
@@ -45,19 +46,36 @@ const AdminBlogs = () => {
           <Link href="blog/add">{t("addBlog")}</Link>
         </Button>
       </div>
-      <div className="grid md:grid-cols-3 items-start gap-10">
-        {mappedBlogs.map((blog: any) => (
-          <DashboardBlogCard
-            key={blog.id}
-            blog={blog}
-            onView={() => {
-              setSelectedBlog(blog);
-              setViewModalOpen(true);
-            }}
-            onEdit={() => router.push(`blog/${blog.id}/edit`)}
-          />
-        ))}
-      </div>
+
+      {mappedBlogs.length === 0 ? (
+        <EmptyState
+          title={t("emptyStates.blogs.title")}
+          description={t("emptyStates.blogs.description")}
+          icon="📝"
+          size="lg"
+          primaryAction={{
+            label: t("addBlog"),
+            onClick: () => {
+              router.push("/dashboard/admin/blog/add");
+            },
+          }}
+          translationKey="dashboard.emptyStates"
+        />
+      ) : (
+        <div className="grid md:grid-cols-3 items-start gap-10">
+          {mappedBlogs.map((blog: any) => (
+            <DashboardBlogCard
+              key={blog.id}
+              blog={blog}
+              onView={() => {
+                setSelectedBlog(blog);
+                setViewModalOpen(true);
+              }}
+              onEdit={() => router.push(`blog/${blog.id}/edit`)}
+            />
+          ))}
+        </div>
+      )}
 
       <BlogViewModal
         blog={selectedBlog}

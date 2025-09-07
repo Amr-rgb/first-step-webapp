@@ -9,6 +9,7 @@ import {
 } from "@/components/tables/data/center-reports";
 import { DataTable } from "@/components/tables/DataTable";
 import { centerService } from "@/services/dashboardApi";
+import EmptyState from "@/components/common/EmptyState";
 
 interface DailyReport {
   id: number;
@@ -113,6 +114,19 @@ const Reports = () => {
 
     return Array.from(parentMap.values());
   }, [reportsData]);
+
+  // Show empty state if no reports
+  if (!isLoading && transformedData.length === 0) {
+    return (
+      <EmptyState
+        title={t("emptyStates.reports.title")}
+        description={t("emptyStates.reports.description")}
+        icon="📊"
+        size="lg"
+        translationKey="dashboard.emptyStates"
+      />
+    );
+  }
 
   return (
     <div>

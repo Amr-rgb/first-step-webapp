@@ -4,6 +4,7 @@ import { Booking, getColumns } from "@/components/tables/data/top-bookings";
 import { DataTable } from "@/components/tables/DataTable";
 import { useAdminStats } from "@/hooks/useAdminStats";
 import { useTranslations } from "next-intl";
+import EmptyState from "@/components/common/EmptyState";
 
 const TopBookings = () => {
   const { stats } = useAdminStats();
@@ -24,7 +25,17 @@ const TopBookings = () => {
     <div>
       <div className="mt-6 lg:p-4 space-y-1">
         <p className="font-bold text-primary text-center">{t("title")}</p>
-        <DataTable data={bookingsData} columns={columns} />
+        {bookingsData.length > 0 ? (
+          <DataTable data={bookingsData} columns={columns} />
+        ) : (
+          <EmptyState
+            title={t("emptyStates.bookings.title")}
+            description={t("emptyStates.bookings.description")}
+            icon="🏆"
+            size="lg"
+            translationKey="dashboard.emptyStates"
+          />
+        )}
       </div>
     </div>
   );

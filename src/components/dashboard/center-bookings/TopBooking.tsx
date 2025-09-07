@@ -3,43 +3,38 @@
 import { useTranslations } from "next-intl";
 import { Booking, getColumns } from "@/components/tables/data/top-bookings";
 import { DataTable } from "@/components/tables/DataTable";
-
-const bookingsData: Booking[] = [
-  {
-    id: 1,
-    branch: "اسم الفرع",
-    count: "5",
-    income: 5444.5,
-  },
-  {
-    id: 2,
-    branch: "اسم الفرع",
-    count: "4",
-    income: 56444.5,
-  },
-  {
-    id: 3,
-    branch: "اسم الفرع",
-    count: "3",
-    income: 56664.5,
-  },
-  {
-    id: 4,
-    branch: "اسم الفرع",
-    count: "3",
-    income: 5664.5,
-  },
-  {
-    id: 5,
-    branch: "اسم الفرع",
-    count: "3",
-    income: 5634.5,
-  },
-];
+import { useCenterStats } from "@/hooks/useCenterStats";
+import { useHasRole } from "@/store/authStore";
 
 const TopBookings = () => {
   const t = useTranslations("dashboard.tables.top-bookings");
-  const columns = getColumns({ nurseryName: false });
+  const isCenter = useHasRole("center");
+  const { stats } = useCenterStats(isCenter ? "center" : "branch");
+  const columns = getColumns({ nurseryName: false, branch: true });
+
+  const source: Array<{
+    nursery_name: string;
+    enrollment_count: number;
+    total_revenue?: string | number;
+  }> =
+    (stats?.branches_ordering_depending_on_the_number_of_enrollments as any) ||
+    [];
+
+  const bookingsData: Booking[] = source.map(
+    (
+      item: {
+        nursery_name: string;
+        enrollment_count: number;
+        total_revenue?: string | number;
+      },
+      index: number
+    ) => ({
+      id: index + 1,
+      branch: item.nursery_name,
+      count: String(item.enrollment_count ?? 0),
+      income: Number(item.total_revenue ?? 0),
+    })
+  );
 
   return (
     <div>

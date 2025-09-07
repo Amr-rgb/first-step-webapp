@@ -157,7 +157,11 @@ const BranchWrapper = ({
     },
     onSuccess: (data) => {
       toast.success("Branch updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["branch", editBranchId] });
+
+      // Invalidate all related queries to ensure data consistency
+      queryClient.refetchQueries({ queryKey: ["branch", editBranchId] });
+      queryClient.refetchQueries({ queryKey: ["branches"] });
+
       setApiErrors({});
       router.back();
     },

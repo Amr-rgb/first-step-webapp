@@ -10,6 +10,7 @@ import {
 } from "@/components/tables/data/center-bookings";
 import { DataTable } from "@/components/tables/DataTable";
 import { centerService } from "@/services/dashboardApi";
+import EmptyState from "@/components/common/EmptyState";
 
 const transformEnrollmentsData = (data: any): Booking[] => {
   return data.data.map((parent: any) => {
@@ -73,6 +74,19 @@ const Bookings = () => {
   const bookingsData = enrollmentsData
     ? transformEnrollmentsData(enrollmentsData)
     : [];
+
+  // Show empty state if no bookings
+  if (!isLoading && bookingsData.length === 0) {
+    return (
+      <EmptyState
+        title={t("emptyStates.bookings.title")}
+        description={t("emptyStates.bookings.description")}
+        icon="📅"
+        size="lg"
+        translationKey="dashboard.emptyStates"
+      />
+    );
+  }
 
   return (
     <div>

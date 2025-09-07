@@ -9,6 +9,7 @@ import { adminService } from "@/services/dashboardApi";
 import { Button } from "@/components/ui/button";
 import AdRequestForm from "@/components/forms/dashboard/adblog-request/AdRequestForm";
 import { AdRequestFormData } from "@/lib/schemas";
+import EmptyState from "@/components/common/EmptyState";
 
 const AdminAds = () => {
   const queryClient = useQueryClient();
@@ -34,21 +35,30 @@ const AdminAds = () => {
   const addButton = (
     <div className="mb-4 flex justify-end">
       <Button asChild size="sm">
-        <Link href="/dashboard/admin/advertisement/add">
-          {t("addNewAd")}
-        </Link>
+        <Link href="/dashboard/admin/advertisement/add">{t("addNewAd")}</Link>
       </Button>
     </div>
   );
 
   if (isLoading) return <div>{t("loading")}</div>;
-  if (error)
-    return <div className="text-red-500">{t("errorLoading")}</div>;
+  if (error) return <div className="text-red-500">{t("errorLoading")}</div>;
   if (!data?.data?.length)
     return (
       <>
         {addButton}
-        <div>{t("noAds")}</div>
+        <EmptyState
+          title={t("emptyStates.ads.title")}
+          description={t("emptyStates.ads.description")}
+          icon="📢"
+          size="lg"
+          primaryAction={{
+            label: t("addNewAd"),
+            onClick: () => {
+              window.location.href = "/dashboard/admin/advertisement/add";
+            },
+          }}
+          translationKey="dashboard.emptyStates"
+        />
       </>
     );
 

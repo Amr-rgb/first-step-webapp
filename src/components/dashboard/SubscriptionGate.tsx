@@ -1,11 +1,15 @@
 "use client";
 
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 const SubscriptionGate = () => {
+  const meta = usePageMetadata();
+
   const t = useTranslations("HomePage.Subscription.dashboard");
 
   return (
