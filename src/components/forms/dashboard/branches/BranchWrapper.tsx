@@ -159,12 +159,11 @@ const BranchWrapper = ({
       toast.success("Branch updated successfully");
 
       // Invalidate all related queries to ensure data consistency
-      queryClient.invalidateQueries({ queryKey: ["branch", editBranchId] });
-      queryClient.invalidateQueries({ queryKey: ["branches"] });
-      queryClient.invalidateQueries({ queryKey: ["branches", undefined] });
+      queryClient.refetchQueries({ queryKey: ["branch", editBranchId] });
+      queryClient.refetchQueries({ queryKey: ["branches"] });
 
       setApiErrors({});
-      router.back(); // Commented out to prevent redirect
+      router.back();
     },
     onError: handleApiError,
   });
