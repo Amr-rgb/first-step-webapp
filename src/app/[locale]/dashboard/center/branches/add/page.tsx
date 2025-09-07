@@ -5,6 +5,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { use, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { centerService } from "@/services/dashboardApi";
 import BranchWrapper from "@/components/forms/dashboard/branches/BranchWrapper";
@@ -21,6 +22,8 @@ export default function DashboardAddBranch({
   const { locale } = use(params);
   const t = useTranslations("dashboard.center.branches");
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [isAdminFormOpen, setIsAdminFormOpen] = useState(false);
   const [branchName, setBranchName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +50,8 @@ export default function DashboardAddBranch({
 
       const created = await centerService.createBranch(mergedPayload);
       toast.success(t("admin.assigned"));
+
+      queryClient.refetchQueries({ queryKey: ["branches"] });
 
       // After successful creation, go back to branches list
       router.push(`/${locale}/dashboard/center/branches`);
