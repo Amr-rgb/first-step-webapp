@@ -1460,6 +1460,56 @@
       },
       "loading": "Loading Data..."
     },
+    "emptyStates": {
+      "bookings": {
+        "title": "No bookings yet",
+        "description": "Your booking history will appear here once you make your first reservation."
+      },
+      "children": {
+        "title": "No children added",
+        "description": "Add your children to get started with managing their information and bookings."
+      },
+      "reports": {
+        "title": "No reports available",
+        "description": "Daily reports about your children will appear here once they start attending."
+      },
+      "chat": {
+        "title": "No conversations yet",
+        "description": "Start a conversation with your nursery to begin messaging."
+      },
+      "tasks": {
+        "title": "No tasks yet",
+        "description": "Your tasks and reminders will appear here."
+      },
+      "birthdays": {
+        "title": "No upcoming birthdays",
+        "description": "Birthday reminders will appear here when there are upcoming celebrations."
+      },
+      "team": {
+        "title": "No team members yet",
+        "description": "Add team members to manage your center's staff and personnel."
+      },
+      "branches": {
+        "title": "No branches yet",
+        "description": "Add branches to manage multiple locations for your center."
+      },
+      "ads": {
+        "title": "No advertisements yet",
+        "description": "Request advertisements to promote your center and attract more parents."
+      },
+      "blogs": {
+        "title": "No blog posts yet",
+        "description": "Request blog posts to share your center's story and expertise with parents."
+      },
+      "centers": {
+        "title": "No centers found",
+        "description": "No childcare centers are currently registered in the system."
+      },
+      "parents": {
+        "title": "No parents found",
+        "description": "No parent accounts are currently registered in the system."
+      }
+    },
     "charts": {
       "children": {
         "title": "Number of Children",
@@ -1960,7 +2010,11 @@
 
   "common": {
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "emptyState": {
+      "title": "No data available",
+      "description": "There's nothing to show here yet. Get started by adding some content."
+    }
   },
   "HomePage": {
     "Features": {

@@ -6,6 +6,7 @@ import BranchCard from "./BranchCard";
 import BranchCardSkeleton from "./BranchCardSkeleton";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import EmptyState from "@/components/common/EmptyState";
 
 const Branches = ({
   noEdit,
@@ -41,6 +42,25 @@ const Branches = ({
           {t("error.retry")}
         </Button>
       </div>
+    );
+  }
+
+  // Show empty state if no branches
+  if (!branches || branches.length === 0) {
+    return (
+      <EmptyState
+        title={t("emptyStates.branches.title")}
+        description={t("emptyStates.branches.description")}
+        icon="🏢"
+        size="lg"
+        primaryAction={{
+          label: t("add"),
+          onClick: () => {
+            window.location.href = "/dashboard/center/branches/add";
+          },
+        }}
+        translationKey="dashboard.emptyStates"
+      />
     );
   }
 

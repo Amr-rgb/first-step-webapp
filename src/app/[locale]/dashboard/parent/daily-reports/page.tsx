@@ -20,6 +20,7 @@ import {
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import EmptyState from "@/components/common/EmptyState";
 
 interface DailyReportResponse {
   id: number;
@@ -193,6 +194,19 @@ export default function DailyReports() {
       <div className="flex justify-center items-center min-h-[200px]">
         Loading...
       </div>
+    );
+  }
+
+  // Show empty state if no children or no reports
+  if (children.length === 0 && !isLoading) {
+    return (
+      <EmptyState
+        title={t("emptyStates.reports.title")}
+        description={t("emptyStates.reports.description")}
+        icon="📊"
+        size="lg"
+        translationKey="dashboard.emptyStates"
+      />
     );
   }
 

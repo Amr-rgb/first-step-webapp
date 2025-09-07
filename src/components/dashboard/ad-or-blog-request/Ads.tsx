@@ -7,6 +7,7 @@ import { centerService } from "@/services/dashboardApi";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import EmptyState from "@/components/common/EmptyState";
 
 const Ads = () => {
   const tableT = useTranslations("dashboard.tables.ads");
@@ -46,6 +47,26 @@ const Ads = () => {
       console.error("Error fetching ads:", error);
     }
   }, [error, tableT]);
+
+  // Show empty state if no ads
+  if (!isLoading && ads.length === 0) {
+    return (
+      <EmptyState
+        title={t("emptyStates.ads.title")}
+        description={t("emptyStates.ads.description")}
+        icon="📢"
+        size="lg"
+        primaryAction={{
+          label: "Request Ad",
+          onClick: () => {
+            window.location.href =
+              "/dashboard/center/ad-or-blog-request/ad-request";
+          },
+        }}
+        translationKey="dashboard.emptyStates"
+      />
+    );
+  }
 
   return (
     <div className="mt-6">
