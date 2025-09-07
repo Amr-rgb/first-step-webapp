@@ -6,6 +6,7 @@ import ChildCard from "./ChildCard";
 import ChildrenSkeleton from "./ChildrenSkeleton";
 import { Child } from "@/types";
 import { useTranslations } from "next-intl";
+import EmptyState from "@/components/common/EmptyState";
 
 interface AdminChild {
   id: number;
@@ -107,7 +108,22 @@ const Children = ({
     Array.isArray(childrenToRender) &&
     childrenToRender.length === 0
   ) {
-    return <div>{t("noChildren")}</div>;
+    return (
+      <EmptyState
+        title={t("children.title")}
+        description={t("children.description")}
+        icon="👶"
+        size="lg"
+        primaryAction={{
+          label: t("add"),
+          onClick: () => {
+            // This will be handled by the parent component
+            window.location.href = "/dashboard/parent/children/add";
+          },
+        }}
+        translationKey="dashboard.emptyStates"
+      />
+    );
   }
 
   if (!childrenToRender && isLoading) {

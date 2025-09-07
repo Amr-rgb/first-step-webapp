@@ -5,6 +5,7 @@ import { getColumns } from "@/components/tables/data/admin-bookings";
 import { DataTable } from "@/components/tables/DataTable";
 import { useAdminEnrollments } from "@/hooks/useAdminEnrollments";
 import { useTranslations } from "next-intl";
+import EmptyState from "@/components/common/EmptyState";
 
 import { Parent } from "@/hooks/useAdminEnrollments";
 import { ReservationStatus } from "@/types";
@@ -98,9 +99,13 @@ const Bookings = () => {
         {bookingsData.length > 0 ? (
           <DataTable columns={columns} data={bookingsData} />
         ) : (
-          <div className="text-center py-10 text-gray-500">
-            {t("noBookings")}
-          </div>
+          <EmptyState
+            title={t("emptyStates.bookings.title")}
+            description={t("emptyStates.bookings.description")}
+            icon="📅"
+            size="lg"
+            translationKey="dashboard.emptyStates"
+          />
         )}
       </div>
     </div>

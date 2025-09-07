@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations } from "next-intl";
+import EmptyState from "@/components/common/EmptyState";
 
 const STATUS_STYLES: Record<string, string> = {
   accepted: "bg-success text-white border-green-400",
@@ -344,6 +345,18 @@ const Bookings = () => {
       amount: parseFloat(booking.price_amount),
       notes: [],
     })) || [];
+
+  if (bookings.length === 0) {
+    return (
+      <EmptyState
+        title={t("bookings.title")}
+        description={t("bookings.description")}
+        icon="📅"
+        size="lg"
+        translationKey="dashboard.emptyStates"
+      />
+    );
+  }
 
   // Cancel booking handler
   const handleCancel = (booking: any) => {

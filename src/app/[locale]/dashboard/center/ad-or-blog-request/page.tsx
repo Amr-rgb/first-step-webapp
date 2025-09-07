@@ -15,6 +15,7 @@ import { centerService } from "@/services/dashboardApi";
 import { AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermissions } from "@/hooks/usePermissions";
+import EmptyState from "@/components/common/EmptyState";
 
 const BlogCardSkeleton = () => {
   return (
@@ -75,58 +76,74 @@ const BlogsSection = () => {
         </Button>
       </div>
 
-      <div className="grid md:grid-cols-3 items-start gap-10">
-        {blogsData
-          ? blogsData?.map((blog) => (
-              <DashboardBlogCard
-                key={blog.id}
-                blog={blog}
-                onView={() => {
-                  setSelectedBlogId(blog.id);
-                  setViewModalOpen(true);
-                }}
-                onEdit={() => {
-                  queryClient.refetchQueries({
-                    queryKey: ["blogs", blog.id],
-                  });
-                  router.push(
-                    `/dashboard/center/ad-or-blog-request/edit-blog/${blog.id}`
-                  );
-                }}
-              />
-            ))
-          : null}
+      {!isLoading && !error && (!blogsData || blogsData.length === 0) ? (
+        <EmptyState
+          title={t("emptyStates.blogs.title")}
+          description={t("emptyStates.blogs.description")}
+          icon="📝"
+          size="lg"
+          primaryAction={{
+            label: t("request-blog"),
+            onClick: () => {
+              router.push("/dashboard/center/ad-or-blog-request/blog-request");
+            },
+          }}
+          translationKey="dashboard.emptyStates"
+        />
+      ) : (
+        <div className="grid md:grid-cols-3 items-start gap-10">
+          {blogsData
+            ? blogsData?.map((blog) => (
+                <DashboardBlogCard
+                  key={blog.id}
+                  blog={blog}
+                  onView={() => {
+                    setSelectedBlogId(blog.id);
+                    setViewModalOpen(true);
+                  }}
+                  onEdit={() => {
+                    queryClient.refetchQueries({
+                      queryKey: ["blogs", blog.id],
+                    });
+                    router.push(
+                      `/dashboard/center/ad-or-blog-request/edit-blog/${blog.id}`
+                    );
+                  }}
+                />
+              ))
+            : null}
 
-        {isLoading ? (
-          <>
-            <BlogCardSkeleton />
-            <BlogCardSkeleton />
-            <BlogCardSkeleton />
-          </>
-        ) : null}
+          {isLoading ? (
+            <>
+              <BlogCardSkeleton />
+              <BlogCardSkeleton />
+              <BlogCardSkeleton />
+            </>
+          ) : null}
 
-        {error ? (
-          <div className="col-span-3 flex flex-col items-center justify-center gap-4 rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-destructive">
-                {t("blog.form.error.title")}
-              </h3>
-              <p className="text-sm text-mid-gray">
-                {t("blog.form.error.description")}
-              </p>
+          {error ? (
+            <div className="col-span-3 flex flex-col items-center justify-center gap-4 rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-destructive">
+                  {t("blog.form.error.title")}
+                </h3>
+                <p className="text-sm text-mid-gray">
+                  {t("blog.form.error.description")}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                className="mt-2"
+              >
+                {t("blog.form.error.retry")}
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              className="mt-2"
-            >
-              {t("blog.form.error.retry")}
-            </Button>
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      )}
 
       <BlogViewModal
         blog={selectedBlog}

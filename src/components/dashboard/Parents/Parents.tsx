@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import ParentCard from "./ParentCard";
+import EmptyState from "@/components/common/EmptyState";
+import { useTranslations } from "next-intl";
 
 interface Child {
   id: number;
@@ -24,6 +26,7 @@ interface ParentsResponse {
 }
 
 const Parents = () => {
+  const t = useTranslations("dashboard.emptyStates");
   const { data, isLoading } = useQuery<ParentsResponse>({
     queryKey: ["parents"],
     queryFn: adminService.getParents,
@@ -31,6 +34,19 @@ const Parents = () => {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  // Show empty state if no parents
+  if (!data?.parents || data.parents.length === 0) {
+    return (
+      <EmptyState
+        title={t("parents.title")}
+        description={t("parents.description")}
+        icon="👨‍👩‍👧‍👦"
+        size="lg"
+        translationKey="dashboard.emptyStates"
+      />
+    );
   }
 
   return (
