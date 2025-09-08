@@ -34,7 +34,7 @@ const Children = () => {
           id: child.id,
           child_name: child.child_name,
           birthday_date: child.birthday_date,
-          parent_name: child.parent_name,
+          parent_name: enrollment.parent_name ?? child.parent_name,
           branch_name: enrollment.branch_name ?? child.branch_name,
           enrollments: [
             {
