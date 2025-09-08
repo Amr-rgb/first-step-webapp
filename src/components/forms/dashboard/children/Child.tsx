@@ -628,7 +628,6 @@ const ChildPart = ({
             <FormItem>
               <Label>
                 <span className="text-base">صلة القرابة</span>
-                <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
