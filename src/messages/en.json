@@ -1863,6 +1863,9 @@
         "socialMediaRemoved": "Social media links have been removed as per requirements.",
         "previewHeader": "✨ Live Preview - This is how your nursery profile will appear to visitors",
         "previewSubtitle": "Changes made in edit mode will be reflected here instantly",
+        "placeholders": {
+          "preview": "Preview"
+        },
         "emptyProfile": {
           "title": "Your Nursery Profile",
           "comingSoon": "Coming Soon!",

@@ -85,7 +85,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   onChange,
   placeholder,
 }) => {
-  const t = useTranslations("profileEditor.common");
+  const t = useTranslations("dashboard.profileEditor.common");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -653,6 +653,7 @@ const ProfileEditor = ({
                         {t("sections.plans.program")} {index + 1}
                       </h4>
                       <Button
+                        type="button"
                         size="sm"
                         variant="outline"
                         onClick={() =>
@@ -1333,9 +1334,6 @@ const ProfileEditor = ({
               </div>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mt-4">
-                {t("common.socialMediaRemoved")}
-              </p>
               <input
                 type="hidden"
                 value={JSON.stringify({})}
