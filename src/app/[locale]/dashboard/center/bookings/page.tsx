@@ -1,46 +1,69 @@
-import { Metadata } from "next";
-import { Locale, makePageMetadata } from "@/lib/metadata";
-import { getLocale } from "next-intl/server";
+"use client";
+
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
+import { useTranslations } from "next-intl";
+import { useHasRole } from "@/store/authStore";
+import { useCenterStats } from "@/hooks/useCenterStats";
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
 import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import Bookings from "@/components/dashboard/center-bookings/Bookings";
-import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  return makePageMetadata(locale as Locale, "dashboard/center/bookings");
-}
+export default function CenterDashboardBookings() {
+  const meta = usePageMetadata();
 
-export default async function CenterDashboardBookings() {
-  const t = await getTranslations("dashboard.charts.bookings");
+  const t = useTranslations("dashboard.charts");
+  const tBookings = useTranslations("dashboard.charts.bookings");
+  const isCenter = useHasRole("center");
+  const { stats, isLoading } = useCenterStats(isCenter ? "center" : "branch");
 
-  const rows = [
-    {
-      value: 3620,
-      valueLabel: t("valueLabel"),
-      trend: "up" as const,
-      data: [{ v: 8 }, { v: 10 }, { v: 12 }, { v: 17 }, { v: 13 }, { v: 15 }],
-    },
-    {
-      value: 3620,
-      valueLabel: t("valueLabel"),
-      trend: "down" as const,
-      data: [{ v: 18 }, { v: 12 }, { v: 15 }, { v: 10 }, { v: 7 }, { v: 9 }],
-    },
-    {
-      value: 3620,
-      valueLabel: t("valueLabel"),
-      trend: "up" as const,
-      data: [{ v: 7 }, { v: 10 }, { v: 13 }, { v: 12 }, { v: 15 }, { v: 17 }],
-    },
-  ];
+  if (isLoading) {
+    return <p>loading...</p>;
+  }
+
+  // Build bookingsRows from total_revenue_for_the_lates_5_months
+  type RevenueItem = { month: string; total_paid: number | null };
+  const revenueArr = (
+    (stats.total_revenue_for_the_lates_5_months || []) as RevenueItem[]
+  )
+    .slice()
+    .sort((a: RevenueItem, b: RevenueItem) => a.month.localeCompare(b.month));
+  const lastThreeRevenue = revenueArr.slice(-3).reverse();
+
+  const bookingsRows = lastThreeRevenue.map(
+    (item: RevenueItem, idx: number, arr: RevenueItem[]) => {
+      const value = item.total_paid ?? 0;
+      const valueLabel = t("center.comparison.valueLabel");
+      // Find previous month in the sorted array
+      const prev = revenueArr.findIndex(
+        (r: RevenueItem) => r.month === item.month
+      );
+      const previousValue = prev > 0 ? revenueArr[prev - 1].total_paid ?? 0 : 0;
+      const isUp = value > previousValue;
+      return {
+        value,
+        valueLabel,
+        trend: isUp ? ("up" as const) : ("down" as const),
+        data: getMonthData(value, isUp),
+      };
+    }
+  );
+
+  function getMonthData(value: number, isUp: boolean) {
+    const baseValues = [8, 10, 12, 17, 13, 15];
+    if (isUp) {
+      return baseValues.map((v) => ({ v: v + Math.floor(Math.random() * 5) }));
+    } else {
+      return baseValues.map((v) => ({ v: v - Math.floor(Math.random() * 5) }));
+    }
+  }
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
         <Numbers />
 
-        <MonthlyAreaComparison title={t("title")} rows={rows} />
+        <MonthlyAreaComparison title={tBookings("title")} rows={bookingsRows} />
       </div>
 
       <div className="mt-6">
