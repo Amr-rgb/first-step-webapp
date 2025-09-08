@@ -73,6 +73,13 @@ const ChildWrapper = ({
   const onSubmit = (data: any) => {
     let payload = { ...data };
 
+    // Ensure kinship is always a string (API requires string)
+    if (payload.kinship == null) {
+      payload.kinship = "";
+    } else if (typeof payload.kinship !== "string") {
+      payload.kinship = String(payload.kinship);
+    }
+
     // Remove all disease/allergy objects if 'no' is selected
     if (payload.chronicDiseases?.hasDiseases === "no") {
       payload.chronicDiseases.diseases = [];
@@ -113,35 +120,69 @@ const ChildWrapper = ({
         }));
     } // If allergy is false, allergies stays as []
 
-    // Compose the child object as expected by the backend
-    const child = {
-      child_name: payload.childName,
-      birthday_date:
-        payload.birthDate instanceof Date
-          ? payload.birthDate.toISOString().split("T")[0]
-          : payload.birthDate,
-      gender: payload.gender === "male" ? "boy" : "girl",
-      disease,
-      disease_details,
-      allergy,
-      parent_name: payload.fatherName,
-      mother_name: payload.motherName,
-      recommendations: payload.recommendations,
-      description_3_words: payload.childDescription,
-      things_child_likes: payload.favoriteThings,
-      notes: payload.comments,
-      kinship: payload.kinship,
-      authorized_persons: (payload.authorizedPersons || []).map(
-        (person: any) => ({
-          name: person.name,
-          cin: person.idNumber,
-        })
-      ),
-      allergies, // <-- this is now an array, not an object
-    };
-
-    // Send both the raw form data and the children array
-    mutation.mutate({ ...payload, children: [child] });
+    // For edit mode, send flat payload matching update API; for add mode, keep original flow
+    if (mode === "edit" && childId) {
+      mutation.mutate({
+        ...payload,
+        birthDate:
+          payload.birthDate instanceof Date
+            ? payload.birthDate.toISOString().split("T")[0]
+            : payload.birthDate,
+        gender: payload.gender === "male" ? "boy" : "girl",
+        chronicDiseases: {
+          ...payload.chronicDiseases,
+          diseases: disease_details,
+          hasDiseases: disease ? "yes" : "no",
+        },
+        allergies: {
+          ...payload.allergies,
+          allergies,
+          hasAllergies: allergy ? "yes" : "no",
+        },
+        fatherName: payload.fatherName,
+        motherName: payload.motherName,
+        recommendations: payload.recommendations ?? "",
+        childDescription: payload.childDescription ?? "",
+        favoriteThings: payload.favoriteThings ?? "",
+        comments: payload.comments ?? "",
+        kinship: payload.kinship ?? "",
+        authorizedPersons: (payload.authorizedPersons || []).map(
+          (person: any) => ({
+            name: person.name,
+            idNumber: person.idNumber,
+            id: person.id,
+          })
+        ),
+      });
+    } else {
+      // add mode
+      const child = {
+        child_name: payload.childName,
+        birthday_date:
+          payload.birthDate instanceof Date
+            ? payload.birthDate.toISOString().split("T")[0]
+            : payload.birthDate,
+        gender: payload.gender === "male" ? "boy" : "girl",
+        disease,
+        disease_details,
+        allergy,
+        parent_name: payload.fatherName,
+        mother_name: payload.motherName,
+        recommendations: payload.recommendations,
+        description_3_words: payload.childDescription,
+        things_child_likes: payload.favoriteThings,
+        notes: payload.comments,
+        kinship: payload.kinship || "",
+        authorized_persons: (payload.authorizedPersons || []).map(
+          (person: any) => ({
+            name: person.name,
+            cin: person.idNumber,
+          })
+        ),
+        allergies,
+      };
+      mutation.mutate({ ...payload, children: [child] });
+    }
   };
 
   function mapFetchedChildToInitialValues(childData: any) {
@@ -160,7 +201,7 @@ const ChildWrapper = ({
       fatherName: childData?.parent_name || "",
       motherName: childData?.mother_name || "",
       gender: childData?.gender === "boy" ? "male" : "female",
-      kinship: childData?.Kinship || "",
+      kinship: childData?.kinship || "",
       // Chronic diseases
       chronicDiseases: {
         hasDiseases: childData?.disease ? "yes" : "no",
@@ -198,7 +239,7 @@ const ChildWrapper = ({
         childData?.authorized_people?.map((person: any) => ({
           id: person.id,
           name: person.name || "",
-          idNumber: person.cin || "",
+          idNumber: String(person.cin ?? ""),
         })) || [],
       // Comments
       comments: childData?.notes || "",
