@@ -43,14 +43,14 @@ const transformEnrollmentsData = (data: any): Booking[] => {
         status: child.enrollments[0]?.status || "pending",
         branch: child.enrollments[0]?.branch_name || "",
         startDate: child.enrollments[0]?.enrollment_date || "",
-        endDate: child.enrollments[0]?.enrollment_date || "",
+        type: child.enrollments[0]?.enrollment_type || "",
         amount: child.enrollments[0]
           ? parseFloat(child.enrollments[0].price_amount)
           : 0,
       })),
       branch: latestEnrollment?.branch_name || "",
       startDate: latestEnrollment?.enrollment_date || "",
-      endDate: latestEnrollment?.enrollment_date || "",
+      type: latestEnrollment?.enrollment_type || "",
       amount: latestEnrollment ? parseFloat(latestEnrollment.price_amount) : 0,
     };
   });

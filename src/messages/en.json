@@ -1788,7 +1788,7 @@
           "childNumber": "No.",
           "parentName": "Parent Name",
           "startDate": "Start Date",
-          "endDate": "End Date",
+          "type": "Type",
           "child": "Child",
           "branch": "Branch",
           "amount": "Amount",

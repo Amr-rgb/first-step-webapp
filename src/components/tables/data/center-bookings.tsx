@@ -22,12 +22,12 @@ export type Booking = {
     status: string;
     branch: string;
     startDate: string;
-    endDate: string;
+    type: string;
     amount: number;
   }[];
   branch: string;
   startDate: string;
-  endDate: string;
+  type: string;
   amount: number;
 };
 
@@ -36,7 +36,7 @@ export interface SelectedChild {
   status: string;
   branch: string;
   startDate: string;
-  endDate: string;
+  type: string;
   amount: number;
 }
 
@@ -103,12 +103,12 @@ export function useCenterBookingsColumns(
       },
     },
     {
-      accessorKey: "endDate",
-      header: () => t("headers.endDate"),
+      accessorKey: "type",
+      header: () => t("headers.type"),
       cell: ({ row }) => {
         const parentId = row.original.id;
         const selectedChild = selectedChildMap[parentId];
-        return selectedChild?.endDate ?? row.original.endDate;
+        return selectedChild?.type ?? row.original.type;
       },
     },
     {
@@ -123,7 +123,7 @@ export function useCenterBookingsColumns(
           status: childs[0]?.status ?? "",
           branch: childs[0]?.branch ?? "",
           startDate: childs[0]?.startDate ?? "",
-          endDate: childs[0]?.endDate ?? "",
+          type: childs[0]?.type ?? "",
           amount: childs[0]?.amount ?? 0,
         };
 
@@ -142,7 +142,7 @@ export function useCenterBookingsColumns(
                     status: child.status as ReservationStatus,
                     branch: child.branch,
                     startDate: child.startDate,
-                    endDate: child.endDate,
+                    type: child.type,
                     amount: child.amount,
                   },
                 }));
