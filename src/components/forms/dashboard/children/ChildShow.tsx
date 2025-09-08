@@ -42,6 +42,7 @@ const ChildShow = ({
     resolver: zodResolver(signUpParentSchema),
     defaultValues: {
       ...initialValues,
+      authorizedPersons: initialValues.authorizedPersons,
     },
     mode: "onChange",
   });
@@ -734,7 +735,7 @@ const AuthorizationPart = ({
         {sectionT("authorized")}
       </h2>
       <div className="space-y-6 lg:p-6 lg:pb-0">
-        {authorizedPersons.map((_, index) => (
+        {authorizedPersons?.map((_, index) => (
           <div key={index} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
