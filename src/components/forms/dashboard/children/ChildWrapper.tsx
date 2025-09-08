@@ -2,7 +2,7 @@
 
 import React from "react";
 import Child from "./Child";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
@@ -17,6 +17,7 @@ const ChildWrapper = ({
   childId?: string;
 }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Fetch child data if in show/edit mode and childId is provided
   const { data: fetchedChild, isLoading } = useQuery({
@@ -39,6 +40,22 @@ const ChildWrapper = ({
       }
     },
     onSuccess: (response) => {
+      // Update caches so pages reflect changes without manual refresh
+      if (childId) {
+        const updatedChild = response?.child ?? response;
+        queryClient.setQueryData(["child", childId], updatedChild);
+        queryClient.invalidateQueries({ queryKey: ["child", childId] });
+
+        // Update parent children list cache by replacing the edited child
+        queryClient.setQueryData(["parent-children"], (oldData: any) => {
+          if (!Array.isArray(oldData)) return oldData;
+          return oldData.map((c) =>
+            c?.id === updatedChild?.id ? { ...c, ...updatedChild } : c
+          );
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["parent-children"] });
+
       toast(
         mode === "edit"
           ? "تم تحديث بيانات الطفل بنجاح!"
