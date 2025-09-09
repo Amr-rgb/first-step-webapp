@@ -370,6 +370,9 @@ export default function CenterDashboardHome() {
               value = stats.total_team_members;
               break;
           }
+
+          if (!isCenter && index === 0) return null;
+
           return (
             <div
               key={card.title}
@@ -403,6 +406,7 @@ export default function CenterDashboardHome() {
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
         <div className="w-full flex-1 min-w-3xs">
           <MonthlyRevenueChart
+            className={!isCenter ? "lg:max-w-max" : ""}
             data={(stats.total_revenue_for_the_lates_5_months || []).map(
               (item: { month: string; total_paid: number | null }) => {
                 // item.month is 'YYYY-MM', e.g. '2025-07'
@@ -423,9 +427,12 @@ export default function CenterDashboardHome() {
             )}
           />
         </div>
-        <div className="w-full flex-1">
-          <TopBookings />
-        </div>
+
+        {isCenter && (
+          <div className="w-full flex-1">
+            <TopBookings />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">

@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   YAxis,
 } from "recharts";
+import { cn } from "@/lib/utils";
 
 export type RevenueData = {
   month: string;
@@ -19,10 +20,12 @@ export type RevenueData = {
 
 interface MonthlyRevenueChartProps {
   data: RevenueData[];
+  className?: string;
 }
 
 export default function MonthlyRevenueChart({
   data,
+  className,
 }: MonthlyRevenueChartProps) {
   const [selected, setSelected] = useState<RevenueData>(
     data[data.length - 1] || { month: "", value: 0 }
@@ -31,7 +34,12 @@ export default function MonthlyRevenueChart({
   const locale = useLocale();
 
   return (
-    <div className="p-4 rounded-xl bg-white shadow-[0_0_4px_rgba(34,34,34,.16)] w-full lg:max-w-md">
+    <div
+      className={cn(
+        "p-4 rounded-xl bg-white shadow-[0_0_4px_rgba(34,34,34,.16)] w-full lg:max-w-md",
+        className
+      )}
+    >
       <div className="text-sm text-gray-500 mb-2">
         <span className="text-primary font-bold text-lg">
           {t("title", { month: selected.month })}
