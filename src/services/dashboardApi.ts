@@ -688,7 +688,7 @@ export const centerService = {
   getBranchStats: async () => {
     try {
       const response = await apiClient.get(`/branch/statistics`);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
