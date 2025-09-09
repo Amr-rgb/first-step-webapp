@@ -20,11 +20,13 @@ export type Report = {
 interface SelectedChild {
   reportId: string;
   reportDate: string;
+  reportDownloadLink: string;
 }
 
 interface ReportIdMap {
   reportId: number;
   reportDate: string;
+  reportDownloadLink: string;
 }
 
 export function useCenterReportsColumns(
@@ -68,6 +70,7 @@ export function useCenterReportsColumns(
                 [parentId]: {
                   reportId: childId,
                   reportDate: reportIdMap[childId]?.reportDate ?? "",
+                  reportDownloadLink: reportIdMap[childId]?.reportDownloadLink,
                 },
               }));
             }}
@@ -104,6 +107,9 @@ export function useCenterReportsColumns(
         };
         const reportId = reportIdMap[selectedChild.reportId]?.reportId;
 
+        const reportDownloadLink =
+          reportIdMap[selectedChild.reportId]?.reportDownloadLink;
+
         return (
           <div className="flex items-center gap-1">
             <Button asChild variant={"ghost"} size={"icon"}>
@@ -112,7 +118,7 @@ export function useCenterReportsColumns(
               </Link>
             </Button>
             <Button asChild variant={"ghost"} size={"icon"}>
-              <a target="_blank" href={`/api/daily-reports/${reportId}/pdf`}>
+              <a target="_blank" href={reportDownloadLink}>
                 <Download className="size-4 text-mid-gray" />
               </a>
             </Button>

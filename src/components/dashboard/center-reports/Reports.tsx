@@ -14,6 +14,7 @@ import EmptyState from "@/components/common/EmptyState";
 interface DailyReport {
   id: number;
   created_at: string;
+  pdf_url: string;
   child: {
     id: number;
     name: string;
@@ -28,6 +29,7 @@ interface DailyReport {
 interface SelectedChild {
   reportId: string;
   reportDate: string;
+  reportDownloadLink: string;
 }
 
 const Reports = () => {
@@ -47,10 +49,14 @@ const Reports = () => {
   const reportIdMap = React.useMemo(() => {
     if (!reportsData?.data) return {};
 
-    const map: Record<string, { reportId: number; reportDate: string }> = {};
+    const map: Record<
+      string,
+      { reportId: number; reportDate: string; reportDownloadLink: string }
+    > = {};
     reportsData.data.forEach((report) => {
       const childId = report.child.id.toString();
       const reportDate = report.created_at.split(" ")[0];
+      const reportDownloadLink = report.pdf_url;
 
       if (
         !map[childId] ||
@@ -59,6 +65,7 @@ const Reports = () => {
         map[childId] = {
           reportId: report.id,
           reportDate,
+          reportDownloadLink,
         };
       }
     });
