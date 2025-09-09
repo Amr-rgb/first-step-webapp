@@ -19,16 +19,19 @@ const transformEnrollmentsData = (data: any): Booking[] => {
       (child: any) => child.enrollments.length > 0
     );
 
-    // Get the most recent enrollment date among all children
+    // Get the most recent enrollment date among all enrollments for all children
     const latestEnrollment = childrenWithEnrollments.reduce(
       (latest: any, child: any) => {
-        const childLatest = child.enrollments[0];
-        if (!childLatest) return latest;
-        return !latest ||
-          new Date(childLatest.enrollment_date) >
-            new Date(latest.enrollment_date)
-          ? childLatest
-          : latest;
+        for (const enrollment of child.enrollments) {
+          if (
+            !latest ||
+            new Date(enrollment.enrollment_date) >
+              new Date(latest.enrollment_date)
+          ) {
+            latest = enrollment;
+          }
+        }
+        return latest;
       },
       null
     );
@@ -36,18 +39,22 @@ const transformEnrollmentsData = (data: any): Booking[] => {
     return {
       id: parent.parent_id,
       parentName: parent.parent_name,
-      childs: childrenWithEnrollments.map((child: any) => ({
-        id: child.child_id.toString(),
-        name: child.child_name,
-        enrollmentId: child.enrollments[0]?.enrollment_id.toString() || "",
-        status: child.enrollments[0]?.status || "pending",
-        branch: child.enrollments[0]?.branch_name || "",
-        startDate: child.enrollments[0]?.enrollment_date || "",
-        type: child.enrollments[0]?.enrollment_type || "",
-        amount: child.enrollments[0]
-          ? parseFloat(child.enrollments[0].price_amount)
-          : 0,
-      })),
+      // Flatten all enrollments for each child into selectable rows
+      childs: childrenWithEnrollments.flatMap((child: any) =>
+        child.enrollments.map((enrollment: any) => ({
+          id: child.child_id.toString(),
+          // Include additional info to distinguish multiple enrollments for the same child
+          name: `${child.child_name}`,
+          enrollmentId: enrollment?.enrollment_id?.toString() || "",
+          status: enrollment?.status || "-",
+          branch: enrollment?.branch_name || "",
+          startDate: enrollment?.enrollment_date || "",
+          type: enrollment?.enrollment_type || "",
+          amount: enrollment?.price_amount
+            ? parseFloat(enrollment.price_amount)
+            : 0,
+        }))
+      ),
       branch: latestEnrollment?.branch_name || "",
       startDate: latestEnrollment?.enrollment_date || "",
       type: latestEnrollment?.enrollment_type || "",
@@ -71,9 +78,43 @@ const Bookings = () => {
     queryFn: centerService.getEnrollments,
   });
 
-  const bookingsData = enrollmentsData
+  const baseData = enrollmentsData
     ? transformEnrollmentsData(enrollmentsData)
     : [];
+
+  // Expand rows: after each parent row, if selected child has multiple enrollments, insert detail rows
+  const bookingsData: Booking[] = [];
+  for (const parent of baseData) {
+    bookingsData.push(parent);
+    const selected = selectedChildMap[parent.id];
+    if (!selected) continue;
+    // all enrollments belonging to the selected child's id
+    const selectedChildEntries = parent.childs.filter(
+      (c) =>
+        c.id ===
+        parent.childs.find((x) => x.enrollmentId === selected.enrollmentId)?.id
+    );
+    if (selectedChildEntries.length > 1) {
+      // mark parent row as expanded so its info cells can be hidden by the table
+      (bookingsData[bookingsData.length - 1] as Booking).isExpandedParent =
+        true;
+      for (const en of selectedChildEntries) {
+        bookingsData.push({
+          ...parent,
+          parentName: parent.parentName, // show child name in child column via columns logic
+          childs: parent.childs,
+          branch: en.branch,
+          startDate: en.startDate,
+          type: en.type,
+          amount: en.amount,
+          isDetail: true,
+          detailChildName: selectedChildEntries[0]?.name ?? "",
+          detailEnrollmentId: en.enrollmentId,
+          detailStatus: en.status,
+        } as Booking);
+      }
+    }
+  }
 
   // Show empty state if no bookings
   if (!isLoading && bookingsData.length === 0) {

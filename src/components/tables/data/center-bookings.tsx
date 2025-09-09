@@ -29,6 +29,11 @@ export type Booking = {
   startDate: string;
   type: string;
   amount: number;
+  isDetail?: boolean;
+  isExpandedParent?: boolean;
+  detailChildName?: string;
+  detailEnrollmentId?: string;
+  detailStatus?: string;
 };
 
 export interface SelectedChild {
@@ -86,19 +91,35 @@ export function useCenterBookingsColumns(
         </div>
       ),
       cell: ({ row }) => {
-        return <div className="text-center">{row.index + 1}</div>;
+        const isDetail = (row.original as any).isDetail;
+        return isDetail ? (
+          <div className="text-center">•</div>
+        ) : (
+          <div className="text-center">{row.index + 1}</div>
+        );
       },
     },
     {
       accessorKey: "parentName",
       header: () => t("headers.parentName"),
+      cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (!isDetail && isExpandedParent) return "";
+
+        return row.original.parentName;
+      },
     },
     {
       accessorKey: "startDate",
       header: () => t("headers.startDate"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
+        if (isDetail) return row.original.startDate;
         const parentId = row.original.id;
         const selectedChild = selectedChildMap[parentId];
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (isExpandedParent) return "";
         return selectedChild?.startDate ?? row.original.startDate;
       },
     },
@@ -106,6 +127,12 @@ export function useCenterBookingsColumns(
       accessorKey: "type",
       header: () => t("headers.type"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
+        if (isDetail) return row.original.type;
+
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (isExpandedParent) return "";
+
         const parentId = row.original.id;
         const selectedChild = selectedChildMap[parentId];
         return selectedChild?.type ?? row.original.type;
@@ -115,8 +142,32 @@ export function useCenterBookingsColumns(
       accessorKey: "childs",
       header: () => t("headers.child"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
+        if (isDetail) return row.original.detailChildName; // show child name in detail row's child column
+
         const parentId = row.original.id;
         const childs = row.original.childs;
+
+        // Group flattened enrollments by child id
+        const childIdToGroup = new Map<
+          string,
+          { name: string; enrollments: typeof childs }
+        >();
+        for (const entry of childs) {
+          const group = childIdToGroup.get(entry.id) ?? {
+            name: entry.name,
+            enrollments: [] as typeof childs,
+          };
+          (group.enrollments as any).push(entry);
+          childIdToGroup.set(entry.id, group);
+        }
+        const uniqueChildren = Array.from(childIdToGroup.entries()).map(
+          ([childId, group]) => ({
+            childId,
+            name: group.name,
+            enrollments: group.enrollments,
+          })
+        );
 
         const selectedChild = selectedChildMap[parentId] ?? {
           enrollmentId: childs[0]?.enrollmentId ?? "",
@@ -127,30 +178,39 @@ export function useCenterBookingsColumns(
           amount: childs[0]?.amount ?? 0,
         };
 
+        // Figure out which child is currently selected based on current enrollmentId
+        const selectedEnrollment = childs.find(
+          (c) => c.enrollmentId === selectedChild.enrollmentId
+        );
+        const selectedChildId = selectedEnrollment
+          ? selectedEnrollment.id
+          : uniqueChildren[0]?.childId;
+
         return (
           <select
             className="text-xs px-2 py-1 rounded bg-info text-white"
-            value={selectedChild.enrollmentId}
+            value={selectedChildId}
             onChange={(e) => {
               const childId = e.target.value;
-              const child = childs.find((c) => c.enrollmentId === childId);
-              if (child) {
+              const group = childIdToGroup.get(childId);
+              const firstEnrollment = group?.enrollments?.[0];
+              if (firstEnrollment) {
                 setSelectedChildMap((prev) => ({
                   ...prev,
                   [parentId]: {
-                    enrollmentId: child.enrollmentId,
-                    status: child.status as ReservationStatus,
-                    branch: child.branch,
-                    startDate: child.startDate,
-                    type: child.type,
-                    amount: child.amount,
+                    enrollmentId: firstEnrollment.enrollmentId,
+                    status: firstEnrollment.status as ReservationStatus,
+                    branch: firstEnrollment.branch,
+                    startDate: firstEnrollment.startDate,
+                    type: firstEnrollment.type,
+                    amount: firstEnrollment.amount,
                   },
                 }));
               }
             }}
           >
-            {childs.map((child) => (
-              <option key={child.enrollmentId} value={child.enrollmentId}>
+            {uniqueChildren.map((child) => (
+              <option key={child.childId} value={child.childId}>
                 {child.name}
               </option>
             ))}
@@ -162,8 +222,12 @@ export function useCenterBookingsColumns(
       accessorKey: "branch",
       header: () => t("headers.branch"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
+        if (isDetail) return row.original.branch;
         const parentId = row.original.id;
         const selectedChild = selectedChildMap[parentId];
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (isExpandedParent) return "";
         return selectedChild?.branch ?? row.original.branch;
       },
     },
@@ -171,9 +235,14 @@ export function useCenterBookingsColumns(
       accessorKey: "amount",
       header: () => t("headers.amount"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
         const parentId = row.original.id;
         const selectedChild = selectedChildMap[parentId];
-        const amount = selectedChild?.amount ?? row.original.amount;
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        const amount = isDetail
+          ? row.original.amount
+          : selectedChild?.amount ?? row.original.amount;
+        if (!isDetail && isExpandedParent) return "";
         return (
           <div className="space-x-1 rtl:space-x-reverse">
             <span>{amount}</span>
@@ -186,15 +255,22 @@ export function useCenterBookingsColumns(
       id: "reservationStatus",
       header: () => t("headers.reservationStatus"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
         const parentId = row.original.id;
         const childs = row.original.childs;
         const selectedChild = selectedChildMap[parentId] ?? {
           status: childs[0]?.status ?? "",
         };
 
-        const status = selectedChild.status as ReservationStatus;
+        const effectiveStatus = isDetail
+          ? ((row.original as any).detailStatus as string)
+          : selectedChild.status;
+        const status = effectiveStatus as ReservationStatus;
         const colorClasses = getStatusColorClass(status);
         const text = getStatusText(status);
+
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (!isDetail && isExpandedParent) return "";
 
         return (
           <div
@@ -209,15 +285,25 @@ export function useCenterBookingsColumns(
       id: "control",
       header: () => t("headers.control"),
       cell: ({ row }) => {
+        const isDetail = (row.original as any).isDetail;
         const parentId = row.original.id;
         const childs = row.original.childs;
         const selectedChild = selectedChildMap[parentId] ?? {
           status: childs[0]?.status ?? "",
           enrollmentId: childs[0]?.enrollmentId,
         };
-        const isWaitingForConfirmation = selectedChild?.status === "pending";
+        const effectiveStatus = isDetail
+          ? ((row.original as any).detailStatus as string)
+          : selectedChild.status;
+        const effectiveEnrollmentId = isDetail
+          ? ((row.original as any).detailEnrollmentId as string)
+          : selectedChild.enrollmentId;
+        const isWaitingForConfirmation = effectiveStatus === "pending";
 
         if (!isWaitingForConfirmation) return null;
+
+        const isExpandedParent = (row.original as any).isExpandedParent;
+        if (!isDetail && isExpandedParent) return "";
 
         return (
           <div className="flex items-center gap-2">
@@ -226,7 +312,7 @@ export function useCenterBookingsColumns(
               size="sm"
               className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() =>
-                handleEnrollmentResponse(selectedChild.enrollmentId, "accepted")
+                handleEnrollmentResponse(effectiveEnrollmentId, "accepted")
               }
               disabled={enrollmentMutation.isPending}
             >
@@ -238,7 +324,7 @@ export function useCenterBookingsColumns(
               size="sm"
               className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() =>
-                handleEnrollmentResponse(selectedChild.enrollmentId, "rejected")
+                handleEnrollmentResponse(effectiveEnrollmentId, "rejected")
               }
               disabled={enrollmentMutation.isPending}
             >
