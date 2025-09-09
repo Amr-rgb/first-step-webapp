@@ -53,8 +53,25 @@ const ChildWrapper = ({
             c?.id === updatedChild?.id ? { ...c, ...updatedChild } : c
           );
         });
+      } else {
+        // add mode: attempt to merge returned children into cache if available
+        const createdChildren = response?.children;
+        if (Array.isArray(createdChildren) && createdChildren.length > 0) {
+          queryClient.setQueryData(["parent-children"], (oldData: any) => {
+            const existing = Array.isArray(oldData) ? oldData : [];
+            const byId = new Map(existing.map((c: any) => [c.id, c]));
+            createdChildren.forEach((nc: any) => {
+              if (nc && nc.id != null)
+                byId.set(nc.id, { ...(byId.get(nc.id) || {}), ...nc });
+            });
+            return Array.from(byId.values());
+          });
+        }
       }
-      queryClient.invalidateQueries({ queryKey: ["parent-children"] });
+      queryClient.invalidateQueries({
+        queryKey: ["parent-children"],
+        refetchType: "active",
+      });
 
       toast(
         mode === "edit"
