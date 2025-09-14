@@ -1778,12 +1778,12 @@
       "ads": {
         "headers": {
           "adNumber": "رقم الإعلان",
+          "title": "عنوان الإعلان",
           "type": "نوع الإعلان",
           "startDate": "تاريخ بداية الإعلان",
           "endDate": "تاريخ نهاية الإعلان",
-          "branch": "اسم الفرع",
           "amount": "المبلغ",
-          "reservationStatus": "حالة الحجز"
+          "status": "الحالة"
         },
         "types": {
           "free": "مجاني",

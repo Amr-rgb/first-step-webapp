@@ -9,10 +9,10 @@ import { ReservationStatus, useReservationStatus } from "./shared/status";
 
 export type Ad = {
   id: number;
+  title: string;
   type: "free" | "paid";
   startDate: string;
   endDate: string;
-  branch: string;
   amount: number;
   reservationStatus: ReservationStatus;
 };
@@ -39,6 +39,20 @@ export function useAdsColumns() {
       },
     },
     {
+      accessorKey: "title",
+      header: () => t("headers.title"),
+      cell: ({ row }) => {
+        return (
+          <div
+            className="max-w-52 truncate hover"
+            title={row.getValue("title")}
+          >
+            <span>{row.getValue("title")}</span>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "type",
       header: () => t("headers.type"),
       cell: ({ row }) => {
@@ -58,10 +72,6 @@ export function useAdsColumns() {
       header: () => t("headers.endDate"),
     },
     {
-      accessorKey: "branch",
-      header: () => t("headers.branch"),
-    },
-    {
       accessorKey: "amount",
       header: () => t("headers.amount"),
       cell: ({ row }) => {
@@ -75,7 +85,7 @@ export function useAdsColumns() {
     },
     {
       accessorKey: "reservationStatus",
-      header: () => t("headers.reservationStatus"),
+      header: () => t("headers.status"),
       cell: ({ row }) => {
         const value = row.getValue(
           "reservationStatus"

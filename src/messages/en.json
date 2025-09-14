@@ -1754,12 +1754,12 @@
       "ads": {
         "headers": {
           "adNumber": "Ad Number",
+          "title": "Ad Title",
           "type": "Ad Type",
           "startDate": "Ad Start Date",
           "endDate": "Ad End Date",
-          "branch": "Branch Name",
           "amount": "Amount",
-          "reservationStatus": "Reservation Status"
+          "status": "Status"
         },
         "types": {
           "free": "Free",

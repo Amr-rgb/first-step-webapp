@@ -2,7 +2,7 @@
 
 import { Ad, useAdsColumns } from "@/components/tables/data/ads";
 import { DataTable } from "@/components/tables/DataTable";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { centerService } from "@/services/dashboardApi";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import EmptyState from "@/components/common/EmptyState";
 
 const Ads = () => {
+  const locale = useLocale();
+  const t = useTranslations("dashboard");
   const tableT = useTranslations("dashboard.tables.ads");
   const columns = useAdsColumns();
 
@@ -26,7 +28,7 @@ const Ads = () => {
         type: "paid",
         startDate: ad.publish_date,
         endDate: ad.end_date,
-        branch: ad.branch_id, // Since branch name is not provided in the response
+        title: ad.title[locale],
         amount: ad.status === "approved" ? 0 : 0, // Amount only if approved
         reservationStatus:
           ad.status === "approved"
