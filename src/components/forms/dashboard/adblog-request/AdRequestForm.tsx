@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import DatePicker from "@/components/general/DatePicker";
 import {
   FormControl,
@@ -37,6 +37,7 @@ const AdRequestForm = ({
   ) => React.ReactNode;
 }) => {
   const locale = useLocale();
+  const router = useRouter();
   const pathname = usePathname();
   const isAdmin = pathname.includes("/admin/");
 
@@ -100,6 +101,8 @@ const AdRequestForm = ({
         : queryClient.invalidateQueries({
             queryKey: ["ads"],
           });
+
+      router.back();
     },
     onError: (error) => {
       toast(t("error.title"), {

@@ -107,9 +107,9 @@ const CenterBlogForm = ({
           updatePayload.description = data.description;
         if (dirtyFields.content) updatePayload.content = data.content;
         if (dirtyFields.mainImage)
-          updatePayload.mainImage = data.mainImage?.[0] as File;
+          updatePayload.cover = data.mainImage?.[0] as File;
         if (dirtyFields.cardImage)
-          updatePayload.cardImage = data.cardImage?.[0] as File;
+          updatePayload.blog_image = data.cardImage?.[0] as File;
 
         return centerService.updateBlog(blogId, updatePayload);
       } else {
@@ -137,6 +137,7 @@ const CenterBlogForm = ({
 
       // Invalidate the blogs query to refetch the list
       queryClient.refetchQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["blog", blogId] });
 
       // Navigate back
       router.back();
