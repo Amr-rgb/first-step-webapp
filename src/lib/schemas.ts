@@ -855,7 +855,7 @@ export const createBlogRequestSchema = (locale: "ar" | "en" = "ar") =>
     mainImage: createImageSchema(
       1440,
       610,
-      "يجب أن يكون مقاس الصورة 610",
+      "يجب أن يكون مقاس الصورة 1440 × 610",
       locale
     ),
     cardImage: createImageSchema(
@@ -896,7 +896,7 @@ export const createAdminBlogRequestSchema = (locale: "ar" | "en" = "ar") =>
     mainImage: createImageSchema(
       1440,
       610,
-      "يجب أن يكون مقاس الصورة 610",
+      "يجب أن يكون مقاس الصورة 1440 × 610",
       locale
     ),
     cardImage: createImageSchema(
