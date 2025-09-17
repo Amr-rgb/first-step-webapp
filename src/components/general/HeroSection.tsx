@@ -56,6 +56,9 @@ const HeroSection = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Add this line to easily stop the slideshow for design purposes
+  const [isDesignMode, setIsDesignMode] = useState(false);
+
   const centerImages = {
     left: `/assets/hero/desktop-center-${locale}.png`,
     center: "/assets/hero/woman.png",
@@ -109,6 +112,18 @@ const HeroSection = () => {
     },
   ];
 
+  // Special event slide for Saudi National Day
+  const eventSlide = {
+    title: "event.title",
+    subtitle: "event.subtitle",
+    offer: "event.offer",
+    button: {
+      label: "event.button",
+      variant: "default" as ButtonVariant,
+      link: "/sign-up/center",
+    },
+  };
+
   // Embla API callback to update current slide index
   const handleSetApi = (api: CarouselApi) => {
     if (!api) return;
@@ -135,6 +150,9 @@ const HeroSection = () => {
 
   // Auto-advance timer and progress ring logic
   useEffect(() => {
+    // Skip auto-advance if in design mode
+    if (isDesignMode) return;
+
     setProgress(0);
     if (timerRef.current) clearInterval(timerRef.current);
     let timeout = setTimeout(() => {
@@ -153,7 +171,7 @@ const HeroSection = () => {
           setProgress(0);
           clearInterval(timerRef.current!);
           setCurrent((prev) => {
-            const next = prev < slides.length - 1 ? prev + 1 : 0;
+            const next = prev < slides.length * 2 - 1 ? prev + 1 : 0;
             if (prev !== next) {
               if (carouselApi) carouselApi.scrollTo(next);
               return next;
@@ -168,7 +186,7 @@ const HeroSection = () => {
       if (timerRef.current) clearInterval(timerRef.current);
       clearTimeout(timeout);
     };
-  }, [current, slides.length, isPaused, carouselApi]);
+  }, [current, slides.length, isPaused, carouselApi, isDesignMode]);
 
   return (
     <section
@@ -178,19 +196,40 @@ const HeroSection = () => {
           "linear-gradient(to bottom, #FFFFFF 0%, #D5F3E5 22%, #D5F5E6 38%, #C4E7D7 52%, #D5F5E6 66%, #D5F3E5 83%, #FFFFFF 100%)",
       }}
     >
-      <div className="container mx-auto px-4 relative">
-        {/* Pattern background image */}
-        <Image
-          className={cn(
-            "z-10 absolute select-none pointer-events-none",
-            "ltr:-right-14 ltr:rotate-y-180 -top-24",
-            "rtl:-left-14"
-          )}
-          src="/assets/hero/hero-pattern.svg"
-          width={774.57}
-          height={687.41}
-          alt="background pattern"
-        />
+      {/* Design Mode Toggle - Remove this when done designing */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setIsDesignMode(!isDesignMode)}
+          className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+            isDesignMode
+              ? "bg-red-500 text-white hover:bg-red-600"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
+          {isDesignMode ? "🎨 Design Mode ON" : "▶️ Auto Mode"}
+        </button>
+        {isDesignMode && (
+          <div className="mt-2 text-xs text-gray-600 bg-white p-2 rounded shadow">
+            Slideshow paused for design. Click to resume.
+          </div>
+        )}
+      </div>
+
+      <div className="container mx-auto relative">
+        {/* Pattern background image - only show on regular slides, not event slides */}
+        {current % 2 === 0 && (
+          <Image
+            className={cn(
+              "z-10 absolute select-none pointer-events-none",
+              "ltr:-right-14 ltr:rotate-y-180 -top-24",
+              "rtl:-left-14"
+            )}
+            src="/assets/hero/hero-pattern.svg"
+            width={774.57}
+            height={687.41}
+            alt="background pattern"
+          />
+        )}
 
         <Carousel
           className="z-20"
@@ -204,217 +243,372 @@ const HeroSection = () => {
         >
           <CarouselContent>
             {slides.map((slide, idx) => (
-              <CarouselItem key={idx}>
-                <AnimatePresence mode="wait" initial={false}>
-                  {current === idx && (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, scale: 0.995 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.995 }}
-                      transition={{
-                        opacity: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-                        scale: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-                      }}
-                      style={{
-                        position: "relative",
-                        width: "100%",
-                        zIndex: 50,
-                      }}
-                    >
-                      <div className="z-20 relative pt-52 pb-80 2xl:py-24 w-full h-full">
-                        {/* Content area */}
-                        <motion.div
-                          className="z-50 relative flex flex-col gap-y-6 rtl:max-w-[50rem] ltr:max-w-[49rem]"
-                          initial={{ opacity: 0, scale: 0.98 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.98 }}
-                          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                        >
-                          <motion.h1
-                            className="heading-2 text-primary"
+              <React.Fragment key={idx}>
+                {/* Regular slide */}
+                <CarouselItem>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {current === idx * 2 && (
+                      <motion.div
+                        key={idx * 2}
+                        initial={{ opacity: 0, scale: 0.995 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.995 }}
+                        transition={{
+                          opacity: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                          scale: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                        }}
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          zIndex: 50,
+                        }}
+                      >
+                        <div className="z-20 relative pt-52 pb-80 2xl:py-24 w-full h-full">
+                          {/* Content area */}
+                          <motion.div
+                            className="z-50 relative flex flex-col gap-y-6 rtl:max-w-[50rem] ltr:max-w-[49rem]"
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.98 }}
                             transition={{
                               duration: 0.5,
-                              delay: 0.1,
                               ease: [0.4, 0, 0.2, 1],
                             }}
                           >
-                            {t(slide.title)}
-                          </motion.h1>
-                          <motion.div
-                            className="flex items-center gap-x-2.5"
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            transition={{
-                              duration: 0.5,
-                              delay: 0.18,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          >
-                            {slide.buttons.map((btn, i) => (
-                              <Button
-                                key={btn.label}
-                                asChild
-                                variant={btn.variant}
-                                size="sm"
-                                className={cn(btn.className || "")}
-                              >
-                                <Link href={btn.link}>{t(btn.label)}</Link>
-                              </Button>
-                            ))}
-                          </motion.div>
-                        </motion.div>
-
-                        {/* Absolutely positioned hero images with staggered animation */}
-                        <motion.div className="z-40 absolute inset-0 select-none pointer-events-none">
-                          <motion.div
-                            className={cn(
-                              "z-50 absolute",
-                              "bottom-0 ltr:-right-0",
-                              "rtl:-left-0"
-                            )}
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{
-                              duration: 0.7,
-                              delay: 0.25,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          >
-                            <Image
-                              src={slide.images.left}
-                              width={600}
-                              height={400}
-                              alt=""
-                              draggable={false}
-                              className="select-none pointer-events-none"
-                            />
-                          </motion.div>
-                          <motion.div
-                            className={cn(
-                              "z-50 absolute hidden md:block",
-                              "bottom-0 ltr:right-80",
-                              "rtl:left-80"
-                            )}
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{
-                              duration: 0.7,
-                              delay: 0.38,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          >
-                            <Image
-                              src={slide.images.right}
-                              width={600}
-                              height={400}
-                              alt=""
-                              draggable={false}
-                              className="select-none pointer-events-none"
-                            />
-                          </motion.div>
-                          <motion.div
-                            className={cn(
-                              "z-50 absolute",
-                              "bottom-0 ltr:right-24",
-                              "rtl:left-24"
-                            )}
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{
-                              duration: 0.7,
-                              delay: 0.5,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          >
-                            <Image
-                              src={slide.images.center}
-                              width={600}
-                              height={400}
-                              alt=""
-                              draggable={false}
-                              className="ltr:rotate-y-180 select-none pointer-events-none"
-                            />
-                          </motion.div>
-                        </motion.div>
-                        {/* Next button with progress ring, centered under content */}
-                        <div className="flex justify-start mt-8 mx-2 relative">
-                          <motion.button
-                            onClick={goToNext}
-                            aria-label="Next slide"
-                            className="relative bg-white/60 border border-gray-200 shadow-lg rounded-full w-14 h-14 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
-                            type="button"
-                            whileHover={{
-                              scale: 1.08,
-                              boxShadow: "0 6px 24px 0 rgba(37,99,235,0.10)",
-                            }}
-                            whileTap={{ scale: 0.97 }}
-                            onMouseEnter={() => setIsPaused(true)}
-                            onMouseLeave={() => setIsPaused(false)}
-                          >
-                            <motion.div
-                              className="flex items-center justify-center"
-                              whileHover={{
-                                rotate: isRTL ? 45 : -45,
-                              }}
+                            <motion.h1
+                              className="heading-2 text-primary"
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.98 }}
                               transition={{
-                                type: "spring",
-                                stiffness: 320,
-                                damping: 18,
+                                duration: 0.5,
+                                delay: 0.1,
+                                ease: [0.4, 0, 0.2, 1],
                               }}
                             >
-                              <motion.span
-                                initial={{ color: "#2563eb" }}
-                                whileHover={{ color: "#3b82f6" }}
-                                transition={{ duration: 0.22 }}
-                                className="flex"
-                              >
-                                <ArrowRight className="w-7 h-7 transition-colors rtl:rotate-y-180" />
-                              </motion.span>
+                              {t(slide.title)}
+                            </motion.h1>
+                            <motion.div
+                              className="flex items-center gap-x-2.5"
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.98 }}
+                              transition={{
+                                duration: 0.5,
+                                delay: 0.18,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
+                              {slide.buttons.map((btn, i) => (
+                                <Button
+                                  key={btn.label}
+                                  asChild
+                                  variant={btn.variant}
+                                  size="sm"
+                                  className={cn(btn.className || "")}
+                                >
+                                  <Link href={btn.link}>{t(btn.label)}</Link>
+                                </Button>
+                              ))}
                             </motion.div>
-                            {/* Progress ring always shown, animates according to timer */}
-                            {progress > 0 && progress < 1 && (
-                              <svg
-                                className="absolute pointer-events-none"
-                                width={64}
-                                height={64}
-                                style={{
-                                  left: "50%",
-                                  top: "50%",
-                                  transform: "translate(-50%, -50%)",
+                          </motion.div>
+
+                          {/* Absolutely positioned hero images with staggered animation */}
+                          <motion.div className="z-40 absolute inset-0 select-none pointer-events-none">
+                            <motion.div
+                              className={cn(
+                                "z-50 absolute",
+                                "bottom-0 ltr:-right-0",
+                                "rtl:-left-0"
+                              )}
+                              initial={{ opacity: 0, scale: 0.96 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.96 }}
+                              transition={{
+                                duration: 0.7,
+                                delay: 0.25,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
+                              <Image
+                                src={slide.images.left}
+                                width={600}
+                                height={400}
+                                alt=""
+                                draggable={false}
+                                className="select-none pointer-events-none"
+                              />
+                            </motion.div>
+                            <motion.div
+                              className={cn(
+                                "z-50 absolute hidden md:block",
+                                "bottom-0 ltr:right-80",
+                                "rtl:left-80"
+                              )}
+                              initial={{ opacity: 0, scale: 0.96 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.96 }}
+                              transition={{
+                                duration: 0.7,
+                                delay: 0.38,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
+                              <Image
+                                src={slide.images.right}
+                                width={600}
+                                height={400}
+                                alt=""
+                                draggable={false}
+                                className="select-none pointer-events-none"
+                              />
+                            </motion.div>
+                            <motion.div
+                              className={cn(
+                                "z-50 absolute",
+                                "bottom-0 ltr:right-24",
+                                "rtl:left-24"
+                              )}
+                              initial={{ opacity: 0, scale: 0.96 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.96 }}
+                              transition={{
+                                duration: 0.7,
+                                delay: 0.5,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
+                              <Image
+                                src={slide.images.center}
+                                width={600}
+                                height={400}
+                                alt=""
+                                draggable={false}
+                                className="ltr:rotate-y-180 select-none pointer-events-none"
+                              />
+                            </motion.div>
+                          </motion.div>
+                          {/* Next button with progress ring, centered under content */}
+                          {/* <div className="flex justify-start mt-8 mx-2 relative">
+                            <motion.button
+                              onClick={goToNext}
+                              aria-label="Next slide"
+                              className="relative bg-white/60 border border-gray-200 shadow-lg rounded-full w-14 h-14 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                              type="button"
+                              whileHover={{
+                                scale: 1.08,
+                                boxShadow: "0 6px 24px 0 rgba(37,99,235,0.10)",
+                              }}
+                              whileTap={{ scale: 0.97 }}
+                              onMouseEnter={() => setIsPaused(true)}
+                              onMouseLeave={() => setIsPaused(false)}
+                            >
+                              <motion.div
+                                className="flex items-center justify-center"
+                                whileHover={{
+                                  rotate: isRTL ? 45 : -45,
+                                }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 320,
+                                  damping: 18,
                                 }}
                               >
-                                <circle
-                                  cx={32}
-                                  cy={32}
-                                  r={28}
-                                  fill="none"
-                                  stroke="#3b82f6"
-                                  strokeWidth={2.2}
-                                  strokeDasharray={2 * Math.PI * 28}
-                                  strokeDashoffset={
-                                    2 * Math.PI * 28 * (1 - progress)
-                                  }
+                                <motion.span
+                                  initial={{ color: "#2563eb" }}
+                                  whileHover={{ color: "#3b82f6" }}
+                                  transition={{ duration: 0.22 }}
+                                  className="flex"
+                                >
+                                  <ArrowRight className="w-7 h-7 transition-colors rtl:rotate-y-180" />
+                                </motion.span>
+                              </motion.div>
+                              {/* Progress ring always shown, animates according to timer */}
+                          {/* {progress > 0 && progress < 1 && (
+                                <svg
+                                  className="absolute pointer-events-none"
+                                  width={64}
+                                  height={64}
                                   style={{
-                                    transition: "stroke-dashoffset 0.1s linear",
+                                    left: "50%",
+                                    top: "50%",
+                                    transform: "translate(-50%, -50%)",
                                   }}
-                                />
-                              </svg>
-                            )}
-                          </motion.button>
+                                >
+                                  <circle
+                                    cx={32}
+                                    cy={32}
+                                    r={28}
+                                    fill="none"
+                                    stroke="#3b82f6"
+                                    strokeWidth={2.2}
+                                    strokeDasharray={2 * Math.PI * 28}
+                                    strokeDashoffset={
+                                      2 * Math.PI * 28 * (1 - progress)
+                                    }
+                                    style={{
+                                      transition: "stroke-dashoffset 0.1s linear",
+                                    }}
+                                  />
+                                </svg>
+                              )}
+                            </motion.button>
+                          </div> */}
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </CarouselItem>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </CarouselItem>
+
+                {/* Event slide */}
+                <CarouselItem>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {current === idx * 2 + 1 && (
+                      <motion.div
+                        key={idx * 2 + 1}
+                        initial={{ opacity: 0, scale: 0.995 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.995 }}
+                        transition={{
+                          opacity: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                          scale: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+                        }}
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          zIndex: 50,
+                        }}
+                      >
+                        <div className="z-20 relative pt-2 pb-5  w-full h-full">
+                          {/* Event slide content */}
+                          <div className="flex flex-col md:flex-row h-full">
+                            {/* Left section - Clean dark teal background */}
+                            <div className="w-full md:w-2/5 bg-teal-800 flex items-center justify-center p-6 md:p-8 min-h-[300px] md:min-h-full">
+                              <div className="text-center text-white">
+                                <Image
+                                  src="/assets/events/logo-event.png"
+                                  alt="Event logo"
+                                  width={150}
+                                  height={150}
+                                  className="mx-auto mb-4 md:w-[200px] md:h-[200px]"
+                                />
+                                <h2 className="text-xl md:text-2xl font-bold mb-2">
+                                  {t("event.logo")}
+                                </h2>
+                                <p className="text-teal-200 text-xs md:text-sm">
+                                  {t("event.subtitle")}
+                                </p>
+                                <p className="text-teal-300 text-xs uppercase mt-2">
+                                  SAUDI NATIONAL DAY 95
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Right section - Clean bright green background */}
+                            <div className="w-full md:w-3/5 bg-green-500 flex flex-col justify-center items-center p-6 md:p-8 min-h-[400px] md:min-h-full">
+                              <div className="text-center text-white">
+                                {/* Main headline */}
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
+                                  {t(eventSlide.title)}
+                                </h1>
+
+                                {/* Offer text */}
+                                <div className="mb-6 md:mb-8">
+                                  <p className="text-xl md:text-2xl lg:text-3xl font-bold">
+                                    <span className="text-4xl md:text-5xl lg:text-6xl font-black">
+                                      95
+                                    </span>{" "}
+                                    {t(eventSlide.offer)}
+                                  </p>
+                                </div>
+
+                                {/* Call-to-action button */}
+                                <Button
+                                  asChild
+                                  variant={eventSlide.button.variant}
+                                  size="lg"
+                                  className="bg-white text-gray-800 hover:bg-gray-100 border border-gray-300 text-sm md:text-base"
+                                >
+                                  <Link href={eventSlide.button.link}>
+                                    {t(eventSlide.button.label)}
+                                  </Link>
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Next button with progress ring */}
+                          {/* <div className="flex justify-start mt-8 mx-2 relative">
+                            <motion.button
+                              onClick={goToNext}
+                              aria-label="Next slide"
+                              className="relative bg-white/60 border border-gray-200 shadow-lg rounded-full w-14 h-14 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                              type="button"
+                              whileHover={{
+                                scale: 1.08,
+                                boxShadow: "0 6px 24px 0 rgba(37,99,235,0.10)",
+                              }}
+                              whileTap={{ scale: 0.97 }}
+                              onMouseEnter={() => setIsPaused(true)}
+                              onMouseLeave={() => setIsPaused(false)}
+                            >
+                              <motion.div
+                                className="flex items-center justify-center"
+                                whileHover={{
+                                  rotate: isRTL ? 45 : -45,
+                                }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 320,
+                                  damping: 18,
+                                }}
+                              >
+                                <motion.span
+                                  initial={{ color: "#2563eb" }}
+                                  whileHover={{ color: "#3b82f6" }}
+                                  transition={{ duration: 0.22 }}
+                                  className="flex"
+                                >
+                                  <ArrowRight className="w-7 h-7 transition-colors rtl:rotate-y-180" />
+                                </motion.span>
+                              </motion.div>
+                              {/* Progress ring always shown, animates according to timer */}
+                          {/* {progress > 0 && progress < 1 && (
+                                <svg
+                                  className="absolute pointer-events-none"
+                                  width={64}
+                                  height={64}
+                                  style={{
+                                    left: "50%",
+                                    top: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                  }}
+                                >
+                                  <circle
+                                    cx={32}
+                                    cy={32}
+                                    r={28}
+                                    fill="none"
+                                    stroke="#3b82f6"
+                                    strokeWidth={2.2}
+                                    strokeDasharray={2 * Math.PI * 28}
+                                    strokeDashoffset={
+                                      2 * Math.PI * 28 * (1 - progress)
+                                    }
+                                    style={{
+                                      transition: "stroke-dashoffset 0.1s linear",
+                                    }}
+                                  />
+                                </svg>
+                              )}
+                            </motion.button>
+                          </div> */}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </CarouselItem>
+              </React.Fragment>
             ))}
           </CarouselContent>
         </Carousel>
@@ -423,26 +617,53 @@ const HeroSection = () => {
       {/* Navigation dots */}
       <div className="flex justify-center gap-2 mt-8">
         {slides.map((_, idx) => (
-          <motion.button
-            key={idx}
-            onClick={() => goToSlide(idx)}
-            aria-label={`Go to slide ${idx + 1}`}
-            type="button"
-            className={cn(
-              "rounded-full mx-1 transition-colors duration-300 cursor-pointer"
-            )}
-            style={{
-              height: 6,
-              width: current === idx ? 36 : 18,
-              transition:
-                "width 0.35s cubic-bezier(0.4,0,0.2,1), background-color 0.35s cubic-bezier(0.4,0,0.2,1)",
-            }}
-            animate={{
-              width: current === idx ? 36 : 18,
-              backgroundColor: current === idx ? "#2563eb" : "#e5e7eb",
-            }}
-            whileHover={current !== idx ? { backgroundColor: "#f3f4f6" } : {}}
-          />
+          <React.Fragment key={idx}>
+            {/* Regular slide dot */}
+            <motion.button
+              onClick={() => goToSlide(idx * 2)}
+              aria-label={`Go to slide ${idx + 1}`}
+              type="button"
+              className={cn(
+                "rounded-full mx-1 transition-colors duration-300 cursor-pointer"
+              )}
+              style={{
+                height: 6,
+                width: current === idx * 2 ? 36 : 18,
+                transition:
+                  "width 0.35s cubic-bezier(0.4,0,0.2,1), background-color 0.35s cubic-bezier(0.4,0,0.2,1)",
+              }}
+              animate={{
+                width: current === idx * 2 ? 36 : 18,
+                backgroundColor: current === idx * 2 ? "#2563eb" : "#e5e7eb",
+              }}
+              whileHover={
+                current !== idx * 2 ? { backgroundColor: "#f3f4f6" } : {}
+              }
+            />
+            {/* Event slide dot */}
+            <motion.button
+              onClick={() => goToSlide(idx * 2 + 1)}
+              aria-label={`Go to event slide ${idx + 1}`}
+              type="button"
+              className={cn(
+                "rounded-full mx-1 transition-colors duration-300 cursor-pointer"
+              )}
+              style={{
+                height: 6,
+                width: current === idx * 2 + 1 ? 36 : 18,
+                transition:
+                  "width 0.35s cubic-bezier(0.4,0,0.2,1), background-color 0.35s cubic-bezier(0.4,0,0.2,1)",
+              }}
+              animate={{
+                width: current === idx * 2 + 1 ? 36 : 18,
+                backgroundColor:
+                  current === idx * 2 + 1 ? "#10b981" : "#e5e7eb",
+              }}
+              whileHover={
+                current !== idx * 2 + 1 ? { backgroundColor: "#f3f4f6" } : {}
+              }
+            />
+          </React.Fragment>
         ))}
       </div>
     </section>
