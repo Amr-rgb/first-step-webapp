@@ -190,12 +190,23 @@ const HeroSection = () => {
 
   return (
     <section
-      className="py-0 overflow-hidden"
+      className="py-0 overflow-hidden relative"
       style={{
         background:
-          "linear-gradient(to bottom, #FFFFFF 0%, #D5F3E5 22%, #D5F5E6 38%, #C4E7D7 52%, #D5F5E6 66%, #D5F3E5 83%, #FFFFFF 100%)",
+          current % 2 === 1
+            ? "transparent"
+            : "linear-gradient(to bottom, #FFFFFF 0%, #D5F3E5 22%, #D5F5E6 38%, #C4E7D7 52%, #D5F5E6 66%, #D5F3E5 83%, #FFFFFF 100%)",
       }}
     >
+      {/* Event background pattern - positioned at section level for full width coverage */}
+      {current % 2 === 1 && (
+        <Image
+          className="absolute inset-0 z-0 select-none pointer-events-none"
+          src="/assets/events/backgroud-event.png"
+          fill
+          alt="event background pattern"
+        />
+      )}
       {/* Design Mode Toggle - Remove this when done designing */}
       <div className="fixed top-4 right-4 z-50">
         <button
@@ -216,7 +227,7 @@ const HeroSection = () => {
       </div>
 
       <div className="container mx-auto relative">
-        {/* Pattern background image - only show on regular slides, not event slides */}
+        {/* Pattern background image - only show hero pattern on regular slides */}
         {current % 2 === 0 && (
           <Image
             className={cn(
@@ -479,7 +490,7 @@ const HeroSection = () => {
                           zIndex: 50,
                         }}
                       >
-                        <div className="z-20 relative pt-2 pb-5  w-full h-full">
+                        <div className="z-20 relative pt-2 pb-5 w-full h-full">
                           {/* Event slide content */}
                           <div className="flex flex-col md:flex-row h-full">
                             {/* Left section - Clean dark teal background */}
