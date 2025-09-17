@@ -1,6 +1,10 @@
 import { apiClient } from "./api";
 import { formatTime } from "@/lib/utils";
-import { CenterRegisterPayload } from "@/types";
+import {
+  BranchPricingData,
+  CenterRegisterPayload,
+  PortfolioFormData,
+} from "@/types";
 import { BranchAdminFormData } from "@/lib/schemas";
 import { ApiErrorHandler } from "@/lib/error-handling";
 
@@ -754,6 +758,51 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  // Portfolio endpoints
+  savePortfolio: async (payload: PortfolioFormData) => {
+    try {
+      const response = await apiClient.post("/portfolios", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getPortfolio: async () => {
+    try {
+      const response = await apiClient.get("/portfolios/show");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  // Pricing endpoints
+  savePricing: async (payload: BranchPricingData[]) => {
+    try {
+      const response = await apiClient.post(
+        "/create-or-update-branch-price",
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getBranchPricing: async (branchId: string) => {
+    try {
+      const response = await apiClient.get(`/branches-pricies/${branchId}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {
@@ -1427,54 +1476,6 @@ export const sidebarService = {
       throw ApiErrorHandler.handle(error);
     }
   },
-};
-
-// Portfolio API integration
-export const getPortfolio = async (centerId: number) => {
-  const response = await apiClient.get(
-    `/portfolios/show?center_id=${centerId}`
-  );
-  return response.data;
-};
-
-export const savePortfolio = async (centerId: number, data: any) => {
-  // If data is FormData, send it directly
-  if (data instanceof FormData) {
-    console.log("📤 SENDING FORMDATA TO API");
-    const response = await apiClient.post(`/portfolios`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  }
-
-  // Otherwise, send as JSON
-  console.log("📤 SENDING JSON TO API");
-  const response = await apiClient.post(`/portfolios`, data);
-  return response.data;
-};
-
-// Pricing API functions
-export const getBranchPricing = async (branchId: string) => {
-  try {
-    const response = await apiClient.get(`/branches-pricies/${branchId}`);
-    return response.data;
-  } catch (error) {
-    throw ApiErrorHandler.handle(error);
-  }
-};
-
-export const savePricing = async (branchId: string, data: any) => {
-  try {
-    const response = await apiClient.post(
-      `/branches/${branchId}/pricing`,
-      data
-    );
-    return response.data;
-  } catch (error) {
-    throw ApiErrorHandler.handle(error);
-  }
 };
 
 export interface Enrollment {
