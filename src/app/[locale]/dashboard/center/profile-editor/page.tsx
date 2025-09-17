@@ -1,1091 +1,206 @@
 "use client";
 
-import { usePageMetadata } from "@/hooks/usePageMetadata";
-
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import ProfileEditor from "@/components/dashboard/profile-editor/ProfileEditor";
-import ProfilePreview from "@/components/dashboard/profile-editor/ProfilePreview";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Eye, Edit, Save, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/authStore";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  getPortfolio,
-  savePortfolio,
-  savePricing,
-} from "@/services/dashboardApi";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
+import { HeroSection } from "@/components/profile-editor/HeroSection";
+import { BranchesSection } from "@/components/profile-editor/BranchesSection";
+import { PhilosophySection } from "@/components/profile-editor/PhilosophySection";
+import { ServicesSection } from "@/components/profile-editor/ServicesSection";
+import { NurseryStateSection } from "@/components/profile-editor/NurseryStateSection";
+import { ActivitiesSection } from "@/components/profile-editor/ActivitiesSection";
+import { ContactSection } from "@/components/profile-editor/ContactSection";
+import { AdsSection } from "@/components/profile-editor/AdsSection";
+import { TeamsSection } from "@/components/profile-editor/TeamsSection";
+import { PlansSection } from "@/components/profile-editor/PlansSection";
+import { PortfolioFormData } from "@/types";
+import { usePortfolio } from "@/hooks/usePortfolio";
 
-export interface ProfileSection {
-  id: string;
-  name: string;
-  type:
-    | "hero"
-    | "about"
-    | "services"
-    | "plans"
-    | "team"
-    | "activities"
-    | "contact"
-    | "philosophy"
-    | "stats"
-    | "branches";
-  enabled: boolean;
-  data: any;
-}
+const ProfileEditor = () => {
+  const t = useTranslations("profileEditor");
+  const [activeSection, setActiveSection] = useState<string>("hero");
 
-export default function ProfileEditorPage() {
-  const meta = usePageMetadata();
+  // Use custom portfolio hook
+  const {
+    data: portfolioData,
+    isLoading: isLoadingData,
+    error: loadError,
+    savePortfolio,
+    isSaving,
+  } = usePortfolio();
 
-  const t = useTranslations("dashboard.profileEditor");
-  const user = useAuthUser();
-  const centerId = user?.id; // Assuming user.id is the center id
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showReminder, setShowReminder] = useState(false);
-  const [originalData, setOriginalData] = useState<any>(null);
+  const [originalData, setOriginalData] = useState<
+    PortfolioFormData | undefined
+  >(portfolioData);
+  const [currentData, setCurrentData] = useState<PortfolioFormData | undefined>(
+    portfolioData
+  );
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const [profileSections, setProfileSections] = useState<ProfileSection[]>([
-    {
-      id: "hero",
-      name: "Hero Section",
-      type: "hero",
-      enabled: false,
-      data: {
-        title: "",
-        subtitle: "",
-        description: "",
-        image: "",
-        ctaText: "",
-        ctaLink: "",
-      },
-    },
+  // Update local state when query data changes
+  useEffect(() => {
+    if (!isLoadingData && portfolioData) {
+      setOriginalData(portfolioData);
+      setCurrentData(portfolioData);
+      setHasChanges(false);
+    }
+  }, [portfolioData, isLoadingData]);
+
+  // Check if data has changed
+  const checkForChanges = (newData: PortfolioFormData) => {
+    if (!originalData) return;
+    const hasChanged = JSON.stringify(newData) !== JSON.stringify(originalData);
+    setHasChanges(hasChanged);
+  };
+
+  // Handle data changes
+  const handleDataChange = (newData: PortfolioFormData) => {
+    setCurrentData(newData);
+    checkForChanges(newData);
+  };
+
+  // Get only the changed fields
+  const getDirtyData = () => {
+    if (!currentData || !originalData) return {};
+
+    const dirtyData: Partial<PortfolioFormData> = {};
+
+    Object.keys(currentData).forEach((key) => {
+      const typedKey = key as keyof PortfolioFormData;
+      if (
+        JSON.stringify(currentData[typedKey]) !==
+        JSON.stringify(originalData[typedKey])
+      ) {
+        (dirtyData as any)[typedKey] = currentData[typedKey];
+      }
+    });
+
+    return dirtyData;
+  };
+
+  const handleSavePortfolio = () => {
+    if (!hasChanges || !currentData) return;
+    const dirtyData = getDirtyData();
+    savePortfolio(dirtyData);
+    // Update original data after save
+    setOriginalData(currentData);
+    setHasChanges(false);
+  };
+
+  const sections = [
+    { id: "hero", title: t("sections.hero"), component: HeroSection },
     {
       id: "branches",
-      name: "Branches",
-      type: "branches",
-      enabled: false,
-      data: {
-        title: "Our Branches",
-        branches: [],
-      },
+      title: t("sections.branches"),
+      component: BranchesSection,
     },
     {
       id: "philosophy",
-      name: "Philosophy, Methodology & Goal",
-      type: "philosophy",
-      enabled: false,
-      data: {
-        philosophyTitle: "Our Philosophy",
-        philosophy: "",
-        methodologyTitle: "Our Methodology",
-        methodology: "",
-        goalTitle: "Our Goal",
-        goal: "",
-      },
-    },
-    {
-      id: "plans",
-      name: "Plans (برامجنا)",
-      type: "plans",
-      enabled: false, // Only enable when there's data
-      data: {
-        title: "Plans", // Static title - will be handled by locale
-        plans: [],
-      },
+      title: t("sections.philosophy"),
+      component: PhilosophySection,
     },
     {
       id: "services",
-      name: "Services",
-      type: "services",
-      enabled: false,
-      data: {
-        title: "Our Services",
-        services: [],
-      },
+      title: t("sections.services"),
+      component: ServicesSection,
     },
     {
-      id: "stats",
-      name: "Nursery Stats",
-      type: "stats",
-      enabled: false,
-      data: {
-        area: "2000",
-        classrooms: "10",
-        teamMembers: "25",
-      },
+      id: "nurseryState",
+      title: t("sections.nurseryState"),
+      component: NurseryStateSection,
     },
     {
       id: "activities",
-      name: "Activities",
-      type: "activities",
-      enabled: false,
-      data: {
-        title: "Activities",
-        subtitle: "",
-        images: [],
-      },
+      title: t("sections.activities"),
+      component: ActivitiesSection,
     },
-    {
-      id: "team",
-      name: "Our Team",
-      type: "team",
-      enabled: false,
-      data: {
-        title: "Meet Our Team",
-        members: [],
-      },
-    },
-    {
-      id: "contact",
-      name: "Contact Information",
-      type: "contact",
-      enabled: false,
-      data: {
-        address: "",
-        phone: "",
-        email: "",
-        workingHours: "",
-        socialMedia: {},
-      },
-    },
-  ]);
+    { id: "contact", title: t("sections.contact"), component: ContactSection },
+    { id: "ads", title: t("sections.ads"), component: AdsSection },
+    { id: "teams", title: t("sections.teams"), component: TeamsSection },
+    { id: "plans", title: t("sections.plans"), component: PlansSection },
+  ];
 
-  // Check if profile is empty (no sections enabled)
-  const isProfileEmpty = profileSections.every((section) => !section.enabled);
-
-  // Show reminder for empty profile
-  useEffect(() => {
-    if (isProfileEmpty) {
-      setShowReminder(true);
-    } else {
-      setShowReminder(false);
-    }
-  }, [isProfileEmpty]);
-
-  useEffect(() => {
-    if (typeof centerId !== "number") {
-      setProfileSections(getDefaultProfileSections());
-      return;
-    }
-    async function fetchPortfolio() {
-      try {
-        const result = await getPortfolio(centerId as number);
-        console.log("🔍 FETCHED PORTFOLIO DATA:", result);
-        if (result.portofilo) {
-          const mappedSections = mapBackendToProfileSections(result.portofilo);
-          setProfileSections(mappedSections);
-          // Store original data for change detection
-          setOriginalData(result.portofilo);
-          console.log("📋 MAPPED PROFILE SECTIONS:", mappedSections);
-        } else {
-          setProfileSections(getDefaultProfileSections());
-          setOriginalData(null);
-        }
-      } catch (e) {
-        console.error("❌ Error fetching portfolio:", e);
-        setProfileSections(getDefaultProfileSections());
-        setOriginalData(null);
-      }
-    }
-    fetchPortfolio();
-  }, [centerId]);
-
-  const handleSectionUpdate = (sectionId: string, data: any) => {
-    setProfileSections((prev) =>
-      prev.map((section) =>
-        section.id === sectionId
-          ? { ...section, data: { ...section.data, ...data } }
-          : section
-      )
-    );
-    setIsDirty(true);
-  };
-
-  const handleSectionToggle = (sectionId: string, enabled: boolean) => {
-    setProfileSections((prev) =>
-      prev.map((section) =>
-        section.id === sectionId ? { ...section, enabled } : section
-      )
-    );
-    setIsDirty(true);
-  };
-
-  const handleSectionDelete = (sectionId: string) => {
-    setProfileSections((prev) =>
-      prev.map((section) =>
-        section.id === sectionId
-          ? {
-              ...section,
-              enabled: false,
-              data: getDefaultSectionData(section.type),
-            }
-          : section
-      )
-    );
-    setIsDirty(true);
-  };
-
-  const getDefaultSectionData = (type: string) => {
-    const defaults: Record<string, any> = {
-      hero: {
-        title: "",
-        subtitle: "",
-        description: "",
-        image: "",
-        ctaText: "",
-        ctaLink: "",
-      },
-      about: {
-        title: "",
-        description: "",
-        images: [],
-        mission: "",
-        vision: "",
-      },
-      services: { title: "Our Services", services: [] },
-      plans: {
-        title: "برامجنا",
-        plans: [],
-      },
-      team: { title: "Meet Our Team", members: [] },
-      activities: { title: "Activities", subtitle: "", images: [] },
-      philosophy: {
-        philosophyTitle: "Our Philosophy",
-        philosophy: "",
-        methodologyTitle: "Our Methodology",
-        methodology: "",
-        goalTitle: "Our Goal",
-        goal: "",
-      },
-      branches: { title: "Our Branches", branches: [] },
-      stats: { area: "", classrooms: "", teamMembers: "" },
-      contact: {
-        address: "",
-        phone: "",
-        email: "",
-        workingHours: "",
-        socialMedia: {},
-      },
-    };
-    return defaults[type] || {};
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      if (typeof centerId !== "number") throw new Error("No center id");
-
-      // Map profile sections to backend format
-      const portfolioData = mapProfileSectionsToBackend(
-        profileSections,
-        centerId
-      );
-      console.log("📤 SENDING PORTFOLIO DATA:", portfolioData);
-
-      // Check if there are any File objects (images) in the data
-      const hasImages = (() => {
-        const checkForFiles = (obj: any): boolean => {
-          if (obj instanceof File) return true;
-          if (Array.isArray(obj)) return obj.some(checkForFiles);
-          if (obj && typeof obj === "object") {
-            return Object.values(obj).some(checkForFiles);
-          }
-          return false;
-        };
-        return checkForFiles(portfolioData);
-      })();
-
-      let portfolioDataWithFiles: FormData | null = null;
-      if (hasImages) {
-        console.log("📁 PREPARING FORMDATA FOR IMAGES");
-        portfolioDataWithFiles = preparePortfolioDataWithFiles(portfolioData);
-        console.log("📁 SENDING FORMDATA WITH IMAGES");
-      } else {
-        console.log("📁 SENDING AS JSON (NO IMAGES)");
-      }
-
-      // Check if any sections have been updated by comparing with original data
-      const hasPortfolioUpdates = (() => {
-        if (!originalData) {
-          // If no original data, check if any sections are enabled with data
-          return profileSections.some(
-            (section) =>
-              section.enabled &&
-              section.data &&
-              Object.keys(section.data).length > 0
-          );
-        }
-
-        // Compare current data with original data
-        const currentData = mapProfileSectionsToBackend(
-          profileSections,
-          centerId
-        );
-        return JSON.stringify(currentData) !== JSON.stringify(originalData);
-      })();
-
-      // Check for pricing updates
-      const hasPricingUpdates = (() => {
-        const plansSection = profileSections.find(
-          (section) => section.type === "plans"
-        );
-        if (!plansSection || !plansSection.enabled) return false;
-
-        // Check if plans section has data
-        return plansSection.data.plans && plansSection.data.plans.length > 0;
-      })();
-
-      // Prepare pricing data
-      const pricingData = (() => {
-        const plansSection = profileSections.find(
-          (section) => section.type === "plans"
-        );
-        if (!plansSection || !plansSection.enabled) return {};
-
-        return {
-          plans: plansSection.data.plans || [],
-        };
-      })();
-
-      const requests = [];
-
-      // Send portfolio update if there are changes
-      if (hasPortfolioUpdates) {
-        const dataToSend = hasImages ? portfolioDataWithFiles : portfolioData;
-        requests.push(
-          savePortfolio(centerId, dataToSend)
-            .then(() => console.log("✅ Portfolio updated successfully"))
-            .catch((error) => {
-              console.error("❌ Portfolio update failed:", error);
-              console.error("🔍 FULL ERROR RESPONSE:", error.response);
-              console.error("🔍 ERROR STATUS:", error.response?.status);
-              console.error(
-                "🔍 ERROR STATUS TEXT:",
-                error.response?.statusText
-              );
-              console.error("🔍 ERROR HEADERS:", error.response?.headers);
-              console.error(
-                "🔍 VALIDATION ERRORS:",
-                error.response?.data?.errors
-              );
-              console.error("📝 ERROR MESSAGE:", error.response?.data?.message);
-              console.error("📝 ERROR DATA:", error.response?.data);
-              console.error(
-                "📝 FULL ERROR OBJECT:",
-                JSON.stringify(error, null, 2)
-              );
-              throw new Error("Portfolio update failed");
-            })
-        );
-      }
-
-      // Send pricing update if there are changes
-      if (hasPricingUpdates) {
-        const plansSection = profileSections.find(
-          (section) => section.type === "plans"
-        );
-        if (plansSection && plansSection.data.plans) {
-          // Group plans by branch_id
-          const plansByBranch = plansSection.data.plans.reduce(
-            (acc: any, plan: any) => {
-              if (plan.branch_id) {
-                if (!acc[plan.branch_id]) {
-                  acc[plan.branch_id] = [];
-                }
-                acc[plan.branch_id].push(plan);
-              }
-              return acc;
-            },
-            {}
-          );
-
-          // Send pricing update for each branch
-          Object.entries(plansByBranch).forEach(([branchId, plans]) => {
-            // Convert educational program fields back to pricing format
-            const pricingData = (plans as any[])
-              .filter((plan: any) => {
-                // Only include plans with valid data
-                return (
-                  plan.title &&
-                  plan.age_start > 0 &&
-                  plan.age_end > 11 && // API requires end_age > 11
-                  plan.count > 0 &&
-                  plan.price_amount > 0
-                );
-              })
-              .map((plan: any) => ({
-                title: plan.title || "",
-                start_age: Math.max(1, plan.age_start || 1),
-                end_age: Math.max(12, plan.age_end || 12), // Ensure minimum of 12
-                count: plan.count || 1,
-                enrollment_type: plan.enrollment_type || "month",
-                price_amount: plan.price_amount || 100,
-              }));
-
-            // Only send if there are valid plans
-            if (pricingData.length > 0) {
-              requests.push(
-                savePricing(branchId, { pricing: pricingData })
-                  .then(() =>
-                    console.log(
-                      `✅ Pricing updated successfully for branch ${branchId}`
-                    )
-                  )
-                  .catch((error) => {
-                    console.error(
-                      `❌ Pricing update failed for branch ${branchId}:`,
-                      error
-                    );
-                    throw new Error(
-                      `Pricing update failed for branch ${branchId}`
-                    );
-                  })
-              );
-            }
-          });
-        }
-      }
-
-      // Wait for all requests to complete
-      if (requests.length > 0) {
-        await Promise.all(requests);
-        // Update original data after successful save
-        setOriginalData(portfolioData);
-        setIsDirty(false);
-        toast.success(t("saveSuccess"));
-      } else {
-        toast.info("No changes to save");
-      }
-    } catch (error) {
-      console.error("Save error:", error);
-      toast.error(t("saveError"));
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Mapping functions (implement as needed)
-  function getDefaultProfileSections(): ProfileSection[] {
-    return [
-      {
-        id: "hero",
-        name: "Hero Section",
-        type: "hero",
-        enabled: false,
-        data: {
-          title: "",
-          subtitle: "",
-          description: "",
-          image: "",
-          ctaText: "",
-          ctaLink: "",
-        },
-      },
-      {
-        id: "branches",
-        name: "Branches",
-        type: "branches",
-        enabled: false,
-        data: {
-          title: "Our Branches",
-          branches: [],
-        },
-      },
-      {
-        id: "philosophy",
-        name: "Philosophy, Methodology & Goal",
-        type: "philosophy",
-        enabled: false,
-        data: {
-          philosophyTitle: "Our Philosophy",
-          philosophy: "",
-          methodologyTitle: "Our Methodology",
-          methodology: "",
-          goalTitle: "Our Goal",
-          goal: "",
-        },
-      },
-      {
-        id: "plans",
-        name: "Plans (برامجنا)",
-        type: "plans",
-        enabled: false,
-        data: {
-          title: "Plans", // Static title - will be handled by locale
-          plans: [],
-        },
-      },
-      {
-        id: "services",
-        name: "Services",
-        type: "services",
-        enabled: false,
-        data: {
-          title: "Our Services",
-          services: [],
-        },
-      },
-      {
-        id: "stats",
-        name: "Nursery Stats",
-        type: "stats",
-        enabled: false,
-        data: {
-          area: "2000",
-          classrooms: "1",
-          teamMembers: "1",
-        },
-      },
-      {
-        id: "activities",
-        name: "Activities",
-        type: "activities",
-        enabled: false,
-        data: {
-          title: "Activities",
-          subtitle: "",
-          images: [],
-        },
-      },
-      {
-        id: "team",
-        name: "Our Team",
-        type: "team",
-        enabled: false,
-        data: {
-          title: "Meet Our Team",
-          members: [],
-        },
-      },
-      {
-        id: "contact",
-        name: "Contact Information",
-        type: "contact",
-        enabled: false,
-        data: {
-          address: "",
-          phone: "",
-          email: "info@nursery.com",
-          workingHours: "",
-          socialMedia: {},
-        },
-      },
-    ];
-  }
-
-  function mapBackendToProfileSections(portofilo: any): ProfileSection[] {
-    // Always return all sections, using backend data if present, or defaults if not
-    return [
-      {
-        id: "hero",
-        name: "Hero Section",
-        type: "hero",
-        enabled: !!portofilo?.hero_section,
-        data: {
-          title: portofilo?.hero_section?.title_of_hero || "",
-          subtitle: portofilo?.hero_section?.subtitle_of_hero || "",
-          description: portofilo?.hero_section?.description || "",
-          image: portofilo?.hero_section?.background_image || "",
-          ctaText: "",
-          ctaLink: "",
-        },
-      },
-      {
-        id: "branches",
-        name: "Branches",
-        type: "branches",
-        enabled:
-          Array.isArray(portofilo?.branches) && portofilo.branches.length > 0,
-        data: {
-          title: "Our Branches",
-          branches:
-            portofilo?.branches?.map((branch: any) => ({
-              name: branch.branch_name || branch.name || "",
-            })) || [],
-        },
-      },
-      {
-        id: "philosophy",
-        name: "Philosophy, Methodology & Goal",
-        type: "philosophy",
-        enabled: !!portofilo?.Philosophy_Methodology_Goal,
-        data: {
-          philosophyTitle:
-            portofilo?.Philosophy_Methodology_Goal?.philosophy?.title ||
-            "Our Philosophy",
-          philosophy:
-            portofilo?.Philosophy_Methodology_Goal?.philosophy?.content || "",
-          methodologyTitle:
-            portofilo?.Philosophy_Methodology_Goal?.methodology?.title ||
-            "Our Methodology",
-          methodology:
-            portofilo?.Philosophy_Methodology_Goal?.methodology?.content || "",
-          goalTitle:
-            portofilo?.Philosophy_Methodology_Goal?.goals?.title || "Our Goal",
-          goal: portofilo?.Philosophy_Methodology_Goal?.goals?.content || "",
-        },
-      },
-      {
-        id: "plans",
-        name: "Plans (برامجنا)",
-        type: "plans",
-        enabled: false, // Only enable when there's data
-        data: {
-          title: "Plans", // Static title - will be handled by locale
-          plans: [], // Plans will be populated from pricing API
-        },
-      },
-      {
-        id: "services",
-        name: "Services",
-        type: "services",
-        enabled:
-          Array.isArray(portofilo?.services) && portofilo.services.length > 0,
-        data: {
-          title: portofilo?.service_section_title || "Our Services",
-          services: portofilo?.services || [],
-        },
-      },
-      {
-        id: "stats",
-        name: "Nursery Stats",
-        type: "stats",
-        enabled: !!portofilo?.nursery_state,
-        data: {
-          area: portofilo?.nursery_state?.area || "",
-          classrooms: portofilo?.nursery_state?.class_rooms || "",
-          teamMembers: portofilo?.nursery_state?.team_members || "",
-        },
-      },
-      {
-        id: "activities",
-        name: "Activities",
-        type: "activities",
-        enabled:
-          Array.isArray(portofilo?.images_activities) &&
-          portofilo.images_activities.length > 0,
-        data: {
-          title: portofilo?.activity_section_title || "Activities",
-          subtitle: portofilo?.activity_section_subtitle || "",
-          images: portofilo?.images_activities || [],
-        },
-      },
-      {
-        id: "team",
-        name: "Our Team",
-        type: "team",
-        enabled: Array.isArray(portofilo?.teams) && portofilo.teams.length > 0,
-        data: {
-          title: "Meet Our Team",
-          members: portofilo?.teams || [],
-        },
-      },
-      {
-        id: "contact",
-        name: "Contact Information",
-        type: "contact",
-        enabled: !!portofilo?.contact_info,
-        data: {
-          address: portofilo?.contact_info?.address || "",
-          phone: portofilo?.contact_info?.phone_number || "",
-          email: portofilo?.contact_info?.email_address || "info@nursery.com",
-          workingHours: portofilo?.contact_info?.working_hours || "",
-          socialMedia: {
-            facebook: portofilo?.contact_info?.facebook || "",
-            instagram: portofilo?.contact_info?.instagram || "",
-            whatsapp: portofilo?.contact_info?.whatsapp || "",
-          },
-        },
-      },
-    ];
-  }
-  function mapProfileSectionsToBackend(sections: any[], centerId: number) {
-    // Helper to get section by type
-    const get = (type: any) => sections.find((s) => s.type === type);
-
-    console.log("🔄 MAPPING SECTIONS TO BACKEND:", sections);
-
-    const result = {
-      // Hero section - map to individual columns
-      title_of_hero: get("hero")?.data.title || "",
-      subtitle_of_hero: get("hero")?.data.subtitle || "",
-      description: get("hero")?.data.description || "",
-      background_image:
-        get("hero")?.data.image instanceof File
-          ? get("hero")?.data.image
-          : null,
-
-      // Branches - map from frontend 'name' to backend 'branch_name'
-      branches:
-        get("branches")?.data.branches?.map((branch: any) => ({
-          branch_name: branch.name || branch.branch_name || "",
-        })) || [],
-
-      // Philosophy, Methodology, Goals
-      Philosophy_Methodology_Goal: {
-        philosophy: {
-          title: get("philosophy")?.data.philosophyTitle || "",
-          content: get("philosophy")?.data.philosophy || "",
-        },
-        methodology: {
-          title: get("philosophy")?.data.methodologyTitle || "",
-          content: get("philosophy")?.data.methodology || "",
-        },
-        goals: {
-          title: get("philosophy")?.data.goalTitle || "",
-          content: get("philosophy")?.data.goal || "",
-        },
-      },
-
-      // Services
-      service_section_title: get("services")?.data.title || "",
-      services:
-        get("services")?.data.services?.map((service: any) => ({
-          title: service.title || "",
-          description: service.description || "",
-          image_service:
-            service.image_service instanceof File
-              ? service.image_service
-              : null,
-        })) || [],
-
-      // Nursery state
-      nursery_state: {
-        area: get("stats")?.data.area || "",
-        class_rooms: Math.max(1, parseInt(get("stats")?.data.classrooms) || 1),
-        team_members: Math.max(
-          1,
-          parseInt(get("stats")?.data.teamMembers) || 1
-        ),
-      },
-
-      // Activity section
-      activity_section_title: get("activities")?.data.title || "",
-      activity_section_subtitle: get("activities")?.data.subtitle || "",
-      images_activities:
-        get("activities")?.data.images?.filter(
-          (image: any) => image instanceof File
-        ) || [],
-      ads_images: [], // Will be populated when ads functionality is added
-
-      // Teams
-      teams:
-        get("team")?.data.members?.map((member: any) => ({
-          name: member.name || "",
-          mission: member.role || "",
-          image: member.image instanceof File ? member.image : null,
-        })) || [],
-
-      // Contact info
-      contact_info: {
-        address: get("contact")?.data.address || "",
-        working_hours: get("contact")?.data.workingHours || "",
-        phone_number: get("contact")?.data.phone || "",
-        email_address: (() => {
-          const email = get("contact")?.data.email || "";
-          // Basic email validation
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (email && emailRegex.test(email)) {
-            return email;
-          }
-          return "info@nursery.com"; // Default valid email
-        })(),
-        facebook: get("contact")?.data.socialMedia?.facebook || "",
-        instagram: get("contact")?.data.socialMedia?.instagram || "",
-        whatsapp: get("contact")?.data.socialMedia?.whatsapp || "",
-        twitter: get("contact")?.data.socialMedia?.twitter || "",
-      },
-
-      center_id: centerId,
-    };
-
-    console.log("🔄 MAPPED RESULT:", result);
-    console.log("🔍 SERVICES DATA:", result.services);
-    console.log("🔍 TEAMS DATA:", result.teams);
-    console.log("🔍 HERO SECTION:", {
-      title_of_hero: result.title_of_hero,
-      subtitle_of_hero: result.subtitle_of_hero,
-      description: result.description,
-      background_image: result.background_image,
-    });
-    return result;
-  }
-
-  // Function to prepare portfolio data with files for API submission
-  function preparePortfolioDataWithFiles(data: any) {
-    const formData = new FormData();
-
-    // Add center_id
-    formData.append("center_id", data.center_id.toString());
-
-    // Hero section (now individual fields)
-    formData.append("title_of_hero", data.title_of_hero || "");
-    formData.append("subtitle_of_hero", data.subtitle_of_hero || "");
-    formData.append("description", data.description || "");
-
-    // Add background image file if it exists
-    if (data.background_image instanceof File) {
-      formData.append("background_image", data.background_image);
-    }
-
-    // Branches
-    if (data.branches && Array.isArray(data.branches)) {
-      data.branches.forEach((branch: any, index: number) => {
-        formData.append(
-          `branches[${index}][branch_name]`,
-          branch.branch_name || ""
-        );
-      });
-    }
-
-    // Philosophy, Methodology, Goals
-    if (data.Philosophy_Methodology_Goal) {
-      const pmg = data.Philosophy_Methodology_Goal;
-      if (pmg.philosophy) {
-        formData.append(
-          "Philosophy_Methodology_Goal[philosophy][title]",
-          pmg.philosophy.title || ""
-        );
-        formData.append(
-          "Philosophy_Methodology_Goal[philosophy][content]",
-          pmg.philosophy.content || ""
-        );
-      }
-      if (pmg.methodology) {
-        formData.append(
-          "Philosophy_Methodology_Goal[methodology][title]",
-          pmg.methodology.title || ""
-        );
-        formData.append(
-          "Philosophy_Methodology_Goal[methodology][content]",
-          pmg.methodology.content || ""
-        );
-      }
-      if (pmg.goals) {
-        formData.append(
-          "Philosophy_Methodology_Goal[goals][title]",
-          pmg.goals.title || ""
-        );
-        formData.append(
-          "Philosophy_Methodology_Goal[goals][content]",
-          pmg.goals.content || ""
-        );
-      }
-    }
-
-    // Services
-    formData.append("service_section_title", data.service_section_title || "");
-    if (data.services && Array.isArray(data.services)) {
-      data.services.forEach((service: any, index: number) => {
-        formData.append(`services[${index}][title]`, service.title || "");
-        formData.append(
-          `services[${index}][description]`,
-          service.description || ""
-        );
-
-        // Add service image file if it exists
-        if (service.image_service instanceof File) {
-          formData.append(
-            `services[${index}][image_service]`,
-            service.image_service
-          );
-        }
-      });
-    }
-
-    // Nursery state
-    if (data.nursery_state) {
-      formData.append("nursery_state[area]", data.nursery_state.area || "");
-      formData.append(
-        "nursery_state[class_rooms]",
-        data.nursery_state.class_rooms || ""
-      );
-      formData.append(
-        "nursery_state[team_members]",
-        data.nursery_state.team_members || ""
-      );
-    }
-
-    // Activity section
-    formData.append(
-      "activity_section_title",
-      data.activity_section_title || ""
-    );
-    formData.append(
-      "activity_section_subtitle",
-      data.activity_section_subtitle || ""
-    );
-
-    // Add activity image files only (no URLs)
-    if (data.images_activities && Array.isArray(data.images_activities)) {
-      data.images_activities.forEach((image: any, index: number) => {
-        if (image instanceof File) {
-          formData.append(`images_activities[${index}]`, image);
-        }
-      });
-    }
-
-    // Add ads image files only (no URLs)
-    if (data.ads_images && Array.isArray(data.ads_images)) {
-      data.ads_images.forEach((image: any, index: number) => {
-        if (image instanceof File) {
-          formData.append(`ads_images[${index}]`, image);
-        }
-      });
-    }
-
-    // Teams
-    if (data.teams && Array.isArray(data.teams)) {
-      data.teams.forEach((team: any, index: number) => {
-        formData.append(`teams[${index}][name]`, team.name || "");
-        formData.append(`teams[${index}][mission]`, team.mission || "");
-
-        // Add team image file if it exists
-        if (team.image instanceof File) {
-          formData.append(`teams[${index}][image]`, team.image);
-        }
-      });
-    }
-
-    // Contact info
-    if (data.contact_info) {
-      formData.append("contact_info[address]", data.contact_info.address || "");
-      formData.append(
-        "contact_info[working_hours]",
-        data.contact_info.working_hours || ""
-      );
-      formData.append(
-        "contact_info[phone_number]",
-        data.contact_info.phone_number || ""
-      );
-      formData.append(
-        "contact_info[email_address]",
-        data.contact_info.email_address || ""
-      );
-      formData.append(
-        "contact_info[facebook]",
-        data.contact_info.facebook || ""
-      );
-      formData.append(
-        "contact_info[instagram]",
-        data.contact_info.instagram || ""
-      );
-      formData.append(
-        "contact_info[whatsapp]",
-        data.contact_info.whatsapp || ""
-      );
-      formData.append("contact_info[twitter]", data.contact_info.twitter || "");
-    }
-
-    console.log("📁 PREPARED FORMDATA WITH FILES");
-    console.log("📋 FORMDATA CONTENTS:");
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(
-          `${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
-        );
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
-
-    return formData;
-  }
-
-  const enabledSections = profileSections.filter((section) => section.enabled);
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
-            <p className="text-gray-600 mt-1">{t("subtitle")}</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Mode Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
-              <Button
-                variant={!isPreviewMode ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setIsPreviewMode(false)}
-                className={cn(
-                  "px-3 py-1 text-sm font-medium rounded-md transition-all",
-                  !isPreviewMode
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                <Edit className="w-4 h-4 mr-1" />
-                {t("editMode")}
-              </Button>
-              <Button
-                variant={isPreviewMode ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setIsPreviewMode(true)}
-                className={cn(
-                  "px-3 py-1 text-sm font-medium rounded-md transition-all",
-                  isPreviewMode
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                <Eye className="w-4 h-4 mr-1" />
-                {t("previewMode")}
-              </Button>
-            </div>
-
-            {/* Save Button */}
-            <Button
-              onClick={handleSave}
-              disabled={!isDirty || isSaving}
-              className="px-4 py-2"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isSaving ? t("saving") : t("save")}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Reminder Card for Empty Profile */}
-      {showReminder && !isPreviewMode && (
-        <div className="px-6 py-4">
-          <Card className="border-amber-200 bg-amber-50 p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-amber-800">
-                  {t("reminder.title")}
-                </h3>
-                <p className="text-amber-700 text-sm mt-1">
-                  {t("reminder.description")}
+  if (isLoadingData || loadError) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl sm:text-2xl">{t("title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-center py-16 sm:py-20">
+              <div className="text-center space-y-4">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
+                <p className="text-muted-foreground text-sm sm:text-base">
+                  {loadError ? t("loadError") : t("loading")}
                 </p>
               </div>
             </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <div className="relative flex-1">
-        {isPreviewMode ? (
-          <ProfilePreview sections={profileSections} isEmpty={isProfileEmpty} />
-        ) : (
-          <ProfileEditor
-            sections={profileSections}
-            onSectionUpdate={handleSectionUpdate}
-            onSectionToggle={handleSectionToggle}
-            onSectionDelete={handleSectionDelete}
-          />
-        )}
+          </CardContent>
+        </Card>
       </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader className="pb-6">
+          <CardTitle className="text-xl sm:text-2xl lg:text-3xl">
+            {t("title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-6">
+          <Accordion
+            type="single"
+            collapsible
+            value={activeSection}
+            onValueChange={setActiveSection}
+            className="space-y-2"
+          >
+            {sections.map((section) => {
+              const Component = section.component;
+              return (
+                <AccordionItem
+                  key={section.id}
+                  value={section.id}
+                  className="border border-border rounded-lg overflow-hidden"
+                >
+                  <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 [&[data-state=open]]:border-b border-border">
+                    {section.title}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 sm:px-6 py-4 sm:py-6 bg-muted/20">
+                    <Component data={currentData} onChange={handleDataChange} />
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+
+          {/* Save Button - Sticky on mobile for better UX */}
+          <div className="sticky bottom-4 sm:static pt-6 border-t bg-background sm:bg-transparent">
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSavePortfolio}
+                disabled={isSaving || !hasChanges}
+                size="lg"
+                className="w-full sm:w-auto shadow-lg sm:shadow-md"
+              >
+                {isSaving ? t("saving") : t("savePortfolio")}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default ProfileEditor;

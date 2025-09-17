@@ -390,3 +390,69 @@ export interface PortfolioResponse {
   message: string;
   data: PortfolioData;
 }
+
+// Profile Editor Types
+export interface PortfolioFormData {
+  title_of_hero: string;
+  subtitle_of_hero: string;
+  description: string;
+  background_image: File | string;
+  branches: {
+    branch_name: string;
+  }[];
+  Philosophy_Methodology_Goal: {
+    philosophy: {
+      content: string;
+    };
+    methodology: {
+      content: string;
+    };
+    goals: {
+      content: string;
+    };
+  };
+  service_section_title: string;
+  services: {
+    title: string;
+    description: string;
+    image_service: File | string;
+  }[];
+  nursery_state: {
+    area: string;
+    class_rooms: string;
+    team_members: string;
+  };
+  activity_section_title: string;
+  activity_section_subtitle: string;
+  images_activities: (File | string)[];
+  contact_info: {
+    address: string;
+    working_hours: string;
+    phone_number: string;
+    email_address: string;
+    facebook: string;
+    instagram: string;
+    whatsapp: string;
+  };
+  ads_images: (File | string)[];
+  teams: {
+    name: string;
+    mission: string;
+    image: File | string;
+  }[];
+}
+
+export interface PricingFormData {
+  id?: number;
+  enrollment_type: string;
+  title: string;
+  start_age: number;
+  end_age: number;
+  count: number;
+  price_amount: number;
+}
+
+export interface BranchPricingData {
+  branch_id: number;
+  prices: PricingFormData[];
+}

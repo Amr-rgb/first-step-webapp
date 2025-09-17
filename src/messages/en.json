@@ -1570,162 +1570,6 @@
         }
       }
     },
-    "profileEditor": {
-      "title": "Nursery Profile Editor",
-      "subtitle": "Create and customize your nursery's profile page",
-      "editMode": "Edit Mode",
-      "previewMode": "Preview Mode",
-      "save": "Save Changes",
-      "saving": "Saving...",
-      "saveSuccess": "Profile updated successfully!",
-      "saveError": "Failed to save profile. Please try again.",
-      "reminder": {
-        "title": "Complete Your Nursery Profile",
-        "description": "Add sections to showcase your nursery's story, services, and team. This will help parents learn more about what makes your nursery special."
-      },
-      "sections": {
-        "hero": {
-          "name": "Hero Section",
-          "title": "Nursery Name",
-          "subtitle": "Slogan",
-          "description": "Description",
-          "backgroundImage": "Background Image",
-          "ctaText": "Call-to-Action button"
-        },
-        "branches": {
-          "name": "Branches",
-          "title": "Our Branches",
-          "branchName": "Branch name"
-        },
-        "philosophy": {
-          "name": "Philosophy, Methodology & Goal",
-          "philosophyTitle": "Our Philosophy",
-          "philosophy": "Philosophy Content",
-          "methodologyTitle": "Our Methodology",
-          "methodology": "Methodology Content",
-          "goalTitle": "Our Goal",
-          "goal": "Goal Content"
-        },
-        "plans": {
-          "name": "Plans",
-          "title": "Plans",
-          "educationalPrograms": "Educational Programs",
-          "addProgram": "Add Program",
-          "program": "Program",
-          "branch": "Branch",
-          "selectBranch": "Select Branch",
-          "loadingBranches": "Loading branches...",
-          "programName": "Program Name",
-          "programNamePlaceholder": "Example: Early English Language Program",
-          "ageGroup": "Age Group",
-          "selectAgeGroup": "Select Age Group",
-          "setAgeRangeManually": "Set age range manually:",
-          "fromAge": "From age:",
-          "toAge": "To age:",
-          "programType": "Program Type",
-          "selectProgramType": "Select Program Type",
-          "durationWeeks": "Program Duration (weeks)",
-          "sessionsPerWeek": "Sessions per Week",
-          "maxStudents": "Maximum Students",
-          "description": "Program Description",
-          "descriptionPlaceholder": "Brief description of the program and its objectives...",
-          "monthlyPrice": "Monthly Price (SAR)",
-          "programTypes": {
-            "academic": "Academic",
-            "creative": "Creative",
-            "sports": "Sports",
-            "language": "Language",
-            "music": "Music",
-            "art": "Art"
-          },
-          "ageGroups": {
-            "0-1": "0-1 years",
-            "1-2": "1-2 years",
-            "2-3": "2-3 years",
-            "3-4": "3-4 years",
-            "4-5": "4-5 years",
-            "5-6": "5-6 years",
-            "fromAge": "From age...",
-            "toAge": "To age..."
-          }
-        },
-        "services": {
-          "name": "Services",
-          "title": "Section Title",
-          "services": "Services",
-          "addService": "Add Service",
-          "service": "Service",
-          "serviceTitle": "Service title",
-          "serviceDescription": "Service description",
-          "serviceImage": "Service Image"
-        },
-        "stats": {
-          "name": "Nursery Stats",
-          "area": "Area (sqm)",
-          "classrooms": "Classrooms",
-          "teamMembers": "Team Members"
-        },
-        "activities": {
-          "name": "Activities",
-          "title": "Section Title",
-          "subtitle": "Subtitle",
-          "activityImages": "Activity Images",
-          "addImage": "Add Image",
-          "activityImage": "Activity Image",
-          "caption": "Caption (optional)"
-        },
-        "team": {
-          "name": "Our Team",
-          "title": "Section Title",
-          "members": "Team Members",
-          "addMember": "Add Member",
-          "member": "Team Member",
-          "fullName": "Full name",
-          "role": "Role/Position",
-          "profileImage": "Profile Image",
-          "bio": "Bio (optional)"
-        },
-        "contact": {
-          "name": "Contact Information",
-          "address": "Address",
-          "workingHours": "Working Hours",
-          "phoneNumber": "Phone Number",
-          "emailAddress": "Email Address"
-        }
-      },
-      "common": {
-        "enable": "Enable",
-        "enabled": "Enabled",
-        "delete": "Delete",
-        "remove": "Remove",
-        "changeImage": "Change Image",
-        "removeImage": "Remove Image",
-        "uploadImage": "Click to upload an image",
-        "uploading": "Uploading...",
-        "imageFormats": "PNG, JPG, JPEG up to 5MB",
-        "moreSections": "More sections coming soon!",
-        "moreSectionsDescription": "We're working on adding more customizable sections to help you create the perfect nursery profile.",
-        "previewHeader": "✨ Live Preview - This is how your nursery profile will appear to visitors",
-        "previewSubtitle": "Changes made in edit mode will be reflected here instantly",
-        "emptyProfile": {
-          "title": "Your Nursery Profile",
-          "comingSoon": "Coming Soon!",
-          "description": "Your nursery profile is still under construction. Start by adding sections from the editor to showcase your nursery's story, services, team, and more to create an amazing first impression for parents.",
-          "addSections": {
-            "title": "Add Sections",
-            "description": "Enable sections to tell your story"
-          },
-          "customizeContent": {
-            "title": "Customize Content",
-            "description": "Add your unique information"
-          },
-          "previewChanges": {
-            "title": "Preview Changes",
-            "description": "See how it looks instantly"
-          }
-        }
-      }
-    },
     "tables": {
       "shared": {
         "status": {
@@ -2180,6 +2024,162 @@
     "status": {
       "online": "Online",
       "offline": "Offline"
+    }
+  },
+  "profileEditor": {
+    "title": "Profile Editor",
+    "loading": "Loading portfolio data...",
+    "loadError": "Failed to load portfolio data",
+    "savePortfolio": "Save Portfolio",
+    "saving": "Saving...",
+    "saveSuccess": "Portfolio saved successfully!",
+    "saveError": "Failed to save portfolio",
+    "sections": {
+      "hero": "Hero Section",
+      "branches": "Branches",
+      "philosophy": "Philosophy & Goals",
+      "services": "Services",
+      "nurseryState": "Nursery State",
+      "activities": "Activities",
+      "contact": "Contact Information",
+      "ads": "Advertisement Images",
+      "teams": "Team Members",
+      "plans": "Plans & Pricing"
+    },
+    "hero": {
+      "title": "Title",
+      "titlePlaceholder": "Enter hero title",
+      "subtitle": "Subtitle",
+      "subtitlePlaceholder": "Enter hero subtitle",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter hero description",
+
+      "ctaTextPlaceholder": "Enter CTA text",
+      "ctaLink": "Call to Action Link",
+      "ctaLinkPlaceholder": "Enter CTA link",
+      "backgroundImage": "Background Image"
+    },
+    "branches": {
+      "sectionTitle": "Section Title",
+      "sectionTitlePlaceholder": "Enter branches section title",
+      "branchesTitle": "Branches",
+      "branchNamePlaceholder": "Enter branch name",
+      "noBranches": "No branches added yet"
+    },
+    "philosophy": {
+      "philosophy": "Philosophy",
+      "philosophyTitle": "Philosophy Title",
+      "philosophyTitlePlaceholder": "Enter philosophy title",
+      "philosophyContent": "Philosophy Content",
+      "philosophyContentPlaceholder": "Enter philosophy content",
+      "methodology": "Methodology",
+      "methodologyTitle": "Methodology Title",
+      "methodologyTitlePlaceholder": "Enter methodology title",
+      "methodologyContent": "Methodology Content",
+      "methodologyContentPlaceholder": "Enter methodology content",
+      "goals": "Goals",
+
+      "goalTitle": "Goal Title",
+      "goalTitlePlaceholder": "Enter goal title",
+      "goalContent": "Goal Content",
+      "goalContentPlaceholder": "Enter goal content"
+    },
+    "services": {
+      "sectionTitle": "Section Title",
+      "sectionTitlePlaceholder": "Enter services section title",
+      "services": "Services",
+      "addService": "Add Service",
+      "noServices": "No services added yet",
+      "service": "Service",
+      "serviceTitle": "Service Title",
+      "serviceTitlePlaceholder": "Enter service title",
+      "serviceDescription": "Service Description",
+      "serviceDescriptionPlaceholder": "Enter service description",
+      "serviceImage": "Service Image"
+    },
+    "nurseryState": {
+      "title": "Nursery State",
+      "area": "Area",
+      "areaPlaceholder": "Enter area size",
+      "classRooms": "Class Rooms",
+      "classRoomsPlaceholder": "Enter number of class rooms",
+      "teamMembers": "Team Members",
+      "teamMembersPlaceholder": "Enter number of team members"
+    },
+    "activities": {
+      "sectionTitle": "Section Title",
+      "sectionTitlePlaceholder": "Enter activities section title",
+      "sectionSubtitle": "Section Subtitle",
+      "sectionSubtitlePlaceholder": "Enter activities section subtitle",
+      "activityImages": "Activity Images",
+      "addImage": "Add Image",
+      "noImages": "No images added yet"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "address": "Address",
+      "addressPlaceholder": "Enter nursery address",
+      "workingHours": "Working Hours",
+      "workingHoursPlaceholder": "Enter working hours",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter phone number",
+      "emailAddress": "Email Address",
+      "emailAddressPlaceholder": "Enter email address",
+      "socialMedia": "Social Media",
+      "facebook": "Facebook",
+      "facebookPlaceholder": "Enter Facebook URL",
+      "instagram": "Instagram",
+      "instagramPlaceholder": "Enter Instagram URL",
+      "whatsapp": "WhatsApp",
+      "whatsappPlaceholder": "Enter WhatsApp number"
+    },
+    "ads": {
+      "title": "Advertisement Images",
+      "addImage": "Add Image",
+      "noImages": "No advertisement images added yet"
+    },
+    "teams": {
+      "title": "Team Members",
+      "addTeamMember": "Add Team Member",
+      "noTeamMembers": "No team members added yet",
+      "teamMember": "Team Member",
+      "memberName": "Member Name",
+      "memberNamePlaceholder": "Enter member name",
+      "memberMission": "Member Mission",
+      "memberMissionPlaceholder": "Enter member mission",
+      "memberImage": "Member Image"
+    },
+    "plans": {
+      "title": "Plans & Pricing",
+      "loading": "Loading...",
+      "selectBranch": "Select Branch",
+      "selectBranchPlaceholder": "Choose a branch",
+      "plans": "Plans",
+      "addPlan": "Add Plan",
+      "editPlan": "Edit Plan",
+      "noPlansYet": "No Plans Yet",
+      "ageRange": "Age: {start} - {end} years",
+      "price": "Price",
+      "priceAmount": "Price: ${amount}",
+      "enrollmentType": "Enrollment Type",
+      "selectEnrollmentType": "Select enrollment type",
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "planTitle": "Plan Title",
+      "planTitlePlaceholder": "Enter plan title",
+      "startAge": "Start Age",
+      "endAge": "End Age",
+      "count": "Count",
+      "branches": "Branches",
+      "selectBranchesPlaceholder": "Select branches...",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "planSaved": "Plan saved successfully!",
+      "planSaveError": "Failed to save plan",
+      "planDeleted": "Plan deleted successfully!",
+      "planDeleteError": "Failed to delete plan"
     }
   }
 }

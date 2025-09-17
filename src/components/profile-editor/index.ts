@@ -1,0 +1,10 @@
+export { HeroSection } from "./HeroSection";
+export { BranchesSection } from "./BranchesSection";
+export { PhilosophySection } from "./PhilosophySection";
+export { ServicesSection } from "./ServicesSection";
+export { NurseryStateSection } from "./NurseryStateSection";
+export { ActivitiesSection } from "./ActivitiesSection";
+export { ContactSection } from "./ContactSection";
+export { AdsSection } from "./AdsSection";
+export { TeamsSection } from "./TeamsSection";
+export { PlansSection } from "./PlansSection";
