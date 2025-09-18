@@ -2028,6 +2028,10 @@
   },
   "profileEditor": {
     "title": "Profile Editor",
+    "modes": {
+      "edit": "Edit",
+      "preview": "Preview"
+    },
     "loading": "Loading portfolio data...",
     "loadError": "Failed to load portfolio data",
     "savePortfolio": "Save Portfolio",
