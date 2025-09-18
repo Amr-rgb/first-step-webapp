@@ -922,7 +922,7 @@ export const nurseryService = {
   getBranchesByNursery: async (nurseryName: string): Promise<any[]> => {
     try {
       const response = await apiClient.get(
-        `/api/branches?nursery_name=${nurseryName}`
+        `/branches?nursery_name=${nurseryName}`
       );
       return response.data || [];
     } catch (error) {
