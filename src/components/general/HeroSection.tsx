@@ -481,22 +481,11 @@ const HeroSection = () => {
                           zIndex: 50,
                         }}
                       >
-                        <div className="z-20 relative pt-2 pb-5 w-full h-full">
+                        <div className="z-20 relative pt-8 pb-8 md:pt-16 md:pb-16 w-full h-full">
                           {/* Event slide content */}
-                          <div className="flex flex-col md:flex-row h-full">
-                            {/* Left section - Event logo pattern background */}
-                            <div className="w-full md:w-2/5 flex items-center justify-center p-6 md:p-8 min-h-[300px] md:min-h-[400px] relative">
-                              {/* Event logo pattern background */}
-                              <Image
-                                src="/assets/events/logo-event.png"
-                                alt="Event logo pattern"
-                                fill
-                                className="absolute inset-0 z-0 select-none pointer-events-none"
-                              />
-                            </div>
-
-                            {/* Right section - Background event pattern */}
-                            <div className="w-full md:w-3/5 flex flex-col justify-center items-center p-6 md:p-8 min-h-[400px] md:min-h-[500px] relative">
+                          <div className="flex flex-row h-full">
+                            {/* Left section - Background event pattern */}
+                            <div className="w-3/5 flex flex-col justify-center items-center p-2 md:p-6 lg:p-8 min-h-[250px] md:min-h-[400px] lg:min-h-[500px] relative">
                               {/* Background event pattern */}
                               <Image
                                 src="/assets/events/backgroud-event.png"
@@ -504,16 +493,32 @@ const HeroSection = () => {
                                 fill
                                 className="absolute inset-0 z-0 select-none pointer-events-none"
                               />
-                              <div className="text-center text-white relative z-10">
+                              <div
+                                className={cn(
+                                  "text-white relative z-10",
+                                  isRTL ? "text-right" : "text-left"
+                                )}
+                              >
+                                {/* Title background image */}
+                                <Image
+                                  src="/assets/events/title-background.png"
+                                  alt="Title background"
+                                  width={120}
+                                  height={60}
+                                  className={cn(
+                                    "mb-3 md:mb-4 md:w-[200px] md:h-[100px] lg:w-[300px] lg:h-[150px]",
+                                    isRTL ? "ml-auto" : "mr-auto"
+                                  )}
+                                />
                                 {/* Main headline */}
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
+                                <h1 className="text-lg md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 md:mb-4 lg:mb-6 leading-tight">
                                   {t(eventSlide.title)}
                                 </h1>
 
                                 {/* Offer text */}
-                                <div className="mb-6 md:mb-8">
-                                  <p className="text-xl md:text-2xl lg:text-3xl font-bold">
-                                    <span className="text-4xl md:text-5xl lg:text-6xl font-black">
+                                <div className="mb-4 md:mb-6 lg:mb-8">
+                                  <p className="text-sm md:text-xl lg:text-2xl xl:text-3xl font-bold">
+                                    <span className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-black">
                                       95
                                     </span>{" "}
                                     {t(eventSlide.offer)}
@@ -523,15 +528,27 @@ const HeroSection = () => {
                                 {/* Call-to-action button */}
                                 <Button
                                   asChild
-                                  variant={eventSlide.button.variant}
-                                  size="lg"
-                                  className="bg-white text-gray-800 hover:bg-gray-100 border border-gray-300 text-sm md:text-base"
+                                  variant="secondary"
+                                  size="sm"
+                                  className="bg-white hover:bg-gray-100 text-xs md:text-sm lg:text-base"
+                                  style={{ color: "#00343A" }}
                                 >
                                   <Link href={eventSlide.button.link}>
                                     {t(eventSlide.button.label)}
                                   </Link>
                                 </Button>
                               </div>
+                            </div>
+
+                            {/* Right section - Event logo pattern background */}
+                            <div className="w-2/5 flex items-center justify-center p-2 md:p-6 lg:p-8 min-h-[250px] md:min-h-[300px] lg:min-h-[400px] relative">
+                              {/* Event logo pattern background */}
+                              <Image
+                                src="/assets/events/logo-event.png"
+                                alt="Event logo pattern"
+                                fill
+                                className="absolute inset-0 z-0 select-none pointer-events-none"
+                              />
                             </div>
                           </div>
 
