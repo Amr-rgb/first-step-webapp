@@ -198,15 +198,6 @@ const HeroSection = () => {
             : "linear-gradient(to bottom, #FFFFFF 0%, #D5F3E5 22%, #D5F5E6 38%, #C4E7D7 52%, #D5F5E6 66%, #D5F3E5 83%, #FFFFFF 100%)",
       }}
     >
-      {/* Event background pattern - positioned at section level for full width coverage */}
-      {current % 2 === 1 && (
-        <Image
-          className="absolute inset-0 z-0 select-none pointer-events-none"
-          src="/assets/events/backgroud-event.png"
-          fill
-          alt="event background pattern"
-        />
-      )}
       {/* Design Mode Toggle - Remove this when done designing */}
       <div className="fixed top-4 right-4 z-50">
         <button
@@ -493,31 +484,27 @@ const HeroSection = () => {
                         <div className="z-20 relative pt-2 pb-5 w-full h-full">
                           {/* Event slide content */}
                           <div className="flex flex-col md:flex-row h-full">
-                            {/* Left section - Clean dark teal background */}
-                            <div className="w-full md:w-2/5 bg-teal-800 flex items-center justify-center p-6 md:p-8 min-h-[300px] md:min-h-full">
-                              <div className="text-center text-white">
-                                <Image
-                                  src="/assets/events/logo-event.png"
-                                  alt="Event logo"
-                                  width={150}
-                                  height={150}
-                                  className="mx-auto mb-4 md:w-[200px] md:h-[200px]"
-                                />
-                                <h2 className="text-xl md:text-2xl font-bold mb-2">
-                                  {t("event.logo")}
-                                </h2>
-                                <p className="text-teal-200 text-xs md:text-sm">
-                                  {t("event.subtitle")}
-                                </p>
-                                <p className="text-teal-300 text-xs uppercase mt-2">
-                                  SAUDI NATIONAL DAY 95
-                                </p>
-                              </div>
+                            {/* Left section - Event logo pattern background */}
+                            <div className="w-full md:w-2/5 flex items-center justify-center p-6 md:p-8 min-h-[300px] md:min-h-[400px] relative">
+                              {/* Event logo pattern background */}
+                              <Image
+                                src="/assets/events/logo-event.png"
+                                alt="Event logo pattern"
+                                fill
+                                className="absolute inset-0 z-0 select-none pointer-events-none"
+                              />
                             </div>
 
-                            {/* Right section - Clean bright green background */}
-                            <div className="w-full md:w-3/5 bg-green-500 flex flex-col justify-center items-center p-6 md:p-8 min-h-[400px] md:min-h-full">
-                              <div className="text-center text-white">
+                            {/* Right section - Background event pattern */}
+                            <div className="w-full md:w-3/5 flex flex-col justify-center items-center p-6 md:p-8 min-h-[400px] md:min-h-[500px] relative">
+                              {/* Background event pattern */}
+                              <Image
+                                src="/assets/events/backgroud-event.png"
+                                alt="Background event pattern"
+                                fill
+                                className="absolute inset-0 z-0 select-none pointer-events-none"
+                              />
+                              <div className="text-center text-white relative z-10">
                                 {/* Main headline */}
                                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
                                   {t(eventSlide.title)}
