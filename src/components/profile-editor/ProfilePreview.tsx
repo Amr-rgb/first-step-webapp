@@ -14,7 +14,12 @@ import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
 
 interface ProfilePreviewProps {
-  data: PortfolioData;
+  data: PortfolioData & {
+    title_of_hero?: string;
+    subtitle_of_hero?: string;
+    description?: string;
+    background_image?: string;
+  };
   locale: string;
   nurseryName: string;
 }
@@ -29,12 +34,12 @@ export const ProfilePreview = ({
   return (
     <div className="bg-background">
       {/* 1. Hero Section */}
-      {data.hero_section && (
+      {data.title_of_hero && (
         <Header
-          name={data.hero_section.title_of_hero || nurseryName}
-          slogan={data.hero_section.subtitle_of_hero}
-          description={data.hero_section.description}
-          backgroundImage={data.hero_section.background_image}
+          name={data.title_of_hero || nurseryName}
+          slogan={data.subtitle_of_hero}
+          description={data.description}
+          backgroundImage={data.background_image}
         />
       )}
 
