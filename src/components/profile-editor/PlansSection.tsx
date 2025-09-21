@@ -33,7 +33,7 @@ interface PlansSectionProps {
 }
 
 export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
-  const t = useTranslations("profileEditor.plans");
+  const t = useTranslations("dashboard.profileEditor.plans");
   const queryClient = useQueryClient();
   const { data: branches, isLoading: branchesLoading } = useBranches();
 

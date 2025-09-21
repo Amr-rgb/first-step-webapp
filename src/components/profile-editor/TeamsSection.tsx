@@ -16,7 +16,7 @@ interface TeamsSectionProps {
 }
 
 export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
-  const t = useTranslations("profileEditor.teams");
+  const t = useTranslations("dashboard.profileEditor.teams");
 
   const addTeamMember = () => {
     onChange({

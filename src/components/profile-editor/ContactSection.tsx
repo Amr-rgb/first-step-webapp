@@ -13,7 +13,7 @@ interface ContactSectionProps {
 }
 
 export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
-  const t = useTranslations("profileEditor.contact");
+  const t = useTranslations("dashboard.profileEditor.contact");
 
   const handleChange = (
     field: keyof typeof data.contact_info,

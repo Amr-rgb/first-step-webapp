@@ -14,7 +14,7 @@ interface BranchesSectionProps {
 }
 
 export const BranchesSection = ({ data, onChange }: BranchesSectionProps) => {
-  const t = useTranslations("profileEditor.branches");
+  const t = useTranslations("dashboard.profileEditor.branches");
   const [newBranchName, setNewBranchName] = useState("");
 
   const addBranch = () => {

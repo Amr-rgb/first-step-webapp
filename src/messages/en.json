@@ -1722,6 +1722,166 @@
       },
       "noResults": "No results."
     },
+    "profileEditor": {
+      "title": "Profile Editor",
+      "modes": {
+        "edit": "Edit",
+        "preview": "Preview"
+      },
+      "loading": "Loading portfolio data...",
+      "loadError": "Failed to load portfolio data",
+      "savePortfolio": "Save Portfolio",
+      "saving": "Saving...",
+      "saveSuccess": "Portfolio saved successfully!",
+      "saveError": "Failed to save portfolio",
+      "sections": {
+        "hero": "Hero Section",
+        "branches": "Branches",
+        "philosophy": "Philosophy & Goals",
+        "services": "Services",
+        "nurseryState": "Nursery State",
+        "activities": "Activities",
+        "contact": "Contact Information",
+        "ads": "Advertisement Images",
+        "teams": "Team Members",
+        "plans": "Plans & Pricing"
+      },
+      "hero": {
+        "title": "Title",
+        "titlePlaceholder": "Enter hero title",
+        "subtitle": "Subtitle",
+        "subtitlePlaceholder": "Enter hero subtitle",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter hero description",
+
+        "ctaTextPlaceholder": "Enter CTA text",
+        "ctaLink": "Call to Action Link",
+        "ctaLinkPlaceholder": "Enter CTA link",
+        "backgroundImage": "Background Image"
+      },
+      "branches": {
+        "sectionTitle": "Section Title",
+        "sectionTitlePlaceholder": "Enter branches section title",
+        "branchesTitle": "Branches",
+        "branchNamePlaceholder": "Enter branch name",
+        "noBranches": "No branches added yet"
+      },
+      "philosophy": {
+        "philosophy": "Philosophy",
+        "philosophyTitle": "Philosophy Title",
+        "philosophyTitlePlaceholder": "Enter philosophy title",
+        "philosophyContent": "Philosophy Content",
+        "philosophyContentPlaceholder": "Enter philosophy content",
+        "methodology": "Methodology",
+        "methodologyTitle": "Methodology Title",
+        "methodologyTitlePlaceholder": "Enter methodology title",
+        "methodologyContent": "Methodology Content",
+        "methodologyContentPlaceholder": "Enter methodology content",
+        "goals": "Goals",
+
+        "goalTitle": "Goal Title",
+        "goalTitlePlaceholder": "Enter goal title",
+        "goalContent": "Goal Content",
+        "goalContentPlaceholder": "Enter goal content"
+      },
+      "services": {
+        "sectionTitle": "Section Title",
+        "sectionTitlePlaceholder": "Enter services section title",
+        "services": "Services",
+        "addService": "Add Service",
+        "noServices": "No services added yet",
+        "service": "Service",
+        "serviceTitle": "Service Title",
+        "serviceTitlePlaceholder": "Enter service title",
+        "serviceDescription": "Service Description",
+        "serviceDescriptionPlaceholder": "Enter service description",
+        "serviceImage": "Service Image"
+      },
+      "nurseryState": {
+        "title": "Nursery State",
+        "area": "Area",
+        "areaPlaceholder": "Enter area size",
+        "classRooms": "Class Rooms",
+        "classRoomsPlaceholder": "Enter number of class rooms",
+        "teamMembers": "Team Members",
+        "teamMembersPlaceholder": "Enter number of team members"
+      },
+      "activities": {
+        "sectionTitle": "Section Title",
+        "sectionTitlePlaceholder": "Enter activities section title",
+        "sectionSubtitle": "Section Subtitle",
+        "sectionSubtitlePlaceholder": "Enter activities section subtitle",
+        "activityImages": "Activity Images",
+        "addImage": "Add Image",
+        "noImages": "No images added yet"
+      },
+      "contact": {
+        "title": "Contact Information",
+        "address": "Address",
+        "addressPlaceholder": "Enter nursery address",
+        "workingHours": "Working Hours",
+        "workingHoursPlaceholder": "Enter working hours",
+        "phoneNumber": "Phone Number",
+        "phoneNumberPlaceholder": "Enter phone number",
+        "emailAddress": "Email Address",
+        "emailAddressPlaceholder": "Enter email address",
+        "socialMedia": "Social Media",
+        "facebook": "Facebook",
+        "facebookPlaceholder": "Enter Facebook URL",
+        "instagram": "Instagram",
+        "instagramPlaceholder": "Enter Instagram URL",
+        "whatsapp": "WhatsApp",
+        "whatsappPlaceholder": "Enter WhatsApp number"
+      },
+      "ads": {
+        "title": "Advertisement Images",
+        "addImage": "Add Image",
+        "noImages": "No advertisement images added yet"
+      },
+      "teams": {
+        "title": "Team Members",
+        "addTeamMember": "Add Team Member",
+        "noTeamMembers": "No team members added yet",
+        "teamMember": "Team Member",
+        "memberName": "Member Name",
+        "memberNamePlaceholder": "Enter member name",
+        "memberMission": "Member Mission",
+        "memberMissionPlaceholder": "Enter member mission",
+        "memberImage": "Member Image"
+      },
+      "plans": {
+        "title": "Plans & Pricing",
+        "loading": "Loading...",
+        "selectBranch": "Select Branch",
+        "selectBranchPlaceholder": "Choose a branch",
+        "plans": "Plans",
+        "addPlan": "Add Plan",
+        "editPlan": "Edit Plan",
+        "noPlansYet": "No Plans Yet",
+        "ageRange": "Age: {start} - {end} years",
+        "price": "Price",
+        "priceAmount": "Price: ${amount}",
+        "enrollmentType": "Enrollment Type",
+        "selectEnrollmentType": "Select enrollment type",
+        "month": "Month",
+        "week": "Week",
+        "day": "Day",
+        "planTitle": "Plan Title",
+        "planTitlePlaceholder": "Enter plan title",
+        "startAge": "Start Age",
+        "endAge": "End Age",
+        "count": "Count",
+        "branches": "Branches",
+        "selectBranchesPlaceholder": "Select branches...",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "planSaved": "Plan saved successfully!",
+        "planSaveError": "Failed to save plan",
+        "planDeleted": "Plan deleted successfully!",
+        "planDeleteError": "Failed to delete plan"
+      }
+    },
     "children": {
       "search": {
         "placeholder": "Search by nursery / child name / parent"
@@ -1771,88 +1931,6 @@
         "sending": "Sending...",
         "noChildSelected": "Please select at least one child"
       }
-    }
-  },
-  "nurseryDetails": {
-    "waitingPage": {
-      "parentTitle": "Something Beautiful is Coming!",
-      "parentSubtitle": "Beautiful things take time because they are made with love and care.",
-      "centerTitle": "We're Preparing Something Special!",
-      "centerSubtitle": "Outstanding profiles need time to be created with precision and expertise.",
-      "adminTitle": "We're Reviewing Carefully!",
-      "adminSubtitle": "We ensure high quality for all profiles displayed on the platform.",
-      "browseNurseries": "Browse Nurseries",
-      "completeProfile": "Complete Profile",
-      "goToDashboard": "Go to Dashboard",
-      "goToAdminDashboard": "Go to Admin Dashboard"
-    },
-    "goals": {
-      "title": "Our Goals"
-    },
-    "philosophy": {
-      "title": "Our Philosophy"
-    },
-    "methodology": {
-      "title": "Our Methodology"
-    },
-    "stats": {
-      "title": "Nursery Statistics",
-      "area": "Area (m²)",
-      "classrooms": "Classrooms",
-      "teamMembers": "Team Members"
-    },
-    "team": {
-      "title": "Our Team"
-    },
-    "services": {
-      "title": "Our Services"
-    },
-    "programs": {
-      "title": "Our Programs",
-      "currency": "SAR",
-      "bookNow": "Book Now",
-      "noResults": "No programs found matching your filters",
-      "filters": {
-        "childAge": "Child's Age",
-        "branch": "Branch",
-        "programType": "Program Type",
-        "all": "All"
-      }
-    },
-    "contact": {
-      "title": "Contact Information",
-      "info": "Contact Information",
-      "address": "Address",
-      "phone": "Phone",
-      "email": "Email",
-      "workingHours": "Working Hours",
-      "social": "Social Media"
-    },
-    "branches": {
-      "title": "Nursery Branches",
-      "qassim": "Qassim",
-      "gharnata": "Gharnata",
-      "madina": "Madinah",
-      "makkah": "Makkah",
-      "riyadh": "Riyadh",
-      "cta": "Book Now",
-      "stats": {
-        "area": "Area (m²)",
-        "children": "Number of Children",
-        "teachers": "Number of Teachers",
-        "programs": "Number of Programs"
-      }
-    },
-    "plans": {
-      "title": "Our Educational Programs",
-      "subtitle": "Discover our diverse educational programs designed specifically to develop your child's skills",
-      "selectBranch": "Select Branch",
-      "noPrograms": "No Programs Available",
-      "noProgramsMessage": "Programs will be added soon. Please check back later.",
-      "bookNow": "Book Now",
-      "ageRange": "Age Range",
-      "duration": "Duration",
-      "price": "Price"
     }
   },
 
@@ -1987,6 +2065,88 @@
       "download": "Now available on"
     }
   },
+  "nurseryDetails": {
+    "waitingPage": {
+      "parentTitle": "Something Beautiful is Coming!",
+      "parentSubtitle": "Beautiful things take time because they are made with love and care.",
+      "centerTitle": "We're Preparing Something Special!",
+      "centerSubtitle": "Outstanding profiles need time to be created with precision and expertise.",
+      "adminTitle": "We're Reviewing Carefully!",
+      "adminSubtitle": "We ensure high quality for all profiles displayed on the platform.",
+      "browseNurseries": "Browse Nurseries",
+      "completeProfile": "Complete Profile",
+      "goToDashboard": "Go to Dashboard",
+      "goToAdminDashboard": "Go to Admin Dashboard"
+    },
+    "goals": {
+      "title": "Our Goals"
+    },
+    "philosophy": {
+      "title": "Our Philosophy"
+    },
+    "methodology": {
+      "title": "Our Methodology"
+    },
+    "stats": {
+      "title": "Nursery Statistics",
+      "area": "Area (m²)",
+      "classrooms": "Classrooms",
+      "teamMembers": "Team Members"
+    },
+    "team": {
+      "title": "Our Team"
+    },
+    "services": {
+      "title": "Our Services"
+    },
+    "programs": {
+      "title": "Our Programs",
+      "currency": "SAR",
+      "bookNow": "Book Now",
+      "noResults": "No programs found matching your filters",
+      "filters": {
+        "childAge": "Child's Age",
+        "branch": "Branch",
+        "programType": "Program Type",
+        "all": "All"
+      }
+    },
+    "contact": {
+      "title": "Contact Information",
+      "info": "Contact Information",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "workingHours": "Working Hours",
+      "social": "Social Media"
+    },
+    "branches": {
+      "title": "Nursery Branches",
+      "qassim": "Qassim",
+      "gharnata": "Gharnata",
+      "madina": "Madinah",
+      "makkah": "Makkah",
+      "riyadh": "Riyadh",
+      "cta": "Book Now",
+      "stats": {
+        "area": "Area (m²)",
+        "children": "Number of Children",
+        "teachers": "Number of Teachers",
+        "programs": "Number of Programs"
+      }
+    },
+    "plans": {
+      "title": "Our Educational Programs",
+      "subtitle": "Discover our diverse educational programs designed specifically to develop your child's skills",
+      "selectBranch": "Select Branch",
+      "noPrograms": "No Programs Available",
+      "noProgramsMessage": "Programs will be added soon. Please check back later.",
+      "bookNow": "Book Now",
+      "ageRange": "Age Range",
+      "duration": "Duration",
+      "price": "Price"
+    }
+  },
   "chat": {
     "sidebar": {
       "title": "Messages",
@@ -2024,166 +2184,6 @@
     "status": {
       "online": "Online",
       "offline": "Offline"
-    }
-  },
-  "profileEditor": {
-    "title": "Profile Editor",
-    "modes": {
-      "edit": "Edit",
-      "preview": "Preview"
-    },
-    "loading": "Loading portfolio data...",
-    "loadError": "Failed to load portfolio data",
-    "savePortfolio": "Save Portfolio",
-    "saving": "Saving...",
-    "saveSuccess": "Portfolio saved successfully!",
-    "saveError": "Failed to save portfolio",
-    "sections": {
-      "hero": "Hero Section",
-      "branches": "Branches",
-      "philosophy": "Philosophy & Goals",
-      "services": "Services",
-      "nurseryState": "Nursery State",
-      "activities": "Activities",
-      "contact": "Contact Information",
-      "ads": "Advertisement Images",
-      "teams": "Team Members",
-      "plans": "Plans & Pricing"
-    },
-    "hero": {
-      "title": "Title",
-      "titlePlaceholder": "Enter hero title",
-      "subtitle": "Subtitle",
-      "subtitlePlaceholder": "Enter hero subtitle",
-      "description": "Description",
-      "descriptionPlaceholder": "Enter hero description",
-
-      "ctaTextPlaceholder": "Enter CTA text",
-      "ctaLink": "Call to Action Link",
-      "ctaLinkPlaceholder": "Enter CTA link",
-      "backgroundImage": "Background Image"
-    },
-    "branches": {
-      "sectionTitle": "Section Title",
-      "sectionTitlePlaceholder": "Enter branches section title",
-      "branchesTitle": "Branches",
-      "branchNamePlaceholder": "Enter branch name",
-      "noBranches": "No branches added yet"
-    },
-    "philosophy": {
-      "philosophy": "Philosophy",
-      "philosophyTitle": "Philosophy Title",
-      "philosophyTitlePlaceholder": "Enter philosophy title",
-      "philosophyContent": "Philosophy Content",
-      "philosophyContentPlaceholder": "Enter philosophy content",
-      "methodology": "Methodology",
-      "methodologyTitle": "Methodology Title",
-      "methodologyTitlePlaceholder": "Enter methodology title",
-      "methodologyContent": "Methodology Content",
-      "methodologyContentPlaceholder": "Enter methodology content",
-      "goals": "Goals",
-
-      "goalTitle": "Goal Title",
-      "goalTitlePlaceholder": "Enter goal title",
-      "goalContent": "Goal Content",
-      "goalContentPlaceholder": "Enter goal content"
-    },
-    "services": {
-      "sectionTitle": "Section Title",
-      "sectionTitlePlaceholder": "Enter services section title",
-      "services": "Services",
-      "addService": "Add Service",
-      "noServices": "No services added yet",
-      "service": "Service",
-      "serviceTitle": "Service Title",
-      "serviceTitlePlaceholder": "Enter service title",
-      "serviceDescription": "Service Description",
-      "serviceDescriptionPlaceholder": "Enter service description",
-      "serviceImage": "Service Image"
-    },
-    "nurseryState": {
-      "title": "Nursery State",
-      "area": "Area",
-      "areaPlaceholder": "Enter area size",
-      "classRooms": "Class Rooms",
-      "classRoomsPlaceholder": "Enter number of class rooms",
-      "teamMembers": "Team Members",
-      "teamMembersPlaceholder": "Enter number of team members"
-    },
-    "activities": {
-      "sectionTitle": "Section Title",
-      "sectionTitlePlaceholder": "Enter activities section title",
-      "sectionSubtitle": "Section Subtitle",
-      "sectionSubtitlePlaceholder": "Enter activities section subtitle",
-      "activityImages": "Activity Images",
-      "addImage": "Add Image",
-      "noImages": "No images added yet"
-    },
-    "contact": {
-      "title": "Contact Information",
-      "address": "Address",
-      "addressPlaceholder": "Enter nursery address",
-      "workingHours": "Working Hours",
-      "workingHoursPlaceholder": "Enter working hours",
-      "phoneNumber": "Phone Number",
-      "phoneNumberPlaceholder": "Enter phone number",
-      "emailAddress": "Email Address",
-      "emailAddressPlaceholder": "Enter email address",
-      "socialMedia": "Social Media",
-      "facebook": "Facebook",
-      "facebookPlaceholder": "Enter Facebook URL",
-      "instagram": "Instagram",
-      "instagramPlaceholder": "Enter Instagram URL",
-      "whatsapp": "WhatsApp",
-      "whatsappPlaceholder": "Enter WhatsApp number"
-    },
-    "ads": {
-      "title": "Advertisement Images",
-      "addImage": "Add Image",
-      "noImages": "No advertisement images added yet"
-    },
-    "teams": {
-      "title": "Team Members",
-      "addTeamMember": "Add Team Member",
-      "noTeamMembers": "No team members added yet",
-      "teamMember": "Team Member",
-      "memberName": "Member Name",
-      "memberNamePlaceholder": "Enter member name",
-      "memberMission": "Member Mission",
-      "memberMissionPlaceholder": "Enter member mission",
-      "memberImage": "Member Image"
-    },
-    "plans": {
-      "title": "Plans & Pricing",
-      "loading": "Loading...",
-      "selectBranch": "Select Branch",
-      "selectBranchPlaceholder": "Choose a branch",
-      "plans": "Plans",
-      "addPlan": "Add Plan",
-      "editPlan": "Edit Plan",
-      "noPlansYet": "No Plans Yet",
-      "ageRange": "Age: {start} - {end} years",
-      "price": "Price",
-      "priceAmount": "Price: ${amount}",
-      "enrollmentType": "Enrollment Type",
-      "selectEnrollmentType": "Select enrollment type",
-      "month": "Month",
-      "week": "Week",
-      "day": "Day",
-      "planTitle": "Plan Title",
-      "planTitlePlaceholder": "Enter plan title",
-      "startAge": "Start Age",
-      "endAge": "End Age",
-      "count": "Count",
-      "branches": "Branches",
-      "selectBranchesPlaceholder": "Select branches...",
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "planSaved": "Plan saved successfully!",
-      "planSaveError": "Failed to save plan",
-      "planDeleted": "Plan deleted successfully!",
-      "planDeleteError": "Failed to delete plan"
     }
   }
 }

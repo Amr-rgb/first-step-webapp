@@ -1564,162 +1564,6 @@
         }
       }
     },
-    "profileEditor": {
-      "title": "محرر ملف الحضانة الشخصي",
-      "subtitle": "إنشاء وتخصيص صفحة ملف الحضانة الشخصي",
-      "editMode": "وضع التحرير",
-      "previewMode": "وضع المعاينة",
-      "save": "حفظ التغييرات",
-      "saving": "جاري الحفظ...",
-      "saveSuccess": "تم تحديث الملف الشخصي بنجاح!",
-      "saveError": "فشل في حفظ الملف الشخصي. يرجى المحاولة مرة أخرى.",
-      "reminder": {
-        "title": "أكمل ملف الحضانة الشخصي",
-        "description": "أضف أقسام لعرض قصة الحضانة وخدماتها وفريق العمل. سيساعد هذا أولياء الأمور على معرفة المزيد عن ما يجعل حضانتك مميزة."
-      },
-      "sections": {
-        "hero": {
-          "name": "قسم الترحيب",
-          "title": "اسم الحضانة",
-          "subtitle": "الشعار",
-          "description": "الوصف",
-          "backgroundImage": "صورة الخلفية",
-          "ctaText": "زر الدعوة للعمل"
-        },
-        "branches": {
-          "name": "الفروع",
-          "title": "فروعنا",
-          "branchName": "اسم الفرع"
-        },
-        "philosophy": {
-          "name": "الفلسفة والمنهجية والهدف",
-          "philosophyTitle": "فلسفتنا",
-          "philosophy": "محتوى الفلسفة",
-          "methodologyTitle": "منهجيتنا",
-          "methodology": "محتوى المنهجية",
-          "goalTitle": "هدفنا",
-          "goal": "محتوى الهدف"
-        },
-        "plans": {
-          "name": "البرامج",
-          "title": "البرامج",
-          "educationalPrograms": "البرامج التعليمية",
-          "addProgram": "إضافة برنامج",
-          "program": "البرنامج",
-          "branch": "الفرع",
-          "selectBranch": "اختر الفرع",
-          "loadingBranches": "جاري التحميل...",
-          "programName": "اسم البرنامج",
-          "programNamePlaceholder": "مثال: برنامج اللغة الإنجليزية المبكرة",
-          "ageGroup": "الفئة العمرية",
-          "selectAgeGroup": "اختر الفئة العمرية",
-          "setAgeRangeManually": "تحديد الفئة العمرية يدوياً:",
-          "fromAge": "من سن:",
-          "toAge": "إلى سن:",
-          "programType": "نوع البرنامج",
-          "selectProgramType": "اختر نوع البرنامج",
-          "durationWeeks": "مدة البرنامج (أسابيع)",
-          "sessionsPerWeek": "الجلسات في الأسبوع",
-          "maxStudents": "الحد الأقصى للطلاب",
-          "description": "وصف البرنامج",
-          "descriptionPlaceholder": "وصف مختصر للبرنامج وأهدافه...",
-          "monthlyPrice": "السعر الشهري (ريال)",
-          "programTypes": {
-            "academic": "أكاديمي",
-            "creative": "إبداعي",
-            "sports": "رياضي",
-            "language": "لغوي",
-            "music": "موسيقي",
-            "art": "فني"
-          },
-          "ageGroups": {
-            "0-1": "0-1 سنة",
-            "1-2": "1-2 سنة",
-            "2-3": "2-3 سنة",
-            "3-4": "3-4 سنة",
-            "4-5": "4-5 سنة",
-            "5-6": "5-6 سنة",
-            "fromAge": "بداية من سن...",
-            "toAge": "إلى سن..."
-          }
-        },
-        "services": {
-          "name": "الخدمات",
-          "title": "عنوان القسم",
-          "services": "الخدمات",
-          "addService": "إضافة خدمة",
-          "service": "الخدمة",
-          "serviceTitle": "عنوان الخدمة",
-          "serviceDescription": "وصف الخدمة",
-          "serviceImage": "صورة الخدمة"
-        },
-        "stats": {
-          "name": "إحصائيات الحضانة",
-          "area": "المساحة (متر مربع)",
-          "classrooms": "الفصول الدراسية",
-          "teamMembers": "أعضاء الفريق"
-        },
-        "activities": {
-          "name": "الأنشطة",
-          "title": "عنوان القسم",
-          "subtitle": "العنوان الفرعي",
-          "activityImages": "صور الأنشطة",
-          "addImage": "إضافة صورة",
-          "activityImage": "صورة النشاط",
-          "caption": "التعليق (اختياري)"
-        },
-        "team": {
-          "name": "فريق العمل",
-          "title": "عنوان القسم",
-          "members": "أعضاء الفريق",
-          "addMember": "إضافة عضو",
-          "member": "عضو الفريق",
-          "fullName": "الاسم الكامل",
-          "role": "الدور/المنصب",
-          "profileImage": "صورة الملف الشخصي",
-          "bio": "السيرة الذاتية (اختياري)"
-        },
-        "contact": {
-          "name": "معلومات الاتصال",
-          "address": "العنوان",
-          "workingHours": "ساعات العمل",
-          "phoneNumber": "رقم الهاتف",
-          "emailAddress": "عنوان البريد الإلكتروني"
-        }
-      },
-      "common": {
-        "enable": "تفعيل",
-        "enabled": "مفعل",
-        "delete": "حذف",
-        "remove": "إزالة",
-        "changeImage": "تغيير الصورة",
-        "removeImage": "إزالة الصورة",
-        "uploadImage": "انقر لرفع صورة",
-        "uploading": "جاري الرفع...",
-        "imageFormats": "PNG, JPG, JPEG حتى 5 ميجابايت",
-        "moreSections": "المزيد من الأقسام قريباً!",
-        "moreSectionsDescription": "نحن نعمل على إضافة المزيد من الأقسام القابلة للتخصيص لمساعدتك في إنشاء ملف الحضانة المثالي.",
-        "previewHeader": "✨ معاينة مباشرة - هكذا سيظهر ملف الحضانة للزوار",
-        "previewSubtitle": "التغييرات التي تمت في وضع التحرير ستظهر هنا فوراً",
-        "emptyProfile": {
-          "title": "ملف الحضانة الشخصي",
-          "comingSoon": "قريباً!",
-          "description": "ملف الحضانة الشخصي لا يزال قيد الإنشاء. ابدأ بإضافة أقسام من المحرر لعرض قصة الحضانة وخدماتها وفريق العمل والمزيد لإنشاء انطباع أول رائع لأولياء الأمور.",
-          "addSections": {
-            "title": "إضافة أقسام",
-            "description": "تفعيل الأقسام لرواية قصتك"
-          },
-          "customizeContent": {
-            "title": "تخصيص المحتوى",
-            "description": "أضف معلوماتك الفريدة"
-          },
-          "previewChanges": {
-            "title": "معاينة التغييرات",
-            "description": "شاهد كيف تبدو فوراً"
-          }
-        }
-      }
-    },
     "tables": {
       "shared": {
         "status": {
@@ -1876,6 +1720,166 @@
         }
       },
       "noResults": "لا توجد نتائج."
+    },
+    "profileEditor": {
+      "title": "محرر الملف الشخصي",
+      "modes": {
+        "edit": "تعديل",
+        "preview": "معاينة"
+      },
+      "loading": "جارٍ تحميل بيانات الملف...",
+      "loadError": "فشل في تحميل بيانات الملف",
+      "savePortfolio": "حفظ الملف",
+      "saving": "جارٍ الحفظ...",
+      "saveSuccess": "تم حفظ الملف بنجاح!",
+      "saveError": "فشل في حفظ الملف",
+      "sections": {
+        "hero": "قسم البطل",
+        "branches": "الفروع",
+        "philosophy": "الفلسفة والأهداف",
+        "services": "الخدمات",
+        "nurseryState": "حالة الحضانة",
+        "activities": "الأنشطة",
+        "contact": "معلومات التواصل",
+        "ads": "صور الإعلانات",
+        "teams": "أعضاء الفريق",
+        "plans": "الخطط والأسعار"
+      },
+      "hero": {
+        "title": "العنوان",
+        "titlePlaceholder": "أدخل عنوان القسم",
+        "subtitle": "العنوان الفرعي",
+        "subtitlePlaceholder": "أدخل العنوان الفرعي",
+        "description": "الوصف",
+        "descriptionPlaceholder": "أدخل الوصف",
+
+        "ctaTextPlaceholder": "أدخل نص الدعوة للإجراء",
+        "ctaLink": "رابط الدعوة للإجراء",
+        "ctaLinkPlaceholder": "أدخل رابط الدعوة",
+        "backgroundImage": "صورة الخلفية"
+      },
+      "branches": {
+        "sectionTitle": "عنوان القسم",
+        "sectionTitlePlaceholder": "أدخل عنوان قسم الفروع",
+        "branchesTitle": "الفروع",
+        "branchNamePlaceholder": "أدخل اسم الفرع",
+        "noBranches": "لم تتم إضافة أي فروع بعد"
+      },
+      "philosophy": {
+        "philosophy": "الفلسفة",
+        "philosophyTitle": "عنوان الفلسفة",
+        "philosophyTitlePlaceholder": "أدخل عنوان الفلسفة",
+        "philosophyContent": "محتوى الفلسفة",
+        "philosophyContentPlaceholder": "أدخل محتوى الفلسفة",
+        "methodology": "المنهجية",
+        "methodologyTitle": "عنوان المنهجية",
+        "methodologyTitlePlaceholder": "أدخل عنوان المنهجية",
+        "methodologyContent": "محتوى المنهجية",
+        "methodologyContentPlaceholder": "أدخل محتوى المنهجية",
+        "goals": "الأهداف",
+
+        "goalTitle": "عنوان الهدف",
+        "goalTitlePlaceholder": "أدخل عنوان الهدف",
+        "goalContent": "محتوى الهدف",
+        "goalContentPlaceholder": "أدخل محتوى الهدف"
+      },
+      "services": {
+        "sectionTitle": "عنوان القسم",
+        "sectionTitlePlaceholder": "أدخل عنوان قسم الخدمات",
+        "services": "الخدمات",
+        "addService": "إضافة خدمة",
+        "noServices": "لم تتم إضافة أي خدمات بعد",
+        "service": "الخدمة",
+        "serviceTitle": "عنوان الخدمة",
+        "serviceTitlePlaceholder": "أدخل عنوان الخدمة",
+        "serviceDescription": "وصف الخدمة",
+        "serviceDescriptionPlaceholder": "أدخل وصف الخدمة",
+        "serviceImage": "صورة الخدمة"
+      },
+      "nurseryState": {
+        "title": "حالة الحضانة",
+        "area": "المساحة",
+        "areaPlaceholder": "أدخل مساحة الحضانة",
+        "classRooms": "الفصول الدراسية",
+        "classRoomsPlaceholder": "أدخل عدد الفصول",
+        "teamMembers": "أعضاء الفريق",
+        "teamMembersPlaceholder": "أدخل عدد أعضاء الفريق"
+      },
+      "activities": {
+        "sectionTitle": "عنوان القسم",
+        "sectionTitlePlaceholder": "أدخل عنوان قسم الأنشطة",
+        "sectionSubtitle": "العنوان الفرعي للقسم",
+        "sectionSubtitlePlaceholder": "أدخل العنوان الفرعي للأنشطة",
+        "activityImages": "صور الأنشطة",
+        "addImage": "إضافة صورة",
+        "noImages": "لم تتم إضافة أي صور بعد"
+      },
+      "contact": {
+        "title": "معلومات التواصل",
+        "address": "العنوان",
+        "addressPlaceholder": "أدخل عنوان الحضانة",
+        "workingHours": "ساعات العمل",
+        "workingHoursPlaceholder": "أدخل ساعات العمل",
+        "phoneNumber": "رقم الهاتف",
+        "phoneNumberPlaceholder": "أدخل رقم الهاتف",
+        "emailAddress": "البريد الإلكتروني",
+        "emailAddressPlaceholder": "أدخل البريد الإلكتروني",
+        "socialMedia": "وسائل التواصل الاجتماعي",
+        "facebook": "فيسبوك",
+        "facebookPlaceholder": "أدخل رابط فيسبوك",
+        "instagram": "إنستغرام",
+        "instagramPlaceholder": "أدخل رابط إنستغرام",
+        "whatsapp": "واتساب",
+        "whatsappPlaceholder": "أدخل رقم واتساب"
+      },
+      "ads": {
+        "title": "صور الإعلانات",
+        "addImage": "إضافة صورة",
+        "noImages": "لم تتم إضافة أي صور إعلانية بعد"
+      },
+      "teams": {
+        "title": "أعضاء الفريق",
+        "addTeamMember": "إضافة عضو فريق",
+        "noTeamMembers": "لم تتم إضافة أي أعضاء بعد",
+        "teamMember": "عضو الفريق",
+        "memberName": "اسم العضو",
+        "memberNamePlaceholder": "أدخل اسم العضو",
+        "memberMission": "مهمة العضو",
+        "memberMissionPlaceholder": "أدخل مهمة العضو",
+        "memberImage": "صورة العضو"
+      },
+      "plans": {
+        "title": "الخطط والأسعار",
+        "loading": "جارٍ التحميل...",
+        "selectBranch": "اختر الفرع",
+        "selectBranchPlaceholder": "اختر فرعاً",
+        "plans": "الخطط",
+        "addPlan": "إضافة خطة",
+        "editPlan": "تعديل الخطة",
+        "noPlansYet": "لا توجد خطط بعد",
+        "ageRange": "العمر: {start} - {end} سنوات",
+        "price": "السعر",
+        "priceAmount": "السعر: ${amount}",
+        "enrollmentType": "نوع الاشتراك",
+        "selectEnrollmentType": "اختر نوع الاشتراك",
+        "month": "شهر",
+        "week": "أسبوع",
+        "day": "يوم",
+        "planTitle": "عنوان الخطة",
+        "planTitlePlaceholder": "أدخل عنوان الخطة",
+        "startAge": "العمر الابتدائي",
+        "endAge": "العمر النهائي",
+        "count": "العدد",
+        "branches": "الفروع",
+        "selectBranchesPlaceholder": "اختر الفروع...",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "saving": "جارٍ الحفظ...",
+        "planSaved": "تم حفظ الخطة بنجاح!",
+        "planSaveError": "فشل في حفظ الخطة",
+        "planDeleted": "تم حذف الخطة بنجاح!",
+        "planDeleteError": "فشل في حذف الخطة"
+      }
     },
     "children": {
       "search": {
@@ -2060,118 +2064,26 @@
     }
   },
   "nurseryDetails": {
-    "slogan": "هنا آخذ أولى خطواتي",
-    "contact": {
-      "title": "معلومات التواصل",
-      "ownerName": "حويدة نبيل جزاز",
-      "ownerRole": "مالكة المدرسة",
-      "nurseryName": "حضانة عالم التعلم للأطفال",
-      "mobile": "جوال: +966543407777",
-      "phone": "هاتف: +966122886631",
-      "address": "المملكة العربية السعودية - جدة 23423 - حي الخالدية – شارع بحور الشعراء"
-    },
-    "header": {
-      "sloganFallback": "هنا هيكون الشعار بتاع الحضانة أو أي جملة",
-      "description": "نوفر للآباء تقارير يومية تفصيلية عن أداء أطفالهم داخل الحضانة، تشمل مستوى التفاعل، الأنشطة التي شاركوا فيها",
-      "cta": "احجز لطفلك الآن"
-    },
-    "programs": {
-      "title": "برامجنا",
-      "junior": {
-        "monthly": {
-          "title": "البرنامج الشهري",
-          "price": "1,980",
-          "features": [
-            "اشتراك شهري يشمل كافة الأنشطة والبرامج التعليمية والترفيهية.",
-            "وجبات غذائية صحية يومية.",
-            "تقارير متابعة دورية لأداء الطفل.",
-            "إشراف معلمات متخصصات وذوات خبرة.",
-            "إمكانية التواصل مع الإدارة والمعلمات في أي وقت."
-          ],
-          "buttonText": "احجز الآن"
-        },
-        "daily": {
-          "title": "البرنامج اليومي",
-          "price": "115",
-          "features": [
-            "اشتراك يومي مرن حسب الحاجة.",
-            "الاستفادة من جميع الأنشطة في اليوم الواحد.",
-            "وجبة غذائية صحية.",
-            "تقرير يومي عن الطفل.",
-            "إشراف معلمات متخصصات."
-          ],
-          "buttonText": "احجز الآن"
-        },
-        "hourly": {
-          "title": "البرنامج المرن بالساعة",
-          "price": "110",
-          "features": [
-            "اشتراك بالساعة حسب رغبة ولي الأمر.",
-            "الاستفادة من الأنشطة المتاحة خلال الساعة.",
-            "إشراف معلمات متخصصات.",
-            "مرونة في الحضور والانصراف.",
-            "تقرير مختصر عن الطفل."
-          ],
-          "buttonText": "احجز الآن"
-        }
-      }
-    },
-    "services": {
-      "creativeChild": {
-        "title": "المبدع الصغير",
-        "desc": "العمل الفني يساعد الطفل على تعزيز المهارات الحركية الدقيقة والتواصل الاجتماعي والثقة بالنفس وحرية التعبير عن الذات ويعطي له الفرصة للإبداع والاستكشاف."
-      },
-      "playground": {
-        "title": "اللعب في الساحة الخارجية / الداخلية",
-        "desc": "وقت ممتع للأطفال للانطلاق واللعب واحترام دور الغير تحت إشراف معلمتهم."
-      },
-      "unit": {
-        "title": "الوحدة",
-        "desc": "حصة جميلة فيها يتعرف الطفل على العالم بمنظور مبسط."
-      },
-      "montessori": {
-        "title": "منتسوري وتنمية مهارات",
-        "desc": "التعلم باللعب مع الأخذ في الاعتبار النمو النفسي الطبيعي للطفل من خلال استخدام طرق مبسطة للتعليم التي تحرك وتنمي حواس الطفل بهدف مساعدة الأطفال على تطوير مهارة التركيز والاعتماد على النفس وتقوية عضلات اليد وزيادة الثقة بالنفس."
-      }
-    },
-    "activities": {
-      "title": "نشاطات الحضانة",
-      "description": "رياضة - تعليم - ترفيه - سينما - تجارب علمية - حضانة - استضافة بعد المدرسة",
-      "activity1": "نشاط 1",
-      "activity2": "نشاط 2",
-      "activity3": "نشاط 3",
-      "activity4": "نشاط 4",
-      "activity5": "نشاط 5"
-    },
-    "philosophy": {
-      "title": "فلسفتنا",
-      "text": "نوفر للأباء تقارير يومية تفصيلية عن أداء أطفالهم داخل الحضانة، تتضمن مستوى التفاعل، النشاطات التي شاركوا فيها، وملاحظات عن مهاراتهم المختلفة. هذه التقارير تعزز التواصل بين العائلات والمعلمات، مما يساعد على متابعة نمو الطفل ودعمه بشكل أفضل.",
-      "junior": "نؤمن بأن كل طفل فريد ويستحق بيئة تعليمية آمنة ومحفزة تساعده على النمو والتطور."
-    },
-    "methodology": {
-      "title": "منهجيتنا",
-      "text": "نستخدم أحدث الأساليب التربوية والتعليمية المعتمدة عالميًا، مع التركيز على التعلم من خلال اللعب والتجربة العملية.",
-      "junior": "منهجنا يدمج بين التعليم الأكاديمي وتنمية المهارات الحياتية والاجتماعية."
-    },
-    "goal": {
-      "title": "هدفنا",
-      "text": "نسعى لتوفير بيئة آمنة ومحفزة تُمكن الأطفال من اكتشاف قدراتهم وتطوير مهاراتهم.",
-      "junior": "هدفنا أن نكون الشريك الأول للأهل في رحلة نمو وتطور أطفالهم."
-    },
     "waitingPage": {
-      "parentTitle": "نحضر لك شيء جميل انتظرنا!",
-      "parentSubtitle": "الأشياء الجميلة تحتاج وقت لإنها تصنع بحب ورعاية",
-      "centerTitle": "نحضر لك ملفاً مميزاً",
-      "centerSubtitle": "الملفات المميزة تحتاج وقتاً لإنشائها بعناية وإتقان",
-      "adminTitle": "نراجع ملف الحضانة بعناية",
-      "adminSubtitle": "نضمن جودة عالية لجميع الملفات المعروضة على المنصة",
+      "parentTitle": "شيء جميل قادم!",
+      "parentSubtitle": "الأشياء الجميلة تحتاج وقتاً لأنها تُصنع بالحب والعناية.",
+      "centerTitle": "نحن نحضّر شيئاً مميزاً!",
+      "centerSubtitle": "الملفات المميزة تحتاج وقتاً لتُنشأ بدقة وخبرة.",
+      "adminTitle": "نحن نراجع بعناية!",
+      "adminSubtitle": "نضمن أعلى جودة لجميع الملفات المعروضة على المنصة.",
       "browseNurseries": "تصفح الحضانات",
-      "completeProfile": "إكمال الملف",
-      "goToDashboard": "الذهاب إلى لوحة التحكم",
-      "goToAdminDashboard": "الذهاب إلى لوحة الإدارة"
+      "completeProfile": "أكمل الملف الشخصي",
+      "goToDashboard": "الانتقال إلى لوحة التحكم",
+      "goToAdminDashboard": "الانتقال إلى لوحة تحكم المدير"
     },
     "goals": {
       "title": "أهدافنا"
+    },
+    "philosophy": {
+      "title": "فلسفتنا"
+    },
+    "methodology": {
+      "title": "منهجيتنا"
     },
     "stats": {
       "title": "إحصائيات الحضانة",
@@ -2182,6 +2094,21 @@
     "team": {
       "title": "فريقنا"
     },
+    "services": {
+      "title": "خدماتنا"
+    },
+    "programs": {
+      "title": "برامجنا",
+      "currency": "ريال سعودي",
+      "bookNow": "احجز الآن",
+      "noResults": "لا توجد برامج مطابقة لخيارات التصفية",
+      "filters": {
+        "childAge": "عمر الطفل",
+        "branch": "الفرع",
+        "programType": "نوع البرنامج",
+        "all": "الكل"
+      }
+    },
     "contact": {
       "title": "معلومات التواصل",
       "info": "معلومات التواصل",
@@ -2191,12 +2118,27 @@
       "workingHours": "ساعات العمل",
       "social": "وسائل التواصل الاجتماعي"
     },
+    "branches": {
+      "title": "فروع الحضانة",
+      "qassim": "القصيم",
+      "gharnata": "غرناطة",
+      "madina": "المدينة المنورة",
+      "makkah": "مكة المكرمة",
+      "riyadh": "الرياض",
+      "cta": "احجز الآن",
+      "stats": {
+        "area": "المساحة (م²)",
+        "children": "عدد الأطفال",
+        "teachers": "عدد المعلمين",
+        "programs": "عدد البرامج"
+      }
+    },
     "plans": {
       "title": "برامجنا التعليمية",
       "subtitle": "اكتشف برامجنا التعليمية المتنوعة المصممة خصيصاً لتنمية مهارات طفلك",
       "selectBranch": "اختر الفرع",
-      "noPrograms": "لا توجد برامج متاحة حالياً",
-      "noProgramsMessage": "سيتم إضافة البرامج قريباً. تحقق من الفرع لاحقاً.",
+      "noPrograms": "لا توجد برامج متاحة",
+      "noProgramsMessage": "سيتم إضافة البرامج قريباً. يرجى التحقق لاحقاً.",
       "bookNow": "احجز الآن",
       "ageRange": "الفئة العمرية",
       "duration": "المدة",

@@ -15,7 +15,7 @@ export const NurseryStateSection = ({
   data,
   onChange,
 }: NurseryStateSectionProps) => {
-  const t = useTranslations("profileEditor.nurseryState");
+  const t = useTranslations("dashboard.profileEditor.nurseryState");
 
   const handleChange = (
     field: keyof PortfolioFormData["nursery_state"],

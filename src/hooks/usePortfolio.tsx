@@ -86,7 +86,7 @@ const transformApiData = (apiData: any): PortfolioFormData => {
 
 export const usePortfolio = () => {
   const queryClient = useQueryClient();
-  const t = useTranslations("profileEditor");
+  const t = useTranslations("dashboard.profileEditor");
 
   // Query for portfolio data
   const portfolioQuery = useQuery({

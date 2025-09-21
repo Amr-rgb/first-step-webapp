@@ -27,7 +27,7 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { Edit, Eye } from "lucide-react";
 
 const ProfileEditor = () => {
-  const t = useTranslations("profileEditor");
+  const t = useTranslations("dashboard.profileEditor");
   const params = useParams();
   const locale = params.locale as string;
   const [activeSection, setActiveSection] = useState<string>("hero");

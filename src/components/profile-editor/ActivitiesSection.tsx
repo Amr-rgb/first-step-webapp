@@ -15,7 +15,7 @@ export const ActivitiesSection = ({
   data,
   onChange,
 }: ActivitiesSectionProps) => {
-  const t = useTranslations("profileEditor.activities");
+  const t = useTranslations("dashboard.profileEditor.activities");
 
   const handleTitleChange = (value: string) => {
     onChange({

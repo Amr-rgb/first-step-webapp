@@ -16,7 +16,7 @@ export const PhilosophySection = ({
   data,
   onChange,
 }: PhilosophySectionProps) => {
-  const t = useTranslations("profileEditor.philosophy");
+  const t = useTranslations("dashboard.profileEditor.philosophy");
 
   const handleChange = (
     field: keyof PortfolioFormData["Philosophy_Methodology_Goal"],

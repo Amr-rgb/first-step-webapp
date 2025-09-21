@@ -11,7 +11,7 @@ interface AdsSectionProps {
 }
 
 export const AdsSection = ({ data, onChange }: AdsSectionProps) => {
-  const t = useTranslations("profileEditor.ads");
+  const t = useTranslations("dashboard.profileEditor.ads");
 
   return (
     <div className="border border-border rounded-lg p-4 sm:p-6 bg-card">

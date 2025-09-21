@@ -13,7 +13,7 @@ interface HeroSectionProps {
 }
 
 export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
-  const t = useTranslations("profileEditor.hero");
+  const t = useTranslations("dashboard.profileEditor.hero");
 
   const handleChange = (field: string, value: string | File) => {
     if (!data) return;

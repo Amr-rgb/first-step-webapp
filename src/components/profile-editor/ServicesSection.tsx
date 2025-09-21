@@ -16,7 +16,7 @@ interface ServicesSectionProps {
 }
 
 export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
-  const t = useTranslations("profileEditor.services");
+  const t = useTranslations("dashboard.profileEditor.services");
 
   const handleSectionTitleChange = (value: string) => {
     onChange({
