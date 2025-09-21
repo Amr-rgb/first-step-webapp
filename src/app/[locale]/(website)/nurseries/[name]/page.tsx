@@ -55,7 +55,7 @@ export default async function NurseryPage({
 
       {/* 2. Branches Section */}
       {portfolio.branches && portfolio.branches.length > 0 && (
-        <Branches locale={locale} nurseryName={readableName} />
+        <Branches branches={portfolio.branches} />
       )}
 
       {/* 3. Advertisement Section */}
@@ -77,11 +77,7 @@ export default async function NurseryPage({
       )}
 
       {/* 5. Plans Section */}
-      <Plans
-        nurseryName={readableName}
-        locale={locale}
-        portfolioData={portfolio}
-      />
+      <Plans nurseryName={readableName} locale={locale} />
 
       {/* 6. Programs Section */}
       <Programs programs={[]} nurseryName={readableName} locale={locale} />
