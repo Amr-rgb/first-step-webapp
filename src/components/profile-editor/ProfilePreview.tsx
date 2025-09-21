@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { PortfolioFormData } from "@/types";
+import { PortfolioData } from "@/types";
 import Advertisment from "@/components/general/Advertisment";
 import Branches from "@/components/general/nurseries/Branches";
 import Header from "@/components/general/nurseries/Header";
@@ -14,7 +14,7 @@ import Stats from "@/components/general/nurseries/sections/Stats";
 import Team from "@/components/general/nurseries/sections/Team";
 
 interface ProfilePreviewProps {
-  data: PortfolioFormData;
+  data: PortfolioData;
   locale: string;
   nurseryName: string;
 }
@@ -62,7 +62,7 @@ export const ProfilePreview = ({
       )}
 
       {/* 5. Plans Section */}
-      <Plans nurseryName={nurseryName} locale={locale} portfolioData={data} />
+      <Plans nurseryName={nurseryName} locale={locale} />
 
       {/* 6. Programs Section */}
       <Programs programs={[]} nurseryName={nurseryName} locale={locale} />

@@ -22,7 +22,7 @@ import { AdsSection } from "@/components/profile-editor/AdsSection";
 import { TeamsSection } from "@/components/profile-editor/TeamsSection";
 import { PlansSection } from "@/components/profile-editor/PlansSection";
 import { ProfilePreview } from "@/components/profile-editor/ProfilePreview";
-import { PortfolioFormData } from "@/types";
+import { PortfolioData, PortfolioFormData } from "@/types";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { Edit, Eye } from "lucide-react";
 
@@ -235,7 +235,7 @@ const ProfileEditor = () => {
             <div className="border rounded-lg overflow-hidden">
               {currentData && (
                 <ProfilePreview
-                  data={currentData}
+                  data={currentData as PortfolioData}
                   locale={locale}
                   nurseryName="Preview Nursery"
                 />
