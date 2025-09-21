@@ -934,7 +934,7 @@ export const nurseryService = {
   getBranchPricing: async (branchId: string): Promise<any[]> => {
     try {
       const response = await apiClient.get(`/branches-pricies/${branchId}`);
-      return response.data || [];
+      return response.data.data || [];
     } catch (error) {
       console.error("Error fetching branch pricing:", error);
       return [];

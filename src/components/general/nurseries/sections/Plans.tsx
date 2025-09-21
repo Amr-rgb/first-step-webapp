@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -28,19 +28,27 @@ interface Plan {
 interface PlansProps {
   nurseryName: string;
   locale: string;
-  portfolioData?: {
-    branches?: Array<{
-      branch_name: string;
-    }>;
-  };
 }
 
-const Plans = ({ nurseryName, locale, portfolioData }: PlansProps) => {
+const Plans = ({ nurseryName, locale }: PlansProps) => {
   const t = useTranslations("nurseryDetails");
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
+  const [selectedBranch, setSelectedBranch] = useState<null | {
+    id: string;
+    name: string;
+  }>(null);
 
   // Use branches from portfolio data
-  const branches = portfolioData?.branches || [];
+  const {
+    data: branches = [],
+    isLoading: loadingBranches,
+    error: branchesError,
+  } = useQuery({
+    queryKey: ["branches", nurseryName],
+    queryFn: () => nurseryService.getBranchesByNursery(nurseryName),
+    enabled: !!nurseryName,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   // Fetch plans for selected branch using React Query
   const {
@@ -48,17 +56,18 @@ const Plans = ({ nurseryName, locale, portfolioData }: PlansProps) => {
     isLoading: loadingPlans,
     error: plansError,
   } = useQuery({
-    queryKey: ["branch-pricing", selectedBranch],
-    queryFn: () => nurseryService.getBranchPricing(selectedBranch),
+    queryKey: ["branch-pricing", selectedBranch?.id],
+    queryFn: () => nurseryService.getBranchPricing(selectedBranch?.id!),
     enabled: !!selectedBranch,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Auto-select first branch when branches are loaded
-  if (branches.length > 0 && !selectedBranch) {
-    setSelectedBranch(branches[0].branch_name);
-  }
+  useEffect(() => {
+    !selectedBranch &&
+      branches.length > 0 &&
+      setSelectedBranch({ id: branches[0].id, name: branches[0].name });
+  }, [branches]);
 
   const getEnrollmentTypeLabel = (type: string) => {
     switch (type) {
@@ -85,12 +94,12 @@ const Plans = ({ nurseryName, locale, portfolioData }: PlansProps) => {
     }`;
   };
 
-  const selectedBranchData = branches.find(
-    (branch) => branch.branch_name === selectedBranch
+  const selectedBranchData = branches?.find(
+    (branch) => branch.id === selectedBranch
   );
 
   // Don't render if no branches found
-  if (branches.length === 0) {
+  if (!branches || branches.length === 0) {
     return null;
   }
 
@@ -112,14 +121,22 @@ const Plans = ({ nurseryName, locale, portfolioData }: PlansProps) => {
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <MapPin className="w-5 h-5 text-blue-600" />
-              <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+              <Select
+                value={selectedBranch?.id}
+                onValueChange={(value) => {
+                  const branch = branches.find((b) => b.id === value);
+                  if (branch) {
+                    setSelectedBranch({ id: branch.id, name: branch.name });
+                  }
+                }}
+              >
                 <SelectTrigger className="w-64">
                   <SelectValue placeholder={t("plans.selectBranch")} />
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch, index: number) => (
-                    <SelectItem key={index} value={branch.branch_name}>
-                      {branch.branch_name}
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
                       {index === 0 && (
                         <span className="ml-2 text-xs text-blue-600">
                           {locale === "ar"
@@ -136,9 +153,7 @@ const Plans = ({ nurseryName, locale, portfolioData }: PlansProps) => {
 
           {selectedBranchData && (
             <div className="text-center mt-2">
-              <p className="text-sm text-gray-600">
-                {selectedBranchData.branch_name}
-              </p>
+              <p className="text-sm text-gray-600">{selectedBranchData.name}</p>
             </div>
           )}
         </div>
