@@ -208,7 +208,7 @@ const ProfileEditor = () => {
                       </AccordionTrigger>
                       <AccordionContent className="px-4 sm:px-6 py-4 sm:py-6 bg-muted/20">
                         <Component
-                          data={currentData}
+                          data={currentData!}
                           onChange={handleDataChange}
                         />
                       </AccordionContent>
