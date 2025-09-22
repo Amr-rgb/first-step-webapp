@@ -116,6 +116,19 @@ const Child = ({
   const hasAllergies = watch("allergies.hasAllergies");
   const authorizedPersons = methods.watch("authorizedPersons");
 
+  // In edit/show modes, ensure idNumber fields are strings to satisfy validation/UI
+  React.useEffect(() => {
+    if (mode !== "add") {
+      const current = methods.getValues("authorizedPersons") || [];
+      const normalized = current.map((p) => ({
+        ...p,
+        idNumber: p?.idNumber != null ? String(p.idNumber) : "",
+      }));
+      methods.reset({ ...methods.getValues(), authorizedPersons: normalized });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
+
   return (
     <FormProvider {...methods}>
       <form
@@ -615,7 +628,6 @@ const ChildPart = ({
             <FormItem>
               <Label>
                 <span className="text-base">صلة القرابة</span>
-                <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input

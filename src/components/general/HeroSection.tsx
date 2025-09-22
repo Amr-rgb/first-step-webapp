@@ -113,7 +113,10 @@ const HeroSection = () => {
   const handleSetApi = (api: CarouselApi) => {
     if (!api) return;
     setCarouselApi(api);
-    const onSelect = () => setCurrent(api.selectedScrollSnap());
+    const onSelect = () => {
+      const newIndex = api.selectedScrollSnap();
+      setCurrent(newIndex);
+    };
     api.on("select", onSelect);
   };
 

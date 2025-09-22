@@ -151,27 +151,43 @@ export const parentService = {
           ? payload.birthDate.toISOString().split("T")[0]
           : payload.birthDate;
 
-      // Prepare authorized persons data
-      const authorizedPersons = payload.authorizedPersons.map(
-        (person: any) => ({
-          name: person.name,
-          cin: person.idNumber,
+      // Prepare authorized people data (API expects 'authorized_people')
+      const authorizedPeople = (
+        Array.isArray(payload.authorizedPersons)
+          ? payload.authorizedPersons
+          : []
+      )
+        .filter((p: any) => p && typeof p === "object")
+        .map((person: any) => ({
+          name: String(person.name ?? ""),
+          cin: String(person.idNumber ?? ""),
           ...(person.id && { id: person.id }),
-        })
-      );
+        }))
+        .filter(
+          (p: any) => p.name.trim().length > 0 || p.cin.trim().length > 0
+        );
 
-      // Prepare allergies data
-      const allergies = payload.allergies.allergies.map((allergy: any) => ({
-        name: allergy.allergyTypes,
-        allergy_causes: Array.isArray(allergy.allergyFoods)
-          ? allergy.allergyFoods
-          : allergy.allergyFoods.split(", "),
-        allergy_emergency: allergy.allergyProcedures,
-        ...(allergy.id && { id: allergy.id }),
-      }));
+      // Prepare allergies data; API expects allergy_causes as a string, not array
+      const includeAllergies = payload.allergies?.hasAllergies === "yes";
+      const allergies = includeAllergies
+        ? (Array.isArray(payload.allergies?.allergies)
+            ? payload.allergies.allergies
+            : []
+          )
+            .filter((a: any) => a && typeof a === "object")
+            .map((allergy: any) => ({
+              name: String(allergy.allergyTypes ?? ""),
+              allergy_causes: Array.isArray(allergy.allergyFoods)
+                ? allergy.allergyFoods.join(", ")
+                : String(allergy.allergyFoods ?? ""),
+              allergy_emergency: String(allergy.allergyProcedures ?? ""),
+              ...(allergy.id && { id: allergy.id }),
+            }))
+            .filter((a: any) => a.name.trim().length > 0)
+        : [];
 
       // Prepare disease details data
-      const diseaseDetails = payload.chronicDiseases.diseases.map(
+      const diseaseDetails = (payload.chronicDiseases?.diseases || []).map(
         (disease: any) => ({
           disease_name: disease.name,
           medicament: disease.medication,
@@ -180,23 +196,35 @@ export const parentService = {
         })
       );
 
-      const response = await apiClient.put(`/parent/children/${id}`, {
+      const updatePayload: any = {
         child_name: payload.childName,
         birthday_date: formattedDate,
         gender: payload.gender === "male" ? "boy" : "girl",
         disease: payload.chronicDiseases.hasDiseases === "yes",
-        disease_details: diseaseDetails,
-        allergy: payload.allergies.hasAllergies === "yes",
+        disease_details: Array.isArray(diseaseDetails) ? diseaseDetails : [],
+        allergy: includeAllergies,
         parent_name: payload.fatherName,
         mother_name: payload.motherName,
         recommendations: payload.recommendations || "",
         description_3_words: payload.childDescription || "",
         things_child_likes: payload.favoriteThings || "",
         notes: payload.comments || "",
-        kinship: payload.kinship || "",
-        authorized_persons: authorizedPersons,
-        allergies: allergies,
-      });
+        authorized_people: authorizedPeople,
+      };
+      if (includeAllergies) {
+        updatePayload.allergies = allergies;
+      }
+
+      // Only include kinship if it's a non-empty string; omit otherwise
+      if (typeof payload.kinship === "string") {
+        const trimmed = payload.kinship.trim();
+        if (trimmed.length > 0) updatePayload.kinship = trimmed;
+      }
+
+      const response = await apiClient.put(
+        `/parent/children/${id}`,
+        updatePayload
+      );
 
       return response.data;
     } catch (error) {
@@ -251,7 +279,7 @@ export const parentService = {
             description_3_words: payload.childDescription,
             things_child_likes: payload.favoriteThings,
             notes: payload.comments,
-            kinship: payload.kinship,
+            kinship: String(payload.kinship ?? ""),
             authorized_persons: payload.authorizedPersons.map(
               (person: any) => ({
                 name: person.name,

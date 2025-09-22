@@ -198,7 +198,6 @@ const ParentPart = ({
             <FormItem>
               <Label>
                 <span className="text-base">{t("kinship.label")}</span>
-                <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input

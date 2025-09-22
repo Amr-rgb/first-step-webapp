@@ -277,7 +277,7 @@ const createChildStep4Schema = (locale: "ar" | "en" = "ar") =>
           name: z.string().min(2, {
             message: getErrorMessage("general-field-required", locale),
           }),
-          idNumber: z.string().length(10, {
+          idNumber: z.string().min(1, {
             message: getErrorMessage("general-field-required", locale),
           }),
         })

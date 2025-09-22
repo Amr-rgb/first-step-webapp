@@ -64,6 +64,8 @@ const Children = ({
     queryKey: ["parent-children"],
     queryFn: parentService.getParentChildren,
     enabled: !isAdmin,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   let childrenToRender: any[] | undefined = undefined;
