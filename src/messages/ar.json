@@ -1881,166 +1881,6 @@
       },
       "noResults": "لا توجد نتائج."
     },
-    "profileEditor": {
-      "title": "محرر الملف الشخصي",
-      "modes": {
-        "edit": "تعديل",
-        "preview": "معاينة"
-      },
-      "loading": "جارٍ تحميل بيانات الملف...",
-      "loadError": "فشل في تحميل بيانات الملف",
-      "savePortfolio": "حفظ الملف",
-      "saving": "جارٍ الحفظ...",
-      "saveSuccess": "تم حفظ الملف بنجاح!",
-      "saveError": "فشل في حفظ الملف",
-      "sections": {
-        "hero": "قسم البطل",
-        "branches": "الفروع",
-        "philosophy": "الفلسفة والأهداف",
-        "services": "الخدمات",
-        "nurseryState": "حالة الحضانة",
-        "activities": "الأنشطة",
-        "contact": "معلومات التواصل",
-        "ads": "صور الإعلانات",
-        "teams": "أعضاء الفريق",
-        "plans": "الخطط والأسعار"
-      },
-      "hero": {
-        "title": "العنوان",
-        "titlePlaceholder": "أدخل عنوان القسم",
-        "subtitle": "العنوان الفرعي",
-        "subtitlePlaceholder": "أدخل العنوان الفرعي",
-        "description": "الوصف",
-        "descriptionPlaceholder": "أدخل الوصف",
-
-        "ctaTextPlaceholder": "أدخل نص الدعوة للإجراء",
-        "ctaLink": "رابط الدعوة للإجراء",
-        "ctaLinkPlaceholder": "أدخل رابط الدعوة",
-        "backgroundImage": "صورة الخلفية"
-      },
-      "branches": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الفروع",
-        "branchesTitle": "الفروع",
-        "branchNamePlaceholder": "أدخل اسم الفرع",
-        "noBranches": "لم تتم إضافة أي فروع بعد"
-      },
-      "philosophy": {
-        "philosophy": "الفلسفة",
-        "philosophyTitle": "عنوان الفلسفة",
-        "philosophyTitlePlaceholder": "أدخل عنوان الفلسفة",
-        "philosophyContent": "محتوى الفلسفة",
-        "philosophyContentPlaceholder": "أدخل محتوى الفلسفة",
-        "methodology": "المنهجية",
-        "methodologyTitle": "عنوان المنهجية",
-        "methodologyTitlePlaceholder": "أدخل عنوان المنهجية",
-        "methodologyContent": "محتوى المنهجية",
-        "methodologyContentPlaceholder": "أدخل محتوى المنهجية",
-        "goals": "الأهداف",
-
-        "goalTitle": "عنوان الهدف",
-        "goalTitlePlaceholder": "أدخل عنوان الهدف",
-        "goalContent": "محتوى الهدف",
-        "goalContentPlaceholder": "أدخل محتوى الهدف"
-      },
-      "services": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الخدمات",
-        "services": "الخدمات",
-        "addService": "إضافة خدمة",
-        "noServices": "لم تتم إضافة أي خدمات بعد",
-        "service": "الخدمة",
-        "serviceTitle": "عنوان الخدمة",
-        "serviceTitlePlaceholder": "أدخل عنوان الخدمة",
-        "serviceDescription": "وصف الخدمة",
-        "serviceDescriptionPlaceholder": "أدخل وصف الخدمة",
-        "serviceImage": "صورة الخدمة"
-      },
-      "nurseryState": {
-        "title": "حالة الحضانة",
-        "area": "المساحة",
-        "areaPlaceholder": "أدخل مساحة الحضانة",
-        "classRooms": "الفصول الدراسية",
-        "classRoomsPlaceholder": "أدخل عدد الفصول",
-        "teamMembers": "أعضاء الفريق",
-        "teamMembersPlaceholder": "أدخل عدد أعضاء الفريق"
-      },
-      "activities": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الأنشطة",
-        "sectionSubtitle": "العنوان الفرعي للقسم",
-        "sectionSubtitlePlaceholder": "أدخل العنوان الفرعي للأنشطة",
-        "activityImages": "صور الأنشطة",
-        "addImage": "إضافة صورة",
-        "noImages": "لم تتم إضافة أي صور بعد"
-      },
-      "contact": {
-        "title": "معلومات التواصل",
-        "address": "العنوان",
-        "addressPlaceholder": "أدخل عنوان الحضانة",
-        "workingHours": "ساعات العمل",
-        "workingHoursPlaceholder": "أدخل ساعات العمل",
-        "phoneNumber": "رقم الهاتف",
-        "phoneNumberPlaceholder": "أدخل رقم الهاتف",
-        "emailAddress": "البريد الإلكتروني",
-        "emailAddressPlaceholder": "أدخل البريد الإلكتروني",
-        "socialMedia": "وسائل التواصل الاجتماعي",
-        "facebook": "فيسبوك",
-        "facebookPlaceholder": "أدخل رابط فيسبوك",
-        "instagram": "إنستغرام",
-        "instagramPlaceholder": "أدخل رابط إنستغرام",
-        "whatsapp": "واتساب",
-        "whatsappPlaceholder": "أدخل رقم واتساب"
-      },
-      "ads": {
-        "title": "صور الإعلانات",
-        "addImage": "إضافة صورة",
-        "noImages": "لم تتم إضافة أي صور إعلانية بعد"
-      },
-      "teams": {
-        "title": "أعضاء الفريق",
-        "addTeamMember": "إضافة عضو فريق",
-        "noTeamMembers": "لم تتم إضافة أي أعضاء بعد",
-        "teamMember": "عضو الفريق",
-        "memberName": "اسم العضو",
-        "memberNamePlaceholder": "أدخل اسم العضو",
-        "memberMission": "مهمة العضو",
-        "memberMissionPlaceholder": "أدخل مهمة العضو",
-        "memberImage": "صورة العضو"
-      },
-      "plans": {
-        "title": "الخطط والأسعار",
-        "loading": "جارٍ التحميل...",
-        "selectBranch": "اختر الفرع",
-        "selectBranchPlaceholder": "اختر فرعاً",
-        "plans": "الخطط",
-        "addPlan": "إضافة خطة",
-        "editPlan": "تعديل الخطة",
-        "noPlansYet": "لا توجد خطط بعد",
-        "ageRange": "العمر: {start} - {end} سنوات",
-        "price": "السعر",
-        "priceAmount": "السعر: ${amount}",
-        "enrollmentType": "نوع الاشتراك",
-        "selectEnrollmentType": "اختر نوع الاشتراك",
-        "month": "شهر",
-        "week": "أسبوع",
-        "day": "يوم",
-        "planTitle": "عنوان الخطة",
-        "planTitlePlaceholder": "أدخل عنوان الخطة",
-        "startAge": "العمر الابتدائي",
-        "endAge": "العمر النهائي",
-        "count": "العدد",
-        "branches": "الفروع",
-        "selectBranchesPlaceholder": "اختر الفروع...",
-        "cancel": "إلغاء",
-        "save": "حفظ",
-        "saving": "جارٍ الحفظ...",
-        "planSaved": "تم حفظ الخطة بنجاح!",
-        "planSaveError": "فشل في حفظ الخطة",
-        "planDeleted": "تم حذف الخطة بنجاح!",
-        "planDeleteError": "فشل في حذف الخطة"
-      }
-    },
     "children": {
       "search": {
         "placeholder": "البحث باسم الحضانة / اسم طفل / ولي امر"
@@ -2261,7 +2101,6 @@
     "team": {
       "title": "فريقنا"
     },
-<<<<<<< HEAD
     "services": {
       "title": "خدماتنا"
     },
@@ -2277,10 +2116,7 @@
         "all": "الكل"
       }
     },
-    "contact": {
-=======
     "contactForm": {
->>>>>>> omnia
       "title": "معلومات التواصل",
       "info": "معلومات التواصل",
       "address": "العنوان",
