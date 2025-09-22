@@ -38,7 +38,7 @@ const EventSlide = () => {
                 احتفالًا باليوم الوطني السعودي
               </p>
               <p className={styles.eventSlideTextRow2}>
-                <span className={styles.eventSlideNumber95}>95</span> اشتراك
+                <span className={styles.eventSlideNumber95}>95</span> يوم اشتراك
                 مجاني
               </p>
             </div>
