@@ -327,9 +327,11 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                   <SelectValue placeholder={t("selectEnrollmentType")} />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="year">{t("year")}</SelectItem>
                   <SelectItem value="month">{t("month")}</SelectItem>
                   <SelectItem value="week">{t("week")}</SelectItem>
                   <SelectItem value="day">{t("day")}</SelectItem>
+                  <SelectItem value="hour">{t("hour")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
