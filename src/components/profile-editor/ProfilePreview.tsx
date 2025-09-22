@@ -199,6 +199,7 @@ export const ProfilePreview = ({
           buttonText={t("branches.cta")}
           locale={locale}
           nurseryName={nurseryName}
+          preview
         />
       )}
 
@@ -211,6 +212,7 @@ export const ProfilePreview = ({
           buttonText={t("branches.cta")}
           locale={locale}
           nurseryName={nurseryName}
+          preview
         />
       )}
 
