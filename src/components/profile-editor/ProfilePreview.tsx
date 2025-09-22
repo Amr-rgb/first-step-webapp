@@ -204,7 +204,7 @@ export const ProfilePreview = ({
       )}
 
       {/* 9. Activities Section */}
-      {data.images_activities && data.images_activities.length > 0 && (
+      {/* {data.images_activities && data.images_activities.length > 0 && (
         <Activities
           title={data.activity_section_title}
           subtitle={data.activity_section_subtitle}
@@ -214,7 +214,7 @@ export const ProfilePreview = ({
           nurseryName={nurseryName}
           preview
         />
-      )}
+      )} */}
 
       {/* 10. Team Section */}
       {data.teams && data.teams.length > 0 && (

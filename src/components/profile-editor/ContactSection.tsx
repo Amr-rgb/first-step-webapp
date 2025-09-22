@@ -83,7 +83,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
         </div>
 
         {/* Social Media */}
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <h4 className="font-semibold text-base">{t("socialMedia")}</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -116,7 +116,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
