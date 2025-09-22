@@ -823,6 +823,15 @@ export const centerService = {
     }
   },
 
+  deletePricing: async (id: string) => {
+    try {
+      const response = await apiClient.delete(`/delete-price/${id}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getBranchPricing: async (branchId: string) => {
     try {
       const response = await apiClient.get(`/branches-pricies/${branchId}`);
