@@ -40,6 +40,7 @@ export const ProfilePreview = ({
           slogan={data.subtitle_of_hero}
           description={data.description}
           backgroundImage={data.background_image}
+          preview
         />
       )}
 
@@ -67,10 +68,10 @@ export const ProfilePreview = ({
       )}
 
       {/* 5. Plans Section */}
-      <Plans nurseryName={nurseryName} locale={locale} />
+      <Plans nurseryName={nurseryName} locale={locale} preview />
 
       {/* 6. Programs Section */}
-      <Programs programs={[]} nurseryName={nurseryName} locale={locale} />
+      {/* <Programs programs={[]} nurseryName={nurseryName} locale={locale} /> */}
 
       {/* 7. Services Section */}
       {data.services && data.services.length > 0 && (
