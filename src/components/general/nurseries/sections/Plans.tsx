@@ -28,7 +28,7 @@ interface Plan {
 interface PlansProps {
   nurseryName: string;
   locale: string;
-  preview: boolean;
+  preview?: boolean;
 }
 
 const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
