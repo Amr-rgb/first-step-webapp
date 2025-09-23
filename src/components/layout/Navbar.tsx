@@ -2,7 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -13,11 +13,75 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const token = useAuthToken();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
   const isActive = (path: string) => pathname === path;
 
+  // Enhanced toggle function with ref-based control
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    const newState = !isMenuOpen;
+    setIsMenuOpen(newState);
+
+    // Use refs to ensure proper DOM manipulation for old browsers
+    if (menuRef.current && overlayRef.current) {
+      if (newState) {
+        // Open menu
+        menuRef.current.style.transform = "translateX(0)";
+        overlayRef.current.style.opacity = "1";
+        overlayRef.current.style.pointerEvents = "auto";
+
+        // Focus management for accessibility
+        setTimeout(() => {
+          closeButtonRef.current?.focus();
+        }, 100);
+      } else {
+        // Close menu
+        menuRef.current.style.transform = "translateX(100%)";
+        overlayRef.current.style.opacity = "0";
+        overlayRef.current.style.pointerEvents = "none";
+      }
+    }
   };
+
+  // Force close menu (for old browsers that might not respond to state changes)
+  const forceCloseMenu = () => {
+    setIsMenuOpen(false);
+    if (menuRef.current && overlayRef.current) {
+      menuRef.current.style.transform = "translateX(100%)";
+      overlayRef.current.style.opacity = "0";
+      overlayRef.current.style.pointerEvents = "none";
+    }
+  };
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMenuOpen) {
+        forceCloseMenu();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isMenuOpen]);
+
+  // Handle outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node)
+      ) {
+        forceCloseMenu();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMenuOpen]);
 
   const t = useTranslations("navbar");
 
@@ -77,26 +141,39 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           </Link>
         </div>
 
-        {/* Mobile menu overlay */}
+        {/* Enhanced mobile menu overlay with ref */}
         <div
+          ref={overlayRef}
           className={`z-[9999] fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${
             isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
-          onClick={toggleMenu}
+          onClick={forceCloseMenu}
           aria-hidden="true"
+          style={{
+            // Fallback for old browsers
+            opacity: isMenuOpen ? 1 : 0,
+            pointerEvents: isMenuOpen ? "auto" : "none",
+          }}
         />
 
-        {/* Slide-out menu */}
+        {/* Enhanced slide-out menu with ref */}
         <div
+          ref={menuRef}
           className={`z-[9999] fixed top-0 bottom-0 right-0 w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
             isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
+          style={{
+            // Fallback for old browsers
+            transform: isMenuOpen ? "translateX(0)" : "translateX(100%)",
+          }}
         >
-          {/* Menu header */}
+          {/* Menu header with enhanced close button */}
           <div className="flex justify-between items-center p-4 border-b">
+            <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
             <button
-              onClick={toggleMenu}
-              className="p-2 rounded-full hover:bg-gray-100"
+              ref={closeButtonRef}
+              onClick={forceCloseMenu}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
               aria-label="Close menu"
             >
               <X size={20} />
@@ -109,12 +186,12 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               <li key={link.id}>
                 <Link
                   href={link.path}
-                  className={`block px-6 py-4 text-base hover:bg-emerald-50 transition-colors ${
+                  className={`block px-6 py-4 text-base transition-colors duration-200 ${
                     isActive(link.path)
-                      ? "font-bold text-emerald-600"
-                      : "text-gray-700"
+                      ? "font-bold text-emerald-600 bg-emerald-50"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
-                  onClick={toggleMenu}
+                  onClick={forceCloseMenu}
                 >
                   {link.title}
                 </Link>
@@ -123,7 +200,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           </ul>
 
           {/* Call to action button */}
-          <div className="block sm:hidden mt-5 justify-self-center">
+          <div className="px-4 pb-4">
             {children ? children : <NavbarButton />}
           </div>
         </div>
@@ -155,24 +232,22 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           </ul>
         </div>
 
-        {/* Right */}
-        {
-          <div className="flex-1 text-right flex items-center justify-end">
-            {/* Menu Icon */}
-            <Button
-              className="xl:hidden p-2 rounded-full bg-gradient-to-t from-white from-30 to-emerald-50 text-gray-700"
-              aria-expanded={isMenuOpen}
-              aria-label="Toggle navigation menu"
-              onClick={toggleMenu}
-            >
-              <Menu size={24} />
-            </Button>
+        {/* Right - Mobile menu trigger */}
+        <div className="flex-1 text-right flex items-center justify-end">
+          {/* Enhanced Menu Icon */}
+          <Button
+            className="xl:hidden p-2 rounded-full bg-gradient-to-t from-white from-30 to-emerald-50 text-gray-700"
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle navigation menu"
+            onClick={toggleMenu}
+          >
+            <Menu size={24} />
+          </Button>
 
-            <div className="ml-8 hidden sm:block">
-              {children ? children : <NavbarButton />}
-            </div>
+          <div className="ml-8 hidden sm:block">
+            {children ? children : <NavbarButton />}
           </div>
-        }
+        </div>
       </div>
     </div>
   );
