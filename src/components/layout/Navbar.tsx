@@ -108,7 +108,20 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative container mx-auto px-4 py-2.5">
       {!token && (
-        <div className="z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4">
+        <div
+          className="z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4"
+          style={{
+            // Fallback for old browsers that don't support ltr/rtl classes
+            top: "18rem", // 72 * 0.25rem = 18rem
+            right: "-7.5rem", // -120px = -7.5rem
+            transform: "rotate(-90deg)",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            // RTL support for old browsers
+            left: "auto",
+          }}
+        >
           <Button
             asChild
             size={"sm"}
