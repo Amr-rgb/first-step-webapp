@@ -77,8 +77,12 @@ const AdminChatPage = () => {
     try {
       setIsLoading(true);
 
-    
+      console.log(
+        "🔍 [AdminChat] Fetching messages for conversation:",
+        selectedChatId
+      );
 
+      // Use the dedicated admin method for fetching conversation messages
       const conversationMessages =
         await chatService.getAdminConversationMessages(selectedChatId, token);
 
@@ -179,7 +183,6 @@ const AdminChatPage = () => {
     // Initialize Pusher
     pusherService.initialize();
 
-
     // Subscribe to admin conversations channel
     pusherService.subscribeToAdminConversations({
       onNewMessage: (message) => {
@@ -215,7 +218,6 @@ const AdminChatPage = () => {
           setMessages((prev) => [...prev, newMessage]);
         }
 
-
         // Update last message in conversations list for both possible conversation IDs
         setChats((prevChats) =>
           prevChats.map((chat) =>
@@ -224,7 +226,6 @@ const AdminChatPage = () => {
                   ...chat,
                   lastMessage: newMessage.content,
                   timestamp: newMessage.timestamp,
-
                 }
               : chat
           )
@@ -237,11 +238,83 @@ const AdminChatPage = () => {
       },
     });
 
+    // Subscribe to specific chat channel for real-time messages in the selected conversation
+    if (selectedChatId) {
+      // Extract user IDs from conversation ID (format: "user1-user2")
+      const [user1Id, user2Id] = selectedChatId.split("-");
+
+      // Subscribe to both possible chat channels
+      pusherService.subscribeToSpecificChat(user1Id, {
+        onNewMessage: (message) => {
+          console.log("📨 Admin specific chat new message (user1):", message);
+
+          const newMessage: Message = {
+            id: message.id?.toString() || Date.now().toString(),
+            content: message.message,
+            senderId: message.sender_id.toString(),
+            senderName: message.sender_name || "User",
+            senderType: message.sender_name === "center" ? "center" : "parent",
+            timestamp: new Date(message.created_at),
+            chatId: selectedChatId,
+            imageUrl: message.image_url,
+            videoUrl: message.video_url,
+          };
+
+          setMessages((prev) => [...prev, newMessage]);
+
+          // Update last message in conversations list
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
+              chat.id === selectedChatId
+                ? {
+                    ...chat,
+                    lastMessage: newMessage.content,
+                    timestamp: newMessage.timestamp,
+                  }
+                : chat
+            )
+          );
+        },
+      });
+
+      pusherService.subscribeToSpecificChat(user2Id, {
+        onNewMessage: (message) => {
+          console.log("📨 Admin specific chat new message (user2):", message);
+
+          const newMessage: Message = {
+            id: message.id?.toString() || Date.now().toString(),
+            content: message.message,
+            senderId: message.sender_id.toString(),
+            senderName: message.sender_name || "User",
+            senderType: message.sender_name === "center" ? "center" : "parent",
+            timestamp: new Date(message.created_at),
+            chatId: selectedChatId,
+            imageUrl: message.image_url,
+            videoUrl: message.video_url,
+          };
+
+          setMessages((prev) => [...prev, newMessage]);
+
+          // Update last message in conversations list
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
+              chat.id === selectedChatId
+                ? {
+                    ...chat,
+                    lastMessage: newMessage.content,
+                    timestamp: newMessage.timestamp,
+                  }
+                : chat
+            )
+          );
+        },
+      });
+    }
+
     // Subscribe to global user status
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
         setChats((prevChats) =>
-
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -253,7 +326,6 @@ const AdminChatPage = () => {
       },
       onUserOffline: (userId) => {
         setChats((prevChats) =>
-
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -269,6 +341,13 @@ const AdminChatPage = () => {
     return () => {
       pusherService.unsubscribeFromAdminConversations();
       pusherService.unsubscribeFromUserStatus();
+
+      // Unsubscribe from specific chat channels if they exist
+      if (selectedChatId) {
+        const [user1Id, user2Id] = selectedChatId.split("-");
+        pusherService.unsubscribeFromSpecificChat(user1Id);
+        pusherService.unsubscribeFromSpecificChat(user2Id);
+      }
     };
   }, [currentUser.id, selectedChatId, fetchAdminConversations]);
 
@@ -276,15 +355,87 @@ const AdminChatPage = () => {
     setSelectedChatId(chatId);
   };
 
-
   const handleBackToChats = () => {
     setSelectedChatId(null);
   };
 
   const handleSendMessage = async (content: string) => {
-    // Admin cannot send messages - they are only viewing conversations
-    toast.info("Admin can only view conversations, not send messages");
-    return;
+    if (!selectedChatId || !content.trim() || !token || !currentUser.id) return;
+
+    console.log("📤 Admin sending message:", {
+      content,
+      selectedChatId,
+      currentUser: currentUser.id,
+    });
+
+    try {
+      setIsSending(true);
+
+      const newMessage = await chatService.sendAdminMessage(
+        selectedChatId,
+        content,
+        token,
+        currentUser.id
+      );
+
+      console.log("📤 Admin message sent successfully:", newMessage);
+      console.log("📤 Current messages before adding:", messages.length);
+
+      setMessages((prev) => {
+        const updated = [...prev, newMessage];
+        console.log("📤 Messages after adding:", updated.length);
+        return updated;
+      });
+
+      // Verify the message was actually saved by fetching messages again
+      console.log("🔍 [AdminChat] Verifying message persistence...");
+      try {
+        const verificationMessages =
+          await chatService.getAdminConversationMessages(selectedChatId, token);
+        console.log(
+          "🔍 [AdminChat] Verification - messages after send:",
+          verificationMessages.length
+        );
+        console.log(
+          "🔍 [AdminChat] Latest message:",
+          verificationMessages[verificationMessages.length - 1]
+        );
+
+        // Check if our sent message is in the verification
+        const foundMessage = verificationMessages.find(
+          (msg) => msg.id === newMessage.id
+        );
+        if (foundMessage) {
+          console.log("✅ [AdminChat] Message verified in database!");
+        } else {
+          console.warn(
+            "⚠️ [AdminChat] Message not found in database verification"
+          );
+        }
+      } catch (error) {
+        console.error("❌ [AdminChat] Verification failed:", error);
+      }
+
+      // Update last message in conversations list
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === selectedChatId
+            ? {
+                ...chat,
+                lastMessage: newMessage.content,
+                timestamp: newMessage.timestamp,
+              }
+            : chat
+        )
+      );
+
+      console.log("📤 Message added to UI successfully");
+    } catch (error) {
+      console.error("❌ Error sending admin message:", error);
+      toast.error("Failed to send message");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
