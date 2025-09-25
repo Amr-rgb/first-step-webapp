@@ -74,10 +74,16 @@ const NotificationsForm = () => {
         selectedChildMap
       );
 
+      const d = data.day;
+      const utcDate = new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+      );
+      const dateString = utcDate.toISOString().split("T")[0];
+
       return centerService.sendNotification({
         parent_ids: selectedWithOnlySelectedChild.map((parent) => parent.id),
         title: data.type,
-        date: data.day.toISOString().split("T")[0],
+        date: dateString,
         time: data.time,
       });
     },
