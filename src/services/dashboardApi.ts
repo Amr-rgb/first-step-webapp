@@ -1515,6 +1515,35 @@ export const sidebarService = {
   },
 };
 
+export const notificationService = {
+  getNotifications: async () => {
+    try {
+      const response = await apiClient.get(`/notifications`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  readNotification: async (id: string) => {
+    try {
+      const response = await apiClient.patch(`/notifications/${id}/read`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  readAllNotifications: async () => {
+    try {
+      const response = await apiClient.patch(`/notifications/read-all`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
 export interface Enrollment {
   id: number;
   branch_id: number;
