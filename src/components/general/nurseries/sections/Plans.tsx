@@ -211,7 +211,7 @@ const Plans = ({ nurseryName, locale }: PlansProps) => {
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => {
                       // Navigate to booking page with plan details
-                      window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch}&plan=${plan.id}`;
+                      window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
                     }}
                   >
                     {t("plans.bookNow")}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { paymentService } from "@/services/api";
+import { paymentService, nurseryService } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
 
 interface ReservationFormProps {
   nurseryName: string;
   selectedProgram: string;
   locale: "ar" | "en";
+  selectedBranch?: string;
+  selectedPlan?: string;
 }
 
 interface FormData {
@@ -27,18 +30,28 @@ interface FormData {
   selectedChildren: string[];
 }
 
-type ProgramType = "monthly" | "weekly" | "daily" | "hourly";
+type PlanType = "monthly" | "weekly" | "daily" | "hourly";
 
-interface Program {
+interface Plan {
   id: number;
-  type: ProgramType;
+  type: PlanType;
   name: string;
   price: string;
   planId: number;
 }
 
-// Default programs with fallback plan IDs
-const defaultPrograms: { ar: Program[]; en: Program[] } = {
+interface ApiPlan {
+  id: number;
+  title: string;
+  start_age: number;
+  end_age: number;
+  count: number;
+  enrollment_type: string;
+  price_amount: number;
+}
+
+// Default plans with fallback plan IDs
+const defaultPlans: { ar: Plan[]; en: Plan[] } = {
   ar: [
     { id: 1, type: "monthly", name: "شهري", price: "50 ر.س", planId: 1 },
     { id: 2, type: "weekly", name: "أسبوعي", price: "50 ر.س", planId: 2 },
@@ -91,6 +104,8 @@ const ReservationForm = ({
   nurseryName,
   selectedProgram,
   locale,
+  selectedBranch,
+  selectedPlan,
 }: ReservationFormProps) => {
   const t = useTranslations();
   const router = useRouter();
@@ -100,38 +115,108 @@ const ReservationForm = ({
     (nurseryName.toLowerCase().includes("world-of-learning-junior") ||
       nurseryName.toLowerCase().includes("world-of-learning"));
 
-  // Create program list from default programs
-  const createProgramList = (): Program[] => {
-    return defaultPrograms[locale];
+  // Fetch branches for the nursery
+  const { data: branches = [], isLoading: loadingBranches } = useQuery({
+    queryKey: ["branches", nurseryName],
+    queryFn: () => nurseryService.getBranchesByNursery(nurseryName),
+    enabled: !!nurseryName,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  // Fetch plans for the selected branch
+  const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
+    queryKey: ["branch-plans", selectedBranch],
+    queryFn: () => nurseryService.getBranchPricing(selectedBranch!),
+    enabled: !!selectedBranch && selectedBranch !== "",
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  // Convert API plans to plans format
+  const createPlanList = (): Plan[] => {
+    if (apiPlans.length > 0) {
+      return apiPlans.map((apiPlan: ApiPlan) => ({
+        id: apiPlan.id,
+        type: apiPlan.enrollment_type as PlanType,
+        name: apiPlan.title,
+        price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+        planId: apiPlan.id,
+      }));
+    }
+    // Only return default plans if no branch is selected or no API data
+    if (!selectedBranch || selectedBranch === "") {
+      return defaultPlans[locale];
+    }
+    return [];
   };
 
-  const programList = createProgramList();
-  // Helper to match program by id or name (case-insensitive)
-  function findSelectedProgram(
-    programList: Program[],
-    program: string | number
-  ): Program | undefined {
-    return programList.find((p) => {
-      if (typeof program === "number") {
-        return p.id === program;
-      } else if (typeof program === "string") {
+  const planList = createPlanList();
+
+  // Helper to match plan by id or name (case-insensitive)
+  function findSelectedPlan(
+    planList: Plan[],
+    plan: string | number
+  ): Plan | undefined {
+    return planList.find((p) => {
+      if (typeof plan === "number") {
+        return p.id === plan;
+      } else if (typeof plan === "string") {
         return (
-          p.id.toString() === program ||
-          p.type === program ||
-          p.name === program ||
+          p.id.toString() === plan ||
+          p.type === plan ||
+          p.name === plan ||
           (typeof p.name === "string" &&
-            p.name.toLowerCase() === program.toLowerCase())
+            p.name.toLowerCase() === plan.toLowerCase())
         );
       }
       return false;
     });
   }
-  // Set default program to first in list if not found
-  const [program, setProgram] = useState<string | number>(
-    selectedProgram && findSelectedProgram(programList, selectedProgram)
-      ? findSelectedProgram(programList, selectedProgram)!.id
-      : programList[0]?.id ?? 4 // Default to hourly if not found
+
+  // Set default plan to first in list if not found
+  const [selectedPlanId, setSelectedPlanId] = useState<string | number>(
+    selectedPlan && findSelectedPlan(planList, selectedPlan)
+      ? findSelectedPlan(planList, selectedPlan)!.id
+      : selectedProgram && findSelectedPlan(planList, selectedProgram)
+      ? findSelectedPlan(planList, selectedProgram)!.id
+      : planList[0]?.id ?? 4 // Default to hourly if not found
   );
+
+  // Debug logging
+  console.log("Plan list:", planList);
+  console.log(
+    "Selected plan ID:",
+    selectedPlanId,
+    "Type:",
+    typeof selectedPlanId
+  );
+  console.log("Selected plan from URL:", selectedPlan);
+  console.log("Selected program from URL:", selectedProgram);
+
+  // Update selected plan when planList changes (after API data loads) - only on initial load
+  const [hasInitialized, setHasInitialized] = useState(false);
+  useEffect(() => {
+    if (planList.length > 0 && !hasInitialized) {
+      const foundPlan =
+        selectedPlan && findSelectedPlan(planList, selectedPlan)
+          ? findSelectedPlan(planList, selectedPlan)!.id
+          : selectedProgram && findSelectedPlan(planList, selectedProgram)
+          ? findSelectedPlan(planList, selectedProgram)!.id
+          : planList[0]?.id;
+
+      if (foundPlan && foundPlan !== selectedPlanId) {
+        console.log(
+          "Initial plan selection from",
+          selectedPlanId,
+          "to",
+          foundPlan
+        );
+        setSelectedPlanId(foundPlan);
+      }
+      setHasInitialized(true);
+    }
+  }, [planList, selectedPlan, selectedProgram, hasInitialized, selectedPlanId]);
   const [fromTime, setFromTime] = useState("03:00");
   const [toTime, setToTime] = useState("07:00");
   const [bookingDate, setBookingDate] = useState("");
@@ -151,19 +236,19 @@ const ReservationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Get the selected plan/program ID
-    const selectedPlanId = findSelectedProgram(programList, program)?.planId;
-    if (!selectedPlanId) {
-      alert("No program selected. Please choose a program.");
+    // Get the selected plan ID
+    const planId = findSelectedPlan(planList, selectedPlanId)?.planId;
+    if (!planId) {
+      alert("No plan selected. Please choose a plan.");
       setIsSubmitting(false);
       return;
     }
 
-    console.log("Selected program:", findSelectedProgram(programList, program));
-    console.log("Selected plan ID:", selectedPlanId);
+    console.log("Selected plan:", findSelectedPlan(planList, selectedPlanId));
+    console.log("Selected plan ID:", planId);
 
     try {
-      const data = await paymentService.parentSubscribe(selectedPlanId);
+      const data = await paymentService.parentSubscribe(planId);
       setIsSubmitting(false);
       if (data.success && data.payment_url) {
         // Redirect to Moyasar payment page, but after payment, Moyasar should redirect back to our reservation page with ?payment=success
@@ -191,7 +276,7 @@ const ReservationForm = ({
   const dir = locale === "ar" ? "rtl" : "ltr";
   const isRTL = locale === "ar";
 
-  const selectedProgramObj = findSelectedProgram(programList, program);
+  const selectedPlanObj = findSelectedPlan(planList, selectedPlanId);
 
   if (submitSuccess) {
     // Construct URLs
@@ -261,9 +346,20 @@ const ReservationForm = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
     >
-      {/* Program Type Selection */}
+      {/* Plan Selection */}
       <motion.div
-        className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6"
+        className={`flex items-center gap-4 max-w-2xl mx-auto mb-6 ${
+          planList.length > 4
+            ? "overflow-x-auto pb-2 custom-scrollbar"
+            : "flex-row"
+        }`}
+        style={{
+          maxWidth: planList.length > 4 ? "100%" : "32rem",
+          paddingLeft: planList.length > 4 ? 8 : 0,
+          paddingRight: planList.length > 4 ? 8 : 0,
+          paddingTop: 8,
+          paddingBottom: 8,
+        }}
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -273,26 +369,41 @@ const ReservationForm = ({
           stiffness: 60,
         }}
       >
-        {programList.map((p) => {
+        {planList.map((p) => {
           const selected =
-            program === p.id ||
-            p.type === program ||
-            p.name === program ||
+            selectedPlanId === p.id ||
+            p.type === selectedPlanId ||
+            p.name === selectedPlanId ||
             (typeof p.name === "string" &&
-              typeof program === "string" &&
-              p.name.toLowerCase() === program.toLowerCase());
+              typeof selectedPlanId === "string" &&
+              p.name.toLowerCase() === selectedPlanId.toLowerCase());
+
+          console.log(
+            `Plan ${p.id}: selected=${selected}, selectedPlanId=${selectedPlanId}, p.id=${p.id}`
+          );
+
           return (
             <button
               key={p.id}
               type="button"
-              className={`flex-1 flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2
+              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2 ${
+                planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
+              }
                 ${
                   selected
                     ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
                     : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none"
                 }
               `}
-              onClick={() => setProgram(p.id)}
+              onClick={() => {
+                console.log(
+                  "Plan clicked:",
+                  p.id,
+                  "Current selected:",
+                  selectedPlanId
+                );
+                setSelectedPlanId(p.id);
+              }}
               tabIndex={0}
             >
               <span
@@ -565,8 +676,8 @@ const ReservationForm = ({
         </h3>
         <div className="space-y-2 text-sm text-gray-700">
           <div className="flex justify-between">
-            <span>{locale === "ar" ? "البرنامج" : "Program"}</span>
-            <span>{selectedProgramObj ? selectedProgramObj.name : "-"}</span>
+            <span>{locale === "ar" ? "الخطة" : "Plan"}</span>
+            <span>{selectedPlanObj ? selectedPlanObj.name : "-"}</span>
           </div>
           <div className="flex justify-between">
             <span>{locale === "ar" ? "الوقت" : "Time"}</span>
@@ -590,7 +701,7 @@ const ReservationForm = ({
             {locale === "ar" ? "السعر الإجمالي" : "Total"}
           </span>
           <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            {selectedProgramObj ? selectedProgramObj.price : "-"}
+            {selectedPlanObj ? selectedPlanObj.price : "-"}
           </span>
         </div>
       </motion.div>
