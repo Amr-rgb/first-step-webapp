@@ -217,8 +217,8 @@ const ReservationForm = ({
       setHasInitialized(true);
     }
   }, [planList, selectedPlan, selectedProgram, hasInitialized, selectedPlanId]);
-  const [fromTime, setFromTime] = useState("03:00");
-  const [toTime, setToTime] = useState("07:00");
+  const [fromTime, setFromTime] = useState("");
+  const [toTime, setToTime] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -277,6 +277,82 @@ const ReservationForm = ({
   const isRTL = locale === "ar";
 
   const selectedPlanObj = findSelectedPlan(planList, selectedPlanId);
+
+  // Get the corresponding API plan for duration and type info
+  const selectedApiPlan = apiPlans.find(
+    (plan: ApiPlan) => plan.id === selectedPlanId
+  );
+
+  // Generate time options based on plan type
+  const generateTimeOptions = () => {
+    if (!selectedApiPlan) return timeOptions;
+
+    const { enrollment_type } = selectedApiPlan;
+
+    switch (enrollment_type) {
+      case "hour":
+        // For hourly plans, show hour options
+        return timeOptions;
+      case "day":
+        // For daily plans, show day options (1-30 days)
+        return Array.from(
+          { length: 30 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "يوم" : "Day"}`
+        );
+      case "week":
+        // For weekly plans, show week options (1-4 weeks)
+        return Array.from(
+          { length: 4 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "أسبوع" : "Week"}`
+        );
+      case "month":
+        // For monthly plans, show month options (1-12 months)
+        return Array.from(
+          { length: 12 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "شهر" : "Month"}`
+        );
+      default:
+        return timeOptions;
+    }
+  };
+
+  const dynamicTimeOptions = generateTimeOptions();
+
+  // Auto-select plan duration when plan changes
+  useEffect(() => {
+    if (selectedApiPlan) {
+      const { enrollment_type, count } = selectedApiPlan;
+
+      switch (enrollment_type) {
+        case "hour":
+          // For hourly plans, set default time range
+          setFromTime("08:00");
+          setToTime("16:00");
+          break;
+        case "day":
+          // For daily plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "يوم" : "Day"}`);
+          setToTime(`${count} ${locale === "ar" ? "يوم" : "Day"}`);
+          break;
+        case "week":
+          // For weekly plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "أسبوع" : "Week"}`);
+          setToTime(`${count} ${locale === "ar" ? "أسبوع" : "Week"}`);
+          break;
+        case "month":
+          // For monthly plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "شهر" : "Month"}`);
+          setToTime(`${count} ${locale === "ar" ? "شهر" : "Month"}`);
+          break;
+        default:
+          setFromTime("");
+          setToTime("");
+      }
+    } else {
+      setFromTime("");
+      setToTime("");
+    }
+  }, [selectedPlanId, selectedApiPlan, locale]);
 
   if (submitSuccess) {
     // Construct URLs
@@ -438,17 +514,37 @@ const ReservationForm = ({
         }}
       >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
-          {locale === "ar" ? "عدد الساعات" : "Number of Hours"}
+          {selectedApiPlan?.enrollment_type === "hour"
+            ? locale === "ar"
+              ? "عدد الساعات"
+              : "Number of Hours"
+            : selectedApiPlan?.enrollment_type === "day"
+            ? locale === "ar"
+              ? "عدد الأيام"
+              : "Number of Days"
+            : selectedApiPlan?.enrollment_type === "week"
+            ? locale === "ar"
+              ? "عدد الأسابيع"
+              : "Number of Weeks"
+            : selectedApiPlan?.enrollment_type === "month"
+            ? locale === "ar"
+              ? "عدد الأشهر"
+              : "Number of Months"
+            : locale === "ar"
+            ? "المدة"
+            : "Duration"}
         </label>
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto px-2 pb-2">
-            {timeOptions.map((t, idx) => {
+            {dynamicTimeOptions.map((t, idx) => {
               const isSelected = t === fromTime || t === toTime;
               const isInRange =
                 fromTime &&
                 toTime &&
-                timeOptions.indexOf(t) > timeOptions.indexOf(fromTime) &&
-                timeOptions.indexOf(t) < timeOptions.indexOf(toTime);
+                dynamicTimeOptions.indexOf(t) >
+                  dynamicTimeOptions.indexOf(fromTime) &&
+                dynamicTimeOptions.indexOf(t) <
+                  dynamicTimeOptions.indexOf(toTime);
               return (
                 <button
                   key={t}
@@ -463,20 +559,7 @@ const ReservationForm = ({
                     }
                     focus:outline-none focus:ring-2 focus:ring-[#4D5EDB]`}
                   style={{ minWidth: 56 }}
-                  onClick={() => {
-                    if (!fromTime || (fromTime && toTime)) {
-                      setFromTime(t);
-                      setToTime("");
-                    } else if (fromTime && !toTime) {
-                      if (
-                        timeOptions.indexOf(t) > timeOptions.indexOf(fromTime)
-                      ) {
-                        setToTime(t);
-                      } else {
-                        setFromTime(t);
-                      }
-                    }
-                  }}
+                  disabled
                   aria-pressed={isSelected || isInRange ? true : false}
                 >
                   {t}
@@ -489,9 +572,13 @@ const ReservationForm = ({
               ? `${locale === "ar" ? "من" : "From"} ${fromTime} ${
                   locale === "ar" ? "إلى" : "to"
                 } ${toTime}`
+              : selectedApiPlan?.enrollment_type === "hour"
+              ? locale === "ar"
+                ? "المدة المحددة تلقائياً حسب الخطة"
+                : "Duration automatically set based on plan"
               : locale === "ar"
-              ? "اختر وقت البداية ثم النهاية"
-              : "Select start time then end time"}
+              ? "المدة المحددة تلقائياً حسب الخطة"
+              : "Duration automatically set based on plan"}
           </div>
         </div>
       </motion.div>
@@ -513,28 +600,13 @@ const ReservationForm = ({
         <div className="relative max-w-xs mx-auto">
           <input
             type="date"
-            className="w-full bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB] pr-10"
+            className="w-full bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB]"
             value={bookingDate}
             onChange={(e) => setBookingDate(e.target.value)}
+            min={new Date().toISOString().split("T")[0]}
             required
             style={isRTL ? { textAlign: "right" } : {}}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="#4D5EDB"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </span>
         </div>
       </motion.div>
 
