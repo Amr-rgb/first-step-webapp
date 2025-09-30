@@ -1705,9 +1705,11 @@
         "priceAmount": "السعر: ${amount}",
         "enrollmentType": "نوع الاشتراك",
         "selectEnrollmentType": "اختر نوع الاشتراك",
+        "year": "عام",
         "month": "شهر",
         "week": "أسبوع",
         "day": "يوم",
+        "hour": "ساعة",
         "planTitle": "عنوان الخطة",
         "planTitlePlaceholder": "أدخل عنوان الخطة",
         "startAge": "العمر الابتدائي",
@@ -2205,5 +2207,12 @@
       "online": "متصل",
       "offline": "غير متصل"
     }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "loading": "جاري التحميل...",
+    "noNotifications": "لا توجد إشعارات بعد",
+    "viewAll": "عرض جميع الإشعارات"
   }
 }

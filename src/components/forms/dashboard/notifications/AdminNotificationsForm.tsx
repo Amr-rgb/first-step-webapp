@@ -115,13 +115,19 @@ const NotificationsForm = () => {
         selectedBranchMap
       );
 
+      const d = data.day;
+      const utcDate = new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+      );
+      const dateString = utcDate.toISOString().split("T")[0];
+
       return adminService.sendNotification({
         userIds: [
           ...selectedWithOnlySelectedChild.map((parent) => parent.id),
           ...selectedBranchIds,
         ],
         title: data.type,
-        date: data.day.toISOString().split("T")[0],
+        date: dateString,
         time_start: data.time,
       });
     },

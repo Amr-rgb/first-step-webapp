@@ -349,6 +349,59 @@ class PusherService {
     }
   }
 
+  // notification channel
+
+  subscribeToUniversalNotifications(callbacks: {
+    onNewNotification?: (notification: any) => void;
+    onNotificationUpdated?: (data: {
+      notification_id: string;
+      read_at: string;
+    }) => void;
+  }) {
+    if (!this.pusher) {
+      this.initialize();
+    }
+
+    const channelName = "universal-notifications";
+    let channel = this.channels.get(channelName);
+
+    if (!channel) {
+      channel = this.pusher!.subscribe(channelName);
+      this.channels.set(channelName, channel);
+    } else {
+      // Unbind previous events to avoid duplicates
+      channel.unbind(
+        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated"
+      );
+      channel.unbind("notification-updated");
+    }
+
+    // Bind to Laravel notification events
+    if (callbacks.onNewNotification) {
+      channel.bind(
+        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
+        callbacks.onNewNotification
+      );
+    }
+
+    if (callbacks.onNotificationUpdated) {
+      channel.bind("notification-updated", callbacks.onNotificationUpdated);
+    }
+
+    return channel;
+  }
+
+  unsubscribeFromUniversalNotifications() {
+    const channelName = "universal-notifications";
+    const channel = this.channels.get(channelName);
+
+    if (channel) {
+      this.pusher?.unsubscribe(channelName);
+      this.channels.delete(channelName);
+    }
+  }
+
+  // ========================
   disconnect() {
     if (this.pusher) {
       this.pusher.disconnect();
@@ -369,6 +422,8 @@ class PusherService {
       });
     }
   }
+
+  // notification channel
 }
 
 export const pusherService = new PusherService();

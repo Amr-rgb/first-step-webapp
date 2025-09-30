@@ -8,7 +8,7 @@ interface ActivitiesProps {
   subtitle?: string;
   activities: string[];
   buttonText?: string;
-  isPreview?: boolean;
+  preview?: boolean;
   locale?: string;
   nurseryName?: string;
 }
@@ -18,7 +18,7 @@ const Activities = ({
   subtitle,
   activities,
   buttonText,
-  isPreview = false,
+  preview = false,
   locale,
   nurseryName,
 }: ActivitiesProps) => {
@@ -88,31 +88,18 @@ const Activities = ({
       </div>
 
       {buttonText && (
-        <div className="flex justify-center">
-          {isPreview ? (
-            <div className="relative group">
-              <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50 cursor-not-allowed">
-                {buttonText}
-              </button>
+        <div className="flex justify-center mb-12">
+          <div className="relative group">
+            <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50">
+              {buttonText}
+            </button>
+            {!preview ? (
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
                 Wait until the nursery adds its plans or programs
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
               </div>
-            </div>
-          ) : (
-            <div className="relative group">
-              <button
-                className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50 cursor-not-allowed"
-                disabled
-              >
-                {buttonText}
-              </button>
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                Wait until the nursery adds its plans or programs
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-              </div>
-            </div>
-          )}
+            ) : null}
+          </div>
         </div>
       )}
     </section>
