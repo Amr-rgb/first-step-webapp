@@ -1238,6 +1238,40 @@ export const paymentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  payOrder: async (params: {
+    enrollment_id: number;
+    child_ids: Array<string | number>;
+    booking_date?: string;
+    from_time?: string;
+    to_time?: string;
+  }) => {
+    try {
+      const response = await apiClient.post("/payment/pay-order", params);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
+export const enrollmentService = {
+  createEnrollment: async (payload: {
+    center_branch_id: number | string;
+    branch_price_id: number | string;
+    parent_phone: string;
+    children: Array<number | string>;
+    day_string?: string; // for 'hour'
+    starting_time?: string; // for 'hour'
+    starting_date?: string; // for day/week/month/year
+  }) => {
+    try {
+      const response = await apiClient.post("/enrollments", payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 // Parent-related APIs

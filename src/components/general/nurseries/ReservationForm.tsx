@@ -10,7 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { paymentService, nurseryService, parentService } from "@/services/api";
+import {
+  paymentService,
+  nurseryService,
+  parentService,
+  enrollmentService,
+} from "@/services/api";
+import { useAuthUser } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 
 interface ReservationFormProps {
@@ -110,6 +116,7 @@ const ReservationForm = ({
   const t = useTranslations();
   const router = useRouter();
   const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const authUser = typeof window !== "undefined" ? useAuthUser() : null;
   const isWorldOfLearningJunior =
     nurseryName &&
     (nurseryName.toLowerCase().includes("world-of-learning-junior") ||
@@ -248,28 +255,52 @@ const ReservationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Get the selected plan ID
-    const planId = findSelectedPlan(planList, selectedPlanId)?.planId;
+    // Get the selected plan and IDs
+    const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
+    const planId = selectedPlanObjLocal?.planId;
     if (!planId) {
       alert("No plan selected. Please choose a plan.");
       setIsSubmitting(false);
       return;
     }
+    if (!selectedBranch || selectedBranch === "") {
+      alert("No branch selected. Please choose a branch.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const phone =
+      (authUser as any)?.phone || (authUser as any)?.user?.phone || "";
 
     console.log("Selected plan:", findSelectedPlan(planList, selectedPlanId));
     console.log("Selected plan ID:", planId);
 
     try {
-      const data = await paymentService.parentSubscribe(planId);
-      setIsSubmitting(false);
-      if (data.success && data.payment_url) {
-        // Redirect to Moyasar payment page, but after payment, Moyasar should redirect back to our reservation page with ?payment=success
-        // To achieve this, we need to set the return_url in the backend/payment API to point to our reservation page with ?payment=success
-        // For now, we open the payment page, and after payment, the user will be redirected back with ?payment=success
-        window.location.href = data.payment_url;
-      } else {
-        alert("Payment initiation failed. Please try again.");
+      // 1) Create enrollment first
+      const enrollmentPayload: any = {
+        center_branch_id: Number(selectedBranch),
+        branch_price_id: Number(planId),
+        parent_phone: phone,
+        children: selectedChildren.map((id) => Number(id)),
+      };
+
+      if (selectedApiPlan?.enrollment_type === "hour") {
+        // Require day_string and starting_time
+        const dayString = bookingDate
+          ? new Date(bookingDate).toLocaleDateString("en-US", {
+              weekday: "long",
+            })
+          : undefined;
+        enrollmentPayload.day_string = dayString;
+        enrollmentPayload.starting_time = fromTime || "09:00";
+      } else if (bookingDate) {
+        // For day/week/month/year types require starting_date
+        enrollmentPayload.starting_date = bookingDate;
       }
+
+      await enrollmentService.createEnrollment(enrollmentPayload);
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
     } catch (err: any) {
       console.error("Payment error details:", err);
       setIsSubmitting(false);
