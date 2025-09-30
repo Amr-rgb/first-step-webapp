@@ -409,12 +409,13 @@ const ReservationForm = ({
         transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
         className="bg-white rounded-xl shadow-lg p-8 text-center"
       >
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <Image
             src="/assets/illustrations/success.png"
             alt="Success"
-            width={100}
-            height={100}
+            width={160}
+            height={160}
+            className="mx-auto"
           />
         </div>
         <h2 className="text-2xl font-bold text-[#22336C] mb-4">
@@ -428,12 +429,12 @@ const ReservationForm = ({
             : "We will contact you soon to confirm the reservation details."}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-center mb-6">
-          <button
-            onClick={() => router.push(reservationDetailsUrl)}
+        <button
+            onClick={() => setSubmitSuccess(false)}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
               bg-[#4D5EDB] text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
           >
-            {locale === "ar" ? "تفاصيل الحجز" : "View Reservation Details"}
+            {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
           </button>
           <button
             onClick={() => router.push(dashboardReservationsUrl)}
@@ -444,13 +445,7 @@ const ReservationForm = ({
               ? "حجوزاتي في لوحة التحكم"
               : "Go to My Reservations"}
           </button>
-          <button
-            onClick={() => setSubmitSuccess(false)}
-            className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
-              bg-gray-100 text-[#22336C] hover:bg-gray-200 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
-          >
-            {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
-          </button>
+         
         </div>
       </motion.div>
     );
