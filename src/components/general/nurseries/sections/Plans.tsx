@@ -37,18 +37,48 @@ const Plans = ({ nurseryName, locale }: PlansProps) => {
     name: string;
   }>(null);
 
-  // Use branches from portfolio data
+  // Resolve center ID by nursery name
+  const { data: nurseries = [] } = useQuery({
+    queryKey: ["nurseries-for-center-id", locale],
+    queryFn: () => nurseryService.getNurseries(locale),
+    enabled: !!locale,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const centerId: string | undefined = (() => {
+    if (!nurseries || nurseries.length === 0) return undefined;
+    const target = nurseries.find((n: any) => {
+      const dbName = (n.nursery_name || n.name || "").toLowerCase().trim();
+      const searchName = (nurseryName || "").toLowerCase().trim();
+      return (
+        dbName === searchName ||
+        dbName.includes(searchName) ||
+        searchName.includes(dbName)
+      );
+    });
+    return target?.id ? String(target.id) : undefined;
+  })();
+
+  // Fetch branches for center
   const {
-    data: branches = [],
+    data: branchesResponse,
     isLoading: loadingBranches,
     error: branchesError,
   } = useQuery({
-    queryKey: ["branches", nurseryName],
-    queryFn: () => nurseryService.getBranchesByNursery(nurseryName),
-    enabled: !!nurseryName,
+    queryKey: ["branches-for-center", centerId],
+    queryFn: () => nurseryService.getBranchesForCenter(centerId as string),
+    enabled: !!centerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
+
+  const branches: Array<{ id: string; name: string; pricing?: any[] }> =
+    branchesResponse?.data?.map((b: any) => ({
+      id: String(b.id),
+      name: b.nursery_name || b.name || "Branch",
+      pricing: b.pricing,
+    })) || [];
 
   // Fetch plans for selected branch using React Query
   const {
@@ -56,9 +86,13 @@ const Plans = ({ nurseryName, locale }: PlansProps) => {
     isLoading: loadingPlans,
     error: plansError,
   } = useQuery({
-    queryKey: ["branch-pricing", selectedBranch?.id],
-    queryFn: () => nurseryService.getBranchPricing(selectedBranch?.id!),
-    enabled: !!selectedBranch,
+    queryKey: ["branch-pricing", selectedBranch?.id, centerId],
+    queryFn: () =>
+      nurseryService.getBranchPricing(
+        selectedBranch?.id as string,
+        centerId as string
+      ),
+    enabled: !!selectedBranch && !!centerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -95,7 +129,7 @@ const Plans = ({ nurseryName, locale }: PlansProps) => {
   };
 
   const selectedBranchData = branches?.find(
-    (branch) => branch.id === selectedBranch
+    (branch) => branch.id === selectedBranch?.id
   );
 
   // Don't render if no branches found

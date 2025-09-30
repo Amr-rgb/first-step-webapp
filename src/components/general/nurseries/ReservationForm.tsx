@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { paymentService, nurseryService } from "@/services/api";
+import { paymentService, nurseryService, parentService } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
 interface ReservationFormProps {
@@ -226,6 +226,18 @@ const ReservationForm = ({
   const [submitSuccess, setSubmitSuccess] = useState(
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
   );
+
+  // Fetch parent's children
+  const {
+    data: realChildren = [],
+    isLoading: isChildrenLoading,
+    error: childrenError,
+  } = useQuery({
+    queryKey: ["parent-children"],
+    queryFn: () => parentService.getChildren(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
   const handleChildSelect = (id: string) => {
     setSelectedChildren((prev) =>
@@ -633,101 +645,127 @@ const ReservationForm = ({
             paddingRight: 8,
           }}
         >
-          {/* {isChildrenLoading
-            ? Array.from({ length: 4 }).map((_, idx) => (
-                <motion.div
-                  key={idx}
-                  className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                >
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
-                  <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
-                  <div className="w-8 h-3 bg-gray-300 rounded" />
-                </motion.div>
-              ))
-            : (realChildren && realChildren.length > 0
-                ? realChildren
-                : mockChildren
-              ).map((child, idx) => {
-                return (
-                  <motion.button
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: idx * 0.08,
-                      duration: 0.4,
-                      type: "spring",
-                      stiffness: 60,
-                    }}
-                    type="button"
-                    key={child.id}
-                    onClick={() => handleChildSelect(child.id.toString())}
-                    className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
+          {isChildrenLoading &&
+            Array.from({ length: 4 }).map((_, idx) => (
+              <motion.div
+                key={idx}
+                className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+              >
+                <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
+                <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
+                <div className="w-8 h-3 bg-gray-300 rounded" />
+              </motion.div>
+            ))}
+
+          {!isChildrenLoading && childrenError && (
+            <div className="text-sm text-red-500">
+              {locale === "ar"
+                ? "حدث خطأ في جلب الأطفال"
+                : "Failed to load children"}
+            </div>
+          )}
+
+          {!isChildrenLoading &&
+            !childrenError &&
+            (realChildren && realChildren.length > 0
+              ? realChildren
+              : mockChildren
+            ).map((child: any, idx: number) => {
+              const idStr = (
+                child.id ??
+                child.child_id ??
+                child._id ??
+                `${idx}`
+              ).toString();
+              const gender = (child.gender || child.sex || "")
+                .toString()
+                .toLowerCase();
+              const nameAr = child.child_name || child.name || child.nameAr;
+              const nameEn =
+                child.nameEn || child.name_en || child.name || nameAr;
+              return (
+                <motion.button
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: idx * 0.08,
+                    duration: 0.4,
+                    type: "spring",
+                    stiffness: 60,
+                  }}
+                  type="button"
+                  key={idStr}
+                  onClick={() => handleChildSelect(idStr)}
+                  className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
                     ${
-                      selectedChildren.includes(child.id.toString())
+                      selectedChildren.includes(idStr)
                         ? "border-[#4D5EDB] shadow"
                         : "border-gray-300"
                     } focus:outline-none bg-white hover:shadow-lg`}
-                    style={{ flex: "0 0 auto", marginRight: 12 }}
+                  style={{ flex: "0 0 auto", marginRight: 12 }}
+                >
+                  <div
+                    className={`w-16 h-16 flex items-center justify-center ${
+                      selectedChildren.includes(idStr)
+                        ? "mb-0 mt-0"
+                        : "mb-2 mt-2"
+                    } transition-all duration-200`}
+                    style={{
+                      marginTop: selectedChildren.includes(idStr)
+                        ? 0
+                        : undefined,
+                    }}
                   >
-                    <div
-                      className={`w-16 h-16 flex items-center justify-center ${
-                        selectedChildren.includes(child.id.toString())
-                          ? "mb-0 mt-0"
-                          : "mb-2 mt-2"
-                      } transition-all duration-200`}
+                    <Image
+                      src={
+                        gender === "boy" || gender === "male"
+                          ? "/assets/illustrations/boy.png"
+                          : "/assets/illustrations/girl.png"
+                      }
+                      alt={(nameAr || nameEn || "Child").toString()}
+                      width={64}
+                      height={64}
                       style={{
-                        marginTop: selectedChildren.includes(
-                          child.id.toString()
-                        )
-                          ? 0
-                          : undefined,
+                        objectFit: "contain",
+                        filter: selectedChildren.includes(idStr)
+                          ? "none"
+                          : "grayscale(100%) brightness(0.8)",
+                        transform: selectedChildren.includes(idStr)
+                          ? "scale(1.1)"
+                          : "scale(1)",
+                        transition: "all 0.2s",
                       }}
-                    >
-                      <Image
-                        src={
-                          child.gender === "boy"
-                            ? "/assets/illustrations/boy.png"
-                            : "/assets/illustrations/girl.png"
-                        }
-                        alt={child.child_name || child.nameEn}
-                        width={64}
-                        height={64}
-                        style={{
-                          objectFit: "contain",
-                          filter: selectedChildren.includes(child.id.toString())
-                            ? "none"
-                            : "grayscale(100%) brightness(0.8)",
-                          transform: selectedChildren.includes(
-                            child.id.toString()
-                          )
-                            ? "scale(1.1)"
-                            : "scale(1)",
-                          transition: "all 0.2s",
-                        }}
-                      />
-                    </div>
-                    <span
-                      className={`font-bold text-sm text-center mt-2 ${
-                        selectedChildren.includes(child.id.toString())
-                          ? "text-[#22336C]"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {child.child_name ||
-                        child.name ||
-                        (locale === "ar" ? child.name : child.nameEn)}
+                    />
+                  </div>
+                  <span
+                    className={`font-bold text-sm text-center mt-2 ${
+                      selectedChildren.includes(idStr)
+                        ? "text-[#22336C]"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {locale === "ar" ? nameAr || nameEn : nameEn || nameAr}
+                  </span>
+                  {selectedChildren.includes(idStr) && (
+                    <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
+                      ✓
                     </span>
-                    {selectedChildren.includes(child.id.toString()) && (
-                      <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
-                        ✓
-                      </span>
-                    )}
-                  </motion.button>
-                );
-              })} */}
+                  )}
+                </motion.button>
+              );
+            })}
+
+          {!isChildrenLoading &&
+            !childrenError &&
+            realChildren &&
+            realChildren.length === 0 && (
+              <div className="text-sm text-gray-500">
+                {locale === "ar" ? "لا يوجد أطفال مسجلون" : "No children found"}
+              </div>
+            )}
         </div>
       </motion.div>
 

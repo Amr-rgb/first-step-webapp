@@ -45,9 +45,7 @@ export default async function ReservationPage({
   const plan =
     typeof searchParameters.plan === "string" ? searchParameters.plan : "";
 
-  // If redirected from payment, Moyasar should use:
-  // /[locale]/nurseries/[name]/reservation?payment=success
-  // ReservationForm will show the success message automatically.
+ 
 
   const t = await getTranslations();
 
