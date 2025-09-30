@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { paymentService } from "@/services/api";
+import {
+  paymentService,
+  nurseryService,
+  parentService,
+  enrollmentService,
+} from "@/services/api";
+import { useAuthUser } from "@/store/authStore";
+import { useQuery } from "@tanstack/react-query";
 
 interface ReservationFormProps {
   nurseryName: string;
   selectedProgram: string;
   locale: "ar" | "en";
+  selectedBranch?: string;
+  selectedPlan?: string;
 }
 
 interface FormData {
@@ -27,18 +36,28 @@ interface FormData {
   selectedChildren: string[];
 }
 
-type ProgramType = "monthly" | "weekly" | "daily" | "hourly";
+type PlanType = "monthly" | "weekly" | "daily" | "hourly";
 
-interface Program {
+interface Plan {
   id: number;
-  type: ProgramType;
+  type: PlanType;
   name: string;
   price: string;
   planId: number;
 }
 
-// Default programs with fallback plan IDs
-const defaultPrograms: { ar: Program[]; en: Program[] } = {
+interface ApiPlan {
+  id: number;
+  title: string;
+  start_age: number;
+  end_age: number;
+  count: number;
+  enrollment_type: string;
+  price_amount: number;
+}
+
+// Default plans with fallback plan IDs
+const defaultPlans: { ar: Plan[]; en: Plan[] } = {
   ar: [
     { id: 1, type: "monthly", name: "شهري", price: "50 ر.س", planId: 1 },
     { id: 2, type: "weekly", name: "أسبوعي", price: "50 ر.س", planId: 2 },
@@ -91,49 +110,122 @@ const ReservationForm = ({
   nurseryName,
   selectedProgram,
   locale,
+  selectedBranch,
+  selectedPlan,
 }: ReservationFormProps) => {
   const t = useTranslations();
   const router = useRouter();
   const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const authUser = typeof window !== "undefined" ? useAuthUser() : null;
   const isWorldOfLearningJunior =
     nurseryName &&
     (nurseryName.toLowerCase().includes("world-of-learning-junior") ||
       nurseryName.toLowerCase().includes("world-of-learning"));
 
-  // Create program list from default programs
-  const createProgramList = (): Program[] => {
-    return defaultPrograms[locale];
+  // Fetch branches for the nursery
+  const { data: branches = [], isLoading: loadingBranches } = useQuery({
+    queryKey: ["branches", nurseryName],
+    queryFn: () => nurseryService.getBranchesByNursery(nurseryName),
+    enabled: !!nurseryName,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  // Fetch plans for the selected branch
+  const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
+    queryKey: ["branch-plans", selectedBranch],
+    queryFn: () => nurseryService.getBranchPricing(selectedBranch!),
+    enabled: !!selectedBranch && selectedBranch !== "",
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  // Convert API plans to plans format
+  const createPlanList = (): Plan[] => {
+    if (apiPlans.length > 0) {
+      return apiPlans.map((apiPlan: ApiPlan) => ({
+        id: apiPlan.id,
+        type: apiPlan.enrollment_type as PlanType,
+        name: apiPlan.title,
+        price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+        planId: apiPlan.id,
+      }));
+    }
+    // Only return default plans if no branch is selected or no API data
+    if (!selectedBranch || selectedBranch === "") {
+      return defaultPlans[locale];
+    }
+    return [];
   };
 
-  const programList = createProgramList();
-  // Helper to match program by id or name (case-insensitive)
-  function findSelectedProgram(
-    programList: Program[],
-    program: string | number
-  ): Program | undefined {
-    return programList.find((p) => {
-      if (typeof program === "number") {
-        return p.id === program;
-      } else if (typeof program === "string") {
+  const planList = createPlanList();
+
+  // Helper to match plan by id or name (case-insensitive)
+  function findSelectedPlan(
+    planList: Plan[],
+    plan: string | number
+  ): Plan | undefined {
+    return planList.find((p) => {
+      if (typeof plan === "number") {
+        return p.id === plan;
+      } else if (typeof plan === "string") {
         return (
-          p.id.toString() === program ||
-          p.type === program ||
-          p.name === program ||
+          p.id.toString() === plan ||
+          p.type === plan ||
+          p.name === plan ||
           (typeof p.name === "string" &&
-            p.name.toLowerCase() === program.toLowerCase())
+            p.name.toLowerCase() === plan.toLowerCase())
         );
       }
       return false;
     });
   }
-  // Set default program to first in list if not found
-  const [program, setProgram] = useState<string | number>(
-    selectedProgram && findSelectedProgram(programList, selectedProgram)
-      ? findSelectedProgram(programList, selectedProgram)!.id
-      : programList[0]?.id ?? 4 // Default to hourly if not found
+
+  // Set default plan to first in list if not found
+  const [selectedPlanId, setSelectedPlanId] = useState<string | number>(
+    selectedPlan && findSelectedPlan(planList, selectedPlan)
+      ? findSelectedPlan(planList, selectedPlan)!.id
+      : selectedProgram && findSelectedPlan(planList, selectedProgram)
+      ? findSelectedPlan(planList, selectedProgram)!.id
+      : planList[0]?.id ?? 4 // Default to hourly if not found
   );
-  const [fromTime, setFromTime] = useState("03:00");
-  const [toTime, setToTime] = useState("07:00");
+
+  // Debug logging
+  console.log("Plan list:", planList);
+  console.log(
+    "Selected plan ID:",
+    selectedPlanId,
+    "Type:",
+    typeof selectedPlanId
+  );
+  console.log("Selected plan from URL:", selectedPlan);
+  console.log("Selected program from URL:", selectedProgram);
+
+  // Update selected plan when planList changes (after API data loads) - only on initial load
+  const [hasInitialized, setHasInitialized] = useState(false);
+  useEffect(() => {
+    if (planList.length > 0 && !hasInitialized) {
+      const foundPlan =
+        selectedPlan && findSelectedPlan(planList, selectedPlan)
+          ? findSelectedPlan(planList, selectedPlan)!.id
+          : selectedProgram && findSelectedPlan(planList, selectedProgram)
+          ? findSelectedPlan(planList, selectedProgram)!.id
+          : planList[0]?.id;
+
+      if (foundPlan && foundPlan !== selectedPlanId) {
+        console.log(
+          "Initial plan selection from",
+          selectedPlanId,
+          "to",
+          foundPlan
+        );
+        setSelectedPlanId(foundPlan);
+      }
+      setHasInitialized(true);
+    }
+  }, [planList, selectedPlan, selectedProgram, hasInitialized, selectedPlanId]);
+  const [fromTime, setFromTime] = useState("");
+  const [toTime, setToTime] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,6 +233,18 @@ const ReservationForm = ({
   const [submitSuccess, setSubmitSuccess] = useState(
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
   );
+
+  // Fetch parent's children
+  const {
+    data: realChildren = [],
+    isLoading: isChildrenLoading,
+    error: childrenError,
+  } = useQuery({
+    queryKey: ["parent-children"],
+    queryFn: () => parentService.getChildren(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
   const handleChildSelect = (id: string) => {
     setSelectedChildren((prev) =>
@@ -151,28 +255,52 @@ const ReservationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Get the selected plan/program ID
-    const selectedPlanId = findSelectedProgram(programList, program)?.planId;
-    if (!selectedPlanId) {
-      alert("No program selected. Please choose a program.");
+    // Get the selected plan and IDs
+    const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
+    const planId = selectedPlanObjLocal?.planId;
+    if (!planId) {
+      alert("No plan selected. Please choose a plan.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!selectedBranch || selectedBranch === "") {
+      alert("No branch selected. Please choose a branch.");
       setIsSubmitting(false);
       return;
     }
 
-    console.log("Selected program:", findSelectedProgram(programList, program));
-    console.log("Selected plan ID:", selectedPlanId);
+    const phone =
+      (authUser as any)?.phone || (authUser as any)?.user?.phone || "";
+
+    console.log("Selected plan:", findSelectedPlan(planList, selectedPlanId));
+    console.log("Selected plan ID:", planId);
 
     try {
-      const data = await paymentService.parentSubscribe(selectedPlanId);
-      setIsSubmitting(false);
-      if (data.success && data.payment_url) {
-        // Redirect to Moyasar payment page, but after payment, Moyasar should redirect back to our reservation page with ?payment=success
-        // To achieve this, we need to set the return_url in the backend/payment API to point to our reservation page with ?payment=success
-        // For now, we open the payment page, and after payment, the user will be redirected back with ?payment=success
-        window.location.href = data.payment_url;
-      } else {
-        alert("Payment initiation failed. Please try again.");
+      // 1) Create enrollment first
+      const enrollmentPayload: any = {
+        center_branch_id: Number(selectedBranch),
+        branch_price_id: Number(planId),
+        parent_phone: phone,
+        children: selectedChildren.map((id) => Number(id)),
+      };
+
+      if (selectedApiPlan?.enrollment_type === "hour") {
+        // Require day_string and starting_time
+        const dayString = bookingDate
+          ? new Date(bookingDate).toLocaleDateString("en-US", {
+              weekday: "long",
+            })
+          : undefined;
+        enrollmentPayload.day_string = dayString;
+        enrollmentPayload.starting_time = fromTime || "09:00";
+      } else if (bookingDate) {
+        // For day/week/month/year types require starting_date
+        enrollmentPayload.starting_date = bookingDate;
       }
+
+      await enrollmentService.createEnrollment(enrollmentPayload);
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
     } catch (err: any) {
       console.error("Payment error details:", err);
       setIsSubmitting(false);
@@ -191,7 +319,83 @@ const ReservationForm = ({
   const dir = locale === "ar" ? "rtl" : "ltr";
   const isRTL = locale === "ar";
 
-  const selectedProgramObj = findSelectedProgram(programList, program);
+  const selectedPlanObj = findSelectedPlan(planList, selectedPlanId);
+
+  // Get the corresponding API plan for duration and type info
+  const selectedApiPlan = apiPlans.find(
+    (plan: ApiPlan) => plan.id === selectedPlanId
+  );
+
+  // Generate time options based on plan type
+  const generateTimeOptions = () => {
+    if (!selectedApiPlan) return timeOptions;
+
+    const { enrollment_type } = selectedApiPlan;
+
+    switch (enrollment_type) {
+      case "hour":
+        // For hourly plans, show hour options
+        return timeOptions;
+      case "day":
+        // For daily plans, show day options (1-30 days)
+        return Array.from(
+          { length: 30 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "يوم" : "Day"}`
+        );
+      case "week":
+        // For weekly plans, show week options (1-4 weeks)
+        return Array.from(
+          { length: 4 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "أسبوع" : "Week"}`
+        );
+      case "month":
+        // For monthly plans, show month options (1-12 months)
+        return Array.from(
+          { length: 12 },
+          (_, i) => `${i + 1} ${locale === "ar" ? "شهر" : "Month"}`
+        );
+      default:
+        return timeOptions;
+    }
+  };
+
+  const dynamicTimeOptions = generateTimeOptions();
+
+  // Auto-select plan duration when plan changes
+  useEffect(() => {
+    if (selectedApiPlan) {
+      const { enrollment_type, count } = selectedApiPlan;
+
+      switch (enrollment_type) {
+        case "hour":
+          // For hourly plans, set default time range
+          setFromTime("08:00");
+          setToTime("16:00");
+          break;
+        case "day":
+          // For daily plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "يوم" : "Day"}`);
+          setToTime(`${count} ${locale === "ar" ? "يوم" : "Day"}`);
+          break;
+        case "week":
+          // For weekly plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "أسبوع" : "Week"}`);
+          setToTime(`${count} ${locale === "ar" ? "أسبوع" : "Week"}`);
+          break;
+        case "month":
+          // For monthly plans, set time range format
+          setFromTime(`1 ${locale === "ar" ? "شهر" : "Month"}`);
+          setToTime(`${count} ${locale === "ar" ? "شهر" : "Month"}`);
+          break;
+        default:
+          setFromTime("");
+          setToTime("");
+      }
+    } else {
+      setFromTime("");
+      setToTime("");
+    }
+  }, [selectedPlanId, selectedApiPlan, locale]);
 
   if (submitSuccess) {
     // Construct URLs
@@ -205,12 +409,13 @@ const ReservationForm = ({
         transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
         className="bg-white rounded-xl shadow-lg p-8 text-center"
       >
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <Image
             src="/assets/illustrations/success.png"
             alt="Success"
-            width={100}
-            height={100}
+            width={160}
+            height={160}
+            className="mx-auto"
           />
         </div>
         <h2 className="text-2xl font-bold text-[#22336C] mb-4">
@@ -224,12 +429,12 @@ const ReservationForm = ({
             : "We will contact you soon to confirm the reservation details."}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-center mb-6">
-          <button
-            onClick={() => router.push(reservationDetailsUrl)}
+        <button
+            onClick={() => setSubmitSuccess(false)}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
               bg-[#4D5EDB] text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
           >
-            {locale === "ar" ? "تفاصيل الحجز" : "View Reservation Details"}
+            {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
           </button>
           <button
             onClick={() => router.push(dashboardReservationsUrl)}
@@ -240,13 +445,7 @@ const ReservationForm = ({
               ? "حجوزاتي في لوحة التحكم"
               : "Go to My Reservations"}
           </button>
-          <button
-            onClick={() => setSubmitSuccess(false)}
-            className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
-              bg-gray-100 text-[#22336C] hover:bg-gray-200 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
-          >
-            {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
-          </button>
+         
         </div>
       </motion.div>
     );
@@ -261,9 +460,20 @@ const ReservationForm = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
     >
-      {/* Program Type Selection */}
+      {/* Plan Selection */}
       <motion.div
-        className="flex flex-row items-center gap-4 max-w-2xl mx-auto mb-6"
+        className={`flex items-center gap-4 max-w-2xl mx-auto mb-6 ${
+          planList.length > 4
+            ? "overflow-x-auto pb-2 custom-scrollbar"
+            : "flex-row"
+        }`}
+        style={{
+          maxWidth: planList.length > 4 ? "100%" : "32rem",
+          paddingLeft: planList.length > 4 ? 8 : 0,
+          paddingRight: planList.length > 4 ? 8 : 0,
+          paddingTop: 8,
+          paddingBottom: 8,
+        }}
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -273,26 +483,41 @@ const ReservationForm = ({
           stiffness: 60,
         }}
       >
-        {programList.map((p) => {
+        {planList.map((p) => {
           const selected =
-            program === p.id ||
-            p.type === program ||
-            p.name === program ||
+            selectedPlanId === p.id ||
+            p.type === selectedPlanId ||
+            p.name === selectedPlanId ||
             (typeof p.name === "string" &&
-              typeof program === "string" &&
-              p.name.toLowerCase() === program.toLowerCase());
+              typeof selectedPlanId === "string" &&
+              p.name.toLowerCase() === selectedPlanId.toLowerCase());
+
+          console.log(
+            `Plan ${p.id}: selected=${selected}, selectedPlanId=${selectedPlanId}, p.id=${p.id}`
+          );
+
           return (
             <button
               key={p.id}
               type="button"
-              className={`flex-1 flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2
+              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2 ${
+                planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
+              }
                 ${
                   selected
                     ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
                     : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none"
                 }
               `}
-              onClick={() => setProgram(p.id)}
+              onClick={() => {
+                console.log(
+                  "Plan clicked:",
+                  p.id,
+                  "Current selected:",
+                  selectedPlanId
+                );
+                setSelectedPlanId(p.id);
+              }}
               tabIndex={0}
             >
               <span
@@ -327,17 +552,37 @@ const ReservationForm = ({
         }}
       >
         <label className="block font-bold mb-2 text-[#22336C] text-center">
-          {locale === "ar" ? "عدد الساعات" : "Number of Hours"}
+          {selectedApiPlan?.enrollment_type === "hour"
+            ? locale === "ar"
+              ? "عدد الساعات"
+              : "Number of Hours"
+            : selectedApiPlan?.enrollment_type === "day"
+            ? locale === "ar"
+              ? "عدد الأيام"
+              : "Number of Days"
+            : selectedApiPlan?.enrollment_type === "week"
+            ? locale === "ar"
+              ? "عدد الأسابيع"
+              : "Number of Weeks"
+            : selectedApiPlan?.enrollment_type === "month"
+            ? locale === "ar"
+              ? "عدد الأشهر"
+              : "Number of Months"
+            : locale === "ar"
+            ? "المدة"
+            : "Duration"}
         </label>
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto px-2 pb-2">
-            {timeOptions.map((t, idx) => {
+            {dynamicTimeOptions.map((t, idx) => {
               const isSelected = t === fromTime || t === toTime;
               const isInRange =
                 fromTime &&
                 toTime &&
-                timeOptions.indexOf(t) > timeOptions.indexOf(fromTime) &&
-                timeOptions.indexOf(t) < timeOptions.indexOf(toTime);
+                dynamicTimeOptions.indexOf(t) >
+                  dynamicTimeOptions.indexOf(fromTime) &&
+                dynamicTimeOptions.indexOf(t) <
+                  dynamicTimeOptions.indexOf(toTime);
               return (
                 <button
                   key={t}
@@ -352,20 +597,7 @@ const ReservationForm = ({
                     }
                     focus:outline-none focus:ring-2 focus:ring-[#4D5EDB]`}
                   style={{ minWidth: 56 }}
-                  onClick={() => {
-                    if (!fromTime || (fromTime && toTime)) {
-                      setFromTime(t);
-                      setToTime("");
-                    } else if (fromTime && !toTime) {
-                      if (
-                        timeOptions.indexOf(t) > timeOptions.indexOf(fromTime)
-                      ) {
-                        setToTime(t);
-                      } else {
-                        setFromTime(t);
-                      }
-                    }
-                  }}
+                  disabled
                   aria-pressed={isSelected || isInRange ? true : false}
                 >
                   {t}
@@ -378,9 +610,13 @@ const ReservationForm = ({
               ? `${locale === "ar" ? "من" : "From"} ${fromTime} ${
                   locale === "ar" ? "إلى" : "to"
                 } ${toTime}`
+              : selectedApiPlan?.enrollment_type === "hour"
+              ? locale === "ar"
+                ? "المدة المحددة تلقائياً حسب الخطة"
+                : "Duration automatically set based on plan"
               : locale === "ar"
-              ? "اختر وقت البداية ثم النهاية"
-              : "Select start time then end time"}
+              ? "المدة المحددة تلقائياً حسب الخطة"
+              : "Duration automatically set based on plan"}
           </div>
         </div>
       </motion.div>
@@ -402,28 +638,13 @@ const ReservationForm = ({
         <div className="relative max-w-xs mx-auto">
           <input
             type="date"
-            className="w-full bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB] pr-10"
+            className="w-full bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 focus:ring-2 focus:ring-[#4D5EDB]"
             value={bookingDate}
             onChange={(e) => setBookingDate(e.target.value)}
+            min={new Date().toISOString().split("T")[0]}
             required
             style={isRTL ? { textAlign: "right" } : {}}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="#4D5EDB"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </span>
         </div>
       </motion.div>
 
@@ -450,101 +671,126 @@ const ReservationForm = ({
             paddingRight: 8,
           }}
         >
-          {/* {isChildrenLoading
-            ? Array.from({ length: 4 }).map((_, idx) => (
-                <motion.div
-                  key={idx}
-                  className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                >
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
-                  <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
-                  <div className="w-8 h-3 bg-gray-300 rounded" />
-                </motion.div>
-              ))
-            : (realChildren && realChildren.length > 0
-                ? realChildren
-                : mockChildren
-              ).map((child, idx) => {
-                return (
-                  <motion.button
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: idx * 0.08,
-                      duration: 0.4,
-                      type: "spring",
-                      stiffness: 60,
-                    }}
-                    type="button"
-                    key={child.id}
-                    onClick={() => handleChildSelect(child.id.toString())}
-                    className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
+          {isChildrenLoading &&
+            Array.from({ length: 4 }).map((_, idx) => (
+              <motion.div
+                key={idx}
+                className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+              >
+                <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
+                <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
+                <div className="w-8 h-3 bg-gray-300 rounded" />
+              </motion.div>
+            ))}
+
+          {!isChildrenLoading && childrenError && (
+            <div className="text-sm text-red-500">
+              {locale === "ar"
+                ? "حدث خطأ في جلب الأطفال"
+                : "Failed to load children"}
+            </div>
+          )}
+
+          {!isChildrenLoading &&
+            !childrenError &&
+            (realChildren && realChildren.length > 0
+              ? realChildren
+              : mockChildren
+            ).map((child: any, idx: number) => {
+              const idStr = (
+                child.id ??
+                child.child_id ??
+                child._id ??
+                `${idx}`
+              ).toString();
+              const gender = (child.gender || child.sex || "")
+                .toString()
+                .toLowerCase();
+              const nameAr = child.child_name || child.name || child.nameAr;
+              const nameEn =
+                child.nameEn || child.name_en || child.name || nameAr;
+              return (
+                <motion.button
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: idx * 0.08,
+                    duration: 0.4,
+                    type: "spring",
+                    stiffness: 60,
+                  }}
+                  type="button"
+                  key={idStr}
+                  onClick={() => handleChildSelect(idStr)}
+                  className={`flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start
                     ${
-                      selectedChildren.includes(child.id.toString())
+                      selectedChildren.includes(idStr)
                         ? "border-[#4D5EDB] shadow"
                         : "border-gray-300"
                     } focus:outline-none bg-white hover:shadow-lg`}
-                    style={{ flex: "0 0 auto", marginRight: 12 }}
+                  style={{ flex: "0 0 auto", marginRight: 12 }}
+                >
+                  <div
+                    className={`w-16 h-16 flex items-center justify-center mb-2 mt-2 transition-all duration-200`}
                   >
-                    <div
-                      className={`w-16 h-16 flex items-center justify-center ${
-                        selectedChildren.includes(child.id.toString())
-                          ? "mb-0 mt-0"
-                          : "mb-2 mt-2"
-                      } transition-all duration-200`}
+                    <Image
+                      src={
+                        gender === "boy" || gender === "male"
+                          ? "/assets/illustrations/boy.png"
+                          : "/assets/illustrations/girl.png"
+                      }
+                      alt={(nameAr || nameEn || "Child").toString()}
+                      width={64}
+                      height={64}
                       style={{
-                        marginTop: selectedChildren.includes(
-                          child.id.toString()
-                        )
-                          ? 0
-                          : undefined,
+                        objectFit: "contain",
+                        filter: selectedChildren.includes(idStr)
+                          ? "none"
+                          : "grayscale(100%) brightness(0.8)",
+                        transform: selectedChildren.includes(idStr)
+                          ? "scale(1.1)"
+                          : "scale(1)",
+                        transition: "all 0.2s",
                       }}
-                    >
-                      <Image
-                        src={
-                          child.gender === "boy"
-                            ? "/assets/illustrations/boy.png"
-                            : "/assets/illustrations/girl.png"
-                        }
-                        alt={child.child_name || child.nameEn}
-                        width={64}
-                        height={64}
-                        style={{
-                          objectFit: "contain",
-                          filter: selectedChildren.includes(child.id.toString())
-                            ? "none"
-                            : "grayscale(100%) brightness(0.8)",
-                          transform: selectedChildren.includes(
-                            child.id.toString()
-                          )
-                            ? "scale(1.1)"
-                            : "scale(1)",
-                          transition: "all 0.2s",
-                        }}
-                      />
-                    </div>
-                    <span
-                      className={`font-bold text-sm text-center mt-2 ${
-                        selectedChildren.includes(child.id.toString())
-                          ? "text-[#22336C]"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {child.child_name ||
-                        child.name ||
-                        (locale === "ar" ? child.name : child.nameEn)}
+                    />
+                  </div>
+                  <span
+                    className={`font-bold text-sm text-center mt-1 ${
+                      selectedChildren.includes(idStr)
+                        ? "text-[#22336C]"
+                        : "text-gray-600"
+                    }`}
+                    style={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical" as any,
+                      WebkitLineClamp: 2 as any,
+                      overflow: "hidden",
+                      wordBreak: "break-word",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {locale === "ar" ? nameAr || nameEn : nameEn || nameAr}
+                  </span>
+                  {/* {selectedChildren.includes(idStr) && (
+                    <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
+                      ✓
                     </span>
-                    {selectedChildren.includes(child.id.toString()) && (
-                      <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
-                        ✓
-                      </span>
-                    )}
-                  </motion.button>
-                );
-              })} */}
+                  )} */}
+                </motion.button>
+              );
+            })}
+
+          {!isChildrenLoading &&
+            !childrenError &&
+            realChildren &&
+            realChildren.length === 0 && (
+              <div className="text-sm text-gray-500">
+                {locale === "ar" ? "لا يوجد أطفال مسجلون" : "No children found"}
+              </div>
+            )}
         </div>
       </motion.div>
 
@@ -565,8 +811,8 @@ const ReservationForm = ({
         </h3>
         <div className="space-y-2 text-sm text-gray-700">
           <div className="flex justify-between">
-            <span>{locale === "ar" ? "البرنامج" : "Program"}</span>
-            <span>{selectedProgramObj ? selectedProgramObj.name : "-"}</span>
+            <span>{locale === "ar" ? "الخطة" : "Plan"}</span>
+            <span>{selectedPlanObj ? selectedPlanObj.name : "-"}</span>
           </div>
           <div className="flex justify-between">
             <span>{locale === "ar" ? "الوقت" : "Time"}</span>
@@ -590,7 +836,7 @@ const ReservationForm = ({
             {locale === "ar" ? "السعر الإجمالي" : "Total"}
           </span>
           <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            {selectedProgramObj ? selectedProgramObj.price : "-"}
+            {selectedPlanObj ? selectedPlanObj.price : "-"}
           </span>
         </div>
       </motion.div>

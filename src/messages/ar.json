@@ -57,8 +57,8 @@
       "story": { "title": "قصتنا", "path": "/our-story" },
       "contact": { "title": "تواصل معنا", "path": "/contact" },
       "help": { "title": "المساعدة", "path": "/help" },
-      "privacy-policy": { "title": "الخصوصية", "path": "/privacy" },
-      "terms-conditions": { "title": "الشروط والأحكام", "path": "/terms" }
+      "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
+      "terms-conditions": { "title": "الشروط والأحكام", "path": "/terms-conditions" }
     },
     "contactTitle": "تواصل معنا",
     "newsletter": {

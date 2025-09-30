@@ -60,8 +60,8 @@
       "story": { "title": "Our Story", "path": "/our-story" },
       "contact": { "title": "Contact Us", "path": "/contact" },
       "help": { "title": "Help", "path": "/help" },
-      "privacy-policy": { "title": "Privacy", "path": "/privacy" },
-      "terms-conditions": { "title": "Terms and Conditions", "path": "/terms" }
+      "privacy-policy": { "title": "Privacy", "path": "/privacy-policy" },
+      "terms-conditions": { "title": "Terms and Conditions", "path": "/terms-conditions" }
     },
     "contactTitle": "Contact us",
     "newsletter": {
@@ -651,8 +651,8 @@
     }
   },
   "headline": {
-    "slogan": "Because their first step... is your biggest decision!",
-    "brandStatement": "We chose <brandName>First Step</brandName> as our name."
+    "slogan": "Their first step is your biggest decision!",
+    "brandStatement": "That's why we are <brandName>First Step</brandName>."
   },
   "vision-mission": {
     "vision": {
