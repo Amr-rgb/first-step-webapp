@@ -301,136 +301,34 @@ class PusherService {
     }) => void;
   }) {
     if (!this.pusher) {
-      console.log("🔧 Initializing Pusher...");
       this.initialize();
     }
 
     const channelName = "universal-notifications";
-    console.log(
-      "🔔 Subscribing to universal notifications channel:",
-      channelName
-    );
-    console.log("🔧 Pusher instance:", this.pusher);
-    console.log("🔧 Pusher key:", process.env.NEXT_PUBLIC_PUSHER_KEY);
-    console.log("🔧 Pusher cluster:", process.env.NEXT_PUBLIC_PUSHER_CLUSTER);
-
     let channel = this.channels.get(channelName);
 
     if (!channel) {
       channel = this.pusher!.subscribe(channelName);
       this.channels.set(channelName, channel);
-      console.log(
-        "✅ Universal notifications channel subscribed:",
-        channelName
-      );
-
-      // Add connection state logging
-      channel.bind("pusher:subscription_succeeded", () => {
-        console.log(
-          "🎉 Successfully subscribed to universal-notifications channel"
-        );
-      });
-
-      channel.bind("pusher:subscription_error", (error: any) => {
-        console.error(
-          "❌ Failed to subscribe to universal-notifications channel:",
-          error
-        );
-      });
-
-      // Add a global event listener to see ALL events coming through
-      channel.bind_global((eventName: string, data: any) => {
-        console.log(
-          `🔍 Universal notifications channel received event: ${eventName}`,
-          data
-        );
-
-        // If we receive any notification-related event, try to handle it
-        if (
-          eventName.includes("notification") ||
-          eventName.includes("Notification")
-        ) {
-          console.log(`🚨 POTENTIAL NOTIFICATION EVENT DETECTED: ${eventName}`);
-          console.log(`🚨 Event data:`, data);
-
-          // Try to call the callback if it exists
-          if (callbacks.onNewNotification) {
-            console.log(`🚨 Attempting to call onNewNotification callback...`);
-            callbacks.onNewNotification(data);
-          }
-        }
-      });
     } else {
-      console.log("🔄 Channel already exists, unbinding previous events");
       // Unbind previous events to avoid duplicates
-      const possibleEventNames = [
-        "new-notification",
-        "notification",
-        "NotificationSent",
-        "notification.sent",
-        "App\\Events\\NotificationSent",
-        "universal-notification",
-        "admin-notification",
-        "daily-report-notification",
-        "notification-updated",
-        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
-      ];
-
-      possibleEventNames.forEach((eventName) => {
-        channel.unbind(eventName);
-      });
+      channel.unbind(
+        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated"
+      );
+      channel.unbind("notification-updated");
     }
 
-    // Always bind events (even if channel already exists)
+    // Bind to Laravel notification event
     if (callbacks.onNewNotification) {
-      console.log("🔧 Binding notification events to channel:", channelName);
-      const eventHandler = (notification: any) => {
-        console.log("📨 New notification callback triggered:", notification);
-        callbacks.onNewNotification!(notification);
-      };
-
-      // Bind to multiple possible event names that the backend might use
-      const possibleEventNames = [
-        "new-notification",
-        "notification",
-        "NotificationSent",
-        "notification.sent",
-        "App\\Events\\NotificationSent",
-        "universal-notification",
-        "admin-notification",
-        "daily-report-notification",
+      channel.bind(
         "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
-      ];
-
-      possibleEventNames.forEach((eventName) => {
-        console.log(`🔧 Binding to event: ${eventName}`);
-        channel.bind(eventName, eventHandler);
-      });
-
-      // Store the handler reference for debugging
-      (channel as any)._newNotificationHandler = eventHandler;
+        callbacks.onNewNotification
+      );
     }
 
     if (callbacks.onNotificationUpdated) {
-      console.log(
-        "🔧 Binding notification-updated event to channel:",
-        channelName
-      );
-      const updateHandler = (data: {
-        notification_id: string;
-        read_at: string;
-      }) => {
-        console.log("📋 Notification updated callback triggered:", data);
-        callbacks.onNotificationUpdated!(data);
-      };
-      channel.bind("notification-updated", updateHandler);
-
-      // Store the handler reference for debugging
-      (channel as any)._notificationUpdatedHandler = updateHandler;
+      channel.bind("notification-updated", callbacks.onNotificationUpdated);
     }
-
-    // Log current bindings for debugging
-    console.log("🔍 Channel bindings:", (channel as any).callbacks);
 
     return channel;
   }
@@ -442,7 +340,6 @@ class PusherService {
     if (channel) {
       this.pusher?.unsubscribe(channelName);
       this.channels.delete(channelName);
-      console.log("🔧 Unsubscribed from universal notifications channel");
     }
   }
 
@@ -464,65 +361,6 @@ class PusherService {
         userId,
         isTyping,
       });
-    }
-  }
-
-  // Debug method to manually trigger a notification event
-  triggerTestNotification(notification: any) {
-    const channelName = "universal-notifications";
-    const channel = this.channels.get(channelName);
-
-    if (channel) {
-      console.log("🧪 Manually triggering test notification:", notification);
-
-      // Get the bound callbacks and call them directly
-      const callbacks = (channel as any).callbacks;
-      if (callbacks && callbacks["new-notification"]) {
-        console.log(
-          "🔧 Found new-notification callbacks:",
-          callbacks["new-notification"].length
-        );
-        callbacks["new-notification"].forEach((callbackObj: any) => {
-          console.log("🚀 Calling callback:", callbackObj);
-          callbackObj.fn(notification);
-        });
-      } else {
-        console.log("❌ No new-notification callbacks found");
-      }
-    } else {
-      console.log("❌ No universal-notifications channel found");
-    }
-  }
-
-  // Debug method to check channel status
-  getChannelInfo(channelName: string) {
-    const channel = this.channels.get(channelName);
-    if (channel) {
-      return {
-        subscribed: channel.subscribed,
-        callbacks: Object.keys((channel as any).callbacks || {}),
-        state: (channel as any).state,
-        allCallbacks: (channel as any).callbacks,
-      };
-    }
-    return null;
-  }
-
-  // Debug method to force bind to any event name
-  forceBindToEvent(eventName: string, callback: (data: any) => void) {
-    const channelName = "universal-notifications";
-    const channel = this.channels.get(channelName);
-
-    if (channel) {
-      console.log(`🔧 Force binding to event: ${eventName}`);
-      channel.bind(eventName, (data: any) => {
-        console.log(`🎯 Force bound event triggered: ${eventName}`, data);
-        callback(data);
-      });
-    } else {
-      console.log(
-        "❌ No universal-notifications channel found for force binding"
-      );
     }
   }
 }

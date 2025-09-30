@@ -190,6 +190,39 @@ export function NotificationItem({
                   </div>
                 )}
 
+                {/* Enrollment notification details */}
+                {content.notificationType === "enrollment" &&
+                  adminNotification.enrollment && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded text-xs space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-medium">
+                          ${adminNotification.enrollment.price_amount}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Phone:</span>
+                        <span className="font-medium">
+                          {adminNotification.enrollment.parent_phone}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Type:</span>
+                        <span className="font-medium capitalize">
+                          {adminNotification.enrollment.enrollment_type}
+                        </span>
+                      </div>
+                      {adminNotification.enrollment.day_string && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Day:</span>
+                          <span className="font-medium">
+                            {adminNotification.enrollment.day_string}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                 {adminNotification.date && adminNotification.time && (
                   <div className="mt-2 text-xs text-gray-500">
                     <span className="inline-flex items-center gap-1">

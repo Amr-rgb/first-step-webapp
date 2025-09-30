@@ -3,7 +3,6 @@
 import React from "react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
-import { NotificationTest } from "@/components/notifications/NotificationTest";
 import { Button } from "@/components/ui/button";
 import { CheckCheck, Loader2, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -39,13 +38,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      {/* Test Panel - Only show in development */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="mb-6">
-          <NotificationTest />
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

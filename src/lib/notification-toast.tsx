@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "sonner";
 import { NotificationToast } from "@/components/notifications/NotificationToast";
+import { EnrollmentNotificationToast } from "@/components/notifications/EnrollmentNotificationToast";
 import { UniversalNotification } from "@/types";
 
 type NotificationType =
@@ -38,7 +39,7 @@ export function showNotificationToast({
     ),
     {
       duration,
-      position: "top-right",
+      position: "bottom-right",
     }
   );
 }
@@ -57,6 +58,27 @@ export function showNotificationFromData(notification: UniversalNotification) {
   ) {
     title = notificationData.title;
     description = notificationData.description;
+
+    // Special handling for enrollment notifications
+    if (
+      notificationData.notification_type === "enrollment" &&
+      notificationData.enrollment
+    ) {
+      return toast.custom(
+        (t) => (
+          <EnrollmentNotificationToast
+            title={title}
+            description={description}
+            enrollment={notificationData.enrollment}
+            onDismiss={() => toast.dismiss(t)}
+          />
+        ),
+        {
+          duration: 15000, // Longer duration for enrollment notifications
+          position: "bottom-right",
+        }
+      );
+    }
 
     // Use notification_type to determine toast type
     switch (notificationData.notification_type) {

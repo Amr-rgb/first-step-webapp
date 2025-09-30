@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { notificationService } from "@/services/dashboardApi";
 import { pusherService } from "@/services/pusherService";
 import { UniversalNotification, NotificationsResponse } from "@/types";
@@ -14,6 +14,10 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [processedNotificationIds, setProcessedNotificationIds] = useState<
+    Set<string>
+  >(new Set());
+  const isSubscribedRef = useRef(false);
 
   const { user } = useAuthStore();
 
@@ -80,35 +84,68 @@ export function useNotifications() {
   // Handle new notification from Pusher
   const handleNewNotification = useCallback(
     (notification: UniversalNotification) => {
-      console.log("🎯 NOTIFICATION HANDLER CALLED!");
-      console.log("📨 New notification received:", notification);
-      console.log("📊 Current notifications count:", notifications.length);
-      console.log("📊 Current unread count:", unreadCount);
+      // Check if we've already processed this notification
+      if (processedNotificationIds.has(notification.id)) {
+        return;
+      }
+
+      const notificationData = notification as any;
+
+      // Filter out notifications that the current user shouldn't see
+      // 1. Don't show notifications intended for other users
+      if (
+        notificationData.notifiable_id &&
+        user?.id &&
+        notificationData.notifiable_id !== user.id
+      ) {
+        return;
+      }
+
+      // 2. Filter out notifications for enrollment creators (parents shouldn't see their own enrollment notifications)
+      if (
+        notificationData.notification_type === "enrollment" &&
+        notificationData.enrollment
+      ) {
+        // If the current user is the one who created the enrollment, skip this notification
+        if (
+          user?.role === "parent" &&
+          notificationData.enrollment.user_id === user.id
+        ) {
+          return;
+        }
+      }
+
+      // 3. Additional filtering based on user role and notification context
+      // Centers shouldn't see notifications they sent to parents
+      if (
+        user?.role === "center" &&
+        notificationData.notification_type === "info"
+      ) {
+        // Skip if this is a notification sent by this center to a parent
+        // You might need to add more specific logic here based on your notification structure
+      }
+
+      // Add to processed set
+      setProcessedNotificationIds(
+        (prev) => new Set([...prev, notification.id])
+      );
 
       setNotifications((prev) => {
-        console.log(
-          "📝 Updating notifications array, previous length:",
-          prev.length
-        );
-        const newArray = [notification, ...prev];
-        console.log("📝 New notifications array length:", newArray.length);
-        return newArray;
+        // Double-check for duplicates in the array
+        const exists = prev.some((n) => n.id === notification.id);
+        if (exists) {
+          return prev;
+        }
+        return [notification, ...prev];
       });
 
-      setUnreadCount((prev) => {
-        console.log("📝 Updating unread count, previous:", prev);
-        const newCount = prev + 1;
-        console.log("📝 New unread count:", newCount);
-        return newCount;
-      });
+      setUnreadCount((prev) => prev + 1);
 
       // Show custom toast notification
-      console.log("🍞 Showing toast notification...");
       showNotificationFromData(notification);
 
       // Show browser notification if permission granted
       if (Notification.permission === "granted") {
-        const notificationData = notification as any;
         let title = "Notification";
         let body = "You have a new notification";
 
@@ -130,35 +167,31 @@ export function useNotifications() {
           body = notificationData.description || "You have a new notification";
         }
 
-        console.log("🔔 Showing browser notification:", { title, body });
         new Notification(title, {
           body: body,
           icon: "/web-app-manifest-192x192.png",
         });
-      } else {
-        console.log(
-          "🔔 Browser notification permission not granted:",
-          Notification.permission
-        );
       }
     },
-    []
+    [processedNotificationIds, notifications.length, unreadCount]
   );
 
   // Initialize Pusher subscription
   useEffect(() => {
     if (!user?.id) {
-      console.log("❌ No user ID, skipping Pusher subscription");
       return;
     }
 
-    console.log("🚀 Initializing Pusher subscription for user:", user.id);
+    if (isSubscribedRef.current) {
+      return;
+    }
+
+    isSubscribedRef.current = true;
 
     // Subscribe to universal notifications
     const channel = pusherService.subscribeToUniversalNotifications({
       onNewNotification: handleNewNotification,
       onNotificationUpdated: (data) => {
-        console.log("📋 Notification updated:", data);
         setNotifications((prev) =>
           prev.map((notification) =>
             notification.id === data.notification_id
@@ -173,11 +206,9 @@ export function useNotifications() {
       },
     });
 
-    console.log("✅ Pusher subscription initialized, channel:", channel);
-
     // Cleanup function
     return () => {
-      console.log("🧹 Cleaning up Pusher subscription");
+      isSubscribedRef.current = false;
       pusherService.unsubscribeFromUniversalNotifications();
     };
   }, [user?.id, handleNewNotification]);

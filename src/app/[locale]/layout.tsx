@@ -47,7 +47,7 @@ export default async function LocaleLayout({
       <NextIntlClientProvider messages={messages}>
         <CookieSync />
         <Providers>{children}</Providers>
-        <Toaster />
+        <Toaster position="bottom-right" />
       </NextIntlClientProvider>
       <Script
         src="https://accounts.google.com/gsi/client"
