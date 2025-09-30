@@ -708,16 +708,7 @@ const ReservationForm = ({
                   style={{ flex: "0 0 auto", marginRight: 12 }}
                 >
                   <div
-                    className={`w-16 h-16 flex items-center justify-center ${
-                      selectedChildren.includes(idStr)
-                        ? "mb-0 mt-0"
-                        : "mb-2 mt-2"
-                    } transition-all duration-200`}
-                    style={{
-                      marginTop: selectedChildren.includes(idStr)
-                        ? 0
-                        : undefined,
-                    }}
+                    className={`w-16 h-16 flex items-center justify-center mb-2 mt-2 transition-all duration-200`}
                   >
                     <Image
                       src={
@@ -741,19 +732,27 @@ const ReservationForm = ({
                     />
                   </div>
                   <span
-                    className={`font-bold text-sm text-center mt-2 ${
+                    className={`font-bold text-sm text-center mt-1 ${
                       selectedChildren.includes(idStr)
                         ? "text-[#22336C]"
                         : "text-gray-600"
                     }`}
+                    style={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical" as any,
+                      WebkitLineClamp: 2 as any,
+                      overflow: "hidden",
+                      wordBreak: "break-word",
+                      lineHeight: 1.1,
+                    }}
                   >
                     {locale === "ar" ? nameAr || nameEn : nameEn || nameAr}
                   </span>
-                  {selectedChildren.includes(idStr) && (
+                  {/* {selectedChildren.includes(idStr) && (
                     <span className="mt-1 text-[#4D5EDB] text-xs font-bold">
                       ✓
                     </span>
-                  )}
+                  )} */}
                 </motion.button>
               );
             })}
