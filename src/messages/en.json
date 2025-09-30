@@ -2194,5 +2194,12 @@
       "online": "Online",
       "offline": "Offline"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "loading": "Loading...",
+    "noNotifications": "No notifications yet",
+    "viewAll": "View all notifications"
   }
 }

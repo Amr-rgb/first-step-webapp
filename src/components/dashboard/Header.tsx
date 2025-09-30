@@ -37,11 +37,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Toggle } from "@/components/ui/toggle";
+
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
 import { useAuthStore } from "@/store/authStore";
 import { handleLogout } from "@/lib/auth-utils";
+import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 
 type BreadcrumbItem = {
   title: string;
@@ -422,7 +423,7 @@ export default function Header({
           </div>
         </div>
 
-        <Bell className="size-6 text-mid-gray cursor-pointer" />
+        <NotificationDropdown />
 
         {/* Settings Dropdown Menu */}
         <DropdownMenu>

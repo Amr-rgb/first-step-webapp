@@ -456,3 +456,55 @@ export interface BranchPricingData {
   branch_id: number;
   prices: PricingFormData[];
 }
+
+// ===== Notification Types =====
+export interface BaseNotification {
+  id: string;
+  type: string; // e.g., "App\\Notifications\\UniversalNotification"
+  notifiable_type: string; // e.g., "App\\Models\\User"
+  notifiable_id: number;
+  read_at: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+// Universal notification (from Laravel broadcast)
+export interface UniversalNotificationData extends BaseNotification {
+  report_id?: number | null;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  notification_type: "info" | "daily_report" | "enrollment" | string;
+  enrollment_id?: number | null;
+  report?: any | null;
+  enrollment?: any | null;
+}
+
+// Legacy admin notifications (with title, description, date, time)
+export interface AdminNotification extends BaseNotification {
+  type: "App\\Notifications\\AdminNotification";
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+}
+
+// Legacy daily report notifications (with message and report_id)
+export interface DailyReportNotification extends BaseNotification {
+  type: "App\\Notifications\\DailyReportNotification";
+  message: string;
+  report_id: number;
+}
+
+// Union type for all notification types
+export type Notification =
+  | UniversalNotificationData
+  | AdminNotification
+  | DailyReportNotification;
+
+// Type alias for backward compatibility
+export type UniversalNotification = Notification;
+
+// The API returns a simple array of notifications
+export type NotificationsResponse = Notification[];

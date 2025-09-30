@@ -2207,5 +2207,12 @@
       "online": "متصل",
       "offline": "غير متصل"
     }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "loading": "جاري التحميل...",
+    "noNotifications": "لا توجد إشعارات بعد",
+    "viewAll": "عرض جميع الإشعارات"
   }
 }
