@@ -10,7 +10,7 @@ import { DataTable } from "@/components/tables/DataTable";
 import { parentService } from "@/services/dashboardApi";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "@/i18n/navigation";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import {
   useQuery,
   UseQueryOptions,
@@ -98,11 +98,11 @@ const useDailyReports = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dailyReports"] });
-      toast.success(t("deleteSuccess"));
+      toastSuccess(t("deleteSuccess"));
     },
     onError: (error) => {
       console.error("Error deleting report:", error);
-      toast.error(t("deleteError"));
+      toastError(t("deleteError"));
     },
   });
 
@@ -175,9 +175,9 @@ export default function DailyReports() {
   if (error) {
     console.error("Error fetching reports:", error);
     if ("status" in error && error.status === 403) {
-      toast.error(t("permissionError"));
+      toastError(t("permissionError"));
     } else {
-      toast.error(error.message || t("error"));
+      toastError(error.message || t("error"));
     }
   }
 

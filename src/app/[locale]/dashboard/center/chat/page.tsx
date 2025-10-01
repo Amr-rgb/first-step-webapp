@@ -4,7 +4,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
@@ -50,7 +50,7 @@ const CenterChatPage = () => {
       }
     } catch (error) {
       console.error("Error fetching chat contacts:", error);
-      toast.error("Failed to load chat contacts");
+      toastError("Failed to load chat contacts");
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +87,7 @@ const CenterChatPage = () => {
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
-      toast.error("Failed to load messages");
+      toastError("Failed to load messages");
     } finally {
       setIsLoading(false);
     }
@@ -192,7 +192,6 @@ const CenterChatPage = () => {
             videoUrl: message.video_url,
           };
 
-
           console.log("📨 Adding new message to state:", newMessage);
           setMessages((prev) => {
             console.log("📨 Previous messages count:", prev.length);
@@ -204,7 +203,6 @@ const CenterChatPage = () => {
           // Update last message in chats list
           setChats((prevChats) =>
             prevChats.map((chat) =>
-
               chat.id === message.sender_id.toString()
                 ? {
                     ...chat,
@@ -278,7 +276,6 @@ const CenterChatPage = () => {
       },
     });
 
-
     // Cleanup on component unmount or chat change
     return () => {
       console.log(
@@ -337,7 +334,7 @@ const CenterChatPage = () => {
       );
     } catch (error) {
       console.error("❌ Error sending message from center:", error);
-      toast.error("Failed to send message");
+      toastError("Failed to send message");
     } finally {
       setIsSending(false);
     }
@@ -371,10 +368,10 @@ const CenterChatPage = () => {
       setSelectedChatId(participantId);
       setMessages([]); // Start with empty messages
 
-      toast.success("New chat started!");
+      toastSuccess("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);
-      toast.error("Failed to create a new chat");
+      toastError("Failed to create a new chat");
     }
   };
 

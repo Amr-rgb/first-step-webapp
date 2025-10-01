@@ -24,7 +24,7 @@ import { useBranches } from "@/hooks/useBranches";
 import { centerService } from "@/services/dashboardApi";
 import { BranchPricingData, PricingFormData, Branch } from "@/types";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
 
 interface PlansSectionProps {
@@ -77,9 +77,23 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
         queryKey: ["branchPricing"],
       });
       setIsDialogOpen(false);
-      toast.success(t("planSaved"));
+      toastSuccess(t("planSaved"));
     },
-    onError: () => toast.error(t("planSaveError")),
+    onError: () => toastError(t("planSaveError")),
+  });
+
+  // Delete pricing mutation
+  const deletePricingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await centerService.deletePricing(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["branchPricing", selectedBranchId],
+      });
+      toastSuccess(t("planDeleted"));
+    },
+    onError: () => toastError(t("planDeleteError")),
   });
 
   // Select first branch automatically
@@ -113,7 +127,7 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
 
   const handleSavePlan = () => {
     if (selectedBranchIds.length === 0 && !editingPlan) {
-      toast.error(t("selectBranchesError"));
+      toastError(t("selectBranchesError"));
       return;
     }
 
@@ -137,13 +151,7 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
 
   const handleDeletePlan = (planId: number) => {
     if (!selectedBranchId) return;
-
-    const updatedPricing = branchPricing.filter((p) => p.id !== planId);
-    const payload: BranchPricingData[] = [
-      { branch_id: selectedBranchId, prices: updatedPricing },
-    ];
-
-    // savePricingMutation.mutate(payload);
+    deletePricingMutation.mutate(planId.toString());
   };
 
   if (branchesLoading) {
@@ -230,8 +238,13 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                             variant="destructive"
                             size="icon"
                             className="rounded-full w-9 h-9"
+                            disabled={deletePricingMutation.isPending}
                           >
-                            <Trash2 className="w-5 h-5" />
+                            {deletePricingMutation.isPending ? (
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            ) : (
+                              <Trash2 className="w-5 h-5" />
+                            )}
                           </Button>
                         </div>
                       </div>
@@ -327,9 +340,11 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                   <SelectValue placeholder={t("selectEnrollmentType")} />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="year">{t("year")}</SelectItem>
                   <SelectItem value="month">{t("month")}</SelectItem>
                   <SelectItem value="week">{t("week")}</SelectItem>
                   <SelectItem value="day">{t("day")}</SelectItem>
+                  <SelectItem value="hour">{t("hour")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

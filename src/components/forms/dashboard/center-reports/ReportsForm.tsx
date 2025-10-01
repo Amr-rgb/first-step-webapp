@@ -13,7 +13,7 @@ import { Parent } from "@/components/tables/data/parents";
 import Parents from "@/components/dashboard/notifications/Parents";
 import ReportFields from "./ReportFields";
 import { centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 const reportsSchema = z.object({
   activities: z
@@ -91,11 +91,11 @@ const ReportsForm = () => {
     mutationFn: ({ childIds, payload }: { childIds: string[]; payload: any }) =>
       centerService.sendDailyReport(childIds, payload),
     onSuccess: () => {
-      toast.success(t("success"));
+      toastSuccess(t("success"));
       router.back();
     },
     onError: (error) => {
-      toast.error(t("error"));
+      toastError(t("error"));
       console.error("Error sending report:", error);
     },
   });
@@ -119,7 +119,7 @@ const ReportsForm = () => {
       .flatMap((parent: any) => parent.childs.map((child: any) => child.id))
       .filter(Boolean);
     if (!childIds.length) {
-      toast.error(t("noChildSelected"));
+      toastError(t("noChildSelected"));
       return;
     }
 

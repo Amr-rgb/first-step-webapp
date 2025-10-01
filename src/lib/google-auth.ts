@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/store/authStore";
 import { authService } from "@/services/api";
-import { toast } from "sonner";
+import { toastError } from "@/lib/toast";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
@@ -47,7 +47,9 @@ const handleGoogleSignIn = async (credential: any) => {
     window.location.href = dashboardPath;
   } catch (error: any) {
     console.error("Google sign-in failed:", error);
-    toast(error.message || "Failed to sign in with Google. Please try again.");
+    toastError(
+      error.message || "Failed to sign in with Google. Please try again."
+    );
   }
 };
 
@@ -78,7 +80,7 @@ export const triggerGoogleSignIn = async () => {
     });
   } catch (error: any) {
     console.error("Google sign-in failed:", error);
-    toast.error("Failed to sign in with Google. Please try again.");
+    toastError("Failed to sign in with Google. Please try again.");
     return false;
   }
 };

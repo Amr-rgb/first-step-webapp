@@ -4,7 +4,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toastError } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
@@ -64,7 +64,7 @@ const AdminChatPage = () => {
       }
     } catch (error) {
       console.error("❌ Error fetching admin conversations:", error);
-      toast.error("Failed to load conversations");
+      toastError("Failed to load conversations");
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +108,7 @@ const AdminChatPage = () => {
       }
     } catch (error) {
       console.error("❌ Error fetching messages:", error);
-      toast.error("Failed to load messages");
+      toastError("Failed to load messages");
     } finally {
       setIsLoading(false);
     }
@@ -432,7 +432,7 @@ const AdminChatPage = () => {
       console.log("📤 Message added to UI successfully");
     } catch (error) {
       console.error("❌ Error sending admin message:", error);
-      toast.error("Failed to send message");
+      toastError("Failed to send message");
     } finally {
       setIsSending(false);
     }

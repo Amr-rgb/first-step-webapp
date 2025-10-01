@@ -28,9 +28,10 @@ interface Plan {
 interface PlansProps {
   nurseryName: string;
   locale: string;
+  preview?: boolean;
 }
 
-const Plans = ({ nurseryName, locale }: PlansProps) => {
+const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   const t = useTranslations("nurseryDetails");
   const [selectedBranch, setSelectedBranch] = useState<null | {
     id: string;
@@ -244,8 +245,11 @@ const Plans = ({ nurseryName, locale }: PlansProps) => {
                   <Button
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => {
-                      // Navigate to booking page with plan details
-                      window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
+
+                      if (!preview) {
+                        // Navigate to booking page with plan details
+                        window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch}&plan=${plan.id}`;
+                      }
                     }}
                   >
                     {t("plans.bookNow")}

@@ -8,7 +8,7 @@ import { CenterCardType } from "@/hooks/useBranches";
 import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { Loader2, Check, X } from "lucide-react";
 
 const CenterCard = ({ center }: { center: CenterCardType }) => {
@@ -21,10 +21,10 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
     mutationFn: () => adminService.acceptCenter(center.id.toString()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["centers"] });
-      toast.success(t("centerAccepted"));
+      toastSuccess(t("centerAccepted"));
     },
     onError: () => {
-      toast.error(t("errorAcceptingCenter"));
+      toastError(t("errorAcceptingCenter"));
     },
     onSettled: () => {
       setIsProcessing(false);
@@ -36,10 +36,10 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
     mutationFn: () => adminService.rejectCenter(center.id.toString()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["centers"] });
-      toast.success(t("centerRejected"));
+      toastSuccess(t("centerRejected"));
     },
     onError: () => {
-      toast.error(t("errorRejectingCenter"));
+      toastError(t("errorRejectingCenter"));
     },
     onSettled: () => {
       setIsProcessing(false);

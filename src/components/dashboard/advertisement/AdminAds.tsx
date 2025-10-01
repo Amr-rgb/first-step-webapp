@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -23,11 +23,11 @@ const AdminAds = () => {
   const deleteMutation = useMutation({
     mutationFn: (adId: string) => adminService.deleteAdvertisement(adId),
     onSuccess: () => {
-      toast.success(t("deleteSuccess"));
+      toastSuccess(t("deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: ["adminAdvertisements"] });
     },
     onError: () => {
-      toast.error(t("deleteError"));
+      toastError(t("deleteError"));
     },
   });
 

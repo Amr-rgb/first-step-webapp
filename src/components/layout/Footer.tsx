@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Input } from "../ui/input";
@@ -47,14 +47,16 @@ const TopLeftSection = () => {
   const subscribeMutation = useMutation({
     mutationFn: (email: string) => websiteService.subscribeToNewsletter(email),
     onSuccess: () => {
-      toast.success(t("newsletter.successTitle"), {
-        description: t("newsletter.successMessage"),
-      });
+      toastSuccess(
+        t("newsletter.successTitle"),
+        t("newsletter.successMessage")
+      );
     },
     onError: (error: any) => {
-      toast.error(t("newsletter.errorTitle"), {
-        description: error.message || t("newsletter.errorMessage"),
-      });
+      toastError(
+        t("newsletter.errorTitle"),
+        error.message || t("newsletter.errorMessage")
+      );
     },
   });
 

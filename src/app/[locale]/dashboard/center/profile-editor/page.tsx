@@ -128,7 +128,7 @@ const ProfileEditor = () => {
       component: ActivitiesSection,
     },
     { id: "contact", title: t("sections.contact"), component: ContactSection },
-    { id: "ads", title: t("sections.ads"), component: AdsSection },
+    // { id: "ads", title: t("sections.ads"), component: AdsSection },
     { id: "teams", title: t("sections.teams"), component: TeamsSection },
     { id: "plans", title: t("sections.plans"), component: PlansSection },
   ];

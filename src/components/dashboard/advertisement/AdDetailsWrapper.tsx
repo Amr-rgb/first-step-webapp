@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AdRequestForm from "@/components/forms/dashboard/adblog-request/AdRequestForm";
 import { AdRequestFormData } from "@/lib/schemas";
 import { adminService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useTranslations } from "next-intl";
 
 type AdType = "accepted" | "pending" | "rejected";
@@ -42,43 +42,43 @@ const AdDetailsWrapper = ({
       return adminService.updateAdvertisement(adId, transformedData);
     },
     onSuccess: () => {
-      toast.success(t("updateSuccess"));
+      toastSuccess(t("updateSuccess"));
     },
     onError: (error) => {
-      toast.error(t("updateError"));
+      toastError(t("updateError"));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: () => adminService.deleteAdvertisement(adId),
     onSuccess: () => {
-      toast.success(t("deleteSuccess"));
+      toastSuccess(t("deleteSuccess"));
       router.push(`/dashboard/admin/advertisement`);
     },
     onError: () => {
-      toast.error(t("deleteError"));
+      toastError(t("deleteError"));
     },
   });
 
   const acceptMutation = useMutation({
     mutationFn: () => adminService.approveCenterAd(adId),
     onSuccess: () => {
-      toast.success(t("acceptSuccess"));
+      toastSuccess(t("acceptSuccess"));
       queryClient.invalidateQueries({ queryKey: ["centerAds"] });
     },
     onError: () => {
-      toast.error(t("acceptError"));
+      toastError(t("acceptError"));
     },
   });
 
   const rejectMutation = useMutation({
     mutationFn: () => adminService.rejectCenterAd(adId),
     onSuccess: () => {
-      toast.success(t("rejectSuccess"));
+      toastSuccess(t("rejectSuccess"));
       queryClient.invalidateQueries({ queryKey: ["centerAds"] });
     },
     onError: () => {
-      toast.error(t("rejectError"));
+      toastError(t("rejectError"));
     },
   });
 

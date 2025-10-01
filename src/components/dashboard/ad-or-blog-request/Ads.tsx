@@ -4,7 +4,7 @@ import { Ad, useAdsColumns } from "@/components/tables/data/ads";
 import { DataTable } from "@/components/tables/DataTable";
 import { useLocale, useTranslations } from "next-intl";
 import { centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastError } from "@/lib/toast";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import EmptyState from "@/components/common/EmptyState";
@@ -43,9 +43,7 @@ const Ads = () => {
   // Handle errors using useEffect
   useEffect(() => {
     if (error) {
-      toast(tableT("error.title"), {
-        description: tableT("error.description"),
-      });
+      toastError(tableT("error.title"), tableT("error.description"));
       console.error("Error fetching ads:", error);
     }
   }, [error, tableT]);

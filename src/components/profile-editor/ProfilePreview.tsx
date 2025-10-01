@@ -40,6 +40,7 @@ export const ProfilePreview = ({
           slogan={data.subtitle_of_hero}
           description={data.description}
           backgroundImage={data.background_image}
+          preview
         />
       )}
 
@@ -67,10 +68,10 @@ export const ProfilePreview = ({
       )}
 
       {/* 5. Plans Section */}
-      <Plans nurseryName={nurseryName} locale={locale} />
+      <Plans nurseryName={nurseryName} locale={locale} preview />
 
       {/* 6. Programs Section */}
-      <Programs programs={[]} nurseryName={nurseryName} locale={locale} />
+      {/* <Programs programs={[]} nurseryName={nurseryName} locale={locale} /> */}
 
       {/* 7. Services Section */}
       {data.services && data.services.length > 0 && (
@@ -198,11 +199,12 @@ export const ProfilePreview = ({
           buttonText={t("branches.cta")}
           locale={locale}
           nurseryName={nurseryName}
+          preview
         />
       )}
 
       {/* 9. Activities Section */}
-      {data.images_activities && data.images_activities.length > 0 && (
+      {/* {data.images_activities && data.images_activities.length > 0 && (
         <Activities
           title={data.activity_section_title}
           subtitle={data.activity_section_subtitle}
@@ -210,8 +212,9 @@ export const ProfilePreview = ({
           buttonText={t("branches.cta")}
           locale={locale}
           nurseryName={nurseryName}
+          preview
         />
-      )}
+      )} */}
 
       {/* 10. Team Section */}
       {data.teams && data.teams.length > 0 && (

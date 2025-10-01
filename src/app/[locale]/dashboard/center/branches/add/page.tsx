@@ -6,7 +6,7 @@ import { use, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { centerService } from "@/services/dashboardApi";
 import BranchWrapper from "@/components/forms/dashboard/branches/BranchWrapper";
 import BranchAdminForm from "@/components/forms/dashboard/branches/BranchAdminForm";
@@ -49,7 +49,7 @@ export default function DashboardAddBranch({
       };
 
       const created = await centerService.createBranch(mergedPayload);
-      toast.success(t("admin.assigned"));
+      toastSuccess(t("admin.assigned"));
 
       queryClient.refetchQueries({ queryKey: ["branches"] });
 
@@ -57,7 +57,7 @@ export default function DashboardAddBranch({
       router.push(`/${locale}/dashboard/center/branches`);
     } catch (error) {
       console.error("Error creating branch with admin:", error);
-      toast.error(t("errors.something_went_wrong"));
+      toastError(t("errors.something_went_wrong"));
     } finally {
       setIsSubmitting(false);
     }

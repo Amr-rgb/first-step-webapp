@@ -20,7 +20,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService, centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 const AdRequestForm = ({
   initialData,
@@ -88,9 +88,7 @@ const AdRequestForm = ({
       });
     },
     onSuccess: () => {
-      toast(t("success.title"), {
-        description: t("success.description"),
-      });
+      toastSuccess("success.title", t("success.description"));
       methods.reset();
       setPreview(null);
       // Invalidate the ads query to refetch the list
@@ -105,9 +103,7 @@ const AdRequestForm = ({
       router.back();
     },
     onError: (error) => {
-      toast(t("error.title"), {
-        description: t("error.description"),
-      });
+      toastError(t("error.title"), t("error.description"));
       console.error("Error submitting ad request:", error);
     },
   });

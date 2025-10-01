@@ -823,6 +823,15 @@ export const centerService = {
     }
   },
 
+  deletePricing: async (id: string) => {
+    try {
+      const response = await apiClient.delete(`/delete-price/${id}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getBranchPricing: async (branchId: string) => {
     try {
       const response = await apiClient.get(`/branches-pricies/${branchId}`);
@@ -1499,6 +1508,35 @@ export const sidebarService = {
   deleteOccasion: async (occasionId: string) => {
     try {
       const response = await apiClient.delete(`/Occassion-both/${occasionId}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
+export const notificationService = {
+  getNotifications: async () => {
+    try {
+      const response = await apiClient.get(`/notifications`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  readNotification: async (id: string) => {
+    try {
+      const response = await apiClient.patch(`/notifications/${id}/read`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  readAllNotifications: async () => {
+    try {
+      const response = await apiClient.patch(`/notifications/read-all`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

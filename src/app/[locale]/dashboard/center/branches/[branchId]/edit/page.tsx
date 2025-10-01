@@ -6,7 +6,7 @@ import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import BranchWrapper from "@/components/forms/dashboard/branches/BranchWrapper";
 import BranchAdminForm from "@/components/forms/dashboard/branches/BranchAdminForm";
 import { centerService } from "@/services/dashboardApi";
@@ -62,7 +62,7 @@ export default function DashboardEditBranch({
       if (branchData?.user_id) {
         // Update existing admin
         await centerService.updateBranchAdmin(branchData.user_id, data);
-        toast.success(
+        toastSuccess(
           t("admin.success", { branchName: branchData?.name || "" })
         );
       } else {
@@ -71,7 +71,7 @@ export default function DashboardEditBranch({
           email: data.email,
           password: data.password,
         } as any);
-        toast.success(
+        toastSuccess(
           t("admin.success", { branchName: branchData?.name || "" })
         );
       }
@@ -81,7 +81,7 @@ export default function DashboardEditBranch({
       router.refresh();
     } catch (error) {
       console.error("Error updating admin:", error);
-      toast.error(t("error.title"));
+      toastError(t("error.title"));
     } finally {
       setIsSubmitting(false);
     }

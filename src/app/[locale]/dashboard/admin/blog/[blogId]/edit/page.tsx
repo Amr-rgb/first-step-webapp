@@ -7,7 +7,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { AdminBlogRequestFormData } from "@/lib/schemas";
 import { adminService } from "@/services/dashboardApi";
 import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,11 +44,11 @@ export default function BlogEdit({
       });
     },
     onSuccess: () => {
-      toast(t("success"));
+      toastSuccess(t("success"));
       queryClient.refetchQueries({ queryKey: ["adminBlogs", blogId] });
     },
     onError: () => {
-      toast(t("error"));
+      toastError(t("error"));
     },
   });
 

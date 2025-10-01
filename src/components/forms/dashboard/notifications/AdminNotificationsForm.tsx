@@ -14,7 +14,7 @@ import NotificationForm from "@/components/forms/dashboard/notifications/Notific
 import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { adminService, centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 const notificationSchema = z.object({
   type: z
@@ -115,24 +115,30 @@ const NotificationsForm = () => {
         selectedBranchMap
       );
 
+      const d = data.day;
+      const utcDate = new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+      );
+      const dateString = utcDate.toISOString().split("T")[0];
+
       return adminService.sendNotification({
         userIds: [
           ...selectedWithOnlySelectedChild.map((parent) => parent.id),
           ...selectedBranchIds,
         ],
         title: data.type,
-        date: data.day.toISOString().split("T")[0],
+        date: dateString,
         time_start: data.time,
       });
     },
     onSuccess: () => {
-      toast.success(t("form.success"));
+      toastSuccess(t("form.success"));
       methods.reset();
       setSelectedParents([]);
       setSelectedChildMap({});
     },
     onError: (error) => {
-      toast.error(t("form.error"));
+      toastError(t("form.error"));
       console.error("Notification error:", error);
     },
   });
