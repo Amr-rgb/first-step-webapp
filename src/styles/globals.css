@@ -488,3 +488,18 @@
 [data-sonner-toast][data-styled="false"] [data-cancel] {
   all: unset !important;
 }
+/* Toast Stacking Improvements */
+[data-sonner-toaster] {
+  z-index: 9999 !important;
+}
+
+[data-sonner-toaster][data-x-position="right"] {
+  right: 16px !important;
+}
+
+[data-sonner-toaster][data-y-position="bottom"] {
+  bottom: 16px !important;
+}
+
+/* Enable Sonner's expand behavior - don't override positioning */
+/* Remove any CSS that might interfere with Sonner's internal stacking logic */

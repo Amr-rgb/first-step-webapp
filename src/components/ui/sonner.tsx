@@ -11,20 +11,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="bottom-right"
+      visibleToasts={5}
+      closeButton={true}
+      gap={8}
       toastOptions={{
-        style: {
-          background: "white",
-          border: "1px solid #e5e7eb",
-          borderRadius: "8px",
-          boxShadow:
-            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-          padding: "16px",
-          fontSize: "14px",
-          fontWeight: "500",
-          color: "#111827",
-          minWidth: "320px",
-          maxWidth: "448px",
-        },
         className: "sonner-toast",
       }}
       style={
