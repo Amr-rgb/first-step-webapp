@@ -39,9 +39,13 @@ export default async function ReservationPage({
       ? searchParameters.program
       : "";
 
-  // If redirected from payment, Moyasar should use:
-  // /[locale]/nurseries/[name]/reservation?payment=success
-  // ReservationForm will show the success message automatically.
+  const branch =
+    typeof searchParameters.branch === "string" ? searchParameters.branch : "";
+
+  const plan =
+    typeof searchParameters.plan === "string" ? searchParameters.plan : "";
+
+ 
 
   const t = await getTranslations();
 
@@ -65,6 +69,8 @@ export default async function ReservationPage({
           nurseryName={nurseryName}
           selectedProgram={program}
           locale={locale}
+          selectedBranch={branch}
+          selectedPlan={plan}
         />
       </div>
     </div>

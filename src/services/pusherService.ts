@@ -31,7 +31,7 @@ class PusherService {
       this.initialize();
     }
 
-    const channelName = `chat.${receiverId}`;
+    const channelName = `chatnew.${receiverId}`;
     console.log("🔔 Subscribing to chat channel:", channelName);
 
     let channel = this.channels.get(channelName);
@@ -82,7 +82,7 @@ class PusherService {
       this.initialize();
     }
 
-    const channelName = `chat-list.${userId}`;
+    const channelName = `chat-list-new.${userId}`;
     console.log("🔔 Subscribing to chat list channel:", channelName);
 
     let channel = this.channels.get(channelName);
@@ -145,7 +145,7 @@ class PusherService {
       this.initialize();
     }
 
-    const channelName = "chat-list.admin";
+    const channelName = "chat-list-new.admin";
     let channel = this.channels.get(channelName);
 
     if (!channel) {
@@ -172,7 +172,7 @@ class PusherService {
       this.initialize();
     }
 
-    const channelName = "chat.admin";
+    const channelName = "chatnew.admin";
     let channel = this.channels.get(channelName);
 
     if (!channel) {
@@ -232,8 +232,50 @@ class PusherService {
     return channel;
   }
 
-  unsubscribeFromChat(receiverId: string) {
+  // Subscribe to a specific chat channel for admin participation
+  subscribeToSpecificChat(
+    receiverId: string,
+    callbacks: {
+      onNewMessage?: (message: any) => void;
+      onTyping?: (data: { userId: string; isTyping: boolean }) => void;
+    }
+  ) {
+    if (!this.pusher) {
+      this.initialize();
+    }
+
     const channelName = `chat.${receiverId}`;
+    console.log("🔔 Admin subscribing to specific chat channel:", channelName);
+
+    let channel = this.channels.get(channelName);
+
+    if (!channel) {
+      channel = this.pusher!.subscribe(channelName);
+      this.channels.set(channelName, channel);
+      console.log("✅ Admin subscribed to specific chat channel:", channelName);
+    }
+
+    if (callbacks.onNewMessage) {
+      channel.bind("new-message", (message: any) => {
+        console.log("📨 Admin specific chat new message:", message);
+        callbacks.onNewMessage!(message);
+      });
+    }
+
+    if (callbacks.onTyping) {
+      channel.bind(
+        "user.typing",
+        (data: { userId: string; isTyping: boolean }) => {
+          callbacks.onTyping!(data);
+        }
+      );
+    }
+
+    return channel;
+  }
+
+  unsubscribeFromChat(receiverId: string) {
+    const channelName = `chatnew.${receiverId}`;
     const channel = this.channels.get(channelName);
 
     if (channel) {
@@ -243,7 +285,7 @@ class PusherService {
   }
 
   unsubscribeFromChatList(userId: string) {
-    const channelName = `chat-list.${userId}`;
+    const channelName = `chat-list-new.${userId}`;
     const channel = this.channels.get(channelName);
 
     if (channel) {
@@ -263,7 +305,7 @@ class PusherService {
   }
 
   unsubscribeFromAdminChatList() {
-    const channelName = "chat-list.admin";
+    const channelName = "chat-list-new.admin";
     const channel = this.channels.get(channelName);
 
     if (channel) {
@@ -273,7 +315,7 @@ class PusherService {
   }
 
   unsubscribeFromAdminChat() {
-    const channelName = "chat.admin";
+    const channelName = "chatnew.admin";
     const channel = this.channels.get(channelName);
 
     if (channel) {
@@ -292,6 +334,22 @@ class PusherService {
       console.log("🔧 Unsubscribed from admin conversations channel");
     }
   }
+
+  unsubscribeFromSpecificChat(receiverId: string) {
+    const channelName = `chat.${receiverId}`;
+    const channel = this.channels.get(channelName);
+
+    if (channel) {
+      this.pusher?.unsubscribe(channelName);
+      this.channels.delete(channelName);
+      console.log(
+        "🔧 Admin unsubscribed from specific chat channel:",
+        channelName
+      );
+    }
+  }
+
+  // notification channel
 
   subscribeToUniversalNotifications(callbacks: {
     onNewNotification?: (notification: any) => void;
@@ -318,7 +376,7 @@ class PusherService {
       channel.unbind("notification-updated");
     }
 
-    // Bind to Laravel notification event
+    // Bind to Laravel notification events
     if (callbacks.onNewNotification) {
       channel.bind(
         "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
@@ -343,6 +401,7 @@ class PusherService {
     }
   }
 
+  // ========================
   disconnect() {
     if (this.pusher) {
       this.pusher.disconnect();
@@ -353,7 +412,7 @@ class PusherService {
 
   // Send typing indicator
   triggerTyping(chatId: string, userId: string, isTyping: boolean) {
-    const channelName = `chat.${chatId}`;
+    const channelName = `chatnew.${chatId}`;
     const channel = this.channels.get(channelName);
 
     if (channel) {
@@ -363,6 +422,8 @@ class PusherService {
       });
     }
   }
+
+  // notification channel
 }
 
 export const pusherService = new PusherService();
