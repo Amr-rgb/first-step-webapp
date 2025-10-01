@@ -327,3 +327,164 @@
     @apply bg-background text-foreground;
   }
 }
+/* Sonner Toast Styling - Match Notification Components */
+[data-sonner-toaster] {
+  --width: 356px;
+  --font-family: var(--font-primary), sans-serif;
+}
+
+[data-sonner-toast] {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  padding: 16px !important;
+  font-family: var(--font-primary), sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #111827 !important;
+  min-width: 320px !important;
+  max-width: 448px !important;
+  border-left: 4px solid #6b7280 !important;
+}
+
+/* Success Toast - Green Border */
+[data-sonner-toast][data-type="success"] {
+  border-left-color: #10b981 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #10b981 !important;
+}
+
+/* Error Toast - Red Border */
+[data-sonner-toast][data-type="error"] {
+  border-left-color: #ef4444 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: #ef4444 !important;
+}
+
+/* Warning Toast - Yellow Border */
+[data-sonner-toast][data-type="warning"] {
+  border-left-color: #f59e0b !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: #f59e0b !important;
+}
+
+/* Info Toast - Blue Border */
+[data-sonner-toast][data-type="info"] {
+  border-left-color: #3b82f6 !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: #3b82f6 !important;
+}
+
+/* Default/Loading Toast - Gray Border */
+[data-sonner-toast][data-type="loading"] {
+  border-left-color: #6b7280 !important;
+}
+
+[data-sonner-toast][data-type="loading"] [data-icon] {
+  color: #6b7280 !important;
+}
+
+/* Toast Content Styling */
+[data-sonner-toast] [data-title] {
+  font-weight: 600 !important;
+  color: #111827 !important;
+  margin-bottom: 4px !important;
+  font-size: 14px !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+}
+
+/* Toast Icon Styling */
+[data-sonner-toast] [data-icon] {
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Close Button Styling */
+[data-sonner-toast] [data-close-button] {
+  background: transparent !important;
+  border: none !important;
+  color: #9ca3af !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  border-radius: 4px !important;
+  transition: color 0.2s ease !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  color: #6b7280 !important;
+  background: #f3f4f6 !important;
+}
+
+/* Action Button Styling */
+[data-sonner-toast] [data-button] {
+  background: #f3f4f6 !important;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin-top: 8px !important;
+  margin-right: 8px !important;
+}
+
+[data-sonner-toast] [data-button]:hover {
+  background: #e5e7eb !important;
+  border-color: #9ca3af !important;
+}
+
+/* Cancel Button Styling */
+[data-sonner-toast] [data-cancel] {
+  background: transparent !important;
+  border: none !important;
+  color: #6b7280 !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin-top: 8px !important;
+}
+
+[data-sonner-toast] [data-cancel]:hover {
+  color: #374151 !important;
+  background: #f3f4f6 !important;
+}
+/* Unstyled Custom Toasts - Remove Sonner styling for custom notification components */
+[data-sonner-toast][data-styled="false"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-left: none !important;
+}
+
+[data-sonner-toast][data-styled="false"] [data-title],
+[data-sonner-toast][data-styled="false"] [data-description],
+[data-sonner-toast][data-styled="false"] [data-icon],
+[data-sonner-toast][data-styled="false"] [data-close-button],
+[data-sonner-toast][data-styled="false"] [data-button],
+[data-sonner-toast][data-styled="false"] [data-cancel] {
+  all: unset !important;
+}

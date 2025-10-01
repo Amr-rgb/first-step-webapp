@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Loader2, X } from "lucide-react";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useAuthUser } from "@/store/authStore";
 import { Label } from "../ui/label";
 
@@ -119,16 +119,19 @@ export default function EditProfile({
         res?.message &&
         res.message.toLowerCase().includes("does not match")
       ) {
-        toast.error(res.message);
+        toastError("Authentication Failed", res.message);
         return;
       }
       await onSave(pendingData);
-      toast.success(t("success.saved"));
+      toastSuccess(
+        t("success.saved"),
+        "Your profile has been updated successfully"
+      );
       setConfirmOpen(false);
       setPassword("");
       setPendingData(null);
     } catch (error: any) {
-      toast.error(error?.message || t("errors.saveFailed"));
+      toastError("Save Failed", error?.message || t("errors.saveFailed"));
     } finally {
       setConfirmLoading(false);
     }

@@ -5,7 +5,7 @@ import { TeamMemberFormData } from "@/lib/schemas";
 import { centerService } from "@/services/dashboardApi";
 import { useRouter } from "@/i18n/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -46,11 +46,11 @@ const MemberFormWrapper = ({
       queryClient.refetchQueries({
         queryKey: ["branch-team", data.branch_id],
       });
-      toast.success("Team member added successfully");
+      toastSuccess("Team member added successfully");
       router.back();
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to add team member");
+      toastError(error.message || "Failed to add team member");
     },
   });
 
@@ -69,11 +69,11 @@ const MemberFormWrapper = ({
       queryClient.refetchQueries({
         queryKey: ["branch-team", data.branch_id],
       });
-      toast.success("Team member updated successfully");
+      toastSuccess("Team member updated successfully");
       router.back();
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to update team member");
+      toastError(error.message || "Failed to update team member");
     },
   });
 
@@ -83,11 +83,11 @@ const MemberFormWrapper = ({
       queryClient.refetchQueries({
         queryKey: ["branch-team", data.branch_id],
       });
-      toast.success("Team member deleted successfully");
+      toastSuccess("Team member deleted successfully");
       router.back();
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to delete team member");
+      toastError(error.message || "Failed to delete team member");
     },
   });
 

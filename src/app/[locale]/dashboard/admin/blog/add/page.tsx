@@ -5,7 +5,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { useRouter } from "next/navigation";
 import AdminBlogForm from "@/components/forms/dashboard/blog/AdminBlogForm";
 import { adminService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { AdminBlogRequestFormData } from "@/lib/schemas";
 import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,13 +31,13 @@ export default function AdminBlogAddPage() {
       });
     },
     onSuccess: () => {
-      toast(t("success"));
+      toastSuccess("success");
       // Invalidate the blogs query to refetch the list
       queryClient.refetchQueries({ queryKey: ["adminBlogs"] });
       router.back();
     },
     onError: () => {
-      toast(t("error"));
+      toastError(t("error"));
     },
   });
 

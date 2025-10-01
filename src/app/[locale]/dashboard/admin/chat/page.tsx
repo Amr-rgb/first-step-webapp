@@ -4,7 +4,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toastError, toastInfo } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
@@ -64,7 +64,7 @@ const AdminChatPage = () => {
       }
     } catch (error) {
       console.error("❌ Error fetching admin conversations:", error);
-      toast.error("Failed to load conversations");
+      toastError("Failed to load conversations");
     } finally {
       setIsLoading(false);
     }
@@ -76,8 +76,6 @@ const AdminChatPage = () => {
 
     try {
       setIsLoading(true);
-
-    
 
       const conversationMessages =
         await chatService.getAdminConversationMessages(selectedChatId, token);
@@ -104,7 +102,7 @@ const AdminChatPage = () => {
       }
     } catch (error) {
       console.error("❌ Error fetching messages:", error);
-      toast.error("Failed to load messages");
+      toastError("Failed to load messages");
     } finally {
       setIsLoading(false);
     }
@@ -179,7 +177,6 @@ const AdminChatPage = () => {
     // Initialize Pusher
     pusherService.initialize();
 
-
     // Subscribe to admin conversations channel
     pusherService.subscribeToAdminConversations({
       onNewMessage: (message) => {
@@ -215,7 +212,6 @@ const AdminChatPage = () => {
           setMessages((prev) => [...prev, newMessage]);
         }
 
-
         // Update last message in conversations list for both possible conversation IDs
         setChats((prevChats) =>
           prevChats.map((chat) =>
@@ -224,7 +220,6 @@ const AdminChatPage = () => {
                   ...chat,
                   lastMessage: newMessage.content,
                   timestamp: newMessage.timestamp,
-
                 }
               : chat
           )
@@ -241,7 +236,6 @@ const AdminChatPage = () => {
     pusherService.subscribeToUserStatus({
       onUserOnline: (userId) => {
         setChats((prevChats) =>
-
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -253,7 +247,6 @@ const AdminChatPage = () => {
       },
       onUserOffline: (userId) => {
         setChats((prevChats) =>
-
           prevChats.map((chat) => {
             // Check if the user is a participant in this conversation
             const isParticipant = chat.participants?.some(
@@ -276,14 +269,13 @@ const AdminChatPage = () => {
     setSelectedChatId(chatId);
   };
 
-
   const handleBackToChats = () => {
     setSelectedChatId(null);
   };
 
   const handleSendMessage = async (content: string) => {
     // Admin cannot send messages - they are only viewing conversations
-    toast.info("Admin can only view conversations, not send messages");
+    toastInfo("Admin can only view conversations, not send messages");
     return;
   };
 

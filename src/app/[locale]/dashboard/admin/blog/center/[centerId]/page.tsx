@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import AdminBlogCard from "@/components/general/blog/AdminBlogCard";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 export default function CenterBlogsPage({
   params,
@@ -32,11 +32,11 @@ export default function CenterBlogsPage({
     mutationFn: (blogId: string) => adminService.approveCenterBlog(blogId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["centerBlogs", centerId] });
-      toast.success(t("blogApproved"));
+      toastSuccess(t("blogApproved"));
     },
     onError: (error) => {
       console.error("Error approving blog:", error);
-      toast.error(t("approvalError"));
+      toastError(t("approvalError"));
     },
   });
 
@@ -44,11 +44,11 @@ export default function CenterBlogsPage({
     mutationFn: (blogId: string) => adminService.rejectCenterBlog(blogId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["centerBlogs", centerId] });
-      toast.success(t("blogRejected"));
+      toastSuccess(t("blogRejected"));
     },
     onError: (error) => {
       console.error("Error rejecting blog:", error);
-      toast.error(t("rejectionError"));
+      toastError(t("rejectionError"));
     },
   });
 

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
 import { PortfolioFormData } from "@/types";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useTranslations } from "next-intl";
 
 // Transform API data to match our form structure
@@ -105,10 +105,10 @@ export const usePortfolio = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-      toast.success(t("saveSuccess"));
+      toastSuccess(t("saveSuccess"));
     },
     onError: () => {
-      toast.error(t("saveError"));
+      toastError(t("saveError"));
     },
   });
 

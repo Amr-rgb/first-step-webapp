@@ -11,7 +11,7 @@ import { useBranch } from "@/hooks/useBranches";
 import { centerService } from "@/services/dashboardApi";
 import BranchFormSkeleton from "./BranchFormSkeleton";
 import { ApiError } from "@/lib/error-handling";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 
@@ -129,7 +129,7 @@ const BranchWrapper = ({
   }, [mode, transformedInitialValues, methods]);
 
   const handleApiError = (error: ApiError) => {
-    toast.error(error.message);
+    toastError(error.message);
     const formattedErrors = Object.entries(error.errors || {}).reduce(
       (acc, [key, value]) => ({
         ...acc,
@@ -156,7 +156,7 @@ const BranchWrapper = ({
       return await centerService.updateBranch(editBranchId, data);
     },
     onSuccess: (data) => {
-      toast.success("Branch updated successfully");
+      toastSuccess("Branch updated successfully");
 
       // Invalidate all related queries to ensure data consistency
       queryClient.refetchQueries({ queryKey: ["branch", editBranchId] });
@@ -173,7 +173,7 @@ const BranchWrapper = ({
       return await centerService.createBranch(data);
     },
     onSuccess: (data) => {
-      toast.success("Branch created successfully");
+      toastSuccess("Branch created successfully");
       setApiErrors({});
 
       // Call onBranchCreated with the new branch data if provided

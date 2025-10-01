@@ -12,7 +12,7 @@ import NotificationForm from "@/components/forms/dashboard/notifications/Notific
 import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 const notificationSchema = z.object({
   type: z
@@ -88,13 +88,13 @@ const NotificationsForm = () => {
       });
     },
     onSuccess: () => {
-      toast.success(t("form.success"));
+      toastSuccess(t("form.success"));
       methods.reset();
       setSelectedParents([]);
       setSelectedChildMap({});
     },
     onError: (error) => {
-      toast.error(t("form.error"));
+      toastError(t("form.error"));
       console.error("Notification error:", error);
     },
   });

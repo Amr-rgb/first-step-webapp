@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations } from "next-intl";
@@ -369,10 +369,10 @@ const Bookings = () => {
     setCancellingId(booking.id);
     try {
       await parentService.cancelEnrollment(booking.id);
-      toast.success(t("cancelSuccess"));
+      toastSuccess(t("cancelSuccess"));
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
     } catch (e: any) {
-      toast.error(e.message || t("cancelError"));
+      toastError(e.message || t("cancelError"));
     } finally {
       setCancellingId(null);
       setConfirmDialog({ open: false, booking: null });

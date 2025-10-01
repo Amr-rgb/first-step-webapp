@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { NotificationToast } from "@/components/notifications/NotificationToast";
 import { EnrollmentNotificationToast } from "@/components/notifications/EnrollmentNotificationToast";
 import { UniversalNotification } from "@/types";
+import { showToast } from "@/lib/toast";
 
 type NotificationType =
   | "daily_report"
@@ -40,6 +41,7 @@ export function showNotificationToast({
     {
       duration,
       position: "bottom-right",
+      unstyled: true, // This removes Sonner's default styling
     }
   );
 }
@@ -76,6 +78,7 @@ export function showNotificationFromData(notification: UniversalNotification) {
         {
           duration: 15000, // Longer duration for enrollment notifications
           position: "bottom-right",
+          unstyled: true, // This removes Sonner's default styling
         }
       );
     }
@@ -136,5 +139,24 @@ export function showNotificationFromData(notification: UniversalNotification) {
       // Navigate to notifications page
       window.location.href = "/dashboard/notifications";
     },
+  });
+}
+
+// Simple toast function that matches notification styling
+export function showSimpleToast(
+  title: string,
+  description?: string,
+  type: "success" | "error" | "warning" | "info" = "info",
+  options?: {
+    duration?: number;
+    action?: { label: string; onClick: () => void };
+  }
+) {
+  return showToast({
+    title,
+    description,
+    type,
+    duration: options?.duration,
+    action: options?.action,
   });
 }
