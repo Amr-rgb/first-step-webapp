@@ -6,7 +6,7 @@ import { ReservationStatus, useReservationStatus } from "./shared/status";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // This type is used to define the shape of our data.
@@ -66,12 +66,12 @@ export function useCenterBookingsColumns(
       await centerService.respondEnrollment(parseInt(enrollmentId), status);
     },
     onSuccess: () => {
-      toast.success(t("enrollmentResponseSuccess"));
+      toastSuccess(t("enrollmentResponseSuccess"));
       // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: ["centerBookings"] });
     },
     onError: () => {
-      toast.error(t("enrollmentResponseError"));
+      toastError(t("enrollmentResponseError"));
     },
   });
 

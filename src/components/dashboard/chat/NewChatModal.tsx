@@ -5,7 +5,7 @@ import { dashboardIcons } from "@/components/general/icons";
 import { User } from "./types";
 import { chatService } from "@/services/chatService";
 import { useAuthStore } from "@/store/authStore";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 interface Contact {
   id: string;
@@ -43,14 +43,14 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
   useEffect(() => {
     const fetchContacts = async () => {
       if (!token) return;
-      
+
       try {
         setIsLoading(true);
-        
+
         if (currentUser.type === "center") {
           // Fetch parents for center
           const parents = await chatService.getCenterParents(token);
-          const parentContacts: Contact[] = parents.map(parent => ({
+          const parentContacts: Contact[] = parents.map((parent) => ({
             id: parent.id.toString(),
             name: parent.name,
             type: "parent" as const,
@@ -63,7 +63,7 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
         } else if (currentUser.type === "parent") {
           // Fetch centers for parent
           const centers = await chatService.getCentersForParent(token);
-          const centerContacts: Contact[] = centers.map(center => ({
+          const centerContacts: Contact[] = centers.map((center) => ({
             id: center.id.toString(),
             name: center.name,
             type: "center" as const,
@@ -74,18 +74,18 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
           setContacts(centerContacts);
         }
       } catch (error) {
-        console.error('Error fetching contacts:', error);
-        toast.error('Failed to load contacts');
+        console.error("Error fetching contacts:", error);
+        toastError("Failed to load contacts");
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchContacts();
   }, [currentUser.type, token]);
 
   useEffect(() => {
-    const filtered = contacts.filter(contact =>
+    const filtered = contacts.filter((contact) =>
       contact.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredContacts(filtered);
@@ -108,7 +108,7 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
         </div>
       );
     }
-    
+
     // Parent type - first two letters of name
     return (
       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center text-sm font-bold shadow-lg">
@@ -135,18 +135,30 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
-          
+
           {/* Search */}
           <div className="relative mt-4">
             <dashboardIcons.search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder={`Search ${currentUser.type === "center" ? "parents" : "centers"}...`}
+              placeholder={`Search ${
+                currentUser.type === "center" ? "parents" : "centers"
+              }...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
@@ -184,7 +196,7 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                     )}
                   </div>
-                  
+
                   {/* Contact Info */}
                   <div className="ml-3 flex-1">
                     <h3 className="text-sm font-semibold text-gray-900">
@@ -193,16 +205,21 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
                     <p className="text-xs text-gray-500 capitalize">
                       {contact.type}
                       {contact.isOnline && (
-                        <span className="ml-2 text-green-500 font-medium">• Online</span>
+                        <span className="ml-2 text-green-500 font-medium">
+                          • Online
+                        </span>
                       )}
                     </p>
                     {contact.children && contact.children.length > 0 && (
                       <p className="text-xs text-blue-600 mt-1">
-                        Children: {contact.children.map(child => child.child_name).join(", ")}
+                        Children:{" "}
+                        {contact.children
+                          .map((child) => child.child_name)
+                          .join(", ")}
                       </p>
                     )}
                   </div>
-                  
+
                   {/* Start chat button */}
                   <div className="ml-3">
                     <div className="p-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors duration-200">
@@ -218,10 +235,9 @@ const NewChatModal: React.FC<NewChatModalProps> = ({
         {/* Footer */}
         <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
           <p className="text-xs text-gray-600 text-center">
-            {currentUser.type === "center" 
+            {currentUser.type === "center"
               ? "Select a parent to start a conversation"
-              : "Select a center to start a conversation"
-            }
+              : "Select a center to start a conversation"}
           </p>
         </div>
       </div>

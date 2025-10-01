@@ -4,7 +4,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
@@ -49,7 +49,7 @@ const ParentChatPage = () => {
       }
     } catch (error) {
       console.error("Error fetching chat contacts:", error);
-      toast.error("Failed to load chat contacts");
+      toastError("Failed to load chat contacts");
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +86,7 @@ const ParentChatPage = () => {
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
-      toast.error("Failed to load messages");
+      toastError("Failed to load messages");
     } finally {
       setIsLoading(false);
     }
@@ -163,7 +163,6 @@ const ParentChatPage = () => {
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
       onChatUpdate: (chatData) => {
-
         console.log("📋 Processing chat list update:", chatData);
         // The data structure is different - it contains contacts array
         if (chatData.contacts && Array.isArray(chatData.contacts)) {
@@ -331,7 +330,7 @@ const ParentChatPage = () => {
       );
     } catch (error) {
       console.error("❌ Error sending message:", error);
-      toast.error("Failed to send message");
+      toastError("Failed to send message");
     } finally {
       setIsSending(false);
     }
@@ -365,10 +364,10 @@ const ParentChatPage = () => {
       setSelectedChatId(participantId);
       setMessages([]); // Start with empty messages
 
-      toast.success("New chat started!");
+      toastSuccess("New chat started!");
     } catch (error) {
       console.error("Error creating new chat:", error);
-      toast.error("Failed to create a new chat");
+      toastError("Failed to create a new chat");
     }
   };
 

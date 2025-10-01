@@ -24,7 +24,7 @@ import { useBranches } from "@/hooks/useBranches";
 import { centerService } from "@/services/dashboardApi";
 import { BranchPricingData, PricingFormData, Branch } from "@/types";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
 
 interface PlansSectionProps {
@@ -77,9 +77,9 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
         queryKey: ["branchPricing"],
       });
       setIsDialogOpen(false);
-      toast.success(t("planSaved"));
+      toastSuccess(t("planSaved"));
     },
-    onError: () => toast.error(t("planSaveError")),
+    onError: () => toastError(t("planSaveError")),
   });
 
   // Delete pricing mutation
@@ -91,9 +91,9 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
       queryClient.invalidateQueries({
         queryKey: ["branchPricing", selectedBranchId],
       });
-      toast.success(t("planDeleted"));
+      toastSuccess(t("planDeleted"));
     },
-    onError: () => toast.error(t("planDeleteError")),
+    onError: () => toastError(t("planDeleteError")),
   });
 
   // Select first branch automatically
@@ -127,7 +127,7 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
 
   const handleSavePlan = () => {
     if (selectedBranchIds.length === 0 && !editingPlan) {
-      toast.error(t("selectBranchesError"));
+      toastError(t("selectBranchesError"));
       return;
     }
 

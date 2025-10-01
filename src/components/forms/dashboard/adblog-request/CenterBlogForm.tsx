@@ -22,7 +22,7 @@ import { BlogRequestFormData, createBlogRequestSchema } from "@/lib/schemas";
 import { z } from "zod";
 import BlogEditor from "../blog/BlogEditor";
 import { centerService } from "@/services/dashboardApi";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 interface CenterBlogFormProps {
   initialValues?: {
@@ -124,9 +124,7 @@ const CenterBlogForm = ({
       }
     },
     onSuccess: () => {
-      toast(t("success.title"), {
-        description: t("success.description"),
-      });
+      toastSuccess("success.title", t("success.description"));
 
       // Reset form and previews if creating
       if (!blogId) {
@@ -143,9 +141,7 @@ const CenterBlogForm = ({
       router.back();
     },
     onError: (error) => {
-      toast(t("error.title"), {
-        description: t("error.description"),
-      });
+      toastError(t("error.title"), t("error.description"));
       console.error("Error submitting blog:", error);
     },
   });

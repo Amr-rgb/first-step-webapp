@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { toast } from "sonner";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { BranchCardType } from "@/hooks/useBranches";
@@ -32,10 +32,10 @@ const BranchCard = ({
   const handleDelete = async () => {
     try {
       await centerService.deleteBranch(branch.id);
-      toast.success(t("delete_dialog.success"));
+      toastSuccess(t("delete_dialog.success"));
       queryClient.invalidateQueries({ queryKey: ["branches"] });
     } catch (error) {
-      toast.error(t("delete_dialog.error"));
+      toastError(t("delete_dialog.error"));
     }
   };
 

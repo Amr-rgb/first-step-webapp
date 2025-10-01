@@ -136,7 +136,10 @@ export function useNotifications() {
         if (exists) {
           return prev;
         }
-        return [notification, ...prev];
+        return [
+          { ...notification, created_at: new Date().toISOString() },
+          ...prev,
+        ];
       });
 
       setUnreadCount((prev) => prev + 1);

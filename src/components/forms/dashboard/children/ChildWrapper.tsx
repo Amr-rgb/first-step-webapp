@@ -4,8 +4,7 @@ import React from "react";
 import Child from "./Child";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
 const ChildWrapper = ({
   initialValues,
@@ -73,21 +72,20 @@ const ChildWrapper = ({
         refetchType: "active",
       });
 
-      toast(
-        mode === "edit"
-          ? "تم تحديث بيانات الطفل بنجاح!"
-          : "تم إضافة الطفل بنجاح!",
-        {
-          description:
-            mode === "edit"
-              ? "تم تحديث بيانات الطفل بنجاح!"
-              : "تمت إضافة الطفل بنجاح!",
-          icon: <CheckCircle2 className="text-green-500 w-6 h-6" />,
-          className:
-            "bg-green-50 border-green-400 text-green-900 font-bold text-lg",
-          duration: 1800,
-        }
-      );
+      showToast({
+        title:
+          mode === "edit"
+            ? "تم تحديث بيانات الطفل بنجاح!"
+            : "تم إضافة الطفل بنجاح!",
+        description:
+          mode === "edit"
+            ? "تم تحديث بيانات الطفل بنجاح!"
+            : "تمت إضافة الطفل بنجاح!",
+        type: "success",
+        duration: 1800,
+        // className:
+        //   "bg-green-50 border-green-400 text-green-900 font-bold text-lg",
+      });
       setTimeout(() => {
         router.replace("/dashboard/parent/children");
       }, 1500);
