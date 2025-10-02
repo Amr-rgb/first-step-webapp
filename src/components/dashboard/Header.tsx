@@ -16,7 +16,7 @@ import {
   Mail,
   LogOut,
 } from "lucide-react";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useDashboardSearch } from "@/hooks/use-dashboard-search";
@@ -41,6 +41,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
 import { useAuthStore } from "@/store/authStore";
+import { useUserPreferencesStore } from "@/store/userPreferencesStore";
 import { handleLogout } from "@/lib/auth-utils";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 
@@ -67,14 +68,13 @@ export default function Header({
   secondarySidebarOpen,
 }: HeaderProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const t = useTranslations("dashboard.header");
   const commonT = useTranslations("common");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchFocused, setSearchFocused] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const authStore = useAuthStore();
+  const userPreferencesStore = useUserPreferencesStore();
   const role = authStore.user?.role;
 
   // Dashboard search functionality
@@ -92,12 +92,14 @@ export default function Header({
 
   // Menu items configuration
   const menuItems = {
+    // Toggle for enabling/disabling pusher notification toasts
+    // This controls whether toast notifications appear when new pusher notifications arrive
     notifications: {
       icon: Bell,
       label: "الإشعارات",
       type: "toggle" as const,
-      value: notificationsEnabled,
-      onChange: setNotificationsEnabled,
+      value: userPreferencesStore.preferences.notificationToastsEnabled,
+      onChange: userPreferencesStore.setNotificationToastsEnabled,
     },
     separator1: { type: "separator" as const },
     billingControl:

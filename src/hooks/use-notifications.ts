@@ -5,6 +5,7 @@ import { notificationService } from "@/services/dashboardApi";
 import { pusherService } from "@/services/pusherService";
 import { UniversalNotification, NotificationsResponse } from "@/types";
 import { useAuthStore } from "@/store/authStore";
+import { useUserPreferencesStore } from "@/store/userPreferencesStore";
 import { showNotificationFromData } from "@/lib/notification-toast";
 
 export function useNotifications() {
@@ -20,6 +21,7 @@ export function useNotifications() {
   const isSubscribedRef = useRef(false);
 
   const { user } = useAuthStore();
+  const { preferences } = useUserPreferencesStore();
 
   // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
@@ -144,8 +146,11 @@ export function useNotifications() {
 
       setUnreadCount((prev) => prev + 1);
 
-      // Show custom toast notification
-      showNotificationFromData(notification);
+      // Show custom toast notification only if enabled in user preferences
+      // This respects the toggle setting in the dashboard header
+      if (preferences.notificationToastsEnabled) {
+        showNotificationFromData(notification);
+      }
 
       // Show browser notification if permission granted
       if (Notification.permission === "granted") {
