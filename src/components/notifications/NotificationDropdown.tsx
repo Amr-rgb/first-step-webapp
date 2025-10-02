@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, Check, CheckCheck, Loader2 } from "lucide-react";
+import { Bell, CheckCheck, Loader2 } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationItem } from "./NotificationItem";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { useAuthUser } from "@/store/authStore";
 
 export function NotificationDropdown() {
   const {
@@ -26,6 +28,8 @@ export function NotificationDropdown() {
   } = useNotifications();
 
   const t = useTranslations("notifications");
+  const user = useAuthUser();
+  const role = user?.role;
 
   return (
     <DropdownMenu>
@@ -93,7 +97,9 @@ export function NotificationDropdown() {
             <DropdownMenuSeparator />
             <div className="p-2">
               <Button variant="ghost" className="w-full text-sm" asChild>
-                <a href="/dashboard/notifications">{t("viewAll")}</a>
+                <Link href={`/dashboard/${role}/all-notifications`}>
+                  {t("viewAll")}
+                </Link>
               </Button>
             </div>
           </>
