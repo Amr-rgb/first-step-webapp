@@ -61,7 +61,10 @@
       "contact": { "title": "Contact Us", "path": "/contact" },
       "help": { "title": "Help", "path": "/help" },
       "privacy-policy": { "title": "Privacy", "path": "/privacy-policy" },
-      "terms-conditions": { "title": "Terms and Conditions", "path": "/terms-conditions" }
+      "terms-conditions": {
+        "title": "Terms and Conditions",
+        "path": "/terms-conditions"
+      }
     },
     "contactTitle": "Contact us",
     "newsletter": {
@@ -1985,7 +1988,7 @@
       },
       "plans": {
         "popular": "Most Popular",
-        "commission": "+ 12% commission on every booking through the site",
+        "commission": "+ 5% commission on every booking through the site",
         "select": "Join Now",
         "processing": "Processing...",
         "currency": "SAR",

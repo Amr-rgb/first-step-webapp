@@ -58,7 +58,10 @@
       "contact": { "title": "تواصل معنا", "path": "/contact" },
       "help": { "title": "المساعدة", "path": "/help" },
       "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
-      "terms-conditions": { "title": "الشروط والأحكام", "path": "/terms-conditions" }
+      "terms-conditions": {
+        "title": "الشروط والأحكام",
+        "path": "/terms-conditions"
+      }
     },
     "contactTitle": "تواصل معنا",
     "newsletter": {
@@ -1983,7 +1986,7 @@
       },
       "plans": {
         "popular": "الأكثر شعبية",
-        "commission": "+ 12 % عمولة على كل حجز من خلال الموقع",
+        "commission": "+ 5 % عمولة على كل حجز من خلال الموقع",
         "select": "اشترك الآن",
         "processing": "جاري المعالجة...",
         "currency": "ر.س",
