@@ -46,7 +46,11 @@ export interface Child {
   notes: string | null;
   kinship: string | null;
   center_branch_id: number | null;
-  disease_details: string | null;
+  disease_details: Array<{
+    disease_name: string;
+    medicament: string;
+    emergency: string;
+  }> | null;
   enrollments: Array<{
     id: number;
     center_id: number;
