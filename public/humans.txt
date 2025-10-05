@@ -1,0 +1,30 @@
+# First Step - Smart Childcare Platform
+
+# Team
+    First Step Development Team
+    Site: https://firststep.com
+    Twitter: @firststep
+    Location: Saudi Arabia
+
+# Technology
+    Frontend: Next.js, React, TypeScript
+    Styling: Tailwind CSS
+    Backend: Node.js
+    Database: PostgreSQL
+    Hosting: Vercel
+    Analytics: Google Analytics
+    Monitoring: Sentry
+
+# Standards
+    HTML5, CSS3, ES6+
+    Accessibility: WCAG 2.1 AA
+    Performance: Core Web Vitals
+    SEO: Schema.org, Open Graph
+
+# Contact
+    Email: contact@firststep.com
+    Support: support@firststep.com
+    Security: security@firststep.com
+
+# Last update
+    2024-10-05
