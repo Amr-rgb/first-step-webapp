@@ -294,6 +294,10 @@
         "general": {
           "field-required": "This field is required"
         }
+      },
+      "errors": {
+        "chronicDiseases": "Please check the chronic diseases information",
+        "allergies": "Please check the allergies information"
       }
     },
     "add-child": {

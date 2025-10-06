@@ -290,6 +290,10 @@
         "general": {
           "field-required": "هذا الحقل مطلوب"
         }
+      },
+      "errors": {
+        "chronicDiseases": "يرجى التحقق من معلومات الأمراض المزمنة",
+        "allergies": "يرجى التحقق من معلومات الحساسية"
       }
     },
     "add-child": {
