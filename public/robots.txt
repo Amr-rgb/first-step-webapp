@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://firststep.com/sitemap.xml
+
+# Disallow admin and dashboard areas
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /tempTestFile
+Disallow: /testtepfile
+
+# Allow important pages
+Allow: /
+Allow: /en/
+Allow: /ar/
+Allow: /services
+Allow: /nurseries
+Allow: /about
+Allow: /contact
+Allow: /sign-up/
+Allow: /blog
+
+# Crawl delay (optional)
+Crawl-delay: 1
