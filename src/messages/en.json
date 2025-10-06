@@ -1736,7 +1736,16 @@
         "planSaved": "Plan saved successfully!",
         "planSaveError": "Failed to save plan",
         "planDeleted": "Plan deleted successfully!",
-        "planDeleteError": "Failed to delete plan"
+        "planDeleteError": "Failed to delete plan",
+        "selectBranchesError": "Please select a branch",
+        "titleRequired": "Plan title is required",
+        "titleTooShort": "Plan title must be at least 2 characters",
+        "startAgeInvalid": "Start age must be 0 or greater",
+        "endAgeInvalid": "End age must be 0 or greater",
+        "endAgeMustBeGreater": "End age must be greater than start age",
+        "enrollmentTypeRequired": "Enrollment type is required",
+        "countMustBePositive": "Count must be greater than 0",
+        "priceMustBePositive": "Price must be greater than 0"
       }
     },
     "tables": {

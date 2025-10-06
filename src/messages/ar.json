@@ -1729,7 +1729,16 @@
         "planSaved": "تم حفظ البرنامج بنجاح!",
         "planSaveError": "فشل في حفظ البرنامج",
         "planDeleted": "تم حذف البرنامج بنجاح!",
-        "planDeleteError": "فشل في حذف البرنامج"
+        "planDeleteError": "فشل في حذف البرنامج",
+        "selectBranchesError": "اختر الفرع من فضلك",
+        "titleRequired": "عنوان البرنامج مطلوب",
+        "titleTooShort": "عنوان البرنامج يجب أن يكون حرفين على الأقل",
+        "startAgeInvalid": "العمر الابتدائي يجب أن يكون 0 أو أكثر",
+        "endAgeInvalid": "العمر النهائي يجب أن يكون 0 أو أكثر",
+        "endAgeMustBeGreater": "العمر النهائي يجب أن يكون أكبر من العمر الابتدائي",
+        "enrollmentTypeRequired": "نوع التسجيل مطلوب",
+        "countMustBePositive": "العدد يجب أن يكون أكبر من 0",
+        "priceMustBePositive": "السعر يجب أن يكون أكبر من 0"
       }
     },
     "tables": {
