@@ -47,8 +47,6 @@ const AdminAds = () => {
       <>
         {addButton}
         <EmptyState
-          title={t("emptyStates.ads.title")}
-          description={t("emptyStates.ads.description")}
           icon="📢"
           size="lg"
           primaryAction={{
@@ -57,7 +55,7 @@ const AdminAds = () => {
               window.location.href = "/dashboard/admin/advertisement/add";
             },
           }}
-          translationKey="dashboard.emptyStates"
+          translationKey="dashboard.emptyStates.ads"
         />
       </>
     );

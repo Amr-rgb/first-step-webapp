@@ -126,11 +126,9 @@ const Reports = () => {
   if (!isLoading && transformedData.length === 0) {
     return (
       <EmptyState
-        title={t("emptyStates.reports.title")}
-        description={t("emptyStates.reports.description")}
         icon="📊"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.reports"
       />
     );
   }

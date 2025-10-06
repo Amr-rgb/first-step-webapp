@@ -49,8 +49,6 @@ const Branches = ({
   if (!branches || branches.length === 0) {
     return (
       <EmptyState
-        title={t("emptyStates.branches.title")}
-        description={t("emptyStates.branches.description")}
         icon="🏢"
         size="lg"
         primaryAction={{
@@ -59,7 +57,7 @@ const Branches = ({
             window.location.href = "/dashboard/center/branches/add";
           },
         }}
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.branches"
       />
     );
   }

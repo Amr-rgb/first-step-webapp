@@ -112,8 +112,6 @@ const Children = ({
   ) {
     return (
       <EmptyState
-        title={t("children.title")}
-        description={t("children.description")}
         icon="👶"
         size="lg"
         primaryAction={{
@@ -123,7 +121,7 @@ const Children = ({
             window.location.href = "/dashboard/parent/children/add";
           },
         }}
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.children"
       />
     );
   }

@@ -29,11 +29,9 @@ const TopBookings = () => {
           <DataTable data={bookingsData} columns={columns} />
         ) : (
           <EmptyState
-            title={t("emptyStates.bookings.title")}
-            description={t("emptyStates.bookings.description")}
             icon="🏆"
             size="lg"
-            translationKey="dashboard.emptyStates"
+            translationKey="dashboard.emptyStates.bookings"
           />
         )}
       </div>

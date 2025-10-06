@@ -52,8 +52,6 @@ const Ads = () => {
   if (!isLoading && ads.length === 0) {
     return (
       <EmptyState
-        title={t("emptyStates.ads.title")}
-        description={t("emptyStates.ads.description")}
         icon="📢"
         size="lg"
         primaryAction={{
@@ -63,7 +61,7 @@ const Ads = () => {
               "/dashboard/center/ad-or-blog-request/ad-request";
           },
         }}
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.ads"
       />
     );
   }

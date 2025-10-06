@@ -8,8 +8,6 @@ import { cn } from "@/lib/utils";
 
 export interface EmptyStateProps {
   // Content
-  title?: string;
-  description?: string;
   icon?: LucideIcon | string;
   image?: string;
 
@@ -46,8 +44,6 @@ export interface EmptyStateProps {
 }
 
 const EmptyState = ({
-  title,
-  description,
   icon: Icon,
   image,
   primaryAction,
@@ -86,8 +82,8 @@ const EmptyState = ({
   const config = sizeConfig[size];
 
   // Default content
-  const defaultTitle = title || t("title");
-  const defaultDescription = description || t("description");
+  const defaultTitle = t("title");
+  const defaultDescription = t("description");
 
   return (
     <div

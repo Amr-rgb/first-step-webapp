@@ -78,8 +78,6 @@ const BlogsSection = () => {
 
       {!isLoading && !error && (!blogsData || blogsData.length === 0) ? (
         <EmptyState
-          title={t("emptyStates.blogs.title")}
-          description={t("emptyStates.blogs.description")}
           icon="📝"
           size="lg"
           primaryAction={{
@@ -88,7 +86,7 @@ const BlogsSection = () => {
               router.push("/dashboard/center/ad-or-blog-request/blog-request");
             },
           }}
-          translationKey="dashboard.emptyStates"
+          translationKey="dashboard.emptyStates.blogs"
         />
       ) : (
         <div className="grid md:grid-cols-3 items-start gap-10">

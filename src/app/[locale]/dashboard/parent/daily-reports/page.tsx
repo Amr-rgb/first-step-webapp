@@ -201,11 +201,9 @@ export default function DailyReports() {
   if (children.length === 0 && !isLoading) {
     return (
       <EmptyState
-        title={t("emptyStates.reports.title")}
-        description={t("emptyStates.reports.description")}
         icon="📊"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.reports"
       />
     );
   }

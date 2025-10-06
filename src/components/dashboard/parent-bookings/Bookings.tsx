@@ -349,11 +349,9 @@ const Bookings = () => {
   if (bookings.length === 0) {
     return (
       <EmptyState
-        title={t("bookings.title")}
-        description={t("bookings.description")}
         icon="📅"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.bookings"
       />
     );
   }
