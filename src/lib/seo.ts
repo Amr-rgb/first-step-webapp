@@ -27,9 +27,9 @@ interface SEOConfig {
 
 export const defaultSEOConfig: SEOConfig = {
   title:
-    "First Step - Smart Childcare Platform | Find Trusted Nurseries in Saudi Arabia",
+    "First Step - Smart Childcare Platform | Find Trusted Nurseries in Saudi Arabia | Choose the right nursery for your child ",
   description:
-    "Connect with trusted nurseries and childcare centers in Saudi Arabia. Smart childcare solutions for every family. Browse centers, compare plans, and book easily.",
+    "Discover the best and most trusted nurseries and daycares in Saudi Arabia all in one place. First Step helps you choose a child care that provides balanced care and education for your child",
   keywords: [
     "childcare",
     "nursery",
@@ -46,20 +46,28 @@ export const defaultSEOConfig: SEOConfig = {
     "childcare booking",
     "nursery finder",
     "childcare platform",
+
+    "nursery near me",
+    "nursery in riyadh ",
+    "special educational needs ",
+    "Child development center ",
+    "daycare center ",
+    "pre school near me",
+    "nursery school",
   ],
   openGraph: {
     title: "First Step - Smart Childcare Platform",
     description:
-      "Connect with trusted nurseries and childcare centers in Saudi Arabia. Smart childcare solutions for every family.",
+      "Discover the best and most trusted nurseries and daycares in Saudi Arabia all in one place. First Step helps you choose a child care that provides balanced care and education for your child",
     images: ["/assets/logos/complete_logo.svg"],
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "First Step - Smart Childcare Platform",
+    title: "First Step - Smart Childcare Platform | Choose the right nursery for your child | Find Trusted Nurseries in Saudi Arabia",
     description:
-      "Connect with trusted nurseries and childcare centers in Saudi Arabia.",
+      "Discover the best and most trusted nurseries and daycares in Saudi Arabia all in one place. First Step helps you choose a child care that provides balanced care and education for your child",
     images: ["/assets/logos/complete_logo.svg"],
   },
   robots: "index, follow",
@@ -67,17 +75,19 @@ export const defaultSEOConfig: SEOConfig = {
 
 export const arabicSEOConfig: SEOConfig = {
   title:
-    "الخطوة الأولى - منصة رعاية الأطفال الذكية | العثور على حضانات موثوقة في السعودية",
+    " ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك بسهولة في السعودية",
   description:
-    "تواصل مع حضانات ومراكز رعاية الأطفال الموثوقة في السعودية. حلول رعاية الأطفال الذكية لكل عائلة. تصفح المراكز، قارن الخطط، واحجز بسهولة.",
+  "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
   keywords: [
     "رعاية الأطفال",
-    "حضانة",
-    "السعودية",
+    "حضانه",
+    "حضانات في السعودية",
     "رعاية نهارية",
     "مركز رعاية الأطفال",
     "روضة أطفال",
     "مرحلة ما قبل المدرسة",
+    " مراكز ذوي احتياجات خاصة",
+    "افضل مركز ذوي احتياجات خاصة",
     "رعاية الرضع",
     "تطور الطفل",
     "خدمات الأسرة",
@@ -88,9 +98,9 @@ export const arabicSEOConfig: SEOConfig = {
     "منصة رعاية الأطفال",
   ],
   openGraph: {
-    title: "الخطوة الأولى - منصة رعاية الأطفال الذكية",
+    title: " ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك بسهولة في السعودية",
     description:
-      "تواصل مع حضانات ومراكز رعاية الأطفال الموثوقة في السعودية. حلول رعاية الأطفال الذكية لكل عائلة.",
+    "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
     images: ["/assets/logos/complete_logo.svg"],
     locale: "ar_SA",
     type: "website",

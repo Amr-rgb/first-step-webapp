@@ -43,14 +43,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Add specific nursery pages (if you have dynamic nursery routes)
   // This would need to be updated based on your actual nursery data
   const nurseryNames = [
-    "al-noor-nursery",
-    "little-angels-nursery",
-    "sunshine-kids",
-    "happy-hearts",
-    "bright-futures",
-    "tiny-tots",
-    "little-explorers",
-    "childhood-wonders",
+    "world-of-learning",
+    "kids-time",
+    "rekaz",
+    
   ];
 
   routing.locales.forEach((locale) => {
