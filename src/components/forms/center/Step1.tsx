@@ -14,12 +14,13 @@ import {
 import PhoneInput from "../PhoneInput";
 import CheckboxGroup from "../CheckboxGroup";
 import { CitySelector } from "../CitySelector";
+import { FileUploader } from "../FileUploader";
 import type { BranchStep1FormData, CenterStep1FormData } from "@/lib/schemas";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mapOptions } from "@/lib/utils";
-import { CENTER_TYPE_IDS, SERVICE_IDS } from "@/lib/options";
+import { CENTER_TYPE_IDS } from "@/lib/options";
 
 export function Step1BasicInfo({
   isBranch = false,
@@ -47,23 +48,23 @@ export function Step1BasicInfo({
   const { control } = useFormContext<Step1FormData>();
 
   const centerTypes = mapOptions(CENTER_TYPE_IDS, "centerTypes", tOptions);
-  const services = mapOptions(SERVICE_IDS, "centerServices", tOptions);
 
   return (
     <div className="space-y-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 gap-x-10 md:gap-y-4">
+        {/* Name field */}
         <FormField
           control={control}
-          name="nursery_name"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                {t("nursery_name.label")}
+                {t("name.label")}
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("nursery_name.placeholder")}
+                  placeholder={t("name.placeholder")}
                   {...field}
                   disabled={disabled}
                 />
@@ -73,29 +74,103 @@ export function Step1BasicInfo({
           )}
         />
 
-        {(show ? !!control._formValues?.email : !isBranch) && (
-          <FormField
-            control={control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t("email.label")}
-                  <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={t("email.placeholder")}
-                    {...field}
-                    disabled={disabled}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+        {/* Email field */}
+        <FormField
+          control={control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("email.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("email.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
+        {/* Password field */}
+        <FormField
+          control={control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("password.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <div className="relative w-full">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder={t("password.placeholder")}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute rtl:left-4 ltr:right-4 top-1/2 -translate-y-1/2 stroke-neutral-500 hover:stroke-neutral-600 duration-300"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="size-6 stroke-inherit" />
+                    ) : (
+                      <Eye className="size-6 stroke-inherit" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Confirm Password field */}
+        <FormField
+          control={control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("password-confirm.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <div className="relative w-full">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder={t("password-confirm.placeholder")}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute rtl:left-4 ltr:right-4 top-1/2 -translate-y-1/2 stroke-neutral-500 hover:stroke-neutral-600 duration-300"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="size-6 stroke-inherit" />
+                    ) : (
+                      <Eye className="size-6 stroke-inherit" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Phone field */}
         <FormField
           control={control}
           name="phone"
@@ -122,82 +197,73 @@ export function Step1BasicInfo({
           )}
         />
 
-        {!isBranch && (
-          <>
-            <FormField
-              control={control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("password.label")}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative w-full">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder={t("password.placeholder")}
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute rtl:left-4 ltr:right-4 top-1/2 -translate-y-1/2 stroke-neutral-500 hover:stroke-neutral-600 duration-300"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="size-6 stroke-inherit" />
-                        ) : (
-                          <Eye className="size-6 stroke-inherit" />
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Nursery Name field */}
+        <FormField
+          control={control}
+          name="nursery_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("nursery_name.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("nursery_name.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("password-confirm.label")}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative w-full">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder={t("password-confirm.placeholder")}
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute rtl:left-4 ltr:right-4 top-1/2 -translate-y-1/2 stroke-neutral-500 hover:stroke-neutral-600 duration-300"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="size-6 stroke-inherit" />
-                        ) : (
-                          <Eye className="size-6 stroke-inherit" />
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
+        {/* Location field */}
+        <FormField
+          control={control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("location.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("location.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
+        {/* Neighborhood field */}
+        <FormField
+          control={control}
+          name="neighborhood"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("neighborhood.label")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("neighborhood.placeholder")}
+                  {...field}
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* City field */}
         <FormField
           control={control}
           name="city"
@@ -220,19 +286,21 @@ export function Step1BasicInfo({
           )}
         />
 
+        {/* Logo field */}
         <FormField
           control={control}
-          name="neighborhood"
+          name="logo"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                {t("neighborhood.label")}
+                {t("logo.label")}
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t("neighborhood.placeholder")}
-                  {...field}
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  accept="image/png, image/jpeg, image/jpg"
                   disabled={disabled}
                 />
               </FormControl>
@@ -240,66 +308,9 @@ export function Step1BasicInfo({
             </FormItem>
           )}
         />
-
-        {(mode === "edit" || show ? !!control._formValues?.address : true) && (
-          <FormField
-            control={control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t("address.label")}
-                  <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={t("address.placeholder")}
-                    {...field}
-                    disabled={disabled}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        <FormField
-          control={control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("location.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("location.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* <FormField
-          control={control}
-          name="branches"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>{t("branches.label")}</FormLabel>
-              <FormControl>
-                <Input placeholder={t("branches.placeholder")} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
       </div>
 
+      {/* Nursery Type field */}
       <div className="flex flex-col items-center gap-y-4">
         <p className="form-label">{t("type.label")}</p>
         <CheckboxGroup
@@ -310,43 +321,6 @@ export function Step1BasicInfo({
           readOnly={disabled}
         />
       </div>
-
-      <div className="flex flex-col items-center gap-y-4">
-        <p className="form-label">{t("services.label")}</p>
-
-        <CheckboxGroup
-          className="lg:w-3xl"
-          items={services}
-          name="services"
-          control={control}
-          readOnly={disabled}
-        />
-      </div>
-
-      {(show ? !!control._formValues?.address : true) && (
-        <FormField
-          control={control}
-          name="additional_service"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
-                <span>{t("other.label")}</span>
-                <span className="font-normal text-sm md:text-base text-light-gray">
-                  {t("other.sublabel")}
-                </span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("other.placeholder")}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
     </div>
   );
 }

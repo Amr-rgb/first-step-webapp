@@ -409,13 +409,9 @@
       "1": {
         "title": "المعلومات الأساسية",
         "form": {
-          "nursery_name": {
-            "label": "اسم المركز",
-            "placeholder": "أدخل اسم المركز"
-          },
-          "phone": {
-            "label": "رقم الجوال",
-            "placeholder": "أدخل رقم الجوال"
+          "name": {
+            "label": "الاسم",
+            "placeholder": "أدخل اسمك"
           },
           "email": {
             "label": "البريد الإلكتروني",
@@ -429,21 +425,29 @@
             "label": "تأكيد كلمة السر",
             "placeholder": "أعد إدخال كلمة السر"
           },
-          "city": {
-            "label": "المدينة",
-            "placeholder": "أدخل اسم المدينة"
+          "phone": {
+            "label": "رقم الجوال",
+            "placeholder": "أدخل رقم الجوال"
+          },
+          "nursery_name": {
+            "label": "اسم المركز",
+            "placeholder": "أدخل اسم المركز"
+          },
+          "location": {
+            "label": "رابط الموقع الجغرافي",
+            "placeholder": "أدخل رابط خرائط جوجل"
           },
           "neighborhood": {
             "label": "الحي",
             "placeholder": "أدخل اسم الحي"
           },
-          "address": {
-            "label": "العنوان",
-            "placeholder": "أدخل العنوان الكامل"
+          "city": {
+            "label": "المدينة",
+            "placeholder": "أدخل اسم المدينة"
           },
-          "location": {
-            "label": "رابط الموقع الجغرافي",
-            "placeholder": "أدخل رابط خرائط جوجل"
+          "logo": {
+            "label": "الشعار",
+            "placeholder": "رفع شعار المركز"
           },
           "type": {
             "label": "نوع المركز",
@@ -452,67 +456,15 @@
               "education": "تعليمي",
               "support": "الدعم والتأهيل"
             }
-          },
-          "services": {
-            "label": "الخدمات المتوفرة",
-            "options": {
-              "education": "تعليمي",
-              "kindergarten": "روضة",
-              "after-school": "بعد المدرسة",
-              "special-needs": "ذوي الاحتياجات الخاصة",
-              "therapy": "علاج طبيعي",
-              "speech-therapy": "علاج النطق",
-              "occupational-therapy": "علاج وظيفي",
-              "care": "رعاية"
-            }
-          },
-          "other": {
-            "label": "خدمات أخرى",
-            "sublabel": "(مثل التدريب على دورات المياه)",
-            "placeholder": "أدخل الخدمات الإضافية"
           }
         }
       },
       "2": {
-        "title": "الأعمار المقبولة وساعات العمل",
+        "title": "الوثائق",
         "form": {
-          "ages": {
-            "label": "الأعمار المقبولة",
-            "options": {
-              "0-3": "من 0 إلى 3 سنوات",
-              "3-6": "من 3 إلى 6 سنوات",
-              "special-needs": "أطفال ذوي احتياجات خاصة"
-            }
-          },
-          "addition": {
-            "label": "هل يوجد شئ تريد إضافته؟",
-            "placeholder": "أدخل أي معلومات إضافية"
-          },
-          "from-day": {
-            "label": "من يوم",
-            "placeholder": "اختر يوم البداية"
-          },
-          "to-day": {
-            "label": "إلى يوم",
-            "placeholder": "اختر يوم النهاية"
-          },
-          "from-hour": {
-            "label": "من ساعة",
-            "placeholder": "اختر وقت البداية"
-          },
-          "to-hour": {
-            "label": "إلى ساعة",
-            "placeholder": "اختر وقت النهاية"
-          },
-          "days": {
-            "saturday": "السبت",
-            "sunday": "الأحد",
-            "monday": "الإثنين",
-            "tuesday": "الثلاثاء",
-            "wednesday": "الأربعاء",
-            "thursday": "الخميس",
-            "friday": "الجمعة"
-          }
+          "commercial-registration": "السجل التجاري",
+          "business-license": "رخصة العمل",
+          "description": "يرجى رفع الوثائق المطلوبة. الصيغ المقبولة: jpg, jpeg, png, pdf, doc, docx, txt, zip. الحد الأقصى لحجم الملف هو 3 ميجابايت."
         }
       },
       "3": {

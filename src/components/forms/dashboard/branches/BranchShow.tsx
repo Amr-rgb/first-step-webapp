@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBranch } from "@/hooks/useBranches";
 import { BranchFormData, createBranchSchema } from "@/lib/schemas";
 import { Step1BasicInfo } from "../../center/Step1";
-import { Step2AgesAndHours } from "../../center/Step2";
+import { Step2AgesAndHours } from "../../center/Step2AgesAndHours";
 import { Step3Communication } from "../../center/Step3";
 import { Step4Permits } from "../../center/Step4";
 import { useEffect, useMemo } from "react";
