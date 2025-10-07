@@ -32,10 +32,10 @@ export default function SEO({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const siteName = isRTL ? "الخطوة الأولى" : "First Step";
+  const siteName = isRTL ? " فرست " : "First Step";
   const defaultTitle = isRTL
-    ? "الخطوة الأولى - منصة رعاية الأطفال الذكية"
-    : "First Step - Smart Childcare Platform";
+    ? "  ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك في السعودية"
+    : "First Step: Choose the right nursery for your child in Saudi Arabia";
   const defaultDescription = isRTL
     ? "منصة رعاية الأطفال الذكية التي تربط العائلات بحضانات ومراكز رعاية الأطفال الموثوقة في السعودية"
     : "Connect with trusted nurseries and childcare centers in Saudi Arabia. Smart childcare solutions for every family.";
@@ -48,30 +48,51 @@ export default function SEO({
     : fullUrl;
 
   const defaultKeywords = isRTL
-    ? [
-        "رعاية الأطفال",
-        "حضانة",
-        "السعودية",
-        "رعاية نهارية",
-        "مركز رعاية الأطفال",
-        "روضة أطفال",
-        "مرحلة ما قبل المدرسة",
-        "رعاية الرضع",
-        "تطور الطفل",
-        "خدمات الأسرة",
-      ]
+    ?[
+      "رعاية الأطفال",
+      "حضانة",
+      "حضانه",
+      "حضانات في السعودية",
+      "رعاية نهارية",
+      "مركز رعاية الأطفال",
+      "روضة أطفال",
+      "مرحلة ما قبل المدرسة",
+      " مراكز ذوي احتياجات خاصة",
+      "افضل مركز ذوي احتياجات خاصة",
+      "رعاية الرضع",
+      "تطور الطفل",
+      "خدمات الأسرة",
+      "التعليم في مرحلة الطفولة المبكرة",
+      "الأبوة والأمومة",
+      "حجز رعاية الأطفال",
+      "البحث عن حضانة",
+      "منصة رعاية الأطفال",
+    ]
     : [
-        "childcare",
-        "nursery",
-        "Saudi Arabia",
-        "daycare",
-        "childcare center",
-        "kindergarten",
-        "preschool",
-        "baby care",
-        "child development",
-        "family services",
-      ];
+      "childcare",
+      "nursery",
+      "Saudi Arabia",
+      "daycare",
+      "childcare center",
+      "kindergarten",
+      "preschool",
+      "baby care",
+      "child development",
+      "family services",
+      "early childhood education",
+      "parenting",
+      "childcare booking",
+      "nursery finder",
+      "childcare platform",
+  
+      "nursery near me",
+      "nursery in riyadh ",
+      "special educational needs ",
+      "Child development center ",
+      "daycare center ",
+      "pre school near me",
+      "nursery school",
+    ];
 
   const allKeywords = [...defaultKeywords, ...keywords];
 

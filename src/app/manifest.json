@@ -1,7 +1,7 @@
 {
-  "name": "First Step - Smart Childcare Platform",
+  "name": "First Step - Choose the right nursery for your child in Saudi Arabia",
   "short_name": "First Step",
-  "description": "Smart childcare for every family. Connect with trusted nurseries and childcare centers in Saudi Arabia.",
+  "description": "Discover the best and most trusted nurseries and daycares in Saudi Arabia all in one place. First Step helps you choose a child care that provides balanced care and education for your child.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -10,7 +10,7 @@
   "scope": "/",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["education", "family", "childcare"],
+  "categories": ["nursery", "child development", "Education Administration Programs","education", "family", "childcare", "E-Learning"],
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -47,9 +47,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Find Nurseries",
+      "name": "Find Nurseries in Saudi Arabia",
       "short_name": "Nurseries",
-      "description": "Browse available nurseries",
+      "description": "First Step makes it easy for you to find the right nursery for your child ",
       "url": "/nurseries",
       "icons": [
         {
