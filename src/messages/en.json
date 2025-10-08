@@ -929,19 +929,8 @@
         "title": "Schedule Notifications",
         "form": {
           "type": {
-            "label": "Choose Notification",
-            "placeholder": "Choose Notification",
-            "options": {
-              "arrived": "Arrived",
-              "left": "Left",
-              "meal": "Meal Time",
-              "nap": "Nap Time",
-              "activity": "Activity Time",
-              "eid": "Eid",
-              "new_year": "New Year",
-              "meeting": "Meeting",
-              "reminder": "Reminder"
-            }
+            "label": "Notification Content",
+            "placeholder": "Enter notification content"
           },
           "day": {
             "label": "Day",

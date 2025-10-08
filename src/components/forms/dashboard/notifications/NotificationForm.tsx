@@ -23,23 +23,7 @@ import DatePicker from "@/components/general/DatePicker";
 import { useHasRole } from "@/store/authStore";
 
 const NotificationForm = () => {
-  const isAdmin = useHasRole("admin");
   const t = useTranslations("dashboard.center.notifications.form");
-
-  const notificationTypes = [
-    { value: "Arrived", label: t("type.options.arrived") },
-    { value: "Left", label: t("type.options.left") },
-    { value: "Meal Time", label: t("type.options.meal") },
-    { value: "Nap Time", label: t("type.options.nap") },
-    { value: "Activity Time", label: t("type.options.activity") },
-  ];
-
-  const adminNotificationTypes = [
-    { value: "Eid", label: t("type.options.eid") },
-    { value: "New Year", label: t("type.options.new_year") },
-    { value: "Meeting", label: t("type.options.meeting") },
-    { value: "Reminder", label: t("type.options.reminder") },
-  ];
 
   const { control } = useFormContext<NotificationsFormData>();
 
@@ -50,21 +34,10 @@ const NotificationForm = () => {
         control={control}
         render={({ field }) => (
           <FormItem>
-            <Select onValueChange={field.onChange}>
-              <FormLabel>{t("type.label")}</FormLabel>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder={t("type.placeholder")} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {adminNotificationTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormLabel>{t("type.label")}</FormLabel>
+            <FormControl>
+              <Input placeholder={t("type.placeholder")} {...field} />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
