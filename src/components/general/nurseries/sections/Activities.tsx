@@ -62,7 +62,7 @@ const Activities = ({
   return (
     <section className="mt-20 mb-10">
       <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">
-        {title || t("activities.title")}
+        {t("activities.title")}
       </h2>
       <div className="text-center text-[#22336C] mb-8 font-medium">
         {subtitle || t("activities.description")}

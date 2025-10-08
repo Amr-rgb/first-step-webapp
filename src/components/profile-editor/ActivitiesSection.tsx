@@ -34,8 +34,8 @@ export const ActivitiesSection = ({
   return (
     <div className="space-y-6">
       {/* Section Title and Subtitle */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="space-y-2">
+      <div className="grid grid-cols-1">
+        {/* <div className="space-y-2">
           <Label
             htmlFor="activity_section_title"
             className="text-sm font-medium"
@@ -49,7 +49,7 @@ export const ActivitiesSection = ({
             placeholder={t("sectionTitlePlaceholder")}
             className="h-10"
           />
-        </div>
+        </div> */}
 
         <div className="space-y-2">
           <Label

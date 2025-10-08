@@ -2,7 +2,6 @@
 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { PortfolioFormData } from "@/types";
 import { useTranslations } from "next-intl";
@@ -60,23 +59,19 @@ export const PhilosophySection = ({
   return (
     <div className="space-y-6">
       {sections.map(({ key, title, label, placeholder }) => (
-        <Card key={key}>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Label htmlFor={key} className="mb-1 block">
-              {label}
-            </Label>
-            <Textarea
-              id={key}
-              value={data.Philosophy_Methodology_Goal[key].content}
-              onChange={(e) => handleChange(key, e.target.value)}
-              placeholder={placeholder}
-              rows={4}
-            />
-          </CardContent>
-        </Card>
+        <div key={key} className="space-y-2">
+          {/* <h3 className="text-lg font-semibold">{title}</h3> */}
+          <Label htmlFor={key} className="mb-1 block">
+            {label}
+          </Label>
+          <Textarea
+            id={key}
+            value={data.Philosophy_Methodology_Goal[key].content}
+            onChange={(e) => handleChange(key, e.target.value)}
+            placeholder={placeholder}
+            rows={4}
+          />
+        </div>
       ))}
     </div>
   );

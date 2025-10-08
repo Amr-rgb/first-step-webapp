@@ -2121,6 +2121,10 @@
     "services": {
       "title": "خدماتنا"
     },
+    "activities": {
+      "title": "نشاطاتنا",
+      "subtitle": "أعط أطفالك الفرصة للاستمتاع معنا."
+    },
     "programs": {
       "title": "برامجنا",
       "currency": "ريال سعودي",
