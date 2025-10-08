@@ -42,9 +42,9 @@ export default function SEO({
 
   const fullTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const fullDescription = description || defaultDescription;
-  const fullUrl = url ? `https://firststep.com${url}` : "https://firststep.com";
+  const fullUrl = url ? `https://firststep-app.com${url}` : "https://firststep-app.com";
   const canonicalUrl = canonical
-    ? `https://firststep.com${canonical}`
+    ? `https://firststep-app.com${canonical}`
     : fullUrl;
 
   const defaultKeywords = isRTL
@@ -128,7 +128,7 @@ export default function SEO({
         <meta property="og:description" content={fullDescription} />
         <meta property="og:url" content={fullUrl} />
         <meta property="og:site_name" content={siteName} />
-        <meta property="og:image" content={`https://firststep.com${image}`} />
+        <meta property="og:image" content={`https://firststep-app.com${image}`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content={fullTitle} />
@@ -141,7 +141,7 @@ export default function SEO({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={fullTitle} />
         <meta name="twitter:description" content={fullDescription} />
-        <meta name="twitter:image" content={`https://firststep.com${image}`} />
+        <meta name="twitter:image" content={`https://firststep-app.com${image}`} />
         <meta name="twitter:image:alt" content={fullTitle} />
 
         {/* Additional Meta Tags */}

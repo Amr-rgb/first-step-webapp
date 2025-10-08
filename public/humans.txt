@@ -2,16 +2,15 @@
 
 # Team
     First Step Development Team
-    Site: https://firststep.com
-    Twitter: @firststep
+    Site: https://firststep-app.com
     Location: Saudi Arabia
 
 # Technology
     Frontend: Next.js, React, TypeScript
     Styling: Tailwind CSS
-    Backend: Node.js
-    Database: PostgreSQL
-    Hosting: Vercel
+    Backend: Laravel
+    Database: SQL
+    Hosting: GCP
     Analytics: Google Analytics
     Monitoring: Sentry
 
@@ -22,9 +21,9 @@
     SEO: Schema.org, Open Graph
 
 # Contact
-    Email: contact@firststep.com
-    Support: support@firststep.com
-    Security: security@firststep.com
+    Email: info@firststep-app.com
+    Support: info@firststep-app.com
+    Security: info@firststep-app.com
 
 # Last update
-    2024-10-05
+    2024-10-08
