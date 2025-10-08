@@ -126,9 +126,8 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
             <MapPin size={16} className="text-info" />
             <span className="text-sm text-gray text-center">
               {typeof mainBranch.city === "object" && mainBranch.city !== null
-                ? mainBranch.city[locale]
-                : mainBranch.city}
-              ,{" "}
+                ? mainBranch.city.name[locale]
+                : mainBranch.city}{" "}
               {typeof mainBranch.neighborhood === "object" &&
               mainBranch.neighborhood !== null
                 ? mainBranch.neighborhood[locale]
