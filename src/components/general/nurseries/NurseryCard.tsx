@@ -130,11 +130,11 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
               <span className="text-sm text-gray text-center">
                 {typeof mainBranch.city === "object"
                   ? mainBranch.city.name[locale]
-                  : mainBranch.city}{" "}
+                  : mainBranch.city}
                 {typeof mainBranch.neighborhood === "object" &&
                 mainBranch.neighborhood !== null
-                  ? mainBranch.neighborhood[locale]
-                  : mainBranch.neighborhood}
+                  ? ", " + mainBranch.neighborhood[locale]
+                  : ", " + mainBranch.neighborhood}
               </span>
             </div>
           ) : null}
