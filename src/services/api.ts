@@ -1033,7 +1033,7 @@ export const authService = {
         }
       );
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       // Enhanced error logging
       console.error("Register Center Error:", error);
       console.error("Error Response Status:", error.response?.status);

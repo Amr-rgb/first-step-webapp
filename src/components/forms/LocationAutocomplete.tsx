@@ -160,7 +160,6 @@ export function LocationAutocomplete({
     if (hasApiKey && isLoaded && autocompleteService) {
       const request: google.maps.places.AutocompleteRequest = {
         input: query,
-        types: ["establishment", "geocode"],
         language: locale === "ar" ? "ar" : "en",
         region: "SA", // Saudi Arabia
       };

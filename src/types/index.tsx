@@ -185,6 +185,7 @@ export interface NurseryResponse
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
+  accepted_ages?: string[];
   branches?: Array<{
     id: number;
     name: string;
