@@ -1,8 +1,8 @@
 Contact: mailto: info@firststep-app.com
 Contact: https://firststep-app.com/ar/contact
 Expires: 2025-12-31T23:59:59.000Z
-Encryption: https://firststep.com/pgp-key.txt
-Acknowledgments: https://firststep.com/security/acknowledgments
+Encryption: https://firststep-app.com/pgp-key.txt
+Acknowledgments: https://firststep-app.com/security/acknowledgments
 Preferred-Languages: en, ar
-Canonical: https://firststep.com/.well-known/security.txt
+Canonical: https://firststep-app.com/.well-known/security.txt
 Policy: https://firststep-app.com/ar/privacy-policy
