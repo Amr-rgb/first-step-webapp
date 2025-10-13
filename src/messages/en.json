@@ -468,6 +468,8 @@
         "form": {
           "commercial-registration": "Commercial Registration",
           "business-license": "Business License",
+          "notes": "Additional Notes",
+          "notes-placeholder": "Enter any additional information or notes...",
           "description": "Please upload the required documents. Accepted formats: jpg, jpeg, png, pdf, doc, docx, txt, zip. Maximum file size is 3MB."
         }
       },

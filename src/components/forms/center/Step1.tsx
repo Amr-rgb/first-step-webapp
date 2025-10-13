@@ -15,6 +15,7 @@ import PhoneInput from "../PhoneInput";
 import CheckboxGroup from "../CheckboxGroup";
 import { CitySelector } from "../CitySelector";
 import { FileUploader } from "../FileUploader";
+import { LocationAutocomplete } from "../LocationAutocomplete";
 import type { BranchStep1FormData, CenterStep1FormData } from "@/lib/schemas";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
@@ -183,12 +184,7 @@ export function Step1BasicInfo({
               <FormControl>
                 <PhoneInput
                   {...field}
-                  value={field.value?.replace(/^\+966/, "")}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    field.onChange(
-                      `+966${e.target.value.replace(/^(\+966)?/, "")}`
-                    );
-                  }}
+                  placeholder={t("phone.placeholder")}
                   readOnly={disabled}
                 />
               </FormControl>
@@ -230,9 +226,10 @@ export function Step1BasicInfo({
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
-                <Input
+                <LocationAutocomplete
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   placeholder={t("location.placeholder")}
-                  {...field}
                   disabled={disabled}
                 />
               </FormControl>

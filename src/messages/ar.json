@@ -464,6 +464,8 @@
         "form": {
           "commercial-registration": "السجل التجاري",
           "business-license": "رخصة العمل",
+          "notes": "ملاحظات إضافية",
+          "notes-placeholder": "أدخل أي معلومات إضافية أو ملاحظات...",
           "description": "يرجى رفع الوثائق المطلوبة. الصيغ المقبولة: jpg, jpeg, png, pdf, doc, docx, txt, zip. الحد الأقصى لحجم الملف هو 3 ميجابايت."
         }
       },

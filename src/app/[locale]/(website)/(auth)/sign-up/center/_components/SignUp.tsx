@@ -49,6 +49,7 @@ export function SignUp({
       // step2
       commercial_record_path: undefined,
       license_path: undefined,
+      notes: "",
     },
     mode: "onChange",
   });

@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FileUploader } from "../FileUploader";
+import { Textarea } from "@/components/ui/textarea";
 import type { CenterStep2FormData } from "@/lib/schemas";
 
 export function Step2Documents({ disabled = false }: { disabled?: boolean }) {
@@ -63,6 +64,25 @@ export function Step2Documents({ disabled = false }: { disabled?: boolean }) {
           )}
         />
       </div>
+
+      <FormField
+        control={control}
+        name="notes"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("notes")}</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder={t("notes-placeholder")}
+                className="min-h-[100px]"
+                disabled={disabled}
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <p className="text-center text-sm lg:text-base text-info">
         {t("description")}

@@ -48,6 +48,7 @@ const SignUpWrapper = () => {
           nursery_type: "nursery_type",
           commercial_record_path: "commercial_record_path",
           license_path: "license_path",
+          notes: "notes",
         };
 
         const frontendField =
@@ -129,6 +130,7 @@ const SignUpWrapper = () => {
       // Step 2 fields
       commercial_record_path: data.commercial_record_path,
       license_path: data.license_path,
+      notes: data.notes,
     };
 
     mutation.mutate(expectedData);
