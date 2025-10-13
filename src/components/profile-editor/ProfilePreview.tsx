@@ -204,17 +204,15 @@ export const ProfilePreview = ({
       )}
 
       {/* 9. Activities Section */}
-      {/* {data.images_activities && data.images_activities.length > 0 && (
-        <Activities
-          title={data.activity_section_title}
-          subtitle={data.activity_section_subtitle}
-          activities={data.images_activities}
-          buttonText={t("branches.cta")}
-          locale={locale}
-          nurseryName={nurseryName}
-          preview
-        />
-      )} */}
+      <Activities
+        title={data.activity_section_title}
+        subtitle={data.activity_section_subtitle}
+        activities={data.images_activities || []}
+        buttonText={t("branches.cta")}
+        locale={locale}
+        nurseryName={nurseryName}
+        preview
+      />
 
       {/* 10. Team Section */}
       {data.teams && data.teams.length > 0 && (
