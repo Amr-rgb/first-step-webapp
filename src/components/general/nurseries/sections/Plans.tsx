@@ -133,8 +133,40 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     (branch) => branch.id === selectedBranch?.id
   );
 
-  // Don't render if no branches found
+  // Show placeholder in preview mode if no branches found
   if (!branches || branches.length === 0) {
+    if (preview) {
+      return (
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {t("plans.title")}
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                {t("plans.subtitle")}
+              </p>
+            </div>
+
+            {/* Preview Placeholder */}
+            <div className="text-center py-12">
+              <div className="bg-white rounded-lg p-8 shadow-sm">
+                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {locale === "ar" ? "معاينة البرامج" : "Programs Preview"}
+                </h3>
+                <p className="text-gray-600">
+                  {locale === "ar"
+                    ? "ستظهر البرامج هنا عند إضافة الفروع والخطط"
+                    : "Programs will appear here when branches and plans are added"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
     return null;
   }
 
@@ -245,7 +277,6 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                   <Button
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => {
-
                       if (!preview) {
                         // Navigate to booking page with plan details
                         window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch}&plan=${plan.id}`;
