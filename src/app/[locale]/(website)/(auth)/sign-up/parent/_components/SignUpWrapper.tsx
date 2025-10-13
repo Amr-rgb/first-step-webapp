@@ -19,6 +19,7 @@ import {
 } from "@/lib/schemas";
 import { ApiError } from "@/lib/error-handling";
 import { toastSuccess, toastError } from "@/lib/toast";
+import { useAuthStore } from "@/store/authStore";
 
 const SignUpWrapper = () => {
   const router = useRouter();
@@ -73,7 +74,12 @@ const SignUpWrapper = () => {
     mutationFn: async ({ payload }) => {
       return await authService.registerParentv2(payload);
     },
-    onSuccess: (_, { showChildForm }) => {
+    onSuccess: (response, { showChildForm }) => {
+      // Store token and user data from sign-up response
+      if (response.token && response.data) {
+        useAuthStore.getState().setUserToken(response.data, response.token);
+      }
+
       if (showChildForm) {
         toastSuccess(
           "Account Created Successfully!",
@@ -85,6 +91,8 @@ const SignUpWrapper = () => {
           "Account Created Successfully!",
           "Welcome! Your parent account has been registered."
         );
+        // Redirect to dashboard after successful login
+        router.push(`/${locale}/dashboard`);
       }
     },
     onError: handleApiError,
@@ -104,7 +112,10 @@ const SignUpWrapper = () => {
       password: data.password,
     };
 
-    parentRegistrationMutation.mutate({ payload, showChildForm: false });
+    parentRegistrationMutation.mutate({
+      payload,
+      showChildForm: false,
+    });
   };
 
   // Handler for "Add Child" - creates parent account first, then shows child form
@@ -117,7 +128,10 @@ const SignUpWrapper = () => {
       password: data.password,
     };
 
-    parentRegistrationMutation.mutate({ payload, showChildForm: true });
+    parentRegistrationMutation.mutate({
+      payload,
+      showChildForm: true,
+    });
   };
 
   // Handler for adding another child (saves current and resets form)
@@ -153,7 +167,8 @@ const SignUpWrapper = () => {
           default: "All children have been registered successfully.",
         })
       );
-      router.push(`/${locale}/sign-in`);
+      // Redirect to dashboard since user is already logged in
+      router.push(`/${locale}/dashboard`);
     },
     onError: (error) => {
       console.error("Failed to add children:", error);
