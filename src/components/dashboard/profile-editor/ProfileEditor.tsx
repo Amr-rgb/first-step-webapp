@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileSection } from "@/app/[locale]/dashboard/center/profile-editor/page";
+import { ProfileSection } from "@/types";
 import { Fragment, useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

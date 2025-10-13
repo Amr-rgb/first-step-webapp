@@ -498,3 +498,12 @@ export type UniversalNotification = Notification;
 
 // The API returns a simple array of notifications
 export type NotificationsResponse = Notification[];
+
+// ===== Profile Editor Types =====
+export interface ProfileSection {
+  id: string;
+  type: string;
+  name: string;
+  enabled: boolean;
+  data: Record<string, any>;
+}
