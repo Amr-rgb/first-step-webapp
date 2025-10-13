@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         "/testtepfile",
       ],
     },
-    sitemap: "https://firststep.com/sitemap.xml",
+    sitemap: "https://firststep-app.com/sitemap.xml",
   };
 }

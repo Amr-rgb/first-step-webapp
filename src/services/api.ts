@@ -983,82 +983,22 @@ export const authService = {
     try {
       const formData = new FormData();
 
-      // Append text fields
+      // Step 1 fields
+      formData.append("name", payload.name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
-      formData.append("address", payload.address);
       formData.append("phone", payload.phone);
-
-      payload.additional_service &&
-        formData.append("additional_service", payload.additional_service);
-      formData.append("work_days_from", payload.work_days_from);
-      formData.append("work_days_to", payload.work_days_to);
-      formData.append("work_hours_from", formatTime(payload.work_hours_from));
-      formData.append("work_hours_to", formatTime(payload.work_hours_to));
-      payload.time_of_first_period &&
-        formData.append(
-          "time_of_first_period",
-          formatTime(payload.time_of_first_period)
-        );
-      payload.time_of_second_period &&
-        formData.append(
-          "time_of_second_period",
-          formatTime(payload.time_of_second_period)
-        );
-
-      formData.append(
-        "emergency_contact",
-        payload.emergency_contact ? "1" : "0"
-      );
-      formData.append("special_needs", payload.special_needs ? "1" : "0");
-
-      formData.append("name", payload.nursery_name);
       formData.append("nursery_name", payload.nursery_name);
       formData.append("location", payload.location);
-      formData.append("city_id", payload.city);
       formData.append("neighborhood", payload.neighborhood);
+      formData.append("city_id", payload.city);
 
-      formData.append("provides_food", payload.provides_food ? "1" : "0");
-
-      // Append arrays
+      // Append nursery_type array
       payload.nursery_type.forEach((item) => {
         formData.append("nursery_type[]", item);
       });
 
-      payload.communication_methods.forEach((item) => {
-        formData.append("communication_methods[]", item);
-      });
-
-      payload.services.forEach((item) => {
-        formData.append("services[]", item);
-      });
-
-      payload.accepted_ages.forEach((item) => {
-        formData.append("accepted_ages[]", item);
-      });
-
-      payload.first_meals?.forEach((meal, index) => {
-        meal.meal_name &&
-          formData.append(`first_meals[${index}][meal_name]`, meal.meal_name);
-        meal.juice &&
-          formData.append(`first_meals[${index}][juice]`, meal.juice);
-        meal.components &&
-          formData.append(`first_meals[${index}][components]`, meal.components);
-      });
-
-      payload.second_meals?.forEach((meal, index) => {
-        meal.meal_name &&
-          formData.append(`second_meals[${index}][meal_name]`, meal.meal_name);
-        meal.juice &&
-          formData.append(`second_meals[${index}][juice]`, meal.juice);
-        meal.components &&
-          formData.append(
-            `second_meals[${index}][components]`,
-            meal.components
-          );
-      });
-
-      // ✅ Append files
+      // Step 2 fields - files
       payload.logo && formData.append("logo", payload.logo);
       payload.license_path &&
         formData.append("license_path", payload.license_path);
@@ -1068,13 +1008,43 @@ export const authService = {
           payload.commercial_record_path
         );
 
-      const response = await apiClient.post("/register-center", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // Debug: Log the payload being sent
+      console.log("Register Center Payload:", {
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        nursery_name: payload.nursery_name,
+        location: payload.location,
+        neighborhood: payload.neighborhood,
+        city: payload.city,
+        nursery_type: payload.nursery_type,
+        logo: payload.logo?.name,
+        license_path: payload.license_path?.name,
+        commercial_record_path: payload.commercial_record_path?.name,
       });
+
+      const response = await apiClient.post(
+        "/v2/register-center-v2",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       return response.data;
     } catch (error) {
+      // Enhanced error logging
+      console.error("Register Center Error:", error);
+      console.error("Error Response Status:", error.response?.status);
+      console.error("Error Response Data:", error.response?.data);
+      console.error("Error Response Headers:", error.response?.headers);
+
+      // Log the full error for debugging
+      if (error.response?.data?.errors) {
+        console.error("Validation Errors:", error.response.data.errors);
+      }
+
       throw ApiErrorHandler.handle(error);
     }
   },

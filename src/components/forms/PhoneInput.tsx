@@ -7,6 +7,7 @@ interface PhoneInputProps {
   locale?: string;
   className?: string;
   readOnly?: boolean;
+  placeholder?: string;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
@@ -15,21 +16,20 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   locale = "en",
   className,
   readOnly = false,
+  placeholder,
   ...rest
 }) => {
   return (
-    <div className="relative flex items-center">
-      <span className="absolute left-3 text-gray-500">+966</span>
-      <Input
-        dir={locale === "ar" ? "rtl" : "ltr"}
-        type="tel"
-        className={`pr-0 pl-14 ${className || ""}`}
-        onChange={onChange}
-        value={value}
-        disabled={readOnly}
-        {...rest}
-      />
-    </div>
+    <Input
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      type="tel"
+      className={className || ""}
+      onChange={onChange}
+      value={value}
+      disabled={readOnly}
+      placeholder={placeholder}
+      {...rest}
+    />
   );
 };
 

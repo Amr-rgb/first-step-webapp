@@ -99,6 +99,10 @@ const ERRORMESSAGES = {
     ar: "يُسمح فقط بملفات JPG, JPEG, PNG",
     en: "Only JPG, JPEG, PNG files are accepted",
   },
+  "invalid-file-type": {
+    ar: "نوع الملف غير صحيح. يُسمح فقط بملفات: jpg, jpeg, png, pdf, doc, docx, txt, zip",
+    en: "Invalid file type. Only jpg, jpeg, png, pdf, doc, docx, txt, zip files are allowed",
+  },
   "at-least-one-recipient-required": {
     ar: "يجب إضافة ومركز أو ولي أمر واحد على الأقل",
     en: "At least one center or parent must be added",

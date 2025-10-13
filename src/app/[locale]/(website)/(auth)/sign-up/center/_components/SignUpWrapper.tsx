@@ -10,6 +10,7 @@ import { CenterRegisterPayload } from "@/types";
 import { SignUp } from "./SignUp";
 import LoadingOverlay from "@/components/forms/LoadingOverlay";
 import { UseFormReturn } from "react-hook-form";
+import { toastError } from "@/lib/toast";
 import { ApiError } from "@/lib/error-handling";
 
 const SignUpWrapper = () => {
@@ -18,26 +19,74 @@ const SignUpWrapper = () => {
   const formRef = useRef<UseFormReturn<SignUpCenterFormData> | null>(null);
 
   const onError = (error: ApiError) => {
+    console.log("Full API Error:", error);
+
     if (!formRef.current) return;
+
+    // Clear any existing errors first
+    formRef.current.clearErrors();
 
     // Handle field-specific validation errors
     if (error.errors && Object.keys(error.errors).length > 0) {
+      console.log("Field-specific errors:", error.errors);
+
       Object.entries(error.errors).forEach(([field, messages]) => {
-        // Only set errors for fields that exist in the form
-        if (field in formRef.current!.getValues()) {
-          formRef.current?.setError(field as keyof SignUpCenterFormData, {
+        const errorMessage = Array.isArray(messages) ? messages[0] : messages;
+
+        // Map backend field names to frontend field names if needed
+        const fieldMapping: Record<string, keyof SignUpCenterFormData> = {
+          name: "name",
+          email: "email",
+          password: "password",
+          phone: "phone",
+          nursery_name: "nursery_name",
+          location: "location",
+          neighborhood: "neighborhood",
+          city: "city",
+          city_id: "city",
+          logo: "logo",
+          nursery_type: "nursery_type",
+          commercial_record_path: "commercial_record_path",
+          license_path: "license_path",
+          notes: "notes",
+        };
+
+        const frontendField =
+          fieldMapping[field] || (field as keyof SignUpCenterFormData);
+
+        // Check if the field exists in our form
+        if (frontendField in formRef.current!.getValues()) {
+          formRef.current?.setError(frontendField, {
             type: "server",
-            message: Array.isArray(messages) ? messages[0] : messages,
+            message: errorMessage,
           });
+        } else {
+          // If field doesn't exist in form, show as root error
+          console.warn(
+            `Field ${field} not found in form, showing as root error`
+          );
+          formRef.current?.setError("root", {
+            type: "server",
+            message: `${field}: ${errorMessage}`,
+          });
+
+          // Also show as toast for better visibility
+          toastError("Validation Error", `${field}: ${errorMessage}`);
         }
       });
-    }
+    } else {
+      // If no specific field errors, show the main error message
+      formRef.current?.setError("root", {
+        type: "server",
+        message: error.message || "An error occurred. Please try again.",
+      });
 
-    // Always show the main error message
-    formRef.current.setError("root", {
-      type: "server",
-      message: error.message,
-    });
+      // Also show as toast for better visibility
+      toastError(
+        "Registration Failed",
+        error.message || "An error occurred. Please try again."
+      );
+    }
   };
 
   // --- Data Fetching & Mutation ---
@@ -66,42 +115,22 @@ const SignUpWrapper = () => {
     }
 
     const expectedData = {
-      logo: data.logo,
-      license_path: data.license_path,
-      commercial_record_path: data.commercial_record_path,
+      // Step 1 fields
+      name: data.name,
       email: data.email,
       password: data.password,
-      address: data.address,
       phone: data.phone,
-      // comments: data.comments,
-
-      nursery_type: data.nursery_type,
-      additional_service: data.additional_service,
-      work_days_from: data.work_days_from,
-      work_days_to: data.work_days_to,
-
-      work_hours_from: data.work_hours_from,
-      work_hours_to: data.work_hours_to,
-      time_of_first_period: data.meals_and_periods.time_of_first_period,
-      time_of_second_period: data.meals_and_periods.time_of_second_period,
-
-      first_meals: data.meals_and_periods.first_meals,
-      second_meals: data.meals_and_periods.second_meals,
-
-      emergency_contact: data.emergency_contact === "yes",
-      special_needs: data.accepted_ages.includes("disabled"),
-
       nursery_name: data.nursery_name,
       location: data.location,
-      city: data.city,
       neighborhood: data.neighborhood,
+      city: data.city,
+      logo: data.logo,
+      nursery_type: data.nursery_type,
 
-      services: data.services,
-      communication_methods: data.communication_methods,
-
-      provides_food: data.meals_and_periods.provides_food === "yes",
-
-      accepted_ages: data.accepted_ages,
+      // Step 2 fields
+      commercial_record_path: data.commercial_record_path,
+      license_path: data.license_path,
+      notes: data.notes,
     };
 
     mutation.mutate(expectedData);

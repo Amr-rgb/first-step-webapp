@@ -156,35 +156,21 @@ export interface Pricing {
 }
 
 export interface CenterRegisterPayload {
+  // Step 1 fields
   name: string;
   email: string;
   password: string;
-  address: string;
   phone: string;
-  nursery_type: string[];
-  additional_service?: string;
-  work_days_from: string;
-  work_days_to: string;
-  work_hours_from: string;
-  work_hours_to: string;
-  time_of_first_period?: string;
-  time_of_second_period?: string;
-  first_meals?: Meal[];
-  second_meals?: Meal[];
-  emergency_contact: boolean;
-  special_needs: boolean;
   nursery_name: string;
   location: string;
-  city: string;
   neighborhood: string;
-  services: string[];
-  communication_methods: string[];
-  provides_food: boolean;
-  accepted_ages: string[];
-  pricing: Pricing[];
+  city: string;
+  nursery_type: string[];
   logo: File;
-  license_path: File;
+
+  // Step 2 fields
   commercial_record_path: File;
+  license_path: File;
 }
 
 // Extended interface for nursery API response that includes user_id

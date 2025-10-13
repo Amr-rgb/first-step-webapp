@@ -38,19 +38,19 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://firststep.com"),
+  metadataBase: new URL("https://firststep-app.com"),
   alternates: {
-    canonical: "https://firststep.com",
+    canonical: "https://firststep-app.com",
     languages: {
-      en: "https://firststep.com/en",
-      ar: "https://firststep.com/ar",
+      en: "https://firststep-app.com/en",
+      ar: "https://firststep-app.com/ar",
     },
   },
   openGraph: {
     title: "First Step - Smart Childcare Platform",
     description:
       "Connect with trusted nurseries and childcare centers in Saudi Arabia. Smart childcare solutions for every family.",
-    url: "https://firststep.com",
+    url: "https://firststep-app.com",
     siteName: "First Step",
     images: [
       {
