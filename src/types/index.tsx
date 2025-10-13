@@ -108,6 +108,14 @@ export interface ParentRegisterPayload {
   children: Child[];
 }
 
+export interface ParentRegisterPayloadv2 {
+  name: string;
+  email: string;
+  national_number: string;
+  phone: string;
+  password?: string;
+}
+
 export interface ParentRegisterFormDataInput {
   name: string;
   phone: string;

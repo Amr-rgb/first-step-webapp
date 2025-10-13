@@ -203,6 +203,23 @@
     },
     "parent-signup": {
       "title": "Parent Account Signup",
+      "child-form-title": "Add Your Child's Information",
+      "child-form-subtitle": "Your parent account has been created successfully. Now add your child's details.",
+      "add-another": "Add Another Child",
+      "save-child": "Save Children Info",
+      "saved-children": "Saved Children",
+      "gender-male": "Boy",
+      "gender-female": "Girl",
+      "child-added-title": "Child Added!",
+      "child-added-message": "Child information saved. You can add another child.",
+      "child-removed-title": "Child Removed",
+      "child-removed-message": "Child has been removed from the list.",
+      "children-saved-title": "Success!",
+      "children-saved-message": "All children have been registered successfully.",
+      "children-error-title": "Registration Failed",
+      "children-error-message": "Failed to register children. Please try again.",
+      "no-children-title": "No Children",
+      "no-children-message": "Please add at least one child before submitting.",
       "form": {
         "name": {
           "label": "Name",
@@ -323,6 +340,14 @@
           "kinship": {
             "label": "Child Relationship",
             "placeholder": "Enter your relationship to the child"
+          },
+          "national-number": {
+            "label": "Child National Number",
+            "placeholder": "Enter your child national number"
+          },
+          "child-image": {
+            "label": "Child Personal Image",
+            "placeholder": "Enter your child personal image"
           },
           "gender": {
             "title": "Child's Gender",

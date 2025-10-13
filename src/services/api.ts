@@ -12,6 +12,7 @@ import {
   Value,
   NurseryResponse,
   PortfolioResponse,
+  ParentRegisterPayloadv2,
 } from "@/types";
 import axios from "axios";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
@@ -968,6 +969,26 @@ export const nurseryService = {
 };
 
 export const authService = {
+  registerParentv2: async (payload: ParentRegisterPayloadv2) => {
+    try {
+      const response = await apiClient.post("/v2/register-v2", {
+        ...payload,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  addChildren: async (payload: any) => {
+    try {
+      const response = await apiClient.post(`/v2/childs`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   registerParent: async (payload: ParentRegisterPayload) => {
     try {
       const response = await apiClient.post("/register-parent", {
