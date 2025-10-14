@@ -43,7 +43,9 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
   const branchNames =
     nursery.branches
       ?.map((branch: any) =>
-        branch.name === "Main Branch" ? "الفرع الرئيسي" : branch.name
+        branch.nursery_name === "Main Branch"
+          ? "الفرع الرئيسي"
+          : branch.nursery_name
       )
       .join("، ") || "الفرع الرئيسي";
 
@@ -122,19 +124,20 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
           <p className="text-center text-gray text-sm mb-4">{branchNames}</p>
 
           {/* Location */}
-          <div className="flex items-center justify-center gap-1 mb-4">
-            <MapPin size={16} className="text-info" />
-            <span className="text-sm text-gray text-center">
-              {typeof mainBranch.city === "object" && mainBranch.city !== null
-                ? mainBranch.city[locale]
-                : mainBranch.city}
-              ,{" "}
-              {typeof mainBranch.neighborhood === "object" &&
-              mainBranch.neighborhood !== null
-                ? mainBranch.neighborhood[locale]
-                : mainBranch.neighborhood}
-            </span>
-          </div>
+          {mainBranch.city ? (
+            <div className="flex items-center justify-center gap-1 mb-4">
+              <MapPin size={16} className="text-info" />
+              <span className="text-sm text-gray text-center">
+                {typeof mainBranch.city === "object"
+                  ? mainBranch.city.name[locale]
+                  : mainBranch.city}
+                {typeof mainBranch.neighborhood === "object" &&
+                mainBranch.neighborhood !== null
+                  ? ", " + mainBranch.neighborhood[locale]
+                  : ", " + mainBranch.neighborhood}
+              </span>
+            </div>
+          ) : null}
 
           {/* Accepted Ages */}
           <div className="flex items-center justify-center gap-1 mb-4">

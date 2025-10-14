@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://firststep.com/sitemap.xml
+Sitemap: https://https:/firststep-app.com/sitemap.xml
 
 # Disallow admin and dashboard areas
 Disallow: /dashboard/

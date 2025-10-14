@@ -58,7 +58,10 @@
       "contact": { "title": "تواصل معنا", "path": "/contact" },
       "help": { "title": "المساعدة", "path": "/help" },
       "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
-      "terms-conditions": { "title": "الشروط والأحكام", "path": "/terms-conditions" }
+      "terms-conditions": {
+        "title": "الشروط والأحكام",
+        "path": "/terms-conditions"
+      }
     },
     "contactTitle": "تواصل معنا",
     "newsletter": {
@@ -287,6 +290,10 @@
         "general": {
           "field-required": "هذا الحقل مطلوب"
         }
+      },
+      "errors": {
+        "chronicDiseases": "يرجى التحقق من معلومات الأمراض المزمنة",
+        "allergies": "يرجى التحقق من معلومات الحساسية"
       }
     },
     "add-child": {
@@ -870,19 +877,8 @@
         "title": "جدولة الإشعارات",
         "form": {
           "type": {
-            "label": "اختر الإشعار",
-            "placeholder": "اختر الإشعار",
-            "options": {
-              "arrived": "وصل",
-              "left": "غادر",
-              "meal": "وقت الوجبة",
-              "nap": "وقت القيلولة",
-              "activity": "وقت النشاط",
-              "eid": "عيد",
-              "new_year": "السنة الجديدة",
-              "meeting": "الاجتماع",
-              "reminder": "تذكير"
-            }
+            "label": "المحنوى",
+            "placeholder": "أدخل محتوى الإشعار"
           },
           "day": {
             "label": "اليوم",
@@ -1519,73 +1515,72 @@
       }
     },
     "profileEditor": {
-      "title": "محرر الملف الشخصي",
+      "title": "ملف الحضانة الشخصي",
       "modes": {
         "edit": "تعديل",
         "preview": "معاينة"
       },
       "loading": "جارٍ تحميل بيانات الملف...",
       "loadError": "فشل في تحميل بيانات الملف",
-      "savePortfolio": "حفظ الملف",
+      "savePortfolio": "تأكيد",
       "saving": "جارٍ الحفظ...",
-      "saveSuccess": "تم حفظ الملف بنجاح!",
-      "saveError": "فشل في حفظ الملف",
+      "saveSuccess": "تم الحفظ بنجاح!",
+      "saveError": "فشل في الحفظ",
       "sections": {
-        "hero": "قسم البطل",
+        "hero": "القسم الرئيسي",
         "branches": "الفروع",
-        "philosophy": "الفلسفة والأهداف",
-        "services": "الخدمات",
-        "nurseryState": "حالة الحضانة",
+        "philosophy": "فلسفتنا، منهجيتنا، هدفنا",
+        "services": "خدماتنا",
+        "nurseryState": "بيانات المركز",
         "activities": "الأنشطة",
         "contact": "معلومات التواصل",
-        "ads": "صور الإعلانات",
-        "teams": "أعضاء الفريق",
-        "plans": "الخطط والأسعار"
+        "ads": "مساحتك الإعلانية",
+        "teams": "فريقنا",
+        "plans": "برامجنا"
       },
       "hero": {
-        "title": "العنوان",
-        "titlePlaceholder": "أدخل عنوان القسم",
-        "subtitle": "العنوان الفرعي",
-        "subtitlePlaceholder": "أدخل العنوان الفرعي",
+        "title": "اسم المركز",
+        "titlePlaceholder": "مثال: حضانة الورد",
+        "subtitle": "شعار المركز",
+        "subtitlePlaceholder": "مثال: بيتك الثاني",
         "description": "الوصف",
         "descriptionPlaceholder": "أدخل الوصف",
-
-        "ctaTextPlaceholder": "أدخل نص الدعوة للإجراء",
-        "ctaLink": "رابط الدعوة للإجراء",
-        "ctaLinkPlaceholder": "أدخل رابط الدعوة",
-        "backgroundImage": "صورة الخلفية"
+        "ctaTextPlaceholder": "زر اتخاذ القرار",
+        "ctaLink": "زر اتخاذ القرار",
+        "ctaLinkPlaceholder": "URL",
+        "backgroundImage": "صورة الخلفية",
+        "backgroundImagePlaceholder": "حقل اختياري"
       },
       "branches": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الفروع",
+        "sectionTitle": "اسم الفرع",
+        "sectionTitlePlaceholder": "أدخل اسم الفرع",
         "branchesTitle": "الفروع",
         "branchNamePlaceholder": "أدخل اسم الفرع",
-        "noBranches": "لم تتم إضافة أي فروع بعد"
+        "noBranches": "لا يوجد فروع"
       },
       "philosophy": {
-        "philosophy": "الفلسفة",
-        "philosophyTitle": "عنوان الفلسفة",
-        "philosophyTitlePlaceholder": "أدخل عنوان الفلسفة",
-        "philosophyContent": "محتوى الفلسفة",
-        "philosophyContentPlaceholder": "أدخل محتوى الفلسفة",
-        "methodology": "المنهجية",
-        "methodologyTitle": "عنوان المنهجية",
-        "methodologyTitlePlaceholder": "أدخل عنوان المنهجية",
-        "methodologyContent": "محتوى المنهجية",
-        "methodologyContentPlaceholder": "أدخل محتوى المنهجية",
-        "goals": "الأهداف",
-
-        "goalTitle": "عنوان الهدف",
-        "goalTitlePlaceholder": "أدخل عنوان الهدف",
-        "goalContent": "محتوى الهدف",
-        "goalContentPlaceholder": "أدخل محتوى الهدف"
+        "philosophy": "فلسفتنا",
+        "philosophyTitle": "فلسفتنا",
+        "philosophyTitlePlaceholder": " أدخل محتوى فلسفتنا",
+        "philosophyContent": "منهجيتنا",
+        "philosophyContentPlaceholder": " أدخل محتوى فلسفتنا",
+        "methodology": "منهجيتنا",
+        "methodologyTitle": "منهجيتنا",
+        "methodologyTitlePlaceholder": " أدخل محتوى منهجيتنا",
+        "methodologyContent": "منهجيتنا",
+        "methodologyContentPlaceholder": " أدخل محتوى منهجيتنا",
+        "goals": "هدفنا",
+        "goalTitle": "هدفنا",
+        "goalTitlePlaceholder": " أدخل محتوى هدفنا",
+        "goalContent": "هدفنا",
+        "goalContentPlaceholder": " أدخل محتوى هدفنا"
       },
       "services": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الخدمات",
-        "services": "الخدمات",
-        "addService": "إضافة خدمة",
-        "noServices": "لم تتم إضافة أي خدمات بعد",
+        "sectionTitle": "عنوان خدماتنا",
+        "sectionTitlePlaceholder": "أدخل عنوان خدماتنا",
+        "services": "خدماتنا",
+        "addService": "إضافة",
+        "noServices": "لا يوجد خدمات",
         "service": "الخدمة",
         "serviceTitle": "عنوان الخدمة",
         "serviceTitlePlaceholder": "أدخل عنوان الخدمة",
@@ -1594,22 +1589,22 @@
         "serviceImage": "صورة الخدمة"
       },
       "nurseryState": {
-        "title": "حالة الحضانة",
-        "area": "المساحة",
-        "areaPlaceholder": "أدخل مساحة الحضانة",
-        "classRooms": "الفصول الدراسية",
+        "title": "بيانات المركز",
+        "area": "مساحة المركز",
+        "areaPlaceholder": "أدخل مساحة المركز",
+        "classRooms": "عدد الفصول",
         "classRoomsPlaceholder": "أدخل عدد الفصول",
-        "teamMembers": "أعضاء الفريق",
-        "teamMembersPlaceholder": "أدخل عدد أعضاء الفريق"
+        "teamMembers": "عدد الموظفين",
+        "teamMembersPlaceholder": "أدخل عدد الموظفين"
       },
       "activities": {
-        "sectionTitle": "عنوان القسم",
-        "sectionTitlePlaceholder": "أدخل عنوان قسم الأنشطة",
+        "sectionTitle": "الأنشطة",
+        "sectionTitlePlaceholder": "عنوان الأنشطة",
         "sectionSubtitle": "العنوان الفرعي للقسم",
         "sectionSubtitlePlaceholder": "أدخل العنوان الفرعي للأنشطة",
         "activityImages": "صور الأنشطة",
         "addImage": "إضافة صورة",
-        "noImages": "لم تتم إضافة أي صور بعد"
+        "noImages": "لا يوجد أنشطة"
       },
       "contact": {
         "title": "معلومات التواصل",
@@ -1630,54 +1625,63 @@
         "whatsappPlaceholder": "أدخل رقم واتساب"
       },
       "ads": {
-        "title": "صور الإعلانات",
-        "addImage": "إضافة صورة",
-        "noImages": "لم تتم إضافة أي صور إعلانية بعد"
+        "title": "مساحتك الإعلانية",
+        "addImage": "إضافة",
+        "noImages": "لا يوجد صور إعلانية"
       },
       "teams": {
-        "title": "أعضاء الفريق",
-        "addTeamMember": "إضافة عضو فريق",
-        "noTeamMembers": "لم تتم إضافة أي أعضاء بعد",
+        "title": "فريقنا",
+        "addTeamMember": "إضافة فرد",
+        "noTeamMembers": "لا يوجد أعضاء",
         "teamMember": "عضو الفريق",
-        "memberName": "اسم العضو",
-        "memberNamePlaceholder": "أدخل اسم العضو",
-        "memberMission": "مهمة العضو",
-        "memberMissionPlaceholder": "أدخل مهمة العضو",
-        "memberImage": "صورة العضو"
+        "memberName": "اسم الشخص",
+        "memberNamePlaceholder": "مثال: ياسر",
+        "memberMission": "مهنة الشخص",
+        "memberMissionPlaceholder": "أدخل مهنة الشخص",
+        "memberImage": "رابط صورة الشخص"
       },
       "plans": {
-        "title": "الخطط والأسعار",
+        "title": "برامجنا",
         "loading": "جارٍ التحميل...",
-        "selectBranch": "اختر الفرع",
-        "selectBranchPlaceholder": "اختر فرعاً",
-        "plans": "الخطط",
-        "addPlan": "إضافة خطة",
-        "editPlan": "تعديل الخطة",
-        "noPlansYet": "لا توجد خطط بعد",
-        "ageRange": "العمر: {start} - {end} سنوات",
-        "price": "السعر",
-        "priceAmount": "السعر: ${amount}",
-        "enrollmentType": "نوع الاشتراك",
-        "selectEnrollmentType": "اختر نوع الاشتراك",
+        "selectBranch": "الفرع",
+        "selectBranchPlaceholder": "نوع الفرع",
+        "plans": "برامجنا",
+        "addPlan": "إضافة برنامج",
+        "editPlan": "تعديل البرنامج",
+        "noPlansYet": "لا يوجد برامج",
+        "ageRange": "الفئة العمرية",
+        "price": "تسعير البرنامج",
+        "priceAmount": "مثال: 50 رس",
+        "enrollmentType": "نوع البرنامج",
+        "selectEnrollmentType": "ساعة",
         "year": "عام",
         "month": "شهر",
         "week": "أسبوع",
         "day": "يوم",
         "hour": "ساعة",
-        "planTitle": "عنوان الخطة",
-        "planTitlePlaceholder": "أدخل عنوان الخطة",
-        "startAge": "العمر الابتدائي",
-        "endAge": "العمر النهائي",
+        "planTitle": "عنوان البرنامج",
+        "planTitlePlaceholder": "برنامج الصغار",
+        "startAge": "بداية من سن..",
+        "endAge": "إلى سن..",
         "count": "العدد",
         "branches": "الفروع",
         "selectBranchesPlaceholder": "اختر الفروع...",
-        "cancel": "إلغاء",
-        "save": "حفظ",
+        "cancel": "إنهاء",
+        "save": "إضافة برنامج",
         "saving": "جارٍ الحفظ...",
-        "planSaved": "تم حفظ الخطة بنجاح!",
-        "planSaveError": "فشل في حفظ الخطة",
-        "planDeleted": "تم حذف الخطة بنجاح!",
-        "planDeleteError": "فشل في حذف الخطة"
+        "planSaved": "تم حفظ البرنامج بنجاح!",
+        "planSaveError": "فشل في حفظ البرنامج",
+        "planDeleted": "تم حذف البرنامج بنجاح!",
+        "planDeleteError": "فشل في حذف البرنامج",
+        "selectBranchesError": "اختر الفرع من فضلك",
+        "titleRequired": "عنوان البرنامج مطلوب",
+        "titleTooShort": "عنوان البرنامج يجب أن يكون حرفين على الأقل",
+        "startAgeInvalid": "العمر الابتدائي يجب أن يكون 0 أو أكثر",
+        "endAgeInvalid": "العمر النهائي يجب أن يكون 0 أو أكثر",
+        "endAgeMustBeGreater": "العمر النهائي يجب أن يكون أكبر من العمر الابتدائي",
+        "enrollmentTypeRequired": "نوع التسجيل مطلوب",
+        "countMustBePositive": "العدد يجب أن يكون أكبر من 0",
+        "priceMustBePositive": "السعر يجب أن يكون أكبر من 0"
       }
     },
     "tables": {
@@ -1937,7 +1941,7 @@
       },
       "plans": {
         "popular": "الأكثر شعبية",
-        "commission": "+ 12 % عمولة على كل حجز من خلال الموقع",
+        "commission": "+ 5 % عمولة على كل حجز من خلال الموقع",
         "select": "اشترك الآن",
         "processing": "جاري المعالجة...",
         "currency": "ر.س",
@@ -2059,6 +2063,10 @@
     },
     "services": {
       "title": "خدماتنا"
+    },
+    "activities": {
+      "title": "نشاطاتنا",
+      "subtitle": "أعط أطفالك الفرصة للاستمتاع معنا."
     },
     "programs": {
       "title": "برامجنا",

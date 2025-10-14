@@ -120,11 +120,9 @@ const Bookings = () => {
   if (!isLoading && bookingsData.length === 0) {
     return (
       <EmptyState
-        title={t("emptyStates.bookings.title")}
-        description={t("emptyStates.bookings.description")}
         icon="📅"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.bookings"
       />
     );
   }

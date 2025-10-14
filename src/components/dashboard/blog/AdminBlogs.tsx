@@ -49,8 +49,6 @@ const AdminBlogs = () => {
 
       {mappedBlogs.length === 0 ? (
         <EmptyState
-          title={t("emptyStates.blogs.title")}
-          description={t("emptyStates.blogs.description")}
           icon="📝"
           size="lg"
           primaryAction={{
@@ -59,7 +57,7 @@ const AdminBlogs = () => {
               router.push("/dashboard/admin/blog/add");
             },
           }}
-          translationKey="dashboard.emptyStates"
+          translationKey="dashboard.emptyStates.blogs"
         />
       ) : (
         <div className="grid md:grid-cols-3 items-start gap-10">

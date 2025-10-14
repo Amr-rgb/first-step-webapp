@@ -163,8 +163,6 @@ export default function EmptyStateTestClient() {
             </CardHeader>
             <CardContent>
               <EmptyState
-                title={example.description}
-                description="This is a sample description for the empty state component."
                 icon={example.icon}
                 image={example.image}
                 primaryAction={example.primaryAction}

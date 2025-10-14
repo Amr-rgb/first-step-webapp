@@ -24,9 +24,49 @@ const Activities = ({
 }: ActivitiesProps) => {
   const t = useTranslations("nurseryDetails");
 
-  // Don't render if no activities
+  // Show placeholder if no activities
   if (!activities || activities.length === 0) {
-    return null;
+    return (
+      <section className="mt-20 mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">
+          {title || t("activities.title")}
+        </h2>
+        <div className="text-center text-[#22336C] mb-8 font-medium">
+          {subtitle || t("activities.description")}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-8 lg:px-12 mb-8">
+          {/* Show 6 placeholder slots */}
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className={`rounded-2xl w-full ${
+                index % 3 === 1 ? "h-80" : "h-48"
+              } bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300`}
+            >
+              <div className="text-center text-gray-400">
+                <div className="text-4xl mb-2">📸</div>
+                <div className="text-sm">Add Activity Image</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {buttonText && (
+          <div className="flex justify-center mb-12">
+            <div className="relative group">
+              <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50">
+                {buttonText}
+              </button>
+              {!preview ? (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                  Wait until the nursery adds its plans or programs
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
+      </section>
+    );
   }
 
   // Create 6 slots - fill with images or placeholder loaders
@@ -62,7 +102,7 @@ const Activities = ({
   return (
     <section className="mt-20 mb-10">
       <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">
-        {title || t("activities.title")}
+        {t("activities.title")}
       </h2>
       <div className="text-center text-[#22336C] mb-8 font-medium">
         {subtitle || t("activities.description")}

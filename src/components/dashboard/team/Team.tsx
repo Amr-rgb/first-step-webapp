@@ -9,8 +9,6 @@ const Team = ({ members }: { members: TeamMember[] }) => {
   if (members.length === 0) {
     return (
       <EmptyState
-        title={t("team.title")}
-        description={t("team.description")}
         icon="👥"
         size="lg"
         primaryAction={{
@@ -20,7 +18,7 @@ const Team = ({ members }: { members: TeamMember[] }) => {
             window.location.href = "/dashboard/center/team/add";
           },
         }}
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.team"
       />
     );
   }

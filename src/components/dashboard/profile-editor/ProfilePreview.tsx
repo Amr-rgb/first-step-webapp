@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileSection } from "@/app/[locale]/dashboard/center/profile-editor/page";
+import { ProfileSection } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -386,16 +386,18 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
         ) : null;
 
       case "activities":
-        return section.data.images && section.data.images.length > 0 ? (
+        return (
           <Activities
             key={section.id}
             title={section.data.title || "Our Activities"}
             subtitle={section.data.subtitle || ""}
-            activities={section.data.images.map((img: any) => img.url)}
+            activities={(section.data.images || [])
+              .map((img: any) => img.url)
+              .filter(Boolean)}
             buttonText="Book Now"
-            isPreview={true}
+            preview={true}
           />
-        ) : null;
+        );
 
       case "philosophy":
         return (
@@ -540,7 +542,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
               },
             ]}
             buttonText="Book Now"
-            isPreview={true}
+            preview={true}
           />
         );
 

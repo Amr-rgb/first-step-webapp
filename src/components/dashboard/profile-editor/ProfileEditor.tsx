@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileSection } from "@/app/[locale]/dashboard/center/profile-editor/page";
+import { ProfileSection } from "@/types";
 import { Fragment, useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import {
 import { Plus, Trash, CheckSquare, Square, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { centerService, getBranchPricing } from "@/services/dashboardApi";
+import { centerService } from "@/services/dashboardApi";
 import { useQuery } from "@tanstack/react-query";
 
 // Custom hooks for fetching data
@@ -45,7 +45,9 @@ const useAllBranchPricing = (branches: any[]) => {
       try {
         const pricingPromises = branches.map(async (branch: any) => {
           try {
-            const response = await getBranchPricing(branch.id.toString());
+            const response = await centerService.getBranchPricing(
+              branch.id.toString()
+            );
             return {
               branch_id: branch.id,
               pricing: response.data || [],

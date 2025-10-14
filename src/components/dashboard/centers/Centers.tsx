@@ -16,11 +16,9 @@ const Centers = () => {
   if (!centers || centers.length === 0) {
     return (
       <EmptyState
-        title={t("emptyStates.centers.title")}
-        description={t("emptyStates.centers.description")}
         icon="🏢"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.centers"
       />
     );
   }

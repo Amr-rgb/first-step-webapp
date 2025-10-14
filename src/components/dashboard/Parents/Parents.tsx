@@ -40,11 +40,9 @@ const Parents = () => {
   if (!data?.parents || data.parents.length === 0) {
     return (
       <EmptyState
-        title={t("parents.title")}
-        description={t("parents.description")}
         icon="👨‍👩‍👧‍👦"
         size="lg"
-        translationKey="dashboard.emptyStates"
+        translationKey="dashboard.emptyStates.parents"
       />
     );
   }

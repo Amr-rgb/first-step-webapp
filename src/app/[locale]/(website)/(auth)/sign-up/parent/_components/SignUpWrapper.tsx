@@ -28,23 +28,23 @@ const SignUpWrapper = () => {
     // Handle field-specific validation errors
     if (error.errors && Object.keys(error.errors).length > 0) {
       Object.entries(error.errors).forEach(([field, messages]) => {
-        // Map API field names to form field names if needed
-        let formField = field;
+        // Map API field names to form field names
+        let formField = mapApiFieldToFormField(field);
+        const errorMessage = Array.isArray(messages) ? messages[0] : messages;
 
-        // Handle nested fields like children.0.kinship
-        if (field.includes(".")) {
-          const parts = field.split(".");
-          if (parts[0] === "children" && !isNaN(Number(parts[1]))) {
-            // Keep the array index for children fields
-            formField = field;
-          }
+        if (formField) {
+          // Set the error on the mapped form field
+          formRef.current?.setError(formField as keyof SignUpParentFormData, {
+            type: "server",
+            message: errorMessage,
+          });
+        } else {
+          // If we can't map the field, show it as a root error with a user-friendly message
+          formRef.current?.setError("root", {
+            type: "server",
+            message: getFieldErrorMessage(field, errorMessage),
+          });
         }
-
-        // Set the error on the form field
-        formRef.current?.setError(formField as keyof SignUpParentFormData, {
-          type: "server",
-          message: Array.isArray(messages) ? messages[0] : messages,
-        });
       });
     } else if (error.message) {
       // If there's a general error message, show it at the root level
@@ -53,6 +53,49 @@ const SignUpWrapper = () => {
         message: error.message,
       });
     }
+  };
+
+  // Helper function to map API field names to form field names
+  const mapApiFieldToFormField = (apiField: string): string | null => {
+    const fieldMappings: Record<string, string> = {
+      name: "name",
+      email: "email",
+      password: "password",
+      address: "address",
+      national_number: "nationalNumber",
+      phone: "phone",
+      "children.0.child_name": "childName",
+      "children.0.birthday_date": "birthDate",
+      "children.0.gender": "gender",
+      "children.0.parent_name": "fatherName",
+      "children.0.mother_name": "motherName",
+      "children.0.kinship": "kinship",
+      "children.0.description_3_words": "childDescription",
+      "children.0.things_child_likes": "favoriteThings",
+      "children.0.recommendations": "recommendations",
+      "children.0.notes": "comments",
+    };
+
+    return fieldMappings[apiField] || null;
+  };
+
+  // Helper function to generate user-friendly error messages for unmapped fields
+  const getFieldErrorMessage = (
+    apiField: string,
+    originalMessage: string
+  ): string => {
+    const fieldMessages: Record<string, string> = {
+      "children.0.disease_details":
+        t("errors.chronicDiseases") ||
+        "Please check the chronic diseases information",
+      "children.0.disease":
+        t("errors.chronicDiseases") ||
+        "Please check the chronic diseases information",
+      "children.0.allergy":
+        t("errors.allergies") || "Please check the allergies information",
+    };
+
+    return fieldMessages[apiField] || originalMessage;
   };
 
   // --- Data Fetching & Mutation ---

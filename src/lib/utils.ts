@@ -200,10 +200,10 @@ export function transformParentDataToExpectedPayload(
 }
 
 function transformChildData(formData: ParentRegisterFormDataInput): Child {
-  // Helper to serialize disease details as JSON string or null
+  // Helper to get disease details as array or null
   const diseaseDetailsArr = transformDiseases(formData.chronicDiseases);
   const disease_details =
-    diseaseDetailsArr.length > 0 ? JSON.stringify(diseaseDetailsArr) : null;
+    diseaseDetailsArr.length > 0 ? diseaseDetailsArr : null;
 
   // Helper to map authorized people to required structure
   const authorized_people = (formData.authorizedPersons || []).map(

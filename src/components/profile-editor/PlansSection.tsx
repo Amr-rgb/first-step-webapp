@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -26,13 +26,28 @@ import { BranchPricingData, PricingFormData, Branch } from "@/types";
 import { useTranslations } from "next-intl";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { z } from "zod";
 
-interface PlansSectionProps {
-  data?: any;
-  onChange?: (data: any) => void;
-}
+// Zod schema for plan validation
+const createPlanSchema = (t: any, isEditing: boolean) =>
+  z
+    .object({
+      title: z.string().min(1, t("titleRequired")).min(2, t("titleTooShort")),
+      start_age: z.number().min(0, t("startAgeInvalid")),
+      end_age: z.number().min(0, t("endAgeInvalid")),
+      enrollment_type: z.string().min(1, t("enrollmentTypeRequired")),
+      count: z.number().min(1, t("countMustBePositive")),
+      price_amount: z.number().min(0.01, t("priceMustBePositive")),
+      branches: isEditing
+        ? z.array(z.string()).optional()
+        : z.array(z.string()).min(1, t("selectBranchesError")),
+    })
+    .refine((data) => data.end_age > data.start_age, {
+      message: t("endAgeMustBeGreater"),
+      path: ["end_age"],
+    });
 
-export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
+export const PlansSection = () => {
   const t = useTranslations("dashboard.profileEditor.plans");
   const queryClient = useQueryClient();
   const { data: branches, isLoading: branchesLoading } = useBranches();
@@ -50,6 +65,16 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
     count: 0,
     price_amount: 0,
   });
+
+  const [formErrors, setFormErrors] = useState<{
+    title?: string;
+    start_age?: string;
+    end_age?: string;
+    enrollment_type?: string;
+    count?: string;
+    price_amount?: string;
+    branches?: string;
+  }>({});
 
   // React Query for branch pricing data
   const { data: branchPricing = [], isLoading: isPricingLoading } = useQuery<
@@ -103,7 +128,7 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
     }
   }, [branches, selectedBranchId]);
 
-  const resetForm = () =>
+  const resetForm = () => {
     setFormData({
       enrollment_type: "",
       title: "",
@@ -112,6 +137,14 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
       count: 0,
       price_amount: 0,
     });
+    setFormErrors({});
+  };
+
+  const clearFieldError = (fieldName: keyof typeof formErrors) => {
+    if (formErrors[fieldName]) {
+      setFormErrors({ ...formErrors, [fieldName]: undefined });
+    }
+  };
 
   const handleAddPlan = () => {
     setEditingPlan(null);
@@ -125,9 +158,36 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
     setIsDialogOpen(true);
   };
 
+  const validateForm = () => {
+    const schema = createPlanSchema(t, !!editingPlan);
+
+    // Prepare data for validation
+    const validationData = {
+      ...formData,
+      title: formData.title.trim(),
+      branches: editingPlan ? undefined : selectedBranchIds,
+    };
+
+    const result = schema.safeParse(validationData);
+
+    if (!result.success) {
+      const errors: typeof formErrors = {};
+
+      result.error.errors.forEach((error) => {
+        const path = error.path[0] as string;
+        errors[path as keyof typeof formErrors] = error.message;
+      });
+
+      setFormErrors(errors);
+      return false;
+    }
+
+    setFormErrors({});
+    return true;
+  };
+
   const handleSavePlan = () => {
-    if (selectedBranchIds.length === 0 && !editingPlan) {
-      toastError(t("selectBranchesError"));
+    if (!validateForm()) {
       return;
     }
 
@@ -279,9 +339,17 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                     })) || []
                   }
                   selected={selectedBranchIds}
-                  onChange={setSelectedBranchIds}
+                  onChange={(value) => {
+                    setSelectedBranchIds(value);
+                    clearFieldError("branches");
+                  }}
                   placeholder={t("selectBranchesPlaceholder")}
                 />
+                {formErrors.branches && (
+                  <p className="text-sm text-destructive mt-1">
+                    {formErrors.branches}
+                  </p>
+                )}
               </div>
             )}
 
@@ -290,11 +358,18 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
               <Label>{t("planTitle")}</Label>
               <Input
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, title: e.target.value });
+                  clearFieldError("title");
+                }}
                 placeholder={t("planTitlePlaceholder")}
+                className={formErrors.title ? "border-destructive" : ""}
               />
+              {formErrors.title && (
+                <p className="text-sm text-destructive mt-1">
+                  {formErrors.title}
+                </p>
+              )}
             </div>
 
             {/* Age Range */}
@@ -303,27 +378,43 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                 <Label>{t("startAge")}</Label>
                 <Input
                   type="number"
+                  min="0"
                   value={formData.start_age}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       start_age: Number(e.target.value),
-                    })
-                  }
+                    });
+                    clearFieldError("start_age");
+                  }}
+                  className={formErrors.start_age ? "border-destructive" : ""}
                 />
+                {formErrors.start_age && (
+                  <p className="text-sm text-destructive mt-1">
+                    {formErrors.start_age}
+                  </p>
+                )}
               </div>
               <div>
                 <Label>{t("endAge")}</Label>
                 <Input
                   type="number"
+                  min="0"
                   value={formData.end_age}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       end_age: Number(e.target.value),
-                    })
-                  }
+                    });
+                    clearFieldError("end_age");
+                  }}
+                  className={formErrors.end_age ? "border-destructive" : ""}
                 />
+                {formErrors.end_age && (
+                  <p className="text-sm text-destructive mt-1">
+                    {formErrors.end_age}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -332,11 +423,16 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
               <Label>{t("enrollmentType")}</Label>
               <Select
                 value={formData.enrollment_type}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, enrollment_type: value })
-                }
+                onValueChange={(value) => {
+                  setFormData({ ...formData, enrollment_type: value });
+                  clearFieldError("enrollment_type");
+                }}
               >
-                <SelectTrigger>
+                <SelectTrigger
+                  className={
+                    formErrors.enrollment_type ? "border-destructive" : ""
+                  }
+                >
                   <SelectValue placeholder={t("selectEnrollmentType")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -347,6 +443,11 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                   <SelectItem value="hour">{t("hour")}</SelectItem>
                 </SelectContent>
               </Select>
+              {formErrors.enrollment_type && (
+                <p className="text-sm text-destructive mt-1">
+                  {formErrors.enrollment_type}
+                </p>
+              )}
             </div>
 
             {/* Count & Price */}
@@ -355,24 +456,43 @@ export const PlansSection = ({ data, onChange }: PlansSectionProps) => {
                 <Label>{t("count")}</Label>
                 <Input
                   type="number"
+                  min="1"
                   value={formData.count}
-                  onChange={(e) =>
-                    setFormData({ ...formData, count: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, count: Number(e.target.value) });
+                    clearFieldError("count");
+                  }}
+                  className={formErrors.count ? "border-destructive" : ""}
                 />
+                {formErrors.count && (
+                  <p className="text-sm text-destructive mt-1">
+                    {formErrors.count}
+                  </p>
+                )}
               </div>
               <div>
                 <Label>{t("price")}</Label>
                 <Input
                   type="number"
+                  min="0"
+                  step="0.01"
                   value={formData.price_amount}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       price_amount: Number(e.target.value),
-                    })
+                    });
+                    clearFieldError("price_amount");
+                  }}
+                  className={
+                    formErrors.price_amount ? "border-destructive" : ""
                   }
                 />
+                {formErrors.price_amount && (
+                  <p className="text-sm text-destructive mt-1">
+                    {formErrors.price_amount}
+                  </p>
+                )}
               </div>
             </div>
 

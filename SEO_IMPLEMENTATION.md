@@ -113,7 +113,7 @@ export const metadata = generateMetadata(
 
 ## Important Notes
 
-1. **Domain**: Update all URLs from `firststep.com` to your actual domain
+1. **Domain**: Update all URLs from `firststep-app.com` to your actual domain
 2. **Verification**: Add actual Google Search Console verification code
 3. **Contact Info**: Update contact information in security.txt and humans.txt
 4. **Analytics**: Configure Google Analytics tracking ID

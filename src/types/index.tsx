@@ -46,7 +46,11 @@ export interface Child {
   notes: string | null;
   kinship: string | null;
   center_branch_id: number | null;
-  disease_details: string | null;
+  disease_details: Array<{
+    disease_name: string;
+    medicament: string;
+    emergency: string;
+  }> | null;
   enrollments: Array<{
     id: number;
     center_id: number;
@@ -181,6 +185,7 @@ export interface NurseryResponse
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
+  accepted_ages?: string[];
   branches?: Array<{
     id: number;
     name: string;
@@ -494,3 +499,12 @@ export type UniversalNotification = Notification;
 
 // The API returns a simple array of notifications
 export type NotificationsResponse = Notification[];
+
+// ===== Profile Editor Types =====
+export interface ProfileSection {
+  id: string;
+  type: string;
+  name: string;
+  enabled: boolean;
+  data: Record<string, any>;
+}
