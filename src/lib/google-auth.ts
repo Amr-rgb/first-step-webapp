@@ -32,10 +32,8 @@ const handleGoogleSignIn = async (credential: any) => {
   try {
     const result = await authService.googleSignIn(credential);
 
-    useAuthStore.setState({
-      token: result.token,
-      user: result.user,
-    });
+    // Use setUserToken to properly set both state and cookies
+    useAuthStore.getState().setUserToken(result.user, result.token);
 
     let dashboardPath = "/dashboard/center";
     if (result.user.role === "parent") {

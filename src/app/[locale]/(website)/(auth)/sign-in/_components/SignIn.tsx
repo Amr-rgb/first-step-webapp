@@ -51,10 +51,8 @@ const SignIn = () => {
       return await authService.login(data.email, data.password);
     },
     onSuccess: (data) => {
-      useAuthStore.setState({
-        token: data.token,
-        user: data.user,
-      });
+      // Use setUserToken to properly set both state and cookies
+      useAuthStore.getState().setUserToken(data.user, data.token);
 
       let dashboardPath = "/dashboard/center";
 
