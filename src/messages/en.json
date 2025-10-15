@@ -2196,6 +2196,9 @@
     "datePlaceholder": "1/10/2002",
     "relationshipPlaceholder": "Example: Father, Grandmother, or Uncle",
     "savedParents": "Saved Parents",
-    "children": "children"
+    "children": "children",
+    "accountsCreated": "Accounts have been created and data has been sent to parents",
+    "dataSentToParents": "via email and WhatsApp",
+    "viaEmailAndWhatsApp": ""
   }
 }

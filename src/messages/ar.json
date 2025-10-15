@@ -2208,6 +2208,9 @@
     "datePlaceholder": "1/10/2002",
     "relationshipPlaceholder": "مثال: الأب أو الجدة أو الخال",
     "savedParents": "الأولياء المحفوظون",
-    "children": "أطفال"
+    "children": "أطفال",
+    "accountsCreated": "تم إنشاء الحسابات وإرسال البيانات لأولياء الأمور",
+    "dataSentToParents": "عبر البريد الإلكتروني والواتساب",
+    "viaEmailAndWhatsApp": ""
   }
 }
