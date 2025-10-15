@@ -2211,6 +2211,10 @@
     "children": "أطفال",
     "accountsCreated": "تم إنشاء الحسابات وإرسال البيانات لأولياء الأمور",
     "dataSentToParents": "عبر البريد الإلكتروني والواتساب",
-    "viaEmailAndWhatsApp": ""
+    "viaEmailAndWhatsApp": "",
+    "pleaseFillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+    "accountsCreatedSuccessfully": "تم إنشاء حسابات أولياء الأمور بنجاح",
+    "errorCreatingAccounts": "خطأ في إنشاء حسابات أولياء الأمور",
+    "creatingAccounts": "جاري إنشاء الحسابات..."
   }
 }

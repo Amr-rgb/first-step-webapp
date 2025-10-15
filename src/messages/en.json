@@ -2199,6 +2199,10 @@
     "children": "children",
     "accountsCreated": "Accounts have been created and data has been sent to parents",
     "dataSentToParents": "via email and WhatsApp",
-    "viaEmailAndWhatsApp": ""
+    "viaEmailAndWhatsApp": "",
+    "pleaseFillRequiredFields": "Please fill in all required fields",
+    "accountsCreatedSuccessfully": "Parent accounts created successfully",
+    "errorCreatingAccounts": "Error creating parent accounts",
+    "creatingAccounts": "Creating accounts..."
   }
 }

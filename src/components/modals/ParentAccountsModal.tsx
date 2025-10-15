@@ -12,6 +12,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarIcon, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { parentService } from "@/services/api";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 //====================================INTERFACES====================================
 
@@ -54,6 +56,7 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState<Record<string, boolean>>({});
 
@@ -80,17 +83,85 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
     setCurrentStep(1);
   };
 
-  const handleSubmit = () => {
-    const allFamilies = [...parentFamilies];
-    if (parent.name || children.some((child) => child.name)) {
-      allFamilies.push({ parent, children });
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+
+      // Prepare all families data
+      const allFamilies = [...parentFamilies];
+      if (parent.name || children.some((child) => child.name)) {
+        allFamilies.push({ parent, children });
+      }
+
+      // Validate that we have at least one family with complete data
+      const validFamilies = allFamilies.filter(
+        (family) =>
+          family.parent.name &&
+          family.parent.email &&
+          family.parent.mobile &&
+          family.children.some(
+            (child) =>
+              child.name &&
+              child.birthDate &&
+              child.relationship &&
+              child.gender
+          )
+      );
+
+      if (validFamilies.length === 0) {
+        toastError(t("pleaseFillRequiredFields"));
+        return;
+      }
+
+      // Transform data to match API format
+      const apiPayload = {
+        parents: validFamilies.map((family) => ({
+          name: family.parent.name,
+          email: family.parent.email,
+          phone: family.parent.mobile, // API expects 'phone' not 'mobile'
+          children: family.children
+            .filter(
+              (child) =>
+                child.name &&
+                child.birthDate &&
+                child.relationship &&
+                child.gender
+            )
+            .map((child) => ({
+              child_name: child.name, // API expects 'child_name' not 'name'
+              birthday_date: child.birthDate!.toISOString().split("T")[0], // API expects 'birthday_date' not 'birthDate'
+              kinship: child.relationship, // API expects 'kinship' not 'relationship'
+              gender: (child.gender === "male" ? "boy" : "girl") as
+                | "boy"
+                | "girl", // API expects 'boy'/'girl' not 'male'/'female'
+            })),
+        })),
+      };
+
+      console.log("Submitting parent accounts:", apiPayload);
+
+      // Call the API
+      const response = await parentService.registerParentByCenter(apiPayload);
+
+      console.log("API Response:", response);
+
+      // Show success message
+      toastSuccess(response.message || t("accountsCreatedSuccessfully"));
+      setIsSuccess(true);
+    } catch (error: any) {
+      console.error("Error creating parent accounts:", error);
+
+      // Show error message
+      const errorMessage = error.message || t("errorCreatingAccounts");
+      toastError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-    console.log("Creating parent accounts:", allFamilies);
-    setIsSuccess(true);
   };
 
   const handleSuccessClose = () => {
     setIsSuccess(false);
+    setIsLoading(false);
     onClose();
     // Reset everything
     setParent({ name: "", email: "", mobile: "" });
@@ -496,9 +567,12 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                     </Button>
                     <Button
                       onClick={handleSubmit}
+                      disabled={isLoading}
                       className="blue-gradient text-white"
                     >
-                      {t("confirmAccountCreation")}
+                      {isLoading
+                        ? t("creatingAccounts")
+                        : t("confirmAccountCreation")}
                     </Button>
                   </div>
                 </div>
