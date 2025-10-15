@@ -2204,8 +2204,10 @@
     "fullNamePlaceholder": "الاسم بالكامل كما في الهوية",
     "emailPlaceholder": "مثال: example@gmail.com",
     "mobilePlaceholder": "مثال: +966555555555",
-    "childNamePlaceholder": "مثال: زيد",
-    "datePlaceholder": "06/12/2020",
-    "relationshipPlaceholder": "مثال: الأب أو الجدة أو الخال"
+    "childNamePlaceholder": "مثال: أمنية",
+    "datePlaceholder": "1/10/2002",
+    "relationshipPlaceholder": "مثال: الأب أو الجدة أو الخال",
+    "savedParents": "الأولياء المحفوظون",
+    "children": "أطفال"
   }
 }

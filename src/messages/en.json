@@ -2192,8 +2192,10 @@
     "fullNamePlaceholder": "Full name as in ID",
     "emailPlaceholder": "Example: example@gmail.com",
     "mobilePlaceholder": "Example: +966555555555",
-    "childNamePlaceholder": "Example: Zaid",
-    "datePlaceholder": "06/12/2020",
-    "relationshipPlaceholder": "Example: Father, Grandmother, or Uncle"
+    "childNamePlaceholder": "Example: Omnia",
+    "datePlaceholder": "1/10/2002",
+    "relationshipPlaceholder": "Example: Father, Grandmother, or Uncle",
+    "savedParents": "Saved Parents",
+    "children": "children"
   }
 }
