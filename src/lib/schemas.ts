@@ -359,7 +359,7 @@ export const createSignUpParentSchema = (locale: "ar" | "en" = "ar") => {
     }),
   });
 
-  const addChildSchema = createChildStep1Schema(locale);
+  const addChildSchema = createAddChildSchema(locale);
 
   return baseParentSchema.merge(addChildSchema).superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
