@@ -340,7 +340,7 @@ const DashboardSideBar = () => {
             <Button
               onClick={() => setIsParentAccountsModalOpen(true)}
               className={cn(
-                "w-full border-2 border-dashed border-primary bg-transparent hover:bg-primary/5 transition-all duration-200",
+                "w-full border-2 border-solid border-primary bg-transparent hover:bg-primary/5 transition-all duration-200 h-full",
                 state === "collapsed" ? "py-3" : "py-4"
               )}
               variant="outline"
@@ -349,9 +349,9 @@ const DashboardSideBar = () => {
                 <Image
                   src="/assets/illustrations/add-users.png"
                   alt="Add Users"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6"
+                  width={30}
+                  height={38}
+                  className="w-10 h-16"
                 />
                 {state !== "collapsed" && (
                   <div className="flex flex-col items-center">

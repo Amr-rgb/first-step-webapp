@@ -216,7 +216,7 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
       <Dialog open={isOpen && !isSuccess} onOpenChange={onClose}>
         <DialogContent
           className={cn(
-            "max-w-md max-h-[90vh] overflow-hidden rounded-[40px] p-0",
+            "max-w-md overflow-hidden rounded-[40px] p-0",
             isRTL ? "text-right" : "text-left"
           )}
           dir={isRTL ? "rtl" : "ltr"}
@@ -224,31 +224,35 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
           <DialogTitle className="sr-only">
             {t("createParentAccounts")}
           </DialogTitle>
-          <ScrollArea className="h-full rounded-[40px] px-6 py-4">
-            {/* Step 1: Welcome Screen */}
-            {currentStep === 0 && (
-              <div className="flex flex-col items-center space-y-6 py-8">
-                <Image
-                  src="/assets/illustrations/add-users.png"
-                  alt="Add Users"
-                  width={120}
-                  height={120}
-                  className="w-[100px] h-[150px]"
-                />
-                <h2 className="text-xl font-bold text-center text-primary-blue">
-                  {t("createParentAccounts")}
-                </h2>
-                <Button
-                  onClick={handleCreateAccount}
-                  className="blue-gradient text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
-                >
-                  {t("createParentAccount")}
-                </Button>
-              </div>
-            )}
 
-            {/* Step 2: Form */}
-            {currentStep === 1 && (
+          {/* Step 1: Welcome Screen */}
+          {currentStep === 0 && (
+            <div className="flex flex-col items-center space-y-6 py-8 px-6">
+              <Image
+                src="/assets/illustrations/add-users.png"
+                alt="Add Users"
+                width={120}
+                height={120}
+                className="w-[100px] h-[150px]"
+              />
+              <h2 className="text-xl font-bold text-center text-primary-blue">
+                {t("createParentAccounts")}
+              </h2>
+              <Button
+                onClick={handleCreateAccount}
+                className="blue-gradient text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              >
+                {t("createParentAccount")}
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2: Form */}
+          {currentStep === 1 && (
+            <ScrollArea
+              className="rounded-[40px] px-6 py-4"
+              style={{ height: "80vh", maxHeight: "600px" }}
+            >
               <div className="space-y-6 py-6">
                 {/* Header */}
                 <div className="text-center">
@@ -577,8 +581,8 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                   </div>
                 </div>
               </div>
-            )}
-          </ScrollArea>
+            </ScrollArea>
+          )}
         </DialogContent>
       </Dialog>
 
