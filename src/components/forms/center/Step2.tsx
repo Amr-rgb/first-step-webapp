@@ -3,205 +3,90 @@
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   FormField,
   FormItem,
   FormControl,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import CheckboxGroup from "../CheckboxGroup";
-import { Clock } from "lucide-react";
+import { FileUploader } from "../FileUploader";
+import { Textarea } from "@/components/ui/textarea";
 import type { CenterStep2FormData } from "@/lib/schemas";
-import { mapOptions } from "@/lib/utils";
-import { AGE_GROUP_IDS, WEEK_DAYS } from "@/lib/options";
-import { usePathname } from "@/i18n/navigation";
 
-export function Step2AgesAndHours({
-  disabled = false,
-}: {
-  disabled?: boolean;
-}) {
+export function Step2Documents({ disabled = false }: { disabled?: boolean }) {
   const t = useTranslations("auth.center-signup.2.form");
-  const tOptions = useTranslations("options");
   const { control } = useFormContext<CenterStep2FormData>();
-
-  const ageGroups = mapOptions(AGE_GROUP_IDS, "centerAges", tOptions);
-  const days = mapOptions(WEEK_DAYS, "days", tOptions);
-
-  const pathname = usePathname();
-  const isAdd = pathname.includes("add");
 
   return (
     <div className="space-y-8">
-      <div className="space-y-4">
-        <p className="form-label">{t("ages.label")}</p>
-        <CheckboxGroup
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
           control={control}
-          items={ageGroups}
-          name="accepted_ages"
-          readOnly={disabled}
+          name="commercial_record_path"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("commercial-registration")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt,.zip"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="license_path"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("business-license")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt,.zip"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
       </div>
 
-      {/* <FormField
+      <FormField
         control={control}
-        name="additionalInfo"
+        name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("addition.label")}</FormLabel>
+            <FormLabel>{t("notes")}</FormLabel>
             <FormControl>
-              <Input placeholder={t("addition.placeholder")} {...field} />
+              <Textarea
+                placeholder={t("notes-placeholder")}
+                className="min-h-[100px]"
+                disabled={disabled}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
-      /> */}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <FormField
-            control={control}
-            name="work_days_from"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={disabled}
-                >
-                  <FormLabel>{t("from-day.label")}</FormLabel>
-                  <FormControl>
-                    <SelectTrigger>
-                      {!isAdd ? (
-                        <span
-                          data-slot="select-value"
-                          className="text-foreground"
-                        >
-                          {days.find((d) => d.id === field.value)?.label ||
-                            t("from-day.placeholder")}
-                        </span>
-                      ) : (
-                        <SelectValue placeholder={t("from-day.placeholder")} />
-                      )}
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day.id} value={day.id}>
-                        {day.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div>
-          <FormField
-            control={control}
-            name="work_days_to"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={disabled}
-                >
-                  <FormLabel>{t("to-day.label")}</FormLabel>
-                  <FormControl>
-                    <SelectTrigger>
-                      {!isAdd ? (
-                        <span
-                          data-slot="select-value"
-                          className="text-foreground"
-                        >
-                          {days.find((d) => d.id === field.value)?.label ||
-                            t("to-day.placeholder")}
-                        </span>
-                      ) : (
-                        <SelectValue placeholder={t("to-day.placeholder")} />
-                      )}
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day.id} value={day.id}>
-                        {day.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div>
-          <FormField
-            control={control}
-            name="work_hours_from"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("from-hour.label")}</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Clock className="absolute right-6 top-1/2 -translate-y-1/2 text-light-gray size-5" />
-                    <Input
-                      {...field}
-                      type="time"
-                      placeholder={t("from-hour.placeholder")}
-                      className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden
-      [&::-webkit-inner-spin-button]:hidden
-      [&::-ms-clear]:hidden"
-                      disabled={disabled}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div>
-          <FormField
-            control={control}
-            name="work_hours_to"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("to-hour.label")}</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Clock className="absolute right-6 top-1/2 -translate-y-1/2 text-light-gray size-5" />
-                    <Input
-                      {...field}
-                      type="time"
-                      placeholder={t("from-hour.placeholder")}
-                      className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden
-      [&::-webkit-inner-spin-button]:hidden
-      [&::-ms-clear]:hidden"
-                      disabled={disabled}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
+      <p className="text-center text-sm lg:text-base text-info">
+        {t("description")}
+      </p>
     </div>
   );
 }

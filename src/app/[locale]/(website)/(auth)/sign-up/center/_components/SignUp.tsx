@@ -10,9 +10,7 @@ import StepIndicator from "@/components/forms/StepIndicator";
 import { Icons } from "@/components/general/icons";
 import { createSignUpCenterSchema, SignUpCenterFormData } from "@/lib/schemas";
 import { Step1BasicInfo } from "@/components/forms/center/Step1";
-import { Step2AgesAndHours } from "@/components/forms/center/Step2";
-import { Step3Communication } from "@/components/forms/center/Step3";
-import { Step4Permits } from "@/components/forms/center/Step4";
+import { Step2Documents } from "@/components/forms/center/Step2";
 
 export function SignUp({
   submitHandler,
@@ -29,12 +27,6 @@ export function SignUp({
   const steps = [
     { number: 1, label: t("1.title"), icon: Icons.one },
     { number: 2, label: t("2.title"), icon: Icons.two },
-    {
-      number: 3,
-      label: t("3.title"),
-      icon: Icons.three,
-    },
-    { number: 4, label: t("4.title"), icon: Icons.four },
   ];
 
   const signUpCenterSchema = createSignUpCenterSchema(locale as "ar" | "en");
@@ -43,40 +35,21 @@ export function SignUp({
     resolver: zodResolver(signUpCenterSchema),
     defaultValues: {
       // step1
-      nursery_name: "",
+      name: "",
       email: "",
-      phone: "",
       password: "",
       confirmPassword: "",
-      neighborhood: "",
-      nursery_type: [],
-      address: "",
-      city: "",
+      phone: "",
+      nursery_name: "",
       location: "",
-      services: [],
-      additional_service: "",
-      // step2
-      accepted_ages: [],
-      // additionalInfo: "",
-      work_days_from: "",
-      work_days_to: "",
-      work_hours_from: "",
-      work_hours_to: "",
-      // step3
-      emergency_contact: undefined,
-      communication_methods: [],
-      meals_and_periods: {
-        provides_food: "yes",
-        first_meals: [{ meal_name: "", juice: "", components: "" }],
-        second_meals: [{ meal_name: "", juice: "", components: "" }],
-        time_of_first_period: "",
-        time_of_second_period: "",
-      },
-      // step4
-      license_path: undefined,
-      commercial_record_path: undefined,
+      neighborhood: "",
+      city: "",
       logo: undefined,
-      // comments: "",
+      nursery_type: [],
+      // step2
+      commercial_record_path: undefined,
+      license_path: undefined,
+      notes: "",
     },
     mode: "onChange",
   });
@@ -101,33 +74,20 @@ export function SignUp({
     switch (step) {
       case 1:
         return [
-          "nursery_name",
+          "name",
           "email",
+          "password",
+          "confirmPassword",
           "phone",
-          "city",
-          "neighborhood",
-          "address",
+          "nursery_name",
           "location",
+          "neighborhood",
+          "city",
+          "logo",
           "nursery_type",
-          "services",
-          "additional_service",
         ];
       case 2:
-        return [
-          "accepted_ages",
-          "work_days_from",
-          "work_days_to",
-          "work_hours_from",
-          "work_hours_to",
-        ];
-      case 3:
-        return [
-          "emergency_contact",
-          "communication_methods",
-          "meals_and_periods",
-        ];
-      case 4:
-        return ["businessLicense", "commercialRegistration"];
+        return ["commercial_record_path", "license_path"];
       default:
         return [];
     }
@@ -138,11 +98,7 @@ export function SignUp({
       case 1:
         return <Step1BasicInfo />;
       case 2:
-        return <Step2AgesAndHours />;
-      case 3:
-        return <Step3Communication />;
-      case 4:
-        return <Step4Permits />;
+        return <Step2Documents />;
       default:
         return null;
     }

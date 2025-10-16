@@ -41,7 +41,7 @@ const Nurseries = ({
       .toLocaleLowerCase()
       .includes(debouncedQuery.toLocaleLowerCase());
     const matchesFilter = selectedFilter
-      ? nursery.accepted_ages.includes(selectedFilter)
+      ? nursery.accepted_ages?.includes(selectedFilter) || false
       : true;
     return matchesQuery && matchesFilter;
   });

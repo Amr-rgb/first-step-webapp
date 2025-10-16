@@ -22,9 +22,9 @@ export default function StructuredData({
     description: isRTL
       ? "منصة رعاية الأطفال الذكية التي تربط العائلات بحضانات ومراكز رعاية الأطفال الموثوقة في السعودية"
       : "Smart childcare platform connecting families with trusted nurseries and childcare centers in Saudi Arabia",
-    url: "https://firststep.com",
-    logo: "https://firststep.com/assets/logos/complete_logo.svg",
-    image: "https://firststep.com/assets/logos/complete_logo.svg",
+    url: "https://firststep-app.com",
+    logo: "https://firststep-app.com/assets/logos/complete_logo.svg",
+    image: "https://firststep-app.com/assets/logos/complete_logo.svg",
     foundingDate: "2024",
     founder: {
       "@type": "Organization",
@@ -94,7 +94,7 @@ export default function StructuredData({
     "@type": "WebSite",
     name: isRTL ? "الخطوة الأولى" : "First Step",
     alternateName: isRTL ? "First Step" : "الخطوة الأولى",
-    url: "https://firststep.com",
+    url: "https://firststep-app.com",
     description: isRTL
       ? "منصة رعاية الأطفال الذكية"
       : "Smart childcare platform",
@@ -104,7 +104,7 @@ export default function StructuredData({
       target: {
         "@type": "EntryPoint",
         urlTemplate:
-          "https://firststep.com/nurseries?search={search_term_string}",
+          "https://firststep-app.com/nurseries?search={search_term_string}",
       },
       "query-input": "required name=search_term_string",
     },
@@ -117,7 +117,7 @@ export default function StructuredData({
     description: isRTL
       ? "منصة رعاية الأطفال الذكية في السعودية"
       : "Smart childcare platform in Saudi Arabia",
-    url: "https://firststep.com",
+    url: "https://firststep-app.com",
     telephone: "+966-XX-XXX-XXXX", // Replace with actual phone number
     address: {
       "@type": "PostalAddress",
@@ -157,7 +157,7 @@ export default function StructuredData({
         areaServed: "Saudi Arabia",
         availableChannel: {
           "@type": "ServiceChannel",
-          serviceUrl: "https://firststep.com",
+          serviceUrl: "https://firststep-app.com",
           serviceSmsNumber: "+966-XX-XXX-XXXX",
         },
       };

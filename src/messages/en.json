@@ -445,13 +445,9 @@
       "1": {
         "title": "Basic Information",
         "form": {
-          "nursery_name": {
-            "label": "Center Name",
-            "placeholder": "Enter center name"
-          },
-          "phone": {
-            "label": "Mobile Number",
-            "placeholder": "Enter mobile number"
+          "name": {
+            "label": "Name",
+            "placeholder": "Enter your name"
           },
           "email": {
             "label": "Email",
@@ -465,21 +461,29 @@
             "label": "Confirm Password",
             "placeholder": "Re-enter password"
           },
-          "city": {
-            "label": "City",
-            "placeholder": "Enter city name"
+          "phone": {
+            "label": "Mobile Number",
+            "placeholder": "Enter mobile number"
+          },
+          "nursery_name": {
+            "label": "Center Name",
+            "placeholder": "Enter center name"
+          },
+          "location": {
+            "label": "Location Link",
+            "placeholder": "Enter Google Maps link"
           },
           "neighborhood": {
             "label": "Neighborhood",
             "placeholder": "Enter neighborhood name"
           },
-          "address": {
-            "label": "Address",
-            "placeholder": "Enter full address"
+          "city": {
+            "label": "City",
+            "placeholder": "Enter city name"
           },
-          "location": {
-            "label": "Location Link",
-            "placeholder": "Enter Google Maps link"
+          "logo": {
+            "label": "Logo",
+            "placeholder": "Upload center logo"
           },
           "type": {
             "label": "Center Type",
@@ -488,67 +492,17 @@
               "education": "Educational",
               "support": "Support and Rehabilitation"
             }
-          },
-          "services": {
-            "label": "Available Services",
-            "options": {
-              "education": "Educational",
-              "kindergarten": "Kindergarten",
-              "after-school": "After School",
-              "special-needs": "Special Needs",
-              "therapy": "Physical Therapy",
-              "speech-therapy": "Speech Therapy",
-              "occupational-therapy": "Occupational Therapy",
-              "care": "Care"
-            }
-          },
-          "other": {
-            "label": "Other Services",
-            "sublabel": "(e.g., toilet training)",
-            "placeholder": "Enter additional services"
           }
         }
       },
       "2": {
-        "title": "Accepted Ages and Working Hours",
+        "title": "Documents",
         "form": {
-          "ages": {
-            "label": "Accepted Age Ranges",
-            "options": {
-              "0-3": "0 to 3 years",
-              "3-6": "3 to 6 years",
-              "special-needs": "Children with Special Needs"
-            }
-          },
-          "addition": {
-            "label": "Is there anything else you'd like to add?",
-            "placeholder": "Enter any additional information"
-          },
-          "from-day": {
-            "label": "From Day",
-            "placeholder": "Select start day"
-          },
-          "to-day": {
-            "label": "To Day",
-            "placeholder": "Select end day"
-          },
-          "from-hour": {
-            "label": "From Hour",
-            "placeholder": "Select start time"
-          },
-          "to-hour": {
-            "label": "To Hour",
-            "placeholder": "Select end time"
-          },
-          "days": {
-            "saturday": "Saturday",
-            "sunday": "Sunday",
-            "monday": "Monday",
-            "tuesday": "Tuesday",
-            "wednesday": "Wednesday",
-            "thursday": "Thursday",
-            "friday": "Friday"
-          }
+          "commercial-registration": "Commercial Registration",
+          "business-license": "Business License",
+          "notes": "Additional Notes",
+          "notes-placeholder": "Enter any additional information or notes...",
+          "description": "Please upload the required documents. Accepted formats: jpg, jpeg, png, pdf, doc, docx, txt, zip. Maximum file size is 3MB."
         }
       },
       "3": {

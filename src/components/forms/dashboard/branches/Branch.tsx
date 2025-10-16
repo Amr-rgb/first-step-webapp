@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { Step1BasicInfo } from "../../center/Step1";
-import { Step2AgesAndHours } from "../../center/Step2";
+import { Step2AgesAndHours } from "../../center/Step2AgesAndHours";
 import { Step3Communication } from "../../center/Step3";
 import { Step4Permits } from "../../center/Step4";
 import { Button } from "@/components/ui/button";

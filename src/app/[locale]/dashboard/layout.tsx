@@ -22,8 +22,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const user = useAuthUser();
 
-  // Sidebar open state (for main sidebar only)
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Sidebar open state (for main sidebar only) - default to open
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Secondary sidebar state from global store
   const secondarySidebarOpen = useSecondarySidebarOpen();

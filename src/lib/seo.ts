@@ -138,10 +138,10 @@ export function generateMetadata(
     },
     robots: config.robots,
     alternates: {
-      canonical: `https://firststep.com/${locale}`,
+      canonical: `https://firststep-app.com/${locale}`,
       languages: {
-        en: "https://firststep.com/en",
-        ar: "https://firststep.com/ar",
+        en: "https://firststep-app.com/en",
+        ar: "https://firststep-app.com/ar",
       },
     },
     other: {

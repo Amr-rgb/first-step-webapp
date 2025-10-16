@@ -87,18 +87,13 @@ export default function ParentSignUp({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("form.phone.label")}
+                  {t("phone.label")}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <PhoneInput
                     {...field}
-                    value={field.value?.replace(/^\+966/, "")}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      field.onChange(
-                        `+966${e.target.value.replace(/^(\+966)?/, "")}`
-                      );
-                    }}
+                    placeholder={t("phone.placeholder")}
                     locale={locale}
                   />
                 </FormControl>
