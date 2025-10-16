@@ -199,7 +199,7 @@ export interface CenterRegisterPayload {
 export interface NurseryResponse
   extends Omit<
     CenterRegisterPayload,
-    "logo" | "license_path" | "commercial_record_path"
+    "logo" | "license_path" | "commercial_record_path" | "city"
   > {
   id: number;
   user_id: number;
@@ -212,6 +212,7 @@ export interface NurseryResponse
     name: string;
     nursery_name_branch: string;
   }>;
+  city: string | { name: { ar: string; en: string } };
 }
 
 // ===== Child Info Form Types =====

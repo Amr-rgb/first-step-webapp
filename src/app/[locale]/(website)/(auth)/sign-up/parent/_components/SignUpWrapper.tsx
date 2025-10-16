@@ -20,6 +20,7 @@ import {
 import { ApiError } from "@/lib/error-handling";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
+import EnrollmentModal from "@/components/modals/EnrollmentModal";
 
 const SignUpWrapper = () => {
   const router = useRouter();
@@ -27,6 +28,10 @@ const SignUpWrapper = () => {
   const t = useTranslations("auth.parent-signup");
   const [parentAccountCreated, setParentAccountCreated] = useState(false);
   const [savedChildren, setSavedChildren] = useState<ChildStep1FormData[]>([]);
+  const [registeredChildren, setRegisteredChildren] = useState<
+    Array<{ id: number; name: string; image?: string }>
+  >([]);
+  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
 
   // Child form setup
   const childMethods = useForm<ChildStep1FormData>({
@@ -87,12 +92,8 @@ const SignUpWrapper = () => {
         );
         setParentAccountCreated(true);
       } else {
-        toastSuccess(
-          "Account Created Successfully!",
-          "Welcome! Your parent account has been registered."
-        );
-        // Redirect to dashboard after successful login
-        router.push(`/${locale}/dashboard`);
+        // Show enrollment modal instead of redirecting
+        setShowEnrollmentModal(true);
       }
     },
     onError: handleApiError,
@@ -156,19 +157,47 @@ const SignUpWrapper = () => {
   };
 
   // Mutation for submitting all children
-  const addChildrenMutation = useMutation<any, ApiError, FormData>({
-    mutationFn: async (formData) => {
+  const addChildrenMutation = useMutation<
+    any,
+    ApiError,
+    { formData: FormData; allChildren: ChildStep1FormData[] }
+  >({
+    mutationFn: async ({ formData }) => {
       return await authService.addChildren(formData);
     },
-    onSuccess: () => {
+    onSuccess: (response, { allChildren }) => {
       toastSuccess(
         t("children-saved-title", { default: "Success!" }),
         t("children-saved-message", {
           default: "All children have been registered successfully.",
         })
       );
-      // Redirect to dashboard since user is already logged in
-      router.push(`/${locale}/dashboard`);
+
+      // Extract children data from API response
+      const childrenData =
+        response?.data?.children ||
+        response?.children ||
+        response?.data ||
+        response;
+
+      if (childrenData && Array.isArray(childrenData)) {
+        const childrenWithIds = childrenData.map(
+          (child: any, index: number) => ({
+            id: child.id,
+            name:
+              child.child_name || child.name || allChildren[index]?.childName,
+            image: allChildren[index]?.childImage
+              ? URL.createObjectURL(allChildren[index].childImage)
+              : undefined,
+          })
+        );
+        setRegisteredChildren(childrenWithIds);
+      }
+
+      // Update savedChildren with all submitted children
+      setSavedChildren(allChildren);
+      // Show enrollment modal after adding children
+      setShowEnrollmentModal(true);
     },
     onError: (error) => {
       console.error("Failed to add children:", error);
@@ -211,7 +240,14 @@ const SignUpWrapper = () => {
       formData.append(`children[${index}][parent_name]`, child.fatherName);
       formData.append(`children[${index}][mother_name]`, child.motherName);
       formData.append(`children[${index}][kinship]`, child.kinship || "");
-      formData.append(`children[${index}][gender]`, child.gender || "");
+      // Map gender values: male -> boy, female -> girl
+      const genderValue =
+        child.gender === "male"
+          ? "boy"
+          : child.gender === "female"
+          ? "girl"
+          : "";
+      formData.append(`children[${index}][gender]`, genderValue);
       formData.append(
         `children[${index}][national_number]`,
         child.childNationalNumber || ""
@@ -221,7 +257,7 @@ const SignUpWrapper = () => {
       }
     });
 
-    addChildrenMutation.mutate(formData);
+    addChildrenMutation.mutate({ formData, allChildren });
   };
 
   // Handler for submitting only saved children (without validating current form)
@@ -230,134 +266,166 @@ const SignUpWrapper = () => {
   };
 
   return (
-    <div className="flex flex-col container mx-auto px-4">
-      {!parentAccountCreated ? (
-        <ParentSignUp
-          onCreateAccount={handleCreateAccountWithoutChild}
-          onAddChild={handleAddChild}
-          loading={{
-            createAccount: parentRegistrationMutation.isPending,
-            addChild: parentRegistrationMutation.isPending,
-          }}
-        />
-      ) : (
-        <FormProvider {...childMethods}>
-          <form
-            className="w-full"
-            onSubmit={childMethods.handleSubmit(handleSubmitAllChildren)}
-          >
-            <div className="p-5 sm:p-10 rounded-3xl border border-secondary-burgundy">
-              <div className="mb-6">
-                <h2 className="heading-3 text-primary text-center mb-2">
-                  {t("child-form-title")}
-                </h2>
-                <p className="text-center text-gray-600">
-                  {t("child-form-subtitle")}
-                </p>
-              </div>
-
-              {/* Saved children cards */}
-              {savedChildren.length > 0 && (
+    <>
+      <div className="flex flex-col container mx-auto px-4">
+        {!parentAccountCreated ? (
+          <ParentSignUp
+            onCreateAccount={handleCreateAccountWithoutChild}
+            onAddChild={handleAddChild}
+            loading={{
+              createAccount: parentRegistrationMutation.isPending,
+              addChild: parentRegistrationMutation.isPending,
+            }}
+          />
+        ) : (
+          <FormProvider {...childMethods}>
+            <form
+              className="w-full"
+              onSubmit={childMethods.handleSubmit(handleSubmitAllChildren)}
+            >
+              <div className="p-5 sm:p-10 rounded-3xl border border-secondary-burgundy">
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3 text-primary">
-                    {t("saved-children")} ({savedChildren.length})
-                  </h3>
-                  <div className="flex flex-wrap gap-4">
-                    {savedChildren.map((child, index) => (
-                      <div key={index} className="relative group">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveChild(index)}
-                          className="absolute -top-2 -right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
-                          aria-label="Remove child"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                        <div className="flex flex-col items-center gap-2 p-4 border-2 border-secondary-mint-green rounded-2xl bg-white hover:shadow-md transition-shadow duration-200 min-w-[120px]">
-                          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary-mint-green bg-gray-100">
-                            {child.childImage ? (
-                              <img
-                                src={URL.createObjectURL(child.childImage)}
-                                alt={child.childName}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-secondary-mint-green/10">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-10 w-10 text-secondary-mint-green"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                            )}
-                          </div>
-                          <p className="font-semibold text-primary text-center text-sm line-clamp-2">
-                            {child.childName}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <h2 className="heading-3 text-primary text-center mb-2">
+                    {t("child-form-title")}
+                  </h2>
+                  <p className="text-center text-gray-600">
+                    {t("child-form-subtitle")}
+                  </p>
                 </div>
-              )}
 
-              <Step1ChildInfo />
+                {/* Saved children cards */}
+                {savedChildren.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3 text-primary">
+                      {t("saved-children")} ({savedChildren.length})
+                    </h3>
+                    <div className="flex flex-wrap gap-4">
+                      {savedChildren.map((child, index) => (
+                        <div key={index} className="relative group">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveChild(index)}
+                            className="absolute -top-2 -right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                            aria-label="Remove child"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                          <div className="flex flex-col items-center gap-2 p-4 border-2 border-secondary-mint-green rounded-2xl bg-white hover:shadow-md transition-shadow duration-200 min-w-[120px]">
+                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary-mint-green bg-gray-100">
+                              {child.childImage ? (
+                                <img
+                                  src={URL.createObjectURL(child.childImage)}
+                                  alt={child.childName}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-secondary-mint-green/10">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-10 w-10 text-secondary-mint-green"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+                            <p className="font-semibold text-primary text-center text-sm line-clamp-2">
+                              {child.childName}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              {/* Child form action buttons */}
-              <div className="mt-8 flex justify-center gap-4">
-                <Button
-                  className="!border-light-gray text-mid-gray w-full sm:w-auto"
-                  size="lg"
-                  type="button"
-                  variant="outline"
-                  onClick={childMethods.handleSubmit(handleAddAnotherChild)}
-                  disabled={addChildrenMutation.isPending}
-                >
-                  {t("add-another")}
-                </Button>
+                <Step1ChildInfo />
 
-                <Button
-                  className="w-full sm:w-auto"
-                  size="lg"
-                  type={savedChildren.length > 0 ? "button" : "submit"}
-                  onClick={
-                    savedChildren.length > 0
-                      ? handleSubmitSavedChildren
-                      : undefined
-                  }
-                  disabled={addChildrenMutation.isPending}
-                >
-                  {addChildrenMutation.isPending && (
-                    <span className="animate-spin mr-2.5">
-                      <LoaderCircle />
-                    </span>
-                  )}
-                  {t("save-child")}
-                </Button>
+                {/* Child form action buttons */}
+                <div className="mt-8 flex justify-center gap-4">
+                  <Button
+                    className="!border-light-gray text-mid-gray w-full sm:w-auto"
+                    size="lg"
+                    type="button"
+                    variant="outline"
+                    onClick={childMethods.handleSubmit(handleAddAnotherChild)}
+                    disabled={addChildrenMutation.isPending}
+                  >
+                    {t("add-another")}
+                  </Button>
+
+                  <Button
+                    className="w-full sm:w-auto"
+                    size="lg"
+                    type="button"
+                    onClick={async () => {
+                      // Check if form has any values
+                      const formValues = childMethods.getValues();
+                      const isFormFilled =
+                        formValues.childName || formValues.birthDate;
+
+                      if (isFormFilled) {
+                        // Validate and submit with current form data
+                        childMethods.handleSubmit(handleSubmitAllChildren)();
+                      } else if (savedChildren.length > 0) {
+                        // Submit only saved children
+                        handleSubmitAllChildren();
+                      } else {
+                        // No children to submit
+                        toastError(
+                          t("no-children-title", { default: "No Children" }),
+                          t("no-children-message", {
+                            default:
+                              "Please add at least one child before submitting.",
+                          })
+                        );
+                      }
+                    }}
+                    disabled={addChildrenMutation.isPending}
+                  >
+                    {addChildrenMutation.isPending && (
+                      <span className="animate-spin mr-2.5">
+                        <LoaderCircle />
+                      </span>
+                    )}
+                    {t("save-child")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
-        </FormProvider>
+            </form>
+          </FormProvider>
+        )}
+      </div>
+
+      {showEnrollmentModal && (
+        <EnrollmentModal
+          open={showEnrollmentModal}
+          onAddChild={() => {
+            setShowEnrollmentModal(false);
+            setParentAccountCreated(true);
+          }}
+          hasChildren={registeredChildren.length > 0}
+          children={registeredChildren}
+        />
       )}
-    </div>
+    </>
   );
 };
 

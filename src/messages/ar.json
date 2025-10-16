@@ -634,6 +634,47 @@
       "dont-have": "ليس لديك حساب؟"
     }
   },
+  "enrollmentModal": {
+    "title": "اعثر على حضانة أو مركز طفلك",
+    "initial": {
+      "successTitle": "تم إنشاء حسابك بنجاح!",
+      "noSubscription": {
+        "title": "ليس لديك إشتراك؟",
+        "description": "ابحث عن حضانة أو مركز يناسبك"
+      },
+      "hasSubscription": {
+        "title": "لديك إشتراك؟",
+        "description": "اعثر على حضانة أو مركز طفلك"
+      }
+    },
+    "search": {
+      "placeholder": "ابحث بالاسم او العنوان",
+      "notFound": "لم تجد حضانة أو مركز ابنك؟",
+      "inviteButton": "قم بدعوة حضانتك او مركزك",
+      "copy": "نسخ",
+      "copied": "تم النسخ"
+    },
+    "enrollment": {
+      "selectChildren": "اختر الأطفال",
+      "selectBranch": "اختر الفرع",
+      "selectBranchPlaceholder": "اختر الفرع",
+      "selectProgram": "اختر البرنامج",
+      "selectProgramPlaceholder": "اختر البرنامج",
+      "submitButton": "إرسال طلب",
+      "error": "فشل إرسال الطلب",
+      "errorGeneric": "حدث خطأ أثناء إرسال طلب التسجيل"
+    },
+    "noChildren": {
+      "title": "ليس لديك أطفال",
+      "dashboardButton": "الذهاب للوحة التحكم",
+      "addChildButton": "إضافة طفل"
+    },
+    "success": {
+      "title": "تم إرسال الطلب بنجاح",
+      "description": "سيتم مراجعة طلبك قريباً",
+      "dashboardButton": "الذهاب للوحة التحكم"
+    }
+  },
   "options": {
     "centerTypes": {
       "nursing": "رعاية",

@@ -638,6 +638,47 @@
       "dont-have": "Don't have an account?"
     }
   },
+  "enrollmentModal": {
+    "title": "Find Your Child's Nursery or Center",
+    "initial": {
+      "successTitle": "Your Account Has Been Created Successfully!",
+      "noSubscription": {
+        "title": "Don't Have a Subscription?",
+        "description": "Search for a nursery or center that suits you"
+      },
+      "hasSubscription": {
+        "title": "Have a Subscription?",
+        "description": "Find your child's nursery or center"
+      }
+    },
+    "search": {
+      "placeholder": "Search by name or address",
+      "notFound": "Didn't find your child's nursery or center?",
+      "inviteButton": "Invite Your Nursery or Center",
+      "copy": "Copy",
+      "copied": "Copied"
+    },
+    "enrollment": {
+      "selectChildren": "Select Children",
+      "selectBranch": "Select Branch",
+      "selectBranchPlaceholder": "Select Branch",
+      "selectProgram": "Select Program",
+      "selectProgramPlaceholder": "Select Program",
+      "submitButton": "Submit Request",
+      "error": "Enrollment Failed",
+      "errorGeneric": "An error occurred while submitting enrollment"
+    },
+    "noChildren": {
+      "title": "You Don't Have Children",
+      "dashboardButton": "Go to Dashboard",
+      "addChildButton": "Add Child"
+    },
+    "success": {
+      "title": "Request Sent Successfully",
+      "description": "Your request will be reviewed soon",
+      "dashboardButton": "Go to Dashboard"
+    }
+  },
   "options": {
     "centerTypes": {
       "nursing": "Care",
