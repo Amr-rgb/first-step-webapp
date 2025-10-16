@@ -1297,4 +1297,73 @@ export const parentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  /**
+   * Register parent accounts by center
+   *
+   * This endpoint allows centers to create parent accounts with their children's information.
+   * The API expects a payload with an array of parents, each containing their details
+   * and an array of children with their information.
+   *
+   * @param payload - Object containing array of parents with their children
+   * @returns Promise with API response containing created parent and child IDs
+   *
+   * Example response:
+   * {
+   *   "success": true,
+   *   "data": [
+   *     {
+   *       "id": 208,
+   *       "name": "kareem",
+   *       "email": "omnis@gmail.com",
+   *       "phone": "0551234567",
+   *       "role": "parent",
+   *       "children": [
+   *         {
+   *           "id": 142,
+   *           "child_name": "omar",
+   *           "birthday_date": "2015-05-10",
+   *           "gender": "boy",
+   *           "kinship": "father"
+   *         }
+   *       ]
+   *     }
+   *   ],
+   *   "message": "parent and his child register successfully",
+   *   "status": 200
+   * }
+   *
+   * Note: The API expects specific field names:
+   * - Parent: 'phone' (not 'mobile')
+   * - Child: 'child_name' (not 'name'), 'birthday_date' (not 'birthDate'),
+   *   'kinship' (not 'relationship'), 'boy'/'girl' (not 'male'/'female')
+   */
+  registerParentByCenter: async (payload: {
+    parents: Array<{
+      name: string;
+      email: string;
+      phone: string;
+      children: Array<{
+        child_name: string;
+        birthday_date: string; // ISO date string (YYYY-MM-DD format)
+        kinship: string;
+        gender: "boy" | "girl";
+      }>;
+    }>;
+  }) => {
+    try {
+      console.log("Registering parent by center with payload:", payload);
+
+      const response = await apiClient.post(
+        "/register-parent-by-center",
+        payload
+      );
+
+      console.log("Parent registration response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error registering parent by center:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };

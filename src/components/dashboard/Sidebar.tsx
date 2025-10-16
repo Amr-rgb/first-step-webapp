@@ -24,10 +24,18 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthUser } from "@/store/authStore";
+import ParentAccountsModal from "@/components/modals/ParentAccountsModal";
 
-const getCenterNavbar = (t: any) => [
+interface NavbarItem {
+  title: string;
+  url: string;
+  icon: (props: any) => React.JSX.Element;
+  isSpecial?: boolean;
+}
+
+const getCenterNavbar = (t: any): NavbarItem[] => [
   {
     title: t("center.home"),
     url: "/dashboard/center",
@@ -80,7 +88,7 @@ const getCenterNavbar = (t: any) => [
   },
 ];
 
-const getParentNavbar = (t: any) => [
+const getParentNavbar = (t: any): NavbarItem[] => [
   // {
   //   title: t("parent.home"),
   //   url: "/dashboard/parent",
@@ -108,7 +116,7 @@ const getParentNavbar = (t: any) => [
   },
 ];
 
-const getAdminNavbar = (t: any) => [
+const getAdminNavbar = (t: any): NavbarItem[] => [
   {
     title: t("admin.home"),
     url: "/dashboard/admin",
@@ -163,6 +171,8 @@ const DashboardSideBar = () => {
   const t = useTranslations("dashboard.sidebar");
   const isMobile = useIsMobile();
   const user = useAuthUser();
+  const [isParentAccountsModalOpen, setIsParentAccountsModalOpen] =
+    useState(false);
 
   // Auto-expand sidebar when switching from mobile to desktop
   useEffect(() => {
@@ -244,9 +254,10 @@ const DashboardSideBar = () => {
             <SidebarMenu>
               {navbar.map((item) => {
                 const isActive =
-                pathname === item.url ||
-                (pathname.startsWith(item.url + "/") && item.url !== basePathname);
-              
+                  pathname === item.url ||
+                  (pathname.startsWith(item.url + "/") &&
+                    item.url !== basePathname);
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
@@ -259,10 +270,10 @@ const DashboardSideBar = () => {
                         <Link
                           href={item.url}
                           className={cn(
-                            "flex justify-start items-center space-x-2 px-4 py-6.5 w-full rounded-lg transition-all duration-200 ease-in-out transform",
+                            "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
                             isActive
-                              ? "!bg-primary !text-white !font-bold scale-[0.98]"
-                              : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99]"
+                              ? "!bg-primary !text-white !font-bold scale-[0.98] py-6.5"
+                              : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99] py-6.5"
                           )}
                         >
                           <Tooltip>
@@ -318,6 +329,49 @@ const DashboardSideBar = () => {
           state === "collapsed" ? "my-4 px-2" : ""
         )}
       >
+        {/* Parent Accounts Button - Only show for center role */}
+        {user?.role === "center" && (
+          <div
+            className={cn(
+              "w-full mb-4",
+              state === "collapsed" ? "px-2" : "px-4"
+            )}
+          >
+            <Button
+              onClick={() => setIsParentAccountsModalOpen(true)}
+              className={cn(
+                "w-full border-2 border-dashed border-primary bg-transparent hover:bg-primary/5 transition-all duration-200",
+                state === "collapsed" ? "py-3" : "py-4"
+              )}
+              variant="outline"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <Image
+                  src="/assets/illustrations/add-users.png"
+                  alt="Add Users"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6"
+                />
+                {state !== "collapsed" && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm font-medium text-primary">
+                      {locale === "ar"
+                        ? "إنشاء حسابات أولياء الأمور"
+                        : "Create Parent Accounts"}
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      {locale === "ar"
+                        ? "سجل الأطفال الآن"
+                        : "Register children now"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Button>
+          </div>
+        )}
+
         <Link href="/" className={state === "collapsed" ? "w-full h-full" : ""}>
           <Image
             className={cn(
@@ -342,6 +396,12 @@ const DashboardSideBar = () => {
           />
         </Link>
       </SidebarFooter>
+
+      {/* Parent Accounts Modal */}
+      <ParentAccountsModal
+        isOpen={isParentAccountsModalOpen}
+        onClose={() => setIsParentAccountsModalOpen(false)}
+      />
     </Sidebar>
   );
 };
