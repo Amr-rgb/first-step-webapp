@@ -980,9 +980,13 @@ export const authService = {
     }
   },
 
-  addChildren: async (payload: any) => {
+  addChildren: async (payload: FormData) => {
     try {
-      const response = await apiClient.post(`/v2/childs`, payload);
+      const response = await apiClient.post(`/v2/childs`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -1288,6 +1292,19 @@ export const enrollmentService = {
   }) => {
     try {
       const response = await apiClient.post("/enrollments", payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  createExistingEnrollment: async (payload: {
+    center_branch_id: number | string;
+    branch_price_id: number | string;
+    children: Array<number | string>;
+  }) => {
+    try {
+      const response = await apiClient.post("/enrollment-existing", payload);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
