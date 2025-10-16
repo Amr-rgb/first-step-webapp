@@ -200,6 +200,7 @@ export interface NurseryResponse
     nursery_name_branch: string;
   }>;
   city: string | { name: { ar: string; en: string } };
+  address?: string;
 }
 
 // ===== Child Info Form Types =====
