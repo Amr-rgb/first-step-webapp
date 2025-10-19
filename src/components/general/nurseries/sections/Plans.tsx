@@ -279,7 +279,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                     onClick={() => {
                       if (!preview) {
                         // Navigate to booking page with plan details
-                        window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch}&plan=${plan.id}`;
+                        window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
                       }
                     }}
                   >
