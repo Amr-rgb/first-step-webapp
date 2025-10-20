@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -14,6 +14,11 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { parentService } from "@/services/api";
 import { toastSuccess, toastError } from "@/lib/toast";
+import {
+  createParentAccountsSchema,
+  ParentAccountsFormData,
+} from "@/lib/schemas";
+import { z } from "zod";
 
 //====================================INTERFACES====================================
 
@@ -77,13 +82,232 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
 
   const [parentFamilies, setParentFamilies] = useState<ParentFamily[]>([]);
 
+  // Validation state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+
+  // Compute validity for enabling actions without requiring blur
+  const isFormValidForActions = useMemo(() => {
+    try {
+      const schema = createParentAccountsSchema(locale as "ar" | "en");
+      const formData = {
+        parent,
+        children: children.filter(
+          (child) =>
+            child.name || child.birthDate || child.relationship || child.gender
+        ),
+      } as ParentAccountsFormData;
+      const result = schema.safeParse(formData);
+      return result.success;
+    } catch {
+      return false;
+    }
+  }, [parent, children, locale]);
+
+  // Allow submit if at least one saved family is complete
+  const hasValidSavedFamily = useMemo(() => {
+    return parentFamilies.some(
+      (family) =>
+        family.parent.name &&
+        family.parent.email &&
+        family.parent.mobile &&
+        family.children.some(
+          (child) =>
+            child.name && child.birthDate && child.relationship && child.gender
+        )
+    );
+  }, [parentFamilies]);
+
+  //====================================REFS FOR FOCUS====================================
+  const parentNameRef = useRef<HTMLInputElement | null>(null);
+  const parentEmailRef = useRef<HTMLInputElement | null>(null);
+  const parentMobileRef = useRef<HTMLInputElement | null>(null);
+  const childNameRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const childRelationshipRefs = useRef<Record<number, HTMLInputElement | null>>(
+    {}
+  );
+  const childBirthButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
+    {}
+  );
+  const childGenderGirlRefs = useRef<Record<number, HTMLButtonElement | null>>(
+    {}
+  );
+
+  //====================================VALIDATION====================================
+
+  const validateForm = () => {
+    try {
+      const schema = createParentAccountsSchema(locale as "ar" | "en");
+      const formData = {
+        parent,
+        children: children.filter(
+          (child) =>
+            child.name || child.birthDate || child.relationship || child.gender
+        ),
+      };
+
+      schema.parse(formData);
+      setErrors({});
+      setIsFormValid(true);
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          const path = err.path.join(".");
+          // Only show errors for fields that have been touched
+          if (touchedFields.has(path)) {
+            fieldErrors[path] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      }
+      setIsFormValid(false);
+      return false;
+    }
+  };
+
+  const validateField = (fieldPath: string, value: any) => {
+    // Only validate if field has been touched
+    if (!touchedFields.has(fieldPath)) {
+      return;
+    }
+
+    try {
+      const schema = createParentAccountsSchema(locale as "ar" | "en");
+      const formData = {
+        parent,
+        children: children.filter(
+          (child) =>
+            child.name || child.birthDate || child.relationship || child.gender
+        ),
+      } as ParentAccountsFormData;
+
+      // Update the specific field
+      const pathParts = fieldPath.split(".");
+      if (pathParts[0] === "parent") {
+        formData.parent[pathParts[1] as keyof typeof formData.parent] = value;
+      } else if (pathParts[0] === "children") {
+        const childIndex = parseInt(pathParts[1]);
+        const childField = pathParts[2] as keyof Child;
+        if (formData.children[childIndex]) {
+          formData.children[childIndex][childField] = value;
+        }
+      }
+
+      schema.parse(formData);
+
+      // Clear error for this field
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldPath];
+        return newErrors;
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldError = error.errors.find(
+          (err) => err.path.join(".") === fieldPath
+        );
+        if (fieldError) {
+          setErrors((prev) => ({
+            ...prev,
+            [fieldPath]: fieldError.message,
+          }));
+        }
+      }
+    }
+  };
+
+  const handleFieldBlur = (fieldPath: string) => {
+    setTouchedFields((prev) => new Set(prev).add(fieldPath));
+    // Trigger validation for this field after marking it as touched
+    setTimeout(() => validateForm(), 0);
+  };
+
+  // Validate form whenever data changes (but only for touched fields)
+  useEffect(() => {
+    if (touchedFields.size > 0) {
+      validateForm();
+    }
+  }, [parent, children, locale, touchedFields]);
+
   //====================================EVENT HANDLERS====================================
+
+  const resetFormStates = () => {
+    setCurrentStep(0);
+    setIsSuccess(false);
+    setIsLoading(false);
+    setExpandedSection(null);
+    setShowCalendar({});
+    setParent({ name: "", email: "", mobile: "" });
+    setChildren([
+      { name: "", birthDate: undefined, relationship: "", gender: "" },
+    ]);
+    setParentFamilies([]);
+    setErrors({});
+    setIsFormValid(false);
+    setTouchedFields(new Set());
+  };
 
   const handleCreateAccount = () => {
     setCurrentStep(1);
   };
 
   const handleSubmit = async () => {
+    // Mark all fields as touched to show validation errors
+    const allFieldPaths = [
+      "parent.name",
+      "parent.email",
+      "parent.mobile",
+      ...children.flatMap((_, index) => [
+        `children.${index}.name`,
+        `children.${index}.birthDate`,
+        `children.${index}.relationship`,
+        `children.${index}.gender`,
+      ]),
+    ];
+
+    setTouchedFields(new Set(allFieldPaths));
+
+    // Wait for state update then validate and focus first invalid
+    setTimeout(() => {
+      const schema = createParentAccountsSchema(locale as "ar" | "en");
+      const formData = {
+        parent,
+        children: children
+          .filter(
+            (child) =>
+              child.name ||
+              child.birthDate ||
+              child.relationship ||
+              child.gender
+          )
+          .map((child) => ({
+            ...child,
+            birthDate: child.birthDate || new Date(),
+            gender: child.gender || ("male" as "male" | "female"),
+          })),
+      } as ParentAccountsFormData;
+
+      const result = schema.safeParse(formData);
+      if (!result.success) {
+        // Build errors map and focus first invalid field by order
+        const issues = result.error.issues;
+        const issuePaths = issues.map((iss) => iss.path.join("."));
+        const firstPath = allFieldPaths.find((p) => issuePaths.includes(p));
+        if (firstPath) {
+          focusField(firstPath);
+        }
+        toastError(t("pleaseFillRequiredFields"));
+        validateForm();
+        return;
+      }
+      submitForm();
+    }, 0);
+  };
+
+  const submitForm = async () => {
     try {
       setIsLoading(true);
 
@@ -159,19 +383,46 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
     }
   };
 
+  const focusField = (fieldPath: string) => {
+    // Map known paths to refs
+    if (fieldPath === "parent.name") {
+      parentNameRef.current?.focus();
+      return;
+    }
+    if (fieldPath === "parent.email") {
+      parentEmailRef.current?.focus();
+      return;
+    }
+    if (fieldPath === "parent.mobile") {
+      parentMobileRef.current?.focus();
+      return;
+    }
+    if (fieldPath.startsWith("children.")) {
+      const [, idxStr, field] = fieldPath.split(".");
+      const index = parseInt(idxStr);
+      if (field === "name") {
+        childNameRefs.current[index]?.focus();
+        return;
+      }
+      if (field === "relationship") {
+        childRelationshipRefs.current[index]?.focus();
+        return;
+      }
+      if (field === "birthDate") {
+        childBirthButtonRefs.current[index]?.focus();
+        return;
+      }
+      if (field === "gender") {
+        // Focus girl's button by default
+        childGenderGirlRefs.current[index]?.focus();
+        return;
+      }
+    }
+  };
+
   const handleSuccessClose = () => {
-    setIsSuccess(false);
-    setIsLoading(false);
+    resetFormStates();
     onClose();
-    // Reset everything
-    setParent({ name: "", email: "", mobile: "" });
-    setChildren([
-      { name: "", birthDate: undefined, relationship: "", gender: "" },
-    ]);
-    setParentFamilies([]);
-    setExpandedSection(null);
-    setCurrentStep(0);
-    setShowCalendar({});
   };
 
   //====================================FORM ACTIONS====================================
@@ -186,18 +437,58 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
   };
 
   const addParent = () => {
-    if (parent.name && parent.email && parent.mobile) {
-      setParentFamilies([...parentFamilies, { parent, children }]);
+    // Validate current parent + children using schema
+    const schema = createParentAccountsSchema(locale as "ar" | "en");
+    const formData = {
+      parent,
+      children: children.filter(
+        (child) =>
+          child.name || child.birthDate || child.relationship || child.gender
+      ),
+    } as ParentAccountsFormData;
+
+    const allFieldPaths = [
+      "parent.name",
+      "parent.email",
+      "parent.mobile",
+      ...children.flatMap((_, index) => [
+        `children.${index}.name`,
+        `children.${index}.birthDate`,
+        `children.${index}.relationship`,
+        `children.${index}.gender`,
+      ]),
+    ];
+
+    const result = schema.safeParse(formData);
+    if (!result.success) {
+      // mark all fields touched so errors show
+      setTouchedFields(new Set(allFieldPaths));
+      validateForm();
+
+      // focus first invalid
+      const issuePaths = result.error.issues.map((i) => i.path.join("."));
+      const firstPath = allFieldPaths.find((p) => issuePaths.includes(p));
+      if (firstPath) focusField(firstPath);
+      toastError(t("pleaseFillRequiredFields"));
+      return;
     }
+
+    // Push current family and reset for next parent
+    setParentFamilies([...parentFamilies, { parent, children }]);
     setParent({ name: "", email: "", mobile: "" });
     setChildren([
       { name: "", birthDate: undefined, relationship: "", gender: "" },
     ]);
     setExpandedSection(null);
+    setErrors({});
+    setTouchedFields(new Set());
+    setIsFormValid(false);
+    setShowCalendar({});
   };
 
   const updateParent = (field: keyof Parent, value: string) => {
     setParent((prev) => ({ ...prev, [field]: value }));
+    validateField(`parent.${field}`, value);
   };
 
   const updateChild = (childIndex: number, field: keyof Child, value: any) => {
@@ -206,6 +497,7 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
       updated[childIndex] = { ...updated[childIndex], [field]: value };
       return updated;
     });
+    validateField(`children.${childIndex}.${field}`, value);
   };
 
   //====================================MAIN RENDER====================================
@@ -213,7 +505,15 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
   return (
     <>
       {/* Main Dialog */}
-      <Dialog open={isOpen && !isSuccess} onOpenChange={onClose}>
+      <Dialog
+        open={isOpen && !isSuccess}
+        onOpenChange={(open) => {
+          if (!open) {
+            resetFormStates();
+            onClose();
+          }
+        }}
+      >
         <DialogContent
           className={cn(
             "max-w-md overflow-hidden rounded-[40px] p-0",
@@ -355,16 +655,31 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                     </h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <Label htmlFor="parent-name">{t("name")} *</Label>
+                        <Label htmlFor="parent-name">
+                          <span className="text-red-500">*</span> {t("name")}
+                        </Label>
                         <Input
                           id="parent-name"
                           value={parent.name}
                           onChange={(e) => updateParent("name", e.target.value)}
+                          onBlur={() => handleFieldBlur("parent.name")}
+                          ref={parentNameRef}
                           placeholder={t("fullNamePlaceholder")}
+                          className={cn(
+                            errors["parent.name"] &&
+                              "border-red-500 focus:border-red-500"
+                          )}
                         />
+                        {errors["parent.name"] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors["parent.name"]}
+                          </p>
+                        )}
                       </div>
                       <div>
-                        <Label htmlFor="parent-email">{t("email")} *</Label>
+                        <Label htmlFor="parent-email">
+                          <span className="text-red-500">*</span> {t("email")}
+                        </Label>
                         <Input
                           id="parent-email"
                           type="email"
@@ -372,12 +687,24 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                           onChange={(e) =>
                             updateParent("email", e.target.value)
                           }
+                          onBlur={() => handleFieldBlur("parent.email")}
+                          ref={parentEmailRef}
                           placeholder={t("emailPlaceholder")}
+                          className={cn(
+                            errors["parent.email"] &&
+                              "border-red-500 focus:border-red-500"
+                          )}
                         />
+                        {errors["parent.email"] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors["parent.email"]}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="parent-mobile">
-                          {t("mobileNumber")} *
+                          <span className="text-red-500">*</span>{" "}
+                          {t("mobileNumber")}
                         </Label>
                         <Input
                           id="parent-mobile"
@@ -385,8 +712,19 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                           onChange={(e) =>
                             updateParent("mobile", e.target.value)
                           }
+                          onBlur={() => handleFieldBlur("parent.mobile")}
+                          ref={parentMobileRef}
                           placeholder={t("mobilePlaceholder")}
+                          className={cn(
+                            errors["parent.mobile"] &&
+                              "border-red-500 focus:border-red-500"
+                          )}
                         />
+                        {errors["parent.mobile"] && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors["parent.mobile"]}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -405,7 +743,8 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                           {/* Child Name */}
                           <div>
                             <Label htmlFor={`child-name-${childIndex}`}>
-                              {t("childName")} *
+                              <span className="text-red-500">*</span>{" "}
+                              {t("childName")}
                             </Label>
                             <Input
                               id={`child-name-${childIndex}`}
@@ -413,21 +752,39 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                               onChange={(e) =>
                                 updateChild(childIndex, "name", e.target.value)
                               }
+                              onBlur={() =>
+                                handleFieldBlur(`children.${childIndex}.name`)
+                              }
+                              ref={(el) => {
+                                childNameRefs.current[childIndex] = el;
+                              }}
                               placeholder={t("childNamePlaceholder")}
+                              className={cn(
+                                errors[`children.${childIndex}.name`] &&
+                                  "border-red-500 focus:border-red-500"
+                              )}
                             />
+                            {errors[`children.${childIndex}.name`] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors[`children.${childIndex}.name`]}
+                              </p>
+                            )}
                           </div>
 
                           {/* Date of Birth */}
                           <div>
                             <Label htmlFor={`child-birth-${childIndex}`}>
-                              {t("dateOfBirth")} *
+                              <span className="text-red-500">*</span>{" "}
+                              {t("dateOfBirth")}
                             </Label>
                             <div className="relative">
                               <Button
                                 variant="outline"
                                 className={cn(
                                   "w-full justify-start text-left font-normal",
-                                  !child.birthDate && "text-muted-foreground"
+                                  !child.birthDate && "text-muted-foreground",
+                                  errors[`children.${childIndex}.birthDate`] &&
+                                    "border-red-500 focus:border-red-500"
                                 )}
                                 onClick={() =>
                                   setShowCalendar((prev) => ({
@@ -436,6 +793,14 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                       !prev[`child-${childIndex}`],
                                   }))
                                 }
+                                onBlur={() =>
+                                  handleFieldBlur(
+                                    `children.${childIndex}.birthDate`
+                                  )
+                                }
+                                ref={(el) => {
+                                  childBirthButtonRefs.current[childIndex] = el;
+                                }}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {child.birthDate ? (
@@ -456,6 +821,9 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                         "birthDate",
                                         date
                                       );
+                                      handleFieldBlur(
+                                        `children.${childIndex}.birthDate`
+                                      );
                                       setShowCalendar((prev) => ({
                                         ...prev,
                                         [`child-${childIndex}`]: false,
@@ -466,12 +834,18 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                 </div>
                               )}
                             </div>
+                            {errors[`children.${childIndex}.birthDate`] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors[`children.${childIndex}.birthDate`]}
+                              </p>
+                            )}
                           </div>
 
                           {/* Relationship */}
                           <div>
                             <Label htmlFor={`child-relationship-${childIndex}`}>
-                              {t("relationship")} *
+                              <span className="text-red-500">*</span>{" "}
+                              {t("relationship")}
                             </Label>
                             <Input
                               id={`child-relationship-${childIndex}`}
@@ -483,14 +857,32 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                   e.target.value
                                 )
                               }
+                              onBlur={() =>
+                                handleFieldBlur(
+                                  `children.${childIndex}.relationship`
+                                )
+                              }
+                              ref={(el) => {
+                                childRelationshipRefs.current[childIndex] = el;
+                              }}
                               placeholder={t("relationshipPlaceholder")}
+                              className={cn(
+                                errors[`children.${childIndex}.relationship`] &&
+                                  "border-red-500 focus:border-red-500"
+                              )}
                             />
+                            {errors[`children.${childIndex}.relationship`] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors[`children.${childIndex}.relationship`]}
+                              </p>
+                            )}
                           </div>
 
                           {/* Gender Selection */}
                           <div>
                             <Label className="text-center block mb-4">
-                              {t("childGender")} *
+                              <span className="text-red-500">*</span>{" "}
+                              {t("childGender")}
                             </Label>
                             <div className="flex justify-center space-x-4">
                               <Button
@@ -499,10 +891,20 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                     ? "default"
                                     : "outline"
                                 }
-                                onClick={() =>
-                                  updateChild(childIndex, "gender", "female")
-                                }
-                                className="flex flex-col items-center space-y-2 p-4 h-auto"
+                                onClick={() => {
+                                  updateChild(childIndex, "gender", "female");
+                                  handleFieldBlur(
+                                    `children.${childIndex}.gender`
+                                  );
+                                }}
+                                className={cn(
+                                  "flex flex-col items-center space-y-2 p-4 h-auto",
+                                  errors[`children.${childIndex}.gender`] &&
+                                    "border-red-500"
+                                )}
+                                ref={(el) => {
+                                  childGenderGirlRefs.current[childIndex] = el;
+                                }}
                               >
                                 <Image
                                   src="/assets/illustrations/girl.png"
@@ -526,10 +928,17 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                     ? "default"
                                     : "outline"
                                 }
-                                onClick={() =>
-                                  updateChild(childIndex, "gender", "male")
-                                }
-                                className="flex flex-col items-center space-y-2 p-4 h-auto"
+                                onClick={() => {
+                                  updateChild(childIndex, "gender", "male");
+                                  handleFieldBlur(
+                                    `children.${childIndex}.gender`
+                                  );
+                                }}
+                                className={cn(
+                                  "flex flex-col items-center space-y-2 p-4 h-auto",
+                                  errors[`children.${childIndex}.gender`] &&
+                                    "border-red-500"
+                                )}
                               >
                                 <Image
                                   src="/assets/illustrations/boy.png"
@@ -548,6 +957,11 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
                                 </span>
                               </Button>
                             </div>
+                            {errors[`children.${childIndex}.gender`] && (
+                              <p className="text-red-500 text-sm mt-1 text-center">
+                                {errors[`children.${childIndex}.gender`]}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -566,12 +980,19 @@ const ParentAccountsModal: React.FC<ParentAccountsModalProps> = ({
 
                   {/* Add Another Parent and Confirm Buttons - Left and Right */}
                   <div className="flex justify-between">
-                    <Button variant="outline" onClick={addParent}>
+                    <Button
+                      variant="outline"
+                      onClick={addParent}
+                      disabled={!isFormValidForActions}
+                    >
                       {t("addAnotherParent")}
                     </Button>
                     <Button
                       onClick={handleSubmit}
-                      disabled={isLoading}
+                      disabled={
+                        isLoading ||
+                        (!isFormValidForActions && !hasValidSavedFamily)
+                      }
                       className="blue-gradient text-white"
                     >
                       {isLoading

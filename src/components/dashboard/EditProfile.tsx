@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Loader2, X } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useAuthUser } from "@/store/authStore";
@@ -48,6 +48,7 @@ export default function EditProfile({
   schema,
 }: EditProfileProps) {
   const t = useTranslations("dashboard.account");
+  const locale = useLocale();
   const user = useAuthUser();
   const router = useRouter();
 
@@ -235,10 +236,12 @@ export default function EditProfile({
                             {...controllerField}
                             value={controllerField.value?.replace(/^\+966/, "")}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              controllerField.onChange(
-                                `+966${e.target.value.replace(/^(\+966)?/, "")}`
-                              );
+                              const local = e.target.value
+                                .replace(/^\+?966|^00966|^966/, "")
+                                .replace(/^0+/, "");
+                              controllerField.onChange(`+966${local}`);
                             }}
+                            locale={locale}
                           />
                         )}
                       />

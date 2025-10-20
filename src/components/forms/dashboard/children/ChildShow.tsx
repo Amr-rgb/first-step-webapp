@@ -178,9 +178,10 @@ const ParentPart = ({
                   {...field}
                   value={field.value?.replace(/^\+966/, "")}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    field.onChange(
-                      `+966${e.target.value.replace(/^(\+966)?/, "")}`
-                    );
+                    const local = e.target.value
+                      .replace(/^\+?966|^00966|^966/, "")
+                      .replace(/^0+/, "");
+                    field.onChange(`+966${local}`);
                   }}
                   locale={locale}
                   readOnly={readOnly}

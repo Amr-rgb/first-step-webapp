@@ -67,40 +67,9 @@ export const createContactSchema = (locale: "ar" | "en" = "ar") =>
     }),
     phone: z
       .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
-
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
-
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: "Please enter a valid phone number",
+      }),
     subject: z.string().min(1, {
       message: getErrorMessage("invalid-subject", locale),
     }),
@@ -120,40 +89,9 @@ export const createParentSchema = (locale: "ar" | "en" = "ar") =>
         .min(1, { message: getErrorMessage("general-field-required", locale) }),
       phone: z
         .string()
-        .min(1, { message: getErrorMessage("general-field-required", locale) })
-        .refine(
-          (value) => {
-            // Remove all non-digit characters except + at the beginning
-            const cleaned = value.replace(/[^\d+]/g, "");
-
-            // Check for common global phone formats
-            const patterns = [
-              /^\+[1-9]\d{1,14}$/, // International format (E.164)
-              /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-              /^0\d{6,14}$/, // Local format starting with 0
-              /^\+966\d{9}$/, // Saudi format
-              /^966\d{9}$/, // Saudi format without +
-              /^05\d{8}$/, // Saudi mobile format
-              /^\+1\d{10}$/, // US/Canada format
-              /^1\d{10}$/, // US/Canada without +
-              /^\+44\d{10,11}$/, // UK format
-              /^\+49\d{10,11}$/, // Germany format
-              /^\+33\d{9}$/, // France format
-              /^\+39\d{9,10}$/, // Italy format
-              /^\+7\d{10}$/, // Russia format
-              /^\+86\d{11}$/, // China format
-              /^\+81\d{10,11}$/, // Japan format
-              /^\+91\d{10}$/, // India format
-              /^\+61\d{9}$/, // Australia format
-              /^\+55\d{10,11}$/, // Brazil format
-            ];
-
-            return patterns.some((pattern) => pattern.test(cleaned));
-          },
-          {
-            message: getErrorMessage("invalid-phone", locale),
-          }
-        ),
+        .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+          message: "Please enter a valid phone number",
+        }),
       email: z.string().email({
         message: getErrorMessage("invalid-email", locale),
       }),
@@ -405,7 +343,7 @@ export const createSignUpParentSchema = (locale: "ar" | "en" = "ar") => {
     phone: z
       .string()
       .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
-        message: getErrorMessage("invalid-phone", locale),
+        message: "Please enter a valid phone number",
       }),
     email: z.string().email({
       message: getErrorMessage("invalid-email", locale),
@@ -446,40 +384,9 @@ const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
     phone: z
       .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
-
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
-
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: "Please enter a valid phone number",
+      }),
     city: z
       .string()
       .min(1, { message: getErrorMessage("general-field-required", locale) })
@@ -531,40 +438,9 @@ const createCenterStep1Schema = (locale: "ar" | "en" = "ar") =>
     confirmPassword: z.string(),
     phone: z
       .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
-
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
-
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: "Please enter a valid phone number",
+      }),
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -1193,40 +1069,9 @@ export const createCenterProfileSchema = (locale: "ar" | "en" = "ar") =>
       .email({ message: getErrorMessage("invalid-email", locale) }),
     phone: z
       .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
-
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
-
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: getErrorMessage("invalid-phone", locale),
+      }),
     city_id: z
       .number()
       .min(1, { message: getErrorMessage("general-field-required", locale) })
@@ -1262,40 +1107,9 @@ export const createParentProfileSchema = (locale: "ar" | "en" = "ar") =>
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
     phone: z
       .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
-
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
-
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: getErrorMessage("invalid-phone", locale),
+      }),
     email: z.string().email({
       message: getErrorMessage("invalid-email", locale),
     }),
@@ -1306,4 +1120,86 @@ export const createParentProfileSchema = (locale: "ar" | "en" = "ar") =>
 
 export type ParentProfileForm = z.infer<
   ReturnType<typeof createParentProfileSchema>
+>;
+
+// Parent Accounts Modal Schema
+export const createParentAccountsSchema = (locale: "ar" | "en" = "ar") =>
+  z.object({
+    parent: z.object({
+      name: z
+        .string()
+        .min(1, { message: getErrorMessage("general-field-required", locale) })
+        .min(2, { message: getErrorMessage("name-min-length", locale) }),
+      email: z.string().email({
+        message: getErrorMessage("invalid-email", locale),
+      }),
+      mobile: z
+        .string()
+        .min(1, { message: getErrorMessage("general-field-required", locale) })
+        .refine(
+          (value) => {
+            // Remove all non-digit characters except + at the beginning
+            const cleaned = value.replace(/[^\d+]/g, "");
+
+            // Check for common global phone formats
+            const patterns = [
+              /^\+[1-9]\d{1,14}$/, // International format (E.164)
+              /^[1-9]\d{6,14}$/, // National format (7-15 digits)
+              /^0\d{6,14}$/, // Local format starting with 0
+              /^\+966\d{9}$/, // Saudi format
+              /^966\d{9}$/, // Saudi format without +
+              /^05\d{8}$/, // Saudi mobile format
+              /^\+1\d{10}$/, // US/Canada format
+              /^1\d{10}$/, // US/Canada without +
+              /^\+44\d{10,11}$/, // UK format
+              /^\+49\d{10,11}$/, // Germany format
+              /^\+33\d{9}$/, // France format
+              /^\+39\d{9,10}$/, // Italy format
+              /^\+7\d{10}$/, // Russia format
+              /^\+86\d{11}$/, // China format
+              /^\+81\d{10,11}$/, // Japan format
+              /^\+91\d{10}$/, // India format
+              /^\+61\d{9}$/, // Australia format
+              /^\+55\d{10,11}$/, // Brazil format
+            ];
+
+            return patterns.some((pattern) => pattern.test(cleaned));
+          },
+          {
+            message: getErrorMessage("phone-format-guide", locale),
+          }
+        ),
+    }),
+    children: z
+      .array(
+        z.object({
+          name: z
+            .string()
+            .min(1, {
+              message: getErrorMessage("general-field-required", locale),
+            })
+            .min(2, {
+              message: getErrorMessage("child-name-min-length", locale),
+            }),
+          birthDate: z.date({
+            required_error: getErrorMessage("general-field-required", locale),
+          }),
+          relationship: z
+            .string()
+            .min(1, {
+              message: getErrorMessage("general-field-required", locale),
+            })
+            .min(2, {
+              message: getErrorMessage("relationship-min-length", locale),
+            }),
+          gender: z.enum(["male", "female"], {
+            required_error: getErrorMessage("general-field-required", locale),
+          }),
+        })
+      )
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
+  });
+
+export type ParentAccountsFormData = z.infer<
+  ReturnType<typeof createParentAccountsSchema>
 >;

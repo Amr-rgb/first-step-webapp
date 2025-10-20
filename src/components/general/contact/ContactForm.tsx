@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PhoneInput from "@/components/forms/PhoneInput";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -124,23 +125,17 @@ const ContactForm: React.FC = () => {
               <FormItem>
                 <FormLabel>{t("form.phone.label")}</FormLabel>
                 <FormControl>
-                  <div className="relative flex items-center">
-                    <span className="absolute ltr:left-3 rtl:right-3 text-gray-500">
-                      +966
-                    </span>
-                    <Input
-                      dir={locale === "ar" ? "rtl" : "ltr"}
-                      type="tel"
-                      className="ltr:pr-0 ltr:pl-14 rtl:pl-0 rtl:pr-14"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(
-                          `+966${e.target.value.replace(/^(\+966)?/, "")}`
-                        );
-                      }}
-                      value={field.value?.replace(/^\+966/, "")}
-                    />
-                  </div>
+                  <PhoneInput
+                    {...field}
+                    value={field.value?.replace(/^\+966/, "")}
+                    onChange={(e) => {
+                      const local = e.target.value
+                        .replace(/^\+?966|^00966|^966/, "")
+                        .replace(/^0+/, "");
+                      field.onChange(`+966${local}`);
+                    }}
+                    locale={locale}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
