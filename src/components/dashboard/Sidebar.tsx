@@ -62,8 +62,8 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
     icon: dashboardIcons.reports,
   },
   {
-    title: t("center.profile-editor"),
-    url: "/dashboard/center/profile-editor",
+    title: t("center.center-data"),
+    url: "/dashboard/center/center-data",
     icon: dashboardIcons.site,
   },
   {

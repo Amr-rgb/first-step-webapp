@@ -275,9 +275,9 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إدارة إعدادات الحساب والملف الشخصي.",
     },
   },
-  "dashboard/center/profile-editor": {
+  "dashboard/center/center-data": {
     en: {
-      title: "Center • Profile Editor",
+      title: "Center • Center Data",
       description: "Edit and preview center profile.",
     },
     ar: {
