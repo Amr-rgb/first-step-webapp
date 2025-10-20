@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import DatePicker from "@/components/general/DatePicker";
 import type { ChildStep1FormData } from "@/lib/schemas";
 import { useTranslations } from "next-intl";
+import { FileUploader } from "../FileUploader";
 
 export default function Step1ChildInfo() {
   const t = useTranslations("auth.add-child.1.form");
@@ -55,6 +56,37 @@ export default function Step1ChildInfo() {
 
         <FormField
           control={control}
+          name="kinship"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("kinship.label")}</FormLabel>
+              <FormControl>
+                <Input placeholder={t("kinship.placeholder")} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="childNationalNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("national-number.label")}</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("national-number.placeholder")}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
           name="fatherName"
           render={({ field }) => (
             <FormItem>
@@ -89,12 +121,16 @@ export default function Step1ChildInfo() {
 
         <FormField
           control={control}
-          name="kinship"
+          name="childImage"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("kinship.label")}</FormLabel>
+            <FormItem className="col-span-2">
+              <FormLabel>{t("child-image.label")}</FormLabel>
               <FormControl>
-                <Input placeholder={t("kinship.placeholder")} {...field} />
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  accept="image/png, image/jpeg, image/jpg"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

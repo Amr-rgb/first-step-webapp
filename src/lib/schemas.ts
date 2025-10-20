@@ -112,68 +112,77 @@ export const createContactSchema = (locale: "ar" | "en" = "ar") =>
 export type ContactFormData = z.infer<ReturnType<typeof createContactSchema>>;
 
 // --Just-- Sign Up For Parents Form Schema
-const createParentSchema = (locale: "ar" | "en" = "ar") =>
-  z.object({
-    name: z
-      .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) }),
-    phone: z
-      .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) })
-      .refine(
-        (value) => {
-          // Remove all non-digit characters except + at the beginning
-          const cleaned = value.replace(/[^\d+]/g, "");
+export const createParentSchema = (locale: "ar" | "en" = "ar") =>
+  z
+    .object({
+      name: z
+        .string()
+        .min(1, { message: getErrorMessage("general-field-required", locale) }),
+      phone: z
+        .string()
+        .min(1, { message: getErrorMessage("general-field-required", locale) })
+        .refine(
+          (value) => {
+            // Remove all non-digit characters except + at the beginning
+            const cleaned = value.replace(/[^\d+]/g, "");
 
-          // Check for common global phone formats
-          const patterns = [
-            /^\+[1-9]\d{1,14}$/, // International format (E.164)
-            /^[1-9]\d{6,14}$/, // National format (7-15 digits)
-            /^0\d{6,14}$/, // Local format starting with 0
-            /^\+966\d{9}$/, // Saudi format
-            /^966\d{9}$/, // Saudi format without +
-            /^05\d{8}$/, // Saudi mobile format
-            /^\+1\d{10}$/, // US/Canada format
-            /^1\d{10}$/, // US/Canada without +
-            /^\+44\d{10,11}$/, // UK format
-            /^\+49\d{10,11}$/, // Germany format
-            /^\+33\d{9}$/, // France format
-            /^\+39\d{9,10}$/, // Italy format
-            /^\+7\d{10}$/, // Russia format
-            /^\+86\d{11}$/, // China format
-            /^\+81\d{10,11}$/, // Japan format
-            /^\+91\d{10}$/, // India format
-            /^\+61\d{9}$/, // Australia format
-            /^\+55\d{10,11}$/, // Brazil format
-          ];
+            // Check for common global phone formats
+            const patterns = [
+              /^\+[1-9]\d{1,14}$/, // International format (E.164)
+              /^[1-9]\d{6,14}$/, // National format (7-15 digits)
+              /^0\d{6,14}$/, // Local format starting with 0
+              /^\+966\d{9}$/, // Saudi format
+              /^966\d{9}$/, // Saudi format without +
+              /^05\d{8}$/, // Saudi mobile format
+              /^\+1\d{10}$/, // US/Canada format
+              /^1\d{10}$/, // US/Canada without +
+              /^\+44\d{10,11}$/, // UK format
+              /^\+49\d{10,11}$/, // Germany format
+              /^\+33\d{9}$/, // France format
+              /^\+39\d{9,10}$/, // Italy format
+              /^\+7\d{10}$/, // Russia format
+              /^\+86\d{11}$/, // China format
+              /^\+81\d{10,11}$/, // Japan format
+              /^\+91\d{10}$/, // India format
+              /^\+61\d{9}$/, // Australia format
+              /^\+55\d{10,11}$/, // Brazil format
+            ];
 
-          return patterns.some((pattern) => pattern.test(cleaned));
-        },
-        {
-          message: getErrorMessage("invalid-phone", locale),
-        }
-      ),
-    email: z.string().email({
-      message: getErrorMessage("invalid-email", locale),
-    }),
-    national_number: z.string().length(10, {
-      message: getErrorMessage("general-field-required", locale),
-    }),
-    address: z
-      .string()
-      .min(1, { message: getErrorMessage("general-field-required", locale) }),
-    password: z.string().min(8, {
-      message: getErrorMessage("password-min", locale, { min: 8 }),
-    }),
-    confirmPassword: z.string(),
-  });
+            return patterns.some((pattern) => pattern.test(cleaned));
+          },
+          {
+            message: getErrorMessage("invalid-phone", locale),
+          }
+        ),
+      email: z.string().email({
+        message: getErrorMessage("invalid-email", locale),
+      }),
+      national_number: z.string().length(10, {
+        message: getErrorMessage("general-field-required", locale),
+      }),
+      password: z.string().min(8, {
+        message: getErrorMessage("password-min", locale, { min: 8 }),
+      }),
+      confirmPassword: z.string().min(1, {
+        message: getErrorMessage("general-field-required", locale),
+      }),
+    })
+    .superRefine((data, ctx) => {
+      if (data.password !== data.confirmPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: getErrorMessage("password-match", locale),
+          path: ["confirmPassword"],
+        });
+      }
+    });
 
 export type JustSignUpParentFormData = z.infer<
   ReturnType<typeof createParentSchema>
 >;
 
 // Add Child Step 1
-const createChildStep1Schema = (locale: "ar" | "en" = "ar") =>
+export const createChildStep1Schema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Step 1: Child Information
     childName: z
@@ -191,7 +200,26 @@ const createChildStep1Schema = (locale: "ar" | "en" = "ar") =>
     gender: z.enum(["male", "female"], {
       required_error: getErrorMessage("general-answer-required", locale),
     }),
-    kinship: z.string().optional(),
+    kinship: z.string().min(2, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+    childNationalNumber: z.string().length(10, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+    childImage: z
+      .instanceof(File, {
+        message: getErrorMessage("general-field-required", locale),
+      })
+      .refine(
+        (file) => file.size <= MAX_FILE_SIZE,
+        getErrorMessage("file-size", locale)
+      )
+      .refine(
+        (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+        {
+          message: getErrorMessage("image-type", locale),
+        }
+      ),
   });
 
 export type ChildStep1FormData = z.infer<
@@ -369,15 +397,41 @@ export type AddChildFormData = z.infer<ReturnType<typeof createAddChildSchema>>;
 
 // Sign Up For Parents w/ Add Child Form Schema
 export const createSignUpParentSchema = (locale: "ar" | "en" = "ar") => {
-  const parentSchema = createParentSchema(locale);
+  // Create base parent schema without refine
+  const baseParentSchema = z.object({
+    name: z
+      .string()
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
+    phone: z
+      .string()
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: getErrorMessage("invalid-phone", locale),
+      }),
+    email: z.string().email({
+      message: getErrorMessage("invalid-email", locale),
+    }),
+    national_number: z.string().length(10, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+    password: z.string().min(8, {
+      message: getErrorMessage("password-min", locale, { min: 8 }),
+    }),
+    confirmPassword: z.string().min(1, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+  });
+
   const addChildSchema = createAddChildSchema(locale);
 
-  return parentSchema
-    .merge(addChildSchema)
-    .refine((data) => data.password === data.confirmPassword, {
-      message: getErrorMessage("password-match", locale),
-      path: ["confirmPassword"],
-    });
+  return baseParentSchema.merge(addChildSchema).superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: getErrorMessage("password-match", locale),
+        path: ["confirmPassword"],
+      });
+    }
+  });
 };
 
 export type SignUpParentFormData = z.infer<

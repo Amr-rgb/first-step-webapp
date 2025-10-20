@@ -12,6 +12,7 @@ import {
   Value,
   NurseryResponse,
   PortfolioResponse,
+  ParentRegisterPayloadv2,
 } from "@/types";
 import axios from "axios";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
@@ -968,6 +969,30 @@ export const nurseryService = {
 };
 
 export const authService = {
+  registerParentv2: async (payload: ParentRegisterPayloadv2) => {
+    try {
+      const response = await apiClient.post("/v2/register-v2", {
+        ...payload,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  addChildren: async (payload: FormData) => {
+    try {
+      const response = await apiClient.post(`/v2/childs`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   registerParent: async (payload: ParentRegisterPayload) => {
     try {
       const response = await apiClient.post("/register-parent", {
@@ -1237,6 +1262,19 @@ export const enrollmentService = {
   }) => {
     try {
       const response = await apiClient.post("/enrollments", payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  createExistingEnrollment: async (payload: {
+    center_branch_id: number | string;
+    branch_price_id: number | string;
+    children: Array<number | string>;
+  }) => {
+    try {
+      const response = await apiClient.post("/enrollment-existing", payload);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

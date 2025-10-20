@@ -200,6 +200,23 @@
     },
     "parent-signup": {
       "title": "إنشاء حساب ولي أمر",
+      "child-form-title": "إضافة بيانات طفلك",
+      "child-form-subtitle": "تم إنشاء حساب ولي الأمر بنجاح. الآن أضف بيانات طفلك.",
+      "add-another": "إضافة طفل آخر",
+      "save-child": "حفظ بيانات الأطفال",
+      "saved-children": "الأطفال المحفوظة",
+      "gender-male": "ولد",
+      "gender-female": "بنت",
+      "child-added-title": "تمت الإضافة!",
+      "child-added-message": "تم حفظ بيانات الطفل. يمكنك إضافة طفل آخر.",
+      "child-removed-title": "تم الحذف",
+      "child-removed-message": "تم حذف الطفل من القائمة.",
+      "children-saved-title": "نجح!",
+      "children-saved-message": "تم تسجيل جميع الأطفال بنجاح.",
+      "children-error-title": "فشل التسجيل",
+      "children-error-message": "فشل في تسجيل الأطفال. يرجى المحاولة مرة أخرى.",
+      "no-children-title": "لا يوجد أطفال",
+      "no-children-message": "يرجى إضافة طفل واحد على الأقل قبل الإرسال.",
       "form": {
         "name": {
           "label": "الاسم",
@@ -317,8 +334,16 @@
             "placeholder": "أدخل اسم الأم الكامل"
           },
           "kinship": {
-            "label": "صلة القرابة",
-            "placeholder": "أدخل صلة قرابتك"
+            "label": "صلة قرابة ولي الأمر بالطفل",
+            "placeholder": "مثال: الأب أو الجدة أو الخال.."
+          },
+          "national-number": {
+            "label": "رقم هوية الطفل",
+            "placeholder": "أدخل رقم هوية الطفل"
+          },
+          "child-image": {
+            "label": "صورة شخصية للطفل",
+            "placeholder": "أدخل صورة الطفل الشخصية"
           },
           "gender": {
             "title": "جنس الطفل",
@@ -561,6 +586,47 @@
     "options": {
       "have": "ليدك حساب بالفعل؟",
       "dont-have": "ليس لديك حساب؟"
+    }
+  },
+  "enrollmentModal": {
+    "title": "اعثر على حضانة أو مركز طفلك",
+    "initial": {
+      "successTitle": "تم إنشاء حسابك بنجاح!",
+      "noSubscription": {
+        "title": "ليس لديك إشتراك؟",
+        "description": "ابحث عن حضانة أو مركز يناسبك"
+      },
+      "hasSubscription": {
+        "title": "لديك إشتراك؟",
+        "description": "اعثر على حضانة أو مركز طفلك"
+      }
+    },
+    "search": {
+      "placeholder": "ابحث بالاسم او العنوان",
+      "notFound": "لم تجد حضانة أو مركز ابنك؟",
+      "inviteButton": "قم بدعوة حضانتك او مركزك",
+      "copy": "نسخ",
+      "copied": "تم النسخ"
+    },
+    "enrollment": {
+      "selectChildren": "اختر الأطفال",
+      "selectBranch": "اختر الفرع",
+      "selectBranchPlaceholder": "اختر الفرع",
+      "selectProgram": "اختر البرنامج",
+      "selectProgramPlaceholder": "اختر البرنامج",
+      "submitButton": "إرسال طلب",
+      "error": "فشل إرسال الطلب",
+      "errorGeneric": "حدث خطأ أثناء إرسال طلب التسجيل"
+    },
+    "noChildren": {
+      "title": "ليس لديك أطفال",
+      "dashboardButton": "الذهاب للوحة التحكم",
+      "addChildButton": "إضافة طفل"
+    },
+    "success": {
+      "title": "تم إرسال الطلب بنجاح",
+      "description": "سيتم مراجعة طلبك قريباً",
+      "dashboardButton": "الذهاب للوحة التحكم"
     }
   },
   "options": {
