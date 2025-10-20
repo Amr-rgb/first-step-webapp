@@ -88,7 +88,7 @@ const AdRequestForm = ({
       });
     },
     onSuccess: () => {
-      toastSuccess("success.title", t("success.description"));
+      toastSuccess(t("success.title"), t("success.description"));
       methods.reset();
       setPreview(null);
       // Invalidate the ads query to refetch the list
