@@ -133,12 +133,19 @@ const NotificationsForm = () => {
     },
     onSuccess: () => {
       toastSuccess(t("form.success"));
-      methods.reset();
-      setSelectedParents([]);
-      setSelectedChildMap({});
+      // Only reset form fields, keep recipients selected
+      methods.reset({
+        type: "",
+        day: undefined,
+        time: "",
+        recipients: methods.getValues("recipients"),
+      });
     },
-    onError: (error) => {
-      toastError(t("form.error"));
+    onError: (error: any) => {
+      toastError(
+        t("form.error"),
+        error?.response?.data?.error || error?.message
+      );
       console.error("Notification error:", error);
     },
   });
