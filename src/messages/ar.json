@@ -498,7 +498,30 @@
           "business-license": "رخصة العمل",
           "notes": "ملاحظات إضافية",
           "notes-placeholder": "أدخل أي معلومات إضافية أو ملاحظات...",
-          "description": "يرجى رفع الوثائق المطلوبة. الصيغ المقبولة: jpg, jpeg, png, pdf, doc, docx, txt, zip. الحد الأقصى لحجم الملف هو 3 ميجابايت."
+          "description": "يرجى رفع الوثائق المطلوبة. الصيغ المقبولة: jpg, jpeg, png, pdf, doc, docx, txt, zip. الحد الأقصى لحجم الملف هو 3 ميجابايت.",
+          "ages": {
+            "label": "الفئات العمرية المقبولة"
+          },
+          "addition": {
+            "label": "إضافة خدمة",
+            "placeholder": "أدخل اسم الخدمة"
+          },
+          "from-day": {
+            "label": "من يوم",
+            "placeholder": "اختر اليوم"
+          },
+          "to-day": {
+            "label": "إلى يوم",
+            "placeholder": "اختر اليوم"
+          },
+          "from-hour": {
+            "label": "من الساعة",
+            "placeholder": "اختر الوقت"
+          },
+          "to-hour": {
+            "label": "إلى الساعة",
+            "placeholder": "اختر الوقت"
+          }
         }
       },
       "3": {
