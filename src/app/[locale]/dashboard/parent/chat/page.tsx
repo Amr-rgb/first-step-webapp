@@ -43,8 +43,9 @@ const ParentChatPage = () => {
       );
       setChats(contacts);
 
-      // Select the first chat by default if none selected
-      if (contacts.length > 0 && !selectedChatId) {
+      // Only auto-select first chat on desktop (md and up)
+      // On mobile, let users choose from the chat list
+      if (contacts.length > 0 && !selectedChatId && window.innerWidth >= 768) {
         setSelectedChatId(contacts[0].id);
       }
     } catch (error) {

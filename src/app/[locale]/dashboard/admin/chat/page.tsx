@@ -54,8 +54,13 @@ const AdminChatPage = () => {
       }
       setChats(conversations);
 
-      // Select the first conversation by default if none selected
-      if (conversations.length > 0 && !selectedChatId) {
+      // Only auto-select first conversation on desktop (md and up)
+      // On mobile, let users choose from the conversation list
+      if (
+        conversations.length > 0 &&
+        !selectedChatId &&
+        window.innerWidth >= 768
+      ) {
         console.log(
           "🎯 Auto-selecting first conversation:",
           conversations[0].id
