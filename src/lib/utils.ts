@@ -35,6 +35,22 @@ const ERRORMESSAGES = {
     ar: "يرجى إدخال رقم هاتف صحيح",
     en: "Please enter a valid phone number",
   },
+  "phone-format-guide": {
+    ar: "يرجى إدخال رقم هاتف صحيح. أمثلة: 0501234567، +966501234567، 966501234567",
+    en: "Please enter a valid phone number. Examples: 0501234567, +966501234567, 966501234567",
+  },
+  "name-min-length": {
+    ar: "يجب أن يكون الاسم على الأقل حرفين",
+    en: "Name must be at least 2 characters",
+  },
+  "relationship-min-length": {
+    ar: "يجب أن تكون صلة القرابة على الأقل حرفين",
+    en: "Relationship must be at least 2 characters",
+  },
+  "child-name-min-length": {
+    ar: "يجب أن يكون اسم الطفل على الأقل حرفين",
+    en: "Child name must be at least 2 characters",
+  },
   "invalid-subject": {
     ar: "يرجى اختيار موضوع",
     en: "Please select a subject",
