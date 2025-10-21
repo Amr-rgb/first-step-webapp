@@ -17,7 +17,7 @@ import { CitySelector } from "../CitySelector";
 import { FileUploader } from "../FileUploader";
 import { LocationAutocomplete } from "../LocationAutocomplete";
 import type { BranchStep1FormData, CenterStep1FormData } from "@/lib/schemas";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mapOptions } from "@/lib/utils";
@@ -40,6 +40,7 @@ export function Step1BasicInfo({
     : undefined;
 
   const t = useTranslations("auth.center-signup.1.form");
+  const locale = useLocale();
   const tOptions = useTranslations("options");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -184,15 +185,21 @@ export function Step1BasicInfo({
               <FormControl>
                 <PhoneInput
                   {...field}
-                  placeholder={t("phone.placeholder")}
+                  value={field.value?.replace(/^\+966/, "")}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const local = e.target.value
+                      .replace(/^\+?966|^00966|^966/, "")
+                      .replace(/^0+/, "");
+                    field.onChange(`+966${local}`);
+                  }}
                   readOnly={disabled}
+                  locale={locale as any}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         {/* Nursery Name field */}
         <FormField
           control={control}
