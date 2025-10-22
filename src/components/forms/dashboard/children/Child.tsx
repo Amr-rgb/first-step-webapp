@@ -1,3 +1,4 @@
+import { toastError } from "@/lib/toast";
 import {
   FormControl,
   FormField,
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddChildFormData, createAddChildSchema } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useLocale, useTranslations } from "next-intl";
 import { Control, FormProvider, useForm } from "react-hook-form";
 import Image from "next/image";
@@ -34,9 +36,28 @@ const Child = ({
 }) => {
   const locale = useLocale();
   const router = useRouter();
-  const addChildSchema = createAddChildSchema(locale as "ar" | "en");
 
-  const isReadOnly = mode === "show";
+  // Create a custom schema that handles image validation based on mode
+  const addChildSchema = React.useMemo(() => {
+    const baseSchema = createAddChildSchema(locale as "ar" | "en");
+
+    if (mode === "edit") {
+      // For edit mode, create a custom image validation
+      return baseSchema.extend({
+        childImage: z
+          .union([
+            z.instanceof(File), // New file upload
+            z.string().min(1), // Existing image URL
+            z.null(), // No image
+          ])
+          .optional(),
+      });
+    }
+
+    return baseSchema;
+  }, [locale, mode]);
+
+  const readOnly = mode === "show";
 
   const buttons = (mode: string) => {
     if (mode === "add") {
@@ -78,7 +99,7 @@ const Child = ({
       );
   };
 
-  const methods = useForm<AddChildFormData>({
+  const methods = useForm<any>({
     resolver: zodResolver(addChildSchema),
     defaultValues: {
       ...initialValues,
@@ -86,12 +107,50 @@ const Child = ({
     mode: "onChange",
   });
 
+  // No need to track form reset state since we only reset in add mode
+
+  // Reset form when initialValues change (only for add mode)
+  React.useEffect(() => {
+    console.log("=== FORM RESET EFFECT TRIGGERED ===");
+    console.log("initialValues:", initialValues);
+    console.log("mode:", mode);
+    console.log("isDirty:", methods.formState.isDirty);
+
+    if (initialValues && mode === "add") {
+      // Always reset in add mode
+      console.log("=== ADD MODE FORM RESET ===");
+      console.log("Resetting form for add mode:", initialValues);
+      methods.reset(initialValues);
+    } else if (mode === "edit") {
+      // NEVER reset form in edit mode - preserve all user changes
+      console.log("=== EDIT MODE - NO FORM RESET ===");
+      console.log("Edit mode: Form reset disabled to preserve user changes");
+      console.log("Current form values:", methods.getValues());
+    }
+    console.log("=== END FORM RESET EFFECT ===");
+  }, [initialValues, methods, mode]);
+
+  // No need to reset flags since we don't track them anymore
+
   // Debug: Log form errors whenever they change
   React.useEffect(() => {
     if (Object.keys(methods.formState.errors).length > 0) {
       console.log("Form validation errors:", methods.formState.errors);
     }
   }, [methods.formState.errors]);
+
+  // Debug: Track form values changes
+  React.useEffect(() => {
+    console.log("=== FORM VALUES CHANGED ===");
+    console.log("Form values:", methods.getValues());
+    console.log("Allergies:", methods.getValues("allergies"));
+    console.log("Chronic diseases:", methods.getValues("chronicDiseases"));
+    console.log("isDirty:", methods.formState.isDirty);
+    console.log("=== END FORM VALUES CHANGED ===");
+  }, [methods.formState.isDirty, methods.formState.isValidating]);
+
+  // COMMENTED OUT: No longer needed since we don't reset form in edit mode
+  // All the debugging and user interaction tracking has been removed
 
   // --- Add useFieldArray for diseases and allergies ---
   const { control, watch } = methods;
@@ -120,7 +179,7 @@ const Child = ({
   React.useEffect(() => {
     if (mode !== "add") {
       const current = methods.getValues("authorizedPersons") || [];
-      const normalized = current.map((p) => ({
+      const normalized = current.map((p: any) => ({
         ...p,
         idNumber: p?.idNumber != null ? String(p.idNumber) : "",
       }));
@@ -138,13 +197,13 @@ const Child = ({
         {/* <ParentPart
           control={methods.control}
           locale={locale}
-          readOnly={isReadOnly}
+          readOnly={readOnly}
         /> */}
 
         <ChildPart
           control={methods.control}
           locale={locale}
-          readOnly={isReadOnly}
+          readOnly={readOnly}
         />
         {/* --- Chronic Diseases Section --- */}
         <div className="w-full flex flex-col gap-y-4">
@@ -160,7 +219,17 @@ const Child = ({
                   <RadioGroup
                     className="gap-14.5"
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      // Automatically add one empty disease when "yes" is selected
+                      if (value === "yes" && diseases.length === 0) {
+                        appendDisease({
+                          name: "",
+                          medication: "",
+                          procedures: "",
+                        });
+                      }
+                    }}
                     options={[
                       { value: "yes", label: "نعم" },
                       { value: "no", label: "لا" },
@@ -238,37 +307,38 @@ const Child = ({
                   )}
                 />
                 <div className="flex gap-2 col-span-2">
-                  {diseases.length > 1 && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeDisease(index)}
-                      className="font-bold aspect-square"
-                    >
-                      <Minus className="size-6" size={24} />
-                    </Button>
-                  )}
-                  {index === diseases.length - 1 && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        appendDisease({
-                          name: "",
-                          medication: "",
-                          procedures: "",
-                        })
-                      }
-                      className="font-bold"
-                    >
-                      <Plus className="size-6" size={24} /> إضافة مرض
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => removeDisease(index)}
+                    className="font-bold aspect-square"
+                  >
+                    <Minus className="size-6" size={24} />
+                  </Button>
                 </div>
               </div>
             ))}
+          {hasDiseases === "yes" && (
+            <div className="flex justify-center lg:p-6">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  appendDisease({
+                    name: "",
+                    medication: "",
+                    procedures: "",
+                  })
+                }
+                className="font-bold"
+                disabled={readOnly}
+              >
+                <Plus className="size-6" size={24} /> إضافة مرض آخر
+              </Button>
+            </div>
+          )}
         </div>
         {/* --- Allergies Section --- */}
         <div className="w-full flex flex-col gap-y-4">
@@ -282,7 +352,17 @@ const Child = ({
                   <RadioGroup
                     className="gap-14.5"
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      // Automatically add one empty allergy when "yes" is selected
+                      if (value === "yes" && allergies.length === 0) {
+                        appendAllergy({
+                          allergyTypes: "",
+                          allergyFoods: "",
+                          allergyProcedures: "",
+                        });
+                      }
+                    }}
                     options={[
                       { value: "yes", label: "نعم" },
                       { value: "no", label: "لا" },
@@ -348,50 +428,51 @@ const Child = ({
                   )}
                 />
                 <div className="flex gap-2 col-span-2">
-                  {allergies.length > 1 && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeAllergy(index)}
-                      className="font-bold aspect-square"
-                    >
-                      <Minus className="size-6" size={24} />
-                    </Button>
-                  )}
-                  {index === allergies.length - 1 && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        appendAllergy({
-                          allergyTypes: "",
-                          allergyFoods: "",
-                          allergyProcedures: "",
-                        })
-                      }
-                      className="font-bold"
-                    >
-                      <Plus className="size-6" size={24} /> إضافة حساسية
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => removeAllergy(index)}
+                    className="font-bold aspect-square"
+                  >
+                    <Minus className="size-6" size={24} />
+                  </Button>
                 </div>
               </div>
             ))}
+          {hasAllergies === "yes" && (
+            <div className="flex justify-center lg:p-6">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  appendAllergy({
+                    allergyTypes: "",
+                    allergyFoods: "",
+                    allergyProcedures: "",
+                  })
+                }
+                className="font-bold"
+                disabled={readOnly}
+              >
+                <Plus className="size-6" size={24} /> إضافة حساسية أخرى
+              </Button>
+            </div>
+          )}
         </div>
 
         <Recommendations
           control={methods.control}
           locale={locale}
-          readOnly={isReadOnly}
+          readOnly={readOnly}
         />
 
         <AuthorizationPart
           control={methods.control}
           locale={locale}
           authorizedPersons={authorizedPersons}
-          readOnly={isReadOnly}
+          readOnly={readOnly}
         />
 
         <div className="flex justify-center gap-5 lg:gap-x-10">
@@ -635,6 +716,159 @@ const ChildPart = ({
                   {...field}
                   disabled={readOnly}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="childNationalNumber"
+          render={({ field }) => (
+            <FormItem>
+              <Label>
+                <span className="text-base">الرقم الوطني للطفل</span>
+              </Label>
+              <FormControl>
+                <Input
+                  placeholder="الرقم الوطني للطفل"
+                  {...field}
+                  disabled={readOnly}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="childImage"
+          render={({ field }) => (
+            <FormItem>
+              <Label>
+                <span className="text-base">صورة الطفل</span>
+              </Label>
+              <FormControl>
+                <div className="relative">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors duration-200">
+                    {field.value ? (
+                      <div className="space-y-4">
+                        <div className="relative inline-block">
+                          <img
+                            src={
+                              field.value instanceof File
+                                ? URL.createObjectURL(field.value)
+                                : field.value
+                            }
+                            alt="Child preview"
+                            className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
+                          />
+                          {!readOnly && (
+                            <button
+                              type="button"
+                              onClick={() => field.onChange(null)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {field.value instanceof File
+                            ? field.value.name
+                            : "صورة الطفل"}
+                        </p>
+                        {!readOnly && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              document
+                                .getElementById("child-image-upload")
+                                ?.click()
+                            }
+                            className="text-primary hover:text-primary-dark text-sm font-medium transition-colors"
+                          >
+                            تغيير الصورة
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-8 h-8 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">
+                            اضغط لرفع صورة الطفل
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            PNG, JPG, JPEG حتى 5MB
+                          </p>
+                        </div>
+                        {!readOnly && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              document
+                                .getElementById("child-image-upload")
+                                ?.click()
+                            }
+                            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
+                          >
+                            اختيار صورة
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    id="child-image-upload"
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        // Validate file size (5MB limit)
+                        if (file.size > 5 * 1024 * 1024) {
+                          toastError(
+                            "خطأ في حجم الملف",
+                            "حجم الملف يجب أن يكون أقل من 5MB"
+                          );
+                          return;
+                        }
+                        // Validate file type
+                        if (
+                          !["image/png", "image/jpeg", "image/jpg"].includes(
+                            file.type
+                          )
+                        ) {
+                          toastError(
+                            "نوع الملف غير مدعوم",
+                            "يرجى اختيار صورة PNG أو JPG"
+                          );
+                          return;
+                        }
+                        field.onChange(file);
+                      }
+                    }}
+                    className="hidden"
+                    disabled={readOnly}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -946,7 +1180,6 @@ const Recommendations = ({
             <FormItem>
               <Label>
                 <span className="text-base">{t("description.label")}</span>
-                <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
@@ -967,7 +1200,6 @@ const Recommendations = ({
             <FormItem>
               <Label>
                 <span className="text-base">{t("likes.label")}</span>
-                <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input

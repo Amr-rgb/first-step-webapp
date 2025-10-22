@@ -141,6 +141,7 @@ const Children = ({
             birthday={child.birthday_date}
             gender={child.gender}
             userName={userName || child.user.name}
+            image={child.image}
             disease_details={
               (child.disease_details
                 ? typeof child.disease_details === "string"
@@ -168,6 +169,7 @@ const Children = ({
             birthday={child.birthday_date || ""}
             gender={child.gender}
             userName={child.parent_name || ""}
+            image={child.image}
             disease_details={
               (child.disease_details
                 ? typeof child.disease_details === "string"

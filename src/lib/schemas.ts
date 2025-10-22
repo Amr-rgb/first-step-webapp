@@ -282,12 +282,8 @@ export type ChildStep2FormData = z.infer<
 const createChildStep3Schema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Step 3: Recommendations
-    childDescription: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    favoriteThings: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    childDescription: z.string().optional(),
+    favoriteThings: z.string().optional(),
     recommendations: z.string().optional(),
   });
 
@@ -312,9 +308,7 @@ const createChildStep4Schema = (locale: "ar" | "en" = "ar") =>
       )
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
 
-    comments: z
-      .string()
-      .min(2, getErrorMessage("general-field-required", locale)),
+    comments: z.string().optional(),
   });
 
 export type ChildStep4FormData = z.infer<
