@@ -831,13 +831,47 @@ const ReservationForm = ({
             <span>{bookingDate ? bookingDate : "--"}</span>
           </div>
         </div>
-        <div className="border-t mt-4 pt-4 flex justify-between items-center">
-          <span className="font-bold text-[#22336C] text-base">
-            {locale === "ar" ? "السعر الإجمالي" : "Total"}
-          </span>
-          <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            {selectedPlanObj ? selectedPlanObj.price : "-"}
-          </span>
+        <div className="border-t mt-4 pt-4">
+          {selectedChildren.length > 0 && selectedPlanObj && (
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">
+                {locale === "ar" ? "سعر الخطة × عدد الأطفال" : "Plan price × Children"}
+              </span>
+              <span className="text-sm text-gray-700">
+                {(() => {
+                  // Extract numeric value from price string (e.g., "50 SAR" -> 50)
+                  const numericPrice = parseFloat(
+                    selectedPlanObj.price.replace(/[^\d.]/g, "")
+                  );
+                  const numberOfChildren = selectedChildren.length;
+                  const unitPrice = numericPrice || 0;
+                  return `${unitPrice} × ${numberOfChildren}`;
+                })()}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-[#22336C] text-base">
+              {locale === "ar" ? "السعر الإجمالي" : "Total"}
+            </span>
+            <span className="font-extrabold text-2xl text-[#4D5EDB]">
+              {(() => {
+                if (!selectedPlanObj) return "-";
+                
+                // Extract numeric value from price string (e.g., "50 SAR" -> 50)
+                const numericPrice = parseFloat(
+                  selectedPlanObj.price.replace(/[^\d.]/g, "")
+                );
+                const numberOfChildren = selectedChildren.length || 0;
+                const total = numericPrice * numberOfChildren;
+                
+                // Extract currency from price string
+                const currency = locale === "ar" ? "ر.س" : "SAR";
+                
+                return `${total.toFixed(2)} ${currency}`;
+              })()}
+            </span>
+          </div>
         </div>
       </motion.div>
 
