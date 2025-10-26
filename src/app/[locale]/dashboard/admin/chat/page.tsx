@@ -54,8 +54,13 @@ const AdminChatPage = () => {
       }
       setChats(conversations);
 
-      // Select the first conversation by default if none selected
-      if (conversations.length > 0 && !selectedChatId) {
+      // Only auto-select first conversation on large screens (lg and up - 1024px+)
+      // On mobile/tablet, let users choose from the conversation list
+      if (
+        conversations.length > 0 &&
+        !selectedChatId &&
+        window.innerWidth >= 1024
+      ) {
         console.log(
           "🎯 Auto-selecting first conversation:",
           conversations[0].id
@@ -442,11 +447,11 @@ const AdminChatPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
-      {/* Sidebar - Hidden on mobile when chat is selected */}
+      {/* Sidebar - Hidden on mobile/tablet when chat is selected, overlay on larger screens */}
       <div
         className={`${
-          selectedChatId ? "hidden md:block" : "block"
-        } w-full md:w-80`}
+          selectedChatId ? "hidden lg:block" : "block"
+        } w-full lg:w-80`}
       >
         <ChatSidebar
           currentUser={currentUser}
@@ -457,8 +462,8 @@ const AdminChatPage = () => {
         />
       </div>
 
-      {/* Chat Interface - Hidden on mobile when no chat is selected */}
-      <div className={`${selectedChatId ? "block" : "hidden md:block"} flex-1`}>
+      {/* Chat Interface - Hidden on mobile/tablet when no chat is selected */}
+      <div className={`${selectedChatId ? "block" : "hidden lg:block"} flex-1`}>
         <ChatInterface
           currentUser={currentUser}
           selectedChat={selectedChat}

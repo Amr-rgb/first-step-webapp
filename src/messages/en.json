@@ -502,7 +502,30 @@
           "business-license": "Business License",
           "notes": "Additional Notes",
           "notes-placeholder": "Enter any additional information or notes...",
-          "description": "Please upload the required documents. Accepted formats: jpg, jpeg, png, pdf, doc, docx, txt, zip. Maximum file size is 3MB."
+          "description": "Please upload the required documents. Accepted formats: jpg, jpeg, png, pdf, doc, docx, txt, zip. Maximum file size is 3MB.",
+          "ages": {
+            "label": "Accepted Age Groups"
+          },
+          "addition": {
+            "label": "Add Service",
+            "placeholder": "Enter service name"
+          },
+          "from-day": {
+            "label": "From Day",
+            "placeholder": "Select day"
+          },
+          "to-day": {
+            "label": "To Day",
+            "placeholder": "Select day"
+          },
+          "from-hour": {
+            "label": "From Time",
+            "placeholder": "Select time"
+          },
+          "to-hour": {
+            "label": "To Time",
+            "placeholder": "Select time"
+          }
         }
       },
       "3": {

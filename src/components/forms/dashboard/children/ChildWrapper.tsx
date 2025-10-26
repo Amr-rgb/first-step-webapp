@@ -4,7 +4,7 @@ import React from "react";
 import Child from "./Child";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { showToast } from "@/lib/toast";
+import { showToast, toastError } from "@/lib/toast";
 
 const ChildWrapper = ({
   initialValues,
@@ -17,6 +17,7 @@ const ChildWrapper = ({
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  // formKey state removed - no longer needed since we don't reset form in edit mode
 
   // Fetch child data if in show/edit mode and childId is provided
   const { data: fetchedChild, isLoading } = useQuery({
@@ -86,24 +87,48 @@ const ChildWrapper = ({
         // className:
         //   "bg-green-50 border-green-400 text-green-900 font-bold text-lg",
       });
+
+      // Reset form for add mode - handled by Child component now
+      // No need to update formKey since we removed the key prop
+
       setTimeout(() => {
         router.replace("/dashboard/parent/children");
       }, 1500);
     },
     onError: (error: any) => {
       console.error("API error details:", error?.response?.data);
+      console.error("Full error object:", error);
+
       if (error?.response?.data?.errors) {
         console.error("API validation errors:", error.response.data.errors);
-        alert(JSON.stringify(error.response.data.errors, null, 2)); // Show errors in an alert for easy copy-paste
-      }
-      if (error?.response?.data?.errors) {
-        console.error("API validation errors:", error.response.data.errors);
+        // Show detailed validation errors
+        const errorMessages = Object.entries(error.response.data.errors)
+          .map(([field, messages]: [string, any]) => {
+            const fieldMessages = Array.isArray(messages)
+              ? messages.join(", ")
+              : messages;
+            return `${field}: ${fieldMessages}`;
+          })
+          .join("\n");
+
+        toastError("Validation Error", `Validation Errors:\n${errorMessages}`);
+      } else if (error?.response?.data?.message) {
+        toastError("API Error", error.response.data.message);
+      } else {
+        toastError("Error", error?.message || "Unknown error occurred");
       }
     },
   });
 
   const onSubmit = (data: any) => {
     let payload = { ...data };
+
+    console.log("=== FORM SUBMISSION DEBUGGING ===");
+    console.log("Raw form data:", data);
+    console.log("Mode:", mode);
+    console.log("ChildId:", childId);
+    console.log("Raw allergies data:", data.allergies);
+    console.log("Raw chronicDiseases data:", data.chronicDiseases);
 
     // Ensure kinship is always a string (API requires string)
     if (payload.kinship == null) {
@@ -152,9 +177,21 @@ const ChildWrapper = ({
         }));
     } // If allergy is false, allergies stays as []
 
+    console.log("=== AFTER DISEASE/ALLERGY PROCESSING ===");
+    console.log("Processed allergies:", allergies);
+    console.log("Processed disease_details:", disease_details);
+    console.log("Allergy flag:", allergy);
+    console.log("Disease flag:", disease);
+    console.log("=== END AFTER DISEASE/ALLERGY PROCESSING ===");
+
     // For edit mode, send flat payload matching update API; for add mode, keep original flow
     if (mode === "edit" && childId) {
-      mutation.mutate({
+      console.log("=== EDIT MODE PAYLOAD DEBUGGING ===");
+      console.log("Raw payload before processing:", payload);
+      console.log("Payload allergies:", payload.allergies);
+      console.log("Payload chronicDiseases:", payload.chronicDiseases);
+
+      const editPayload = {
         ...payload,
         birthDate:
           payload.birthDate instanceof Date
@@ -163,20 +200,46 @@ const ChildWrapper = ({
         gender: payload.gender === "male" ? "boy" : "girl",
         chronicDiseases: {
           ...payload.chronicDiseases,
-          diseases: disease_details,
+          diseases: disease_details.map((d: any) => ({
+            name: d.disease_name,
+            medication: d.medicament,
+            procedures: d.emergency,
+            id: d.id,
+          })),
           hasDiseases: disease ? "yes" : "no",
         },
         allergies: {
           ...payload.allergies,
-          allergies,
+          allergies: allergies.map((a: any) => ({
+            allergyTypes: a.name,
+            allergyFoods: Array.isArray(a.allergy_causes)
+              ? a.allergy_causes.join(", ")
+              : a.allergy_causes,
+            allergyProcedures: a.allergy_emergency,
+            id: a.id,
+          })),
           hasAllergies: allergy ? "yes" : "no",
         },
         fatherName: payload.fatherName,
         motherName: payload.motherName,
-        recommendations: payload.recommendations ?? "",
-        childDescription: payload.childDescription ?? "",
-        favoriteThings: payload.favoriteThings ?? "",
-        comments: payload.comments ?? "",
+        childNationalNumber: payload.childNationalNumber ?? "",
+        childImage: payload.childImage ?? null,
+        recommendations:
+          payload.recommendations && payload.recommendations.trim() !== ""
+            ? payload.recommendations
+            : "",
+        childDescription:
+          payload.childDescription && payload.childDescription.trim() !== ""
+            ? payload.childDescription
+            : "",
+        favoriteThings:
+          payload.favoriteThings && payload.favoriteThings.trim() !== ""
+            ? payload.favoriteThings
+            : "",
+        comments:
+          payload.comments && payload.comments.trim() !== ""
+            ? payload.comments
+            : "",
         kinship: payload.kinship ?? "",
         authorizedPersons: (payload.authorizedPersons || []).map(
           (person: any) => ({
@@ -185,41 +248,66 @@ const ChildWrapper = ({
             id: person.id,
           })
         ),
-      });
-    } else {
-      // add mode
-      const child = {
-        child_name: payload.childName,
-        birthday_date:
-          payload.birthDate instanceof Date
-            ? payload.birthDate.toISOString().split("T")[0]
-            : payload.birthDate,
-        gender: payload.gender === "male" ? "boy" : "girl",
-        disease,
-        disease_details,
-        allergy,
-        parent_name: payload.fatherName,
-        mother_name: payload.motherName,
-        recommendations: payload.recommendations,
-        description_3_words: payload.childDescription,
-        things_child_likes: payload.favoriteThings,
-        notes: payload.comments,
-        kinship: payload.kinship || "",
-        authorized_persons: (payload.authorizedPersons || []).map(
-          (person: any) => ({
-            name: person.name,
-            cin: person.idNumber,
-          })
-        ),
-        allergies,
       };
-      mutation.mutate({ ...payload, children: [child] });
+
+      console.log("Final edit payload:", editPayload);
+      console.log("Edit payload allergies:", editPayload.allergies);
+      console.log("Edit payload chronicDiseases:", editPayload.chronicDiseases);
+      console.log("=== END EDIT MODE PAYLOAD DEBUGGING ===");
+
+      mutation.mutate(editPayload);
+    } else {
+      // add mode - pass payload directly since API now handles FormData
+      console.log("Sending child data:", payload);
+      console.log("Payload keys:", Object.keys(payload));
+      console.log(
+        "Payload values:",
+        Object.entries(payload).map(([key, value]) => ({
+          key,
+          value,
+          type: typeof value,
+          isNull: value === null,
+          isEmpty: value === "",
+          isArray: Array.isArray(value),
+        }))
+      );
+      mutation.mutate(payload);
     }
   };
 
   function mapFetchedChildToInitialValues(childData: any) {
     if (!childData) return initialValues;
-    return {
+
+    console.log("Raw child data from API:", childData);
+    console.log("=== SPECIFIC FIELD DEBUGGING ===");
+    console.log("childData.national_number:", childData.national_number);
+    console.log("childData.image:", childData.image);
+    console.log(
+      "typeof childData.national_number:",
+      typeof childData.national_number
+    );
+    console.log("typeof childData.image:", typeof childData.image);
+    console.log("=== END SPECIFIC FIELD DEBUGGING ===");
+    console.log("disease_details:", childData.disease_details);
+    console.log("disease flag:", childData.disease);
+    console.log("allergies:", childData.allergies);
+    console.log("allergy flag:", childData.allergy);
+    console.log("authorized_people:", childData.authorized_people);
+    console.log("=== ALLERGIES DETAILED DEBUGGING ===");
+    if (childData.allergies && Array.isArray(childData.allergies)) {
+      childData.allergies.forEach((allergy: any, index: number) => {
+        console.log(`Allergy ${index}:`, allergy);
+        console.log(`Allergy ${index} name:`, allergy.name);
+        console.log(`Allergy ${index} allergy_causes:`, allergy.allergy_causes);
+        console.log(
+          `Allergy ${index} allergy_emergency:`,
+          allergy.allergy_emergency
+        );
+      });
+    }
+    console.log("=== END ALLERGIES DETAILED DEBUGGING ===");
+
+    const mappedValues = {
       // Parent data
       name: childData?.user?.name || "",
       phone: childData?.user?.phone || "",
@@ -234,48 +322,134 @@ const ChildWrapper = ({
       motherName: childData?.mother_name || "",
       gender: childData?.gender === "boy" ? "male" : "female",
       kinship: childData?.kinship || "",
+      childNationalNumber: childData?.national_number || "",
+      childImage: childData?.image || null,
       // Chronic diseases
       chronicDiseases: {
-        hasDiseases: childData?.disease ? "yes" : "no",
-        diseases: childData?.disease_details
-          ? (typeof childData.disease_details === "string"
-              ? JSON.parse(childData.disease_details)
-              : childData.disease_details
-            ).map((disease: any) => ({
-              id: disease.id,
-              name: disease.disease_name,
-              medication: disease.medicament,
-              procedures: disease.emergency,
-            }))
-          : [],
+        hasDiseases:
+          childData?.disease_details &&
+          childData.disease_details !== null &&
+          Array.isArray(childData.disease_details) &&
+          childData.disease_details.length > 0 &&
+          childData.disease_details.some(
+            (disease: any) =>
+              disease.disease_name && disease.disease_name.trim() !== ""
+          )
+            ? "yes"
+            : "no",
+        diseases:
+          childData?.disease_details && childData.disease_details !== null
+            ? (typeof childData.disease_details === "string"
+                ? JSON.parse(childData.disease_details)
+                : childData.disease_details
+              )
+                .filter(
+                  (disease: any) =>
+                    disease.disease_name && disease.disease_name.trim() !== ""
+                )
+                .map((disease: any) => ({
+                  id: disease.id,
+                  name: disease.disease_name,
+                  medication: disease.medicament,
+                  procedures: disease.emergency,
+                }))
+            : [],
       },
       // Allergies
       allergies: {
-        hasAllergies: childData?.allergy ? "yes" : "no",
+        hasAllergies:
+          childData?.allergies &&
+          Array.isArray(childData.allergies) &&
+          childData.allergies.length > 0 &&
+          childData.allergies.some(
+            (allergy: any) => allergy.name && allergy.name.trim() !== ""
+          )
+            ? "yes"
+            : "no",
         allergies:
-          childData?.allergies?.map((allergy: any) => ({
-            id: allergy.id,
-            allergyTypes: allergy.name || "",
-            allergyFoods: Array.isArray(allergy.allergy_causes)
-              ? allergy.allergy_causes.join(", ")
-              : allergy.allergy_causes || "",
-            allergyProcedures: allergy.allergy_emergency || "",
-          })) || [],
+          childData?.allergies && Array.isArray(childData.allergies)
+            ? childData.allergies
+                .filter(
+                  (allergy: any) => allergy.name && allergy.name.trim() !== ""
+                )
+                .map((allergy: any) => ({
+                  id: allergy.id,
+                  allergyTypes: allergy.name || "",
+                  allergyFoods: Array.isArray(allergy.allergy_causes)
+                    ? allergy.allergy_causes.join(", ")
+                    : allergy.allergy_causes || "",
+                  allergyProcedures: allergy.allergy_emergency || "",
+                }))
+            : [],
       },
       // Recommendations
-      childDescription: childData?.description_3_words || "",
-      favoriteThings: childData?.things_child_likes || "",
-      recommendations: childData?.recommendations || "",
+      childDescription:
+        childData?.description_3_words &&
+        childData.description_3_words.trim() !== ""
+          ? childData.description_3_words
+          : "",
+      favoriteThings:
+        childData?.things_child_likes &&
+        childData.things_child_likes.trim() !== ""
+          ? childData.things_child_likes
+          : "",
+      recommendations:
+        childData?.recommendations && childData.recommendations.trim() !== ""
+          ? childData.recommendations
+          : "",
       // Authorized persons
       authorizedPersons:
-        childData?.authorized_people?.map((person: any) => ({
-          id: person.id,
-          name: person.name || "",
-          idNumber: String(person.cin ?? ""),
-        })) || [],
+        childData?.authorized_people &&
+        Array.isArray(childData.authorized_people)
+          ? childData.authorized_people.map((person: any) => ({
+              id: person.id,
+              name: person.name || "",
+              idNumber: String(person.cin ?? ""),
+            }))
+          : [],
       // Comments
-      comments: childData?.notes || "",
+      comments:
+        childData?.notes && childData.notes.trim() !== ""
+          ? childData.notes
+          : "",
     };
+
+    console.log("Mapped initial values:", mappedValues);
+    console.log("=== MAPPED FIELD DEBUGGING ===");
+    console.log(
+      "mappedValues.childNationalNumber:",
+      mappedValues.childNationalNumber
+    );
+    console.log("mappedValues.childImage:", mappedValues.childImage);
+    console.log(
+      "typeof mappedValues.childNationalNumber:",
+      typeof mappedValues.childNationalNumber
+    );
+    console.log(
+      "typeof mappedValues.childImage:",
+      typeof mappedValues.childImage
+    );
+    console.log("=== ALLERGIES MAPPING DEBUGGING ===");
+    console.log("childData.allergies:", childData.allergies);
+    console.log("childData.allergies length:", childData.allergies?.length);
+    console.log(
+      "childData.allergies isArray:",
+      Array.isArray(childData.allergies)
+    );
+    console.log(
+      "childData.allergies has valid entries:",
+      childData.allergies?.some(
+        (allergy: any) => allergy.name && allergy.name.trim() !== ""
+      )
+    );
+    console.log("mapped hasAllergies:", mappedValues.allergies.hasAllergies);
+    console.log("mapped allergies array:", mappedValues.allergies.allergies);
+    console.log("=== END ALLERGIES MAPPING DEBUGGING ===");
+    console.log("=== END MAPPED FIELD DEBUGGING ===");
+    console.log("Mapped diseases:", mappedValues.chronicDiseases);
+    console.log("Mapped allergies:", mappedValues.allergies);
+
+    return mappedValues;
   }
 
   // Use mapped fetched child data as initialValues if available
@@ -283,6 +457,40 @@ const ChildWrapper = ({
     mode !== "add" && fetchedChild
       ? mapFetchedChildToInitialValues(fetchedChild)
       : initialValues;
+
+  console.log("effectiveInitialValues:", effectiveInitialValues);
+  console.log("=== EFFECTIVE VALUES DEBUGGING ===");
+  console.log(
+    "effectiveInitialValues.childNationalNumber:",
+    effectiveInitialValues.childNationalNumber
+  );
+  console.log(
+    "effectiveInitialValues.childImage:",
+    effectiveInitialValues.childImage
+  );
+  console.log(
+    "typeof effectiveInitialValues.childNationalNumber:",
+    typeof effectiveInitialValues.childNationalNumber
+  );
+  console.log(
+    "typeof effectiveInitialValues.childImage:",
+    typeof effectiveInitialValues.childImage
+  );
+  console.log("=== END EFFECTIVE VALUES DEBUGGING ===");
+
+  // Update form key when fetched data changes to ensure form resets with new data
+  // But only if we haven't already set the form key for this child
+  // COMMENTED OUT: This was causing the form to remount and reset user changes
+  // React.useEffect(() => {
+  //   if (mode !== "add" && fetchedChild) {
+  //     console.log("=== FORM KEY UPDATE DEBUGGING ===");
+  //     console.log("Fetched child data changed, updating form key");
+  //     console.log("Current formKey:", formKey);
+  //     console.log("Fetched child ID:", fetchedChild.id);
+  //     console.log("=== END FORM KEY UPDATE DEBUGGING ===");
+  //     setFormKey((prev) => prev + 1);
+  //   }
+  // }, [fetchedChild, mode, formKey]);
 
   if (isLoading) return <div>Loading...</div>;
 

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { UserPlus } from "lucide-react";
 import {
   paymentService,
   nurseryService,
@@ -429,7 +430,7 @@ const ReservationForm = ({
             : "We will contact you soon to confirm the reservation details."}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-center mb-6">
-        <button
+          <button
             onClick={() => setSubmitSuccess(false)}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
               bg-[#4D5EDB] text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
@@ -445,7 +446,6 @@ const ReservationForm = ({
               ? "حجوزاتي في لوحة التحكم"
               : "Go to My Reservations"}
           </button>
-         
         </div>
       </motion.div>
     );
@@ -687,19 +687,30 @@ const ReservationForm = ({
             ))}
 
           {!isChildrenLoading && childrenError && (
-            <div className="text-sm text-red-500">
-              {locale === "ar"
-                ? "حدث خطأ في جلب الأطفال"
-                : "Failed to load children"}
+            <div
+              onClick={() =>
+                router.push(`/${locale}/dashboard/parent/children`)
+              }
+              className="flex flex-col items-center justify-center p-2 rounded-lg border-2 border-dashed min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 bg-blue-50 border-blue-300 mx-auto cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all"
+            >
+              <div className="w-16 h-16 flex items-center justify-center mb-2">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                  <UserPlus className="w-8 h-8 text-blue-600" />
+                </div>
+              </div>
+              <span className="text-sm text-blue-700 font-bold text-center mt-1">
+                {locale === "ar"
+                  ? "لا يوجد لديك أطفال"
+                  : "You have no children"}
+              </span>
             </div>
           )}
 
           {!isChildrenLoading &&
             !childrenError &&
-            (realChildren && realChildren.length > 0
-              ? realChildren
-              : mockChildren
-            ).map((child: any, idx: number) => {
+            realChildren &&
+            realChildren.length > 0 &&
+            realChildren.map((child: any, idx: number) => {
               const idStr = (
                 child.id ??
                 child.child_id ??
@@ -787,8 +798,33 @@ const ReservationForm = ({
             !childrenError &&
             realChildren &&
             realChildren.length === 0 && (
-              <div className="text-sm text-gray-500">
-                {locale === "ar" ? "لا يوجد أطفال مسجلون" : "No children found"}
+              <div className="flex flex-col items-center justify-center py-12 px-4 min-w-full text-center">
+                <Image
+                  src="/assets/illustrations/empty.png"
+                  alt="No children"
+                  width={120}
+                  height={120}
+                  className="mb-4 opacity-50"
+                />
+                <h3 className="text-lg font-bold text-[#22336C] mb-2">
+                  {locale === "ar"
+                    ? "لا يوجد أطفال مسجلون"
+                    : "No Children Found"}
+                </h3>
+                <p className="text-sm text-gray-600 max-w-md">
+                  {locale === "ar"
+                    ? "يجب تسجيل طفل واحد على الأقل قبل إجراء الحجز. يرجى الذهاب إلى صفحة الأطفال لإضافة طفل جديد."
+                    : "You need to register at least one child before making a reservation. Please go to the children page to add a new child."}
+                </p>
+                <Button
+                  type="button"
+                  onClick={() =>
+                    router.push(`/${locale}/dashboard/parent/children`)
+                  }
+                  className="mt-4 bg-[#4D5EDB] hover:bg-[#3646a5] text-white"
+                >
+                  {locale === "ar" ? "إضافة طفل جديد" : "Add New Child"}
+                </Button>
               </div>
             )}
         </div>
@@ -831,13 +867,49 @@ const ReservationForm = ({
             <span>{bookingDate ? bookingDate : "--"}</span>
           </div>
         </div>
-        <div className="border-t mt-4 pt-4 flex justify-between items-center">
-          <span className="font-bold text-[#22336C] text-base">
-            {locale === "ar" ? "السعر الإجمالي" : "Total"}
-          </span>
-          <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            {selectedPlanObj ? selectedPlanObj.price : "-"}
-          </span>
+        <div className="border-t mt-4 pt-4">
+          {selectedChildren.length > 0 && selectedPlanObj && (
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">
+                {locale === "ar"
+                  ? "سعر الخطة × عدد الأطفال"
+                  : "Plan price × Children"}
+              </span>
+              <span className="text-sm text-gray-700">
+                {(() => {
+                  // Extract numeric value from price string (e.g., "50 SAR" -> 50)
+                  const numericPrice = parseFloat(
+                    selectedPlanObj.price.replace(/[^\d.]/g, "")
+                  );
+                  const numberOfChildren = selectedChildren.length;
+                  const unitPrice = numericPrice || 0;
+                  return `${unitPrice} × ${numberOfChildren}`;
+                })()}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-[#22336C] text-base">
+              {locale === "ar" ? "السعر الإجمالي" : "Total"}
+            </span>
+            <span className="font-extrabold text-2xl text-[#4D5EDB]">
+              {(() => {
+                if (!selectedPlanObj) return "-";
+
+                // Extract numeric value from price string (e.g., "50 SAR" -> 50)
+                const numericPrice = parseFloat(
+                  selectedPlanObj.price.replace(/[^\d.]/g, "")
+                );
+                const numberOfChildren = selectedChildren.length || 0;
+                const total = numericPrice * numberOfChildren;
+
+                // Extract currency from price string
+                const currency = locale === "ar" ? "ر.س" : "SAR";
+
+                return `${total.toFixed(2)} ${currency}`;
+              })()}
+            </span>
+          </div>
         </div>
       </motion.div>
 

@@ -246,7 +246,7 @@ export default function AdminDashboardHome() {
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
         <div className="w-full flex-1 min-w-3xs">
           <MonthlyRevenueChart
-            data={Object.entries(stats.total_paid_revenue || {}).map(
+            data={Object.entries(stats?.total_paid_revenue || {}).map(
               ([month, value]) => {
                 // month is 'YYYY-MM', e.g. '2025-07'
                 const [year, monthNum] = month.split("-");

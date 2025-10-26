@@ -125,8 +125,8 @@ const prepareCenterFormData = (
 export const parentService = {
   getParentChildren: async () => {
     try {
-      const response = await apiClient.get(`/parent/children/`);
-      return response.data;
+      const response = await apiClient.get(`/children-all`);
+      return response.data.data; // Return the actual children array from the response
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -135,8 +135,8 @@ export const parentService = {
   getChild: async (id: string) => {
     try {
       // Use the direct endpoint to get a specific child with parent information
-      const response = await apiClient.get(`/parent/children/${id}`);
-      return response.data;
+      const response = await apiClient.get(`/children-one/${id}`);
+      return response.data.data; // Return the actual child object from the response
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -144,88 +144,131 @@ export const parentService = {
 
   updateChild: async (id: string, payload: any) => {
     try {
+      console.log("=== API updateChild DEBUGGING ===");
+      console.log("Received payload:", payload);
+      console.log("Payload allergies:", payload.allergies);
+      console.log("Payload chronicDiseases:", payload.chronicDiseases);
+
       // Format the date to YYYY-MM-DD format
       const formattedDate =
         payload.birthDate instanceof Date
           ? payload.birthDate.toISOString().split("T")[0]
           : payload.birthDate;
 
-      // Prepare authorized people data (API expects 'authorized_people')
-      const authorizedPeople = (
-        Array.isArray(payload.authorizedPersons)
-          ? payload.authorizedPersons
-          : []
-      )
-        .filter((p: any) => p && typeof p === "object")
-        .map((person: any) => ({
-          name: String(person.name ?? ""),
-          cin: String(person.idNumber ?? ""),
-          ...(person.id && { id: person.id }),
-        }))
-        .filter(
-          (p: any) => p.name.trim().length > 0 || p.cin.trim().length > 0
+      // Create FormData for file upload
+      const formData = new FormData();
+
+      // Add child data
+      formData.append("child_name", payload.childName);
+      formData.append("birthday_date", formattedDate);
+      formData.append("gender", payload.gender === "male" ? "boy" : "girl");
+      formData.append("national_number", payload.childNationalNumber || "");
+      formData.append(
+        "disease",
+        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0"
+      );
+      formData.append(
+        "allergy",
+        payload.allergies.hasAllergies === "yes" ? "1" : "0"
+      );
+      formData.append("parent_name", payload.fatherName);
+      formData.append("mother_name", payload.motherName);
+      formData.append("recommendations", payload.recommendations || "");
+      formData.append("description_3_words", payload.childDescription || "");
+      formData.append("things_child_likes", payload.favoriteThings || "");
+      formData.append("notes", payload.comments || "");
+      formData.append("kinship", String(payload.kinship ?? ""));
+
+      // Add image if present
+      if (payload.childImage && payload.childImage instanceof File) {
+        formData.append("image", payload.childImage);
+      }
+
+      // Add disease details - only send if there are actual diseases
+      if (
+        payload.chronicDiseases.hasDiseases === "yes" &&
+        payload.chronicDiseases.diseases &&
+        payload.chronicDiseases.diseases.length > 0
+      ) {
+        payload.chronicDiseases.diseases.forEach(
+          (disease: any, index: number) => {
+            // Only add if disease has a name
+            if (disease.name && disease.name.trim() !== "") {
+              formData.append(
+                `disease_details[${index}][disease_name]`,
+                disease.name
+              );
+              formData.append(
+                `disease_details[${index}][medicament]`,
+                disease.medication || ""
+              );
+              formData.append(
+                `disease_details[${index}][emergency]`,
+                disease.procedures || ""
+              );
+              if (disease.id) {
+                formData.append(`disease_details[${index}][id]`, disease.id);
+              }
+            }
+          }
         );
-
-      // Prepare allergies data; API expects allergy_causes as a string, not array
-      const includeAllergies = payload.allergies?.hasAllergies === "yes";
-      const allergies = includeAllergies
-        ? (Array.isArray(payload.allergies?.allergies)
-            ? payload.allergies.allergies
-            : []
-          )
-            .filter((a: any) => a && typeof a === "object")
-            .map((allergy: any) => ({
-              name: String(allergy.allergyTypes ?? ""),
-              allergy_causes: Array.isArray(allergy.allergyFoods)
-                ? allergy.allergyFoods.join(", ")
-                : String(allergy.allergyFoods ?? ""),
-              allergy_emergency: String(allergy.allergyProcedures ?? ""),
-              ...(allergy.id && { id: allergy.id }),
-            }))
-            .filter((a: any) => a.name.trim().length > 0)
-        : [];
-
-      // Prepare disease details data
-      const diseaseDetails = (payload.chronicDiseases?.diseases || []).map(
-        (disease: any) => ({
-          disease_name: disease.name,
-          medicament: disease.medication,
-          emergency: disease.procedures,
-          ...(disease.id && { id: disease.id }),
-        })
-      );
-
-      const updatePayload: any = {
-        child_name: payload.childName,
-        birthday_date: formattedDate,
-        gender: payload.gender === "male" ? "boy" : "girl",
-        disease: payload.chronicDiseases.hasDiseases === "yes",
-        disease_details: Array.isArray(diseaseDetails) ? diseaseDetails : [],
-        allergy: includeAllergies,
-        parent_name: payload.fatherName,
-        mother_name: payload.motherName,
-        recommendations: payload.recommendations || "",
-        description_3_words: payload.childDescription || "",
-        things_child_likes: payload.favoriteThings || "",
-        notes: payload.comments || "",
-        authorized_people: authorizedPeople,
-      };
-      if (includeAllergies) {
-        updatePayload.allergies = allergies;
       }
 
-      // Only include kinship if it's a non-empty string; omit otherwise
-      if (typeof payload.kinship === "string") {
-        const trimmed = payload.kinship.trim();
-        if (trimmed.length > 0) updatePayload.kinship = trimmed;
+      // Add allergies - only send if there are actual allergies
+      if (
+        payload.allergies.hasAllergies === "yes" &&
+        payload.allergies.allergies &&
+        payload.allergies.allergies.length > 0
+      ) {
+        payload.allergies.allergies.forEach((allergy: any, index: number) => {
+          // Only add if allergy has a name
+          if (allergy.allergyTypes && allergy.allergyTypes.trim() !== "") {
+            formData.append(`allergies[${index}][name]`, allergy.allergyTypes);
+            formData.append(
+              `allergies[${index}][allergy_causes]`,
+              allergy.allergyFoods || ""
+            );
+            formData.append(
+              `allergies[${index}][allergy_emergency]`,
+              allergy.allergyProcedures || ""
+            );
+            if (allergy.id) {
+              formData.append(`allergies[${index}][id]`, allergy.id);
+            }
+          }
+        });
       }
 
-      const response = await apiClient.put(
-        `/parent/children/${id}`,
-        updatePayload
-      );
+      // Add authorized persons
+      if (payload.authorizedPersons) {
+        payload.authorizedPersons.forEach((person: any, index: number) => {
+          formData.append(
+            `authorized_people[${index}][name]`,
+            person.name || ""
+          );
+          formData.append(
+            `authorized_people[${index}][cin]`,
+            person.idNumber || ""
+          );
+          if (person.id) {
+            formData.append(`authorized_people[${index}][id]`, person.id);
+          }
+        });
+      }
 
-      return response.data;
+      console.log("Update FormData entries:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      console.log("=== END API updateChild DEBUGGING ===");
+
+      const response = await apiClient.post(`/v2/childs/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data.data; // Return the actual data from the response
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -257,43 +300,127 @@ export const parentService = {
           ? payload.birthDate.toISOString().split("T")[0]
           : payload.birthDate;
 
-      const response = await apiClient.post(`/parent/children`, {
-        children: [
-          {
-            child_name: payload.childName,
-            birthday_date: formattedDate,
-            gender: payload.gender === "male" ? "boy" : "girl",
-            disease: payload.chronicDiseases.hasDiseases === "yes",
-            disease_details: payload.chronicDiseases.diseases.map(
-              (disease: any) => ({
-                disease_name: disease.name,
-                medicament: disease.medication,
-                emergency: disease.procedures,
-              })
-            ),
-            allergy: payload.allergies.hasAllergies === "yes",
-            parent_name: payload.fatherName,
-            mother_name: payload.motherName,
-            recommendations: payload.recommendations,
-            description_3_words: payload.childDescription,
-            things_child_likes: payload.favoriteThings,
-            notes: payload.comments,
-            kinship: String(payload.kinship ?? ""),
-            authorized_persons: payload.authorizedPersons.map(
-              (person: any) => ({
-                name: person.name,
-                cin: person.idNumber,
-              })
-            ),
-            allergies: payload.allergies.allergies.map((allergy: any) => ({
-              name: allergy.allergyTypes,
-              allergy_causes: allergy.allergyFoods.split(", "),
-              allergy_emergency: allergy.allergyProcedures,
-            })),
-          },
-        ],
+      // Create FormData for file upload
+      const formData = new FormData();
+
+      // Add child data
+      formData.append("children[0][child_name]", payload.childName);
+      formData.append("children[0][birthday_date]", formattedDate);
+      formData.append(
+        "children[0][gender]",
+        payload.gender === "male" ? "boy" : "girl"
+      );
+      formData.append(
+        "children[0][national_number]",
+        payload.childNationalNumber || ""
+      );
+      formData.append(
+        "children[0][disease]",
+        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0"
+      );
+      formData.append(
+        "children[0][allergy]",
+        payload.allergies.hasAllergies === "yes" ? "1" : "0"
+      );
+      formData.append("children[0][parent_name]", payload.fatherName);
+      formData.append("children[0][mother_name]", payload.motherName);
+      formData.append(
+        "children[0][recommendations]",
+        payload.recommendations || ""
+      );
+      formData.append(
+        "children[0][description_3_words]",
+        payload.childDescription || ""
+      );
+      formData.append(
+        "children[0][things_child_likes]",
+        payload.favoriteThings || ""
+      );
+      formData.append("children[0][notes]", payload.comments || "");
+      formData.append("children[0][kinship]", String(payload.kinship ?? ""));
+
+      // Add image if present
+      if (payload.childImage && payload.childImage instanceof File) {
+        formData.append("children[0][image]", payload.childImage);
+      }
+
+      // Add disease details - only send if there are actual diseases
+      if (
+        payload.chronicDiseases.hasDiseases === "yes" &&
+        payload.chronicDiseases.diseases &&
+        payload.chronicDiseases.diseases.length > 0
+      ) {
+        payload.chronicDiseases.diseases.forEach(
+          (disease: any, index: number) => {
+            // Only add if disease has a name
+            if (disease.name && disease.name.trim() !== "") {
+              formData.append(
+                `children[0][disease_details][${index}][disease_name]`,
+                disease.name
+              );
+              formData.append(
+                `children[0][disease_details][${index}][medicament]`,
+                disease.medication || ""
+              );
+              formData.append(
+                `children[0][disease_details][${index}][emergency]`,
+                disease.procedures || ""
+              );
+            }
+          }
+        );
+      }
+
+      // Add allergies - only send if there are actual allergies
+      if (
+        payload.allergies.hasAllergies === "yes" &&
+        payload.allergies.allergies &&
+        payload.allergies.allergies.length > 0
+      ) {
+        payload.allergies.allergies.forEach((allergy: any, index: number) => {
+          // Only add if allergy has a name
+          if (allergy.allergyTypes && allergy.allergyTypes.trim() !== "") {
+            formData.append(
+              `children[0][allergies][${index}][name]`,
+              allergy.allergyTypes
+            );
+            formData.append(
+              `children[0][allergies][${index}][allergy_causes]`,
+              allergy.allergyFoods || ""
+            );
+            formData.append(
+              `children[0][allergies][${index}][allergy_emergency]`,
+              allergy.allergyProcedures || ""
+            );
+          }
+        });
+      }
+
+      // Add authorized persons
+      if (payload.authorizedPersons) {
+        payload.authorizedPersons.forEach((person: any, index: number) => {
+          formData.append(
+            `children[0][authorized_persons][${index}][name]`,
+            person.name || ""
+          );
+          formData.append(
+            `children[0][authorized_persons][${index}][cin]`,
+            person.idNumber || ""
+          );
+        });
+      }
+
+      console.log("FormData entries:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      const response = await apiClient.post(`/v2/childs`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      return response.data;
+      return response.data.data; // Return the actual data from the response
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }

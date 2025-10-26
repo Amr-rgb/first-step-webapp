@@ -44,8 +44,9 @@ const CenterChatPage = () => {
       );
       setChats(contacts);
 
-      // Select the first chat by default if none selected
-      if (contacts.length > 0 && !selectedChatId) {
+      // Only auto-select first chat on large screens (lg and up - 1024px+)
+      // On mobile/tablet, let users choose from the chat list
+      if (contacts.length > 0 && !selectedChatId && window.innerWidth >= 1024) {
         setSelectedChatId(contacts[0].id);
       }
     } catch (error) {
@@ -379,11 +380,11 @@ const CenterChatPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-gray-50 rounded-lg shadow-sm">
-      {/* Sidebar - Hidden on mobile when chat is selected */}
+      {/* Sidebar - Hidden on mobile/tablet when chat is selected, overlay on larger screens */}
       <div
         className={`${
-          selectedChatId ? "hidden md:block" : "block"
-        } w-full md:w-80`}
+          selectedChatId ? "hidden lg:block" : "block"
+        } w-full lg:w-80`}
       >
         <ChatSidebar
           currentUser={currentUser}
@@ -394,8 +395,8 @@ const CenterChatPage = () => {
         />
       </div>
 
-      {/* Chat Interface - Hidden on mobile when no chat is selected */}
-      <div className={`${selectedChatId ? "block" : "hidden md:block"} flex-1`}>
+      {/* Chat Interface - Hidden on mobile/tablet when no chat is selected */}
+      <div className={`${selectedChatId ? "block" : "hidden lg:block"} flex-1`}>
         <ChatInterface
           currentUser={currentUser}
           selectedChat={selectedChat}
