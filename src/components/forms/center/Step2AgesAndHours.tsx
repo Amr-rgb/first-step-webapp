@@ -21,7 +21,7 @@ import CheckboxGroup from "../CheckboxGroup";
 import { Clock } from "lucide-react";
 import type { CenterStep2AgesAndHoursFormData } from "@/lib/schemas";
 import { mapOptions } from "@/lib/utils";
-import { AGE_GROUP_IDS, WEEK_DAYS } from "@/lib/options";
+import { AGE_GROUP_IDS, SERVICE_IDS, WEEK_DAYS } from "@/lib/options";
 import { usePathname } from "@/i18n/navigation";
 
 export function Step2AgesAndHours({
@@ -33,6 +33,7 @@ export function Step2AgesAndHours({
   const tOptions = useTranslations("options");
   const { control } = useFormContext<CenterStep2AgesAndHoursFormData>();
 
+  const services = mapOptions(SERVICE_IDS, "centerServices", tOptions);
   const ageGroups = mapOptions(AGE_GROUP_IDS, "centerAges", tOptions);
   const days = mapOptions(WEEK_DAYS, "days", tOptions);
 
@@ -41,6 +42,41 @@ export function Step2AgesAndHours({
 
   return (
     <div className="space-y-8">
+      <div className="flex flex-col items-center gap-y-4">
+        <p className="form-label">{t("services.label")}</p>
+
+        <CheckboxGroup
+          className="lg:w-3xl"
+          items={services}
+          name="services"
+          control={control}
+          readOnly={disabled}
+        />
+      </div>
+
+      <FormField
+        control={control}
+        name="additional_service"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex justify-start items-start gap-x-1 flex-col sm:flex-row">
+              <span>{t("other.label")}</span>
+              <span className="font-normal text-sm md:text-base text-light-gray">
+                {t("other.sublabel")}
+              </span>
+            </FormLabel>
+            <FormControl>
+              <Input
+                placeholder={t("other.placeholder")}
+                {...field}
+                disabled={disabled}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <div className="space-y-4">
         <p className="form-label">{t("ages.label")}</p>
         <CheckboxGroup

@@ -10,15 +10,46 @@ import { ApiErrorHandler } from "@/lib/error-handling";
 
 const prepareCenterFormData = (
   formData: FormData,
-  payload: CenterRegisterPayload
+  payload: CenterRegisterPayload | any
 ) => {
   // Append text fields only if they exist
+  if (payload.name) formData.append("name", payload.name);
   if (payload.email) formData.append("email", payload.email);
   if (payload.password) formData.append("password", payload.password);
   if (payload.phone) formData.append("phone", payload.phone);
 
+  if (payload.additional_service) {
+    formData.append("additional_service", payload.additional_service);
+  }
+  if (payload.work_days_from)
+    formData.append("work_days_from", payload.work_days_from);
+  if (payload.work_days_to)
+    formData.append("work_days_to", payload.work_days_to);
+  if (payload.work_hours_from)
+    formData.append("work_hours_from", formatTime(payload.work_hours_from));
+  if (payload.work_hours_to)
+    formData.append("work_hours_to", formatTime(payload.work_hours_to));
+  if (payload.time_of_first_period) {
+    formData.append(
+      "time_of_first_period",
+      formatTime(payload.time_of_first_period)
+    );
+  }
+  if (payload.time_of_second_period) {
+    formData.append(
+      "time_of_second_period",
+      formatTime(payload.time_of_second_period)
+    );
+  }
+
+  if (payload.emergency_contact !== undefined) {
+    formData.append("emergency_contact", payload.emergency_contact ? "1" : "0");
+  }
+  if (payload.special_needs !== undefined) {
+    formData.append("special_needs", payload.special_needs ? "1" : "0");
+  }
+
   if (payload.nursery_name) {
-    formData.append("name", payload.nursery_name);
     formData.append("nursery_name", payload.nursery_name);
   }
   if (payload.location) formData.append("location", payload.location);
@@ -26,10 +57,60 @@ const prepareCenterFormData = (
   if (payload.neighborhood)
     formData.append("neighborhood", payload.neighborhood);
 
+  if (payload.provides_food !== undefined) {
+    formData.append("provides_food", payload.provides_food ? "1" : "0");
+  }
+
   // Append arrays only if they exist
   if (payload.nursery_type?.length) {
-    payload.nursery_type.forEach((item) => {
+    payload.nursery_type.forEach((item: string) => {
       formData.append("nursery_type[]", item);
+    });
+  }
+
+  if (payload.communication_methods?.length) {
+    payload.communication_methods.forEach((item: string) => {
+      formData.append("communication_methods[]", item);
+    });
+  }
+
+  if (payload.services?.length) {
+    payload.services.forEach((item: string) => {
+      formData.append("services[]", item);
+    });
+  }
+
+  if (payload.accepted_ages?.length) {
+    payload.accepted_ages.forEach((item: string) => {
+      formData.append("accepted_ages[]", item);
+    });
+  }
+
+  if (payload.first_meals?.length) {
+    payload.first_meals.forEach((meal: any, index: number) => {
+      if (meal.meal_name) {
+        formData.append(`first_meals[${index}][meal_name]`, meal.meal_name);
+      }
+      if (meal.juice) {
+        formData.append(`first_meals[${index}][juice]`, meal.juice);
+      }
+      if (meal.components) {
+        formData.append(`first_meals[${index}][components]`, meal.components);
+      }
+    });
+  }
+
+  if (payload.second_meals?.length) {
+    payload.second_meals.forEach((meal: any, index: number) => {
+      if (meal.meal_name) {
+        formData.append(`second_meals[${index}][meal_name]`, meal.meal_name);
+      }
+      if (meal.juice) {
+        formData.append(`second_meals[${index}][juice]`, meal.juice);
+      }
+      if (meal.components) {
+        formData.append(`second_meals[${index}][components]`, meal.components);
+      }
     });
   }
 
@@ -309,7 +390,7 @@ export const centerService = {
     }
   },
 
-  createBranch: async (payload: CenterRegisterPayload) => {
+  createBranch: async (payload: CenterRegisterPayload | any) => {
     try {
       const formData = new FormData();
       prepareCenterFormData(formData, payload);
