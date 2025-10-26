@@ -754,7 +754,7 @@
         "children-files": "ملفات الأطفال",
         "bookings": "الحجوزات",
         "daily-reports": "التقارير اليومية",
-        "profile-editor": "محرر الملف الشخصي",
+        "center-data": "بيانات مركزك",
         "ad-or-blog-request": "طلب إعلان أو مقال",
         "notifications": "الإشعارات",
         "team": "الفريق",
@@ -1604,7 +1604,7 @@
       }
     },
     "profileEditor": {
-      "title": "ملف الحضانة الشخصي",
+      "title": "بيانات مركزك",
       "modes": {
         "edit": "تعديل",
         "preview": "معاينة"

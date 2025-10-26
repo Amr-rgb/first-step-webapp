@@ -759,7 +759,7 @@
         "children-files": "Children Files",
         "bookings": "Bookings",
         "daily-reports": "Daily Reports",
-        "profile-editor": "Profile Editor",
+        "center-data": "Center Data",
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team",
@@ -1610,7 +1610,7 @@
       }
     },
     "profileEditor": {
-      "title": "Profile Editor",
+      "title": "Center Data",
       "modes": {
         "edit": "Edit",
         "preview": "Preview"

@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import { Textarea } from "@/components/ui/textarea";
 import {
   FormField,
   FormItem,
@@ -50,25 +49,6 @@ export function Step4Permits({ disabled = false }: { disabled?: boolean }) {
                   value={field.value}
                   onChange={field.onChange}
                   accept=".pdf"
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="logo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("logo")}</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={field.value}
-                  onChange={field.onChange}
-                  accept="image/png, image/jpeg, image/jpg"
                   disabled={disabled}
                 />
               </FormControl>

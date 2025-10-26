@@ -62,8 +62,8 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
     icon: dashboardIcons.reports,
   },
   {
-    title: t("center.profile-editor"),
-    url: "/dashboard/center/profile-editor",
+    title: t("center.center-data"),
+    url: "/dashboard/center/center-data",
     icon: dashboardIcons.site,
   },
   {
@@ -334,41 +334,64 @@ const DashboardSideBar = () => {
           <div
             className={cn(
               "w-full mb-4",
-              state === "collapsed" ? "px-2" : "px-4"
+              state === "collapsed" ? "px-0" : "px-4"
             )}
           >
-            <Button
-              onClick={() => setIsParentAccountsModalOpen(true)}
-              className={cn(
-                "w-full border-2 border-solid border-primary bg-transparent hover:bg-primary/5 transition-all duration-200 h-full",
-                state === "collapsed" ? "py-3" : "py-4"
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => setIsParentAccountsModalOpen(true)}
+                  className={cn(
+                    "w-full transition-all duration-200",
+                    state === "collapsed"
+                      ? "h-auto p-0 border-0 bg-transparent hover:bg-transparent"
+                      : "border-2 border-solid border-primary bg-transparent hover:bg-primary/5 py-4 h-full"
+                  )}
+                  variant="outline"
+                >
+                  {state === "collapsed" ? (
+                    <div className="flex items-center justify-center w-full">
+                      <Image
+                        src="/assets/illustrations/add-users.png"
+                        alt="Add Users"
+                        width={32}
+                        height={40}
+                        className="w-8 h-10 object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center space-x-2">
+                      <Image
+                        src="/assets/illustrations/add-users.png"
+                        alt="Add Users"
+                        width={30}
+                        height={38}
+                        className="w-10 h-16"
+                      />
+                      <div className="flex flex-col items-center">
+                        <span className="text-sm font-medium text-primary">
+                          {locale === "ar"
+                            ? "إنشاء حسابات أولياء الأمور"
+                            : "Create Parent Accounts"}
+                        </span>
+                        <span className="text-xs text-gray-600">
+                          {locale === "ar"
+                            ? "سجل الأطفال الآن"
+                            : "Register children now"}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              {state === "collapsed" && (
+                <TooltipContent side="right" align="center">
+                  {locale === "ar"
+                    ? "إنشاء حسابات أولياء الأمور"
+                    : "Create Parent Accounts"}
+                </TooltipContent>
               )}
-              variant="outline"
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <Image
-                  src="/assets/illustrations/add-users.png"
-                  alt="Add Users"
-                  width={30}
-                  height={38}
-                  className="w-10 h-16"
-                />
-                {state !== "collapsed" && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm font-medium text-primary">
-                      {locale === "ar"
-                        ? "إنشاء حسابات أولياء الأمور"
-                        : "Create Parent Accounts"}
-                    </span>
-                    <span className="text-xs text-gray-600">
-                      {locale === "ar"
-                        ? "سجل الأطفال الآن"
-                        : "Register children now"}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Button>
+            </Tooltip>
           </div>
         )}
 

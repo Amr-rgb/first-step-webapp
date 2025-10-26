@@ -124,7 +124,7 @@ const CenterBlogForm = ({
       }
     },
     onSuccess: () => {
-      toastSuccess("success.title", t("success.description"));
+      toastSuccess(t("success.title"), t("success.description"));
 
       // Reset form and previews if creating
       if (!blogId) {

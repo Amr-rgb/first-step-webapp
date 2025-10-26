@@ -79,9 +79,12 @@ export default function DashboardEditBranch({
       // Close the form and refresh the page to show updated data
       setIsAdminFormOpen(false);
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating admin:", error);
-      toastError(t("error.title"));
+      const errorMessage = error?.data?.errors
+        ? Object.values(error.data.errors).flat().join(", ")
+        : error?.data?.message || t("error.description");
+      toastError(t("error.title"), errorMessage);
     } finally {
       setIsSubmitting(false);
     }

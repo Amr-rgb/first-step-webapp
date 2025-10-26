@@ -373,6 +373,16 @@ export type SignUpParentFormData = z.infer<
 const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Step 1: Basic Information
+    name: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    email: z
+      .string()
+      .email({ message: getErrorMessage("invalid-email", locale) }),
+    password: z.string().min(8, {
+      message: getErrorMessage("password-min", locale, { min: 8 }),
+    }),
+    confirmPassword: z.string(),
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -397,19 +407,29 @@ const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
     neighborhood: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    address: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
     location: z
       .string()
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
     nursery_type: z
       .array(z.string())
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
-    services: z
-      .array(z.string())
-      .min(1, { message: getErrorMessage("services-one-required", locale) }),
-    additional_service: z.string().optional(),
+    logo: z
+      .instanceof(File, {
+        message: getErrorMessage("general-field-required", locale),
+      })
+      .refine(
+        (file) => file.size <= MAX_FILE_SIZE,
+        getErrorMessage("file-size", locale)
+      )
+      .refine(
+        (file) =>
+          ["image/png", "image/jpeg", "image/jpg", "image/svg+xml"].includes(
+            file.type
+          ),
+        {
+          message: getErrorMessage("image-type", locale),
+        }
+      ),
   });
 
 export type BranchStep1FormData = z.infer<
@@ -530,17 +550,13 @@ const createCenterStep2Schema = (locale: "ar" | "en" = "ar") =>
   });
 
 // Old Step 2 Schema for Ages and Hours (used by branch forms)
-const createCenterStep2AgesAndHoursSchema = (
-  locale: "ar" | "en" = "ar"
-): z.ZodObject<{
-  accepted_ages: z.ZodArray<z.ZodString>;
-  work_days_from: z.ZodString;
-  work_days_to: z.ZodString;
-  work_hours_from: z.ZodString;
-  work_hours_to: z.ZodString;
-}> =>
+const createCenterStep2AgesAndHoursSchema = (locale: "ar" | "en" = "ar") =>
   z.object({
-    // Step 2: Ages and Hours
+    // Step 2: Services, Ages and Hours
+    services: z
+      .array(z.string())
+      .min(1, { message: getErrorMessage("services-one-required", locale) }),
+    additional_service: z.string().optional(),
     accepted_ages: z
       .array(z.string())
       .min(1, { message: getErrorMessage("age-groups-one-required", locale) }),
@@ -737,25 +753,6 @@ const createCenterStep4Schema = (locale: "ar" | "en" = "ar") =>
         (file) => ACCEPTED_FILE_TYPES.includes(file.type),
         getErrorMessage("pdf-type", locale)
       ),
-
-    logo: z
-      .instanceof(File, {
-        message: getErrorMessage("general-field-required", locale),
-      })
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE,
-        getErrorMessage("file-size", locale)
-      )
-      .refine(
-        (file) =>
-          ["image/png", "image/jpeg", "image/jpg", "image/svg+xml"].includes(
-            file.type
-          ),
-        {
-          message: getErrorMessage("image-type", locale),
-        }
-      ),
-
     comments: z.string().optional(),
   });
 
