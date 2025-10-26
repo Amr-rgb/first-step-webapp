@@ -54,7 +54,7 @@ export function Step1BasicInfo({
   return (
     <div className="space-y-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 gap-x-10 md:gap-y-4">
-        {mode === "add" && (
+        {mode === "edit" || show ? null : (
           <>
             {/* Name field */}
             <FormField

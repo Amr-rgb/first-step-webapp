@@ -27,12 +27,14 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
   const transformedInitialValues: BranchFormData | undefined = useMemo(() => {
     if (!fetchedBranch) return undefined;
     return {
+      name: "",
+      password: "",
+      confirmPassword: "",
       nursery_name: fetchedBranch.nursery_name || "",
       email: fetchedBranch.email || "",
       phone: fetchedBranch.phone || "",
       neighborhood: fetchedBranch.neighborhood || "",
       nursery_type: fetchedBranch.nursery_type || [],
-      address: fetchedBranch.address || "",
       city: fetchedBranch.city_id || "",
       location: fetchedBranch.location || "",
       services: fetchedBranch.services || [],
@@ -66,7 +68,6 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
       phone: "",
       neighborhood: "",
       nursery_type: [],
-      address: "",
       city: "",
       location: "",
       services: [],
