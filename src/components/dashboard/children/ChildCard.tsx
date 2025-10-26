@@ -9,6 +9,7 @@ interface ChildCardProps {
   birthday: string;
   gender: string;
   userName: string;
+  image?: string | null;
   disease_details: Array<{
     disease_name: string;
     medicament: string;
@@ -37,6 +38,7 @@ const ChildCard = ({
   birthday,
   gender,
   userName,
+  image,
   disease_details,
   allergies,
   authorized_people,
@@ -49,7 +51,17 @@ const ChildCard = ({
     <div className="bg-sidebar border-b border-light-gray p-6 flex flex-col lg:flex-row gap-8">
       <div className="flex flex-col gap-y-6">
         <div className="flex items-start gap-4">
-          {gender === "boy" ? (
+          {image ? (
+            <div className="relative w-[91.32px] h-[120px] rounded-lg overflow-hidden border-2 border-gray-200">
+              <Image
+                src={image}
+                alt={name}
+                width={91.32}
+                height={120}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : gender === "boy" ? (
             <Image
               src="/assets/illustrations/boy.png"
               alt={t ? t("card.male") : "Boy"}

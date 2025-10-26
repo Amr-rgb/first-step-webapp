@@ -61,11 +61,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Chat Header */}
       <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center">
-          {/* Back button for mobile */}
+          {/* Back button for mobile/tablet */}
           {onBackToChats && (
             <button
               onClick={onBackToChats}
-              className="md:hidden mr-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="lg:hidden mr-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
             >
               <svg
                 className="w-5 h-5 text-gray-600"
