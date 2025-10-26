@@ -14,7 +14,7 @@ import { RadioGroup } from "@/components/general/RadioGroup";
 import CheckboxGroup from "../CheckboxGroup";
 import { Clock, Minus, Plus } from "lucide-react";
 import type { CenterStep3FormData } from "@/lib/schemas";
-import { getMealTitle, mapOptions } from "@/lib/utils";
+import { mapOptions } from "@/lib/utils";
 import { COMMUNICATION_METHODS_IDS } from "@/lib/options";
 
 export function Step3Communication({
@@ -152,7 +152,7 @@ export function Step3Communication({
           {[1, 2].map((meal, index) => (
             <div key={index} className="space-y-2 text-center">
               <p className="font-medium text-xl text-mid-gray">
-                {getMealTitle(index, "ar")}
+                {index === 0 ? t("periods.first-period") : t("periods.second-period")}
               </p>
 
               <FormField
