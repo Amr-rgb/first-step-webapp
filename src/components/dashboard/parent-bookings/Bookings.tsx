@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
+import { enrollmentService } from "@/services/api";
 
 const STATUS_STYLES: Record<string, string> = {
   accepted: "bg-success text-white border-green-400",
@@ -28,6 +29,7 @@ const Bookings = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [renewingId, setRenewingId] = useState<number | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     booking: any | null;
@@ -61,18 +63,22 @@ const Bookings = () => {
     waiting_confirmation: t("status.waiting_confirmation"),
     canceled: t("status.canceled"),
     cancelled: t("status.cancelled"),
+    paid: t("status.accepted"), // "paid" maps to "Paid"
+    existing: t("status.accepted"), // "existing" maps to "Paid"
+    expired: t("status.accepted"), // "expired" maps to "Paid"
   };
 
   const actionsByStatus: Record<
     string,
     {
       label: string;
-      variant?: "destructive";
-      action: "details" | "cancel" | null;
+      variant?: "destructive" | "default";
+      action: "details" | "cancel" | "renew" | null;
     }[]
   > = {
     [t("status.accepted")]: [
       { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
     ],
     [t("status.rejected")]: [
       { label: t("actions.showDetails"), action: "details" },
@@ -137,12 +143,16 @@ const Bookings = () => {
     booking,
     onShowDetails,
     onCancel,
+    onRenew,
     cancellingId,
+    renewingId,
   }: {
     booking: any;
     onShowDetails: () => void;
     onCancel: () => void;
+    onRenew: () => void;
     cancellingId: number | null;
+    renewingId: number | null;
   }) {
     return (
       <Card className="w-full">
@@ -186,33 +196,66 @@ const Bookings = () => {
           </div>
 
           <div className="flex justify-center gap-2 mt-6">
-            {actionsByStatus[STATUS_MAP[booking.status]]?.map((action, idx) => (
-              <Button
-                key={action.label}
-                variant={action.variant}
-                className={`border ${
-                  action.label === t("actions.cancel")
-                    ? "bg-transparent text-red-500 border-red-500 hover:bg-red-50"
-                    : "border-0"
-                }`}
-                onClick={
-                  action.action === "details"
-                    ? onShowDetails
-                    : action.action === "cancel"
-                    ? onCancel
-                    : undefined
+            {actionsByStatus[STATUS_MAP[booking.status]]?.map((action, idx) => {
+              // Check if this is the only button on the card
+              const isOnlyButton =
+                actionsByStatus[STATUS_MAP[booking.status]]?.length === 1;
+
+              // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
+              let buttonStyle = "";
+
+              // Base styles for all buttons (using secondary button dimensions as reference)
+              const baseStyles =
+                "py-[10.5px] px-[60px] rounded-lg font-bold text-base leading-[19px] w-full max-w-[258px]";
+
+              if (action.label === t("actions.cancel")) {
+                buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
+              } else if (action.label === t("actions.renew")) {
+                buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
+              } else if (action.label === t("actions.showDetails")) {
+                // If it's the only button, use primary style. Otherwise use secondary style
+                if (isOnlyButton) {
+                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
+                } else {
+                  // Figma design: transparent/no fill background, gray border, gray text
+                  buttonStyle = `!bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-gray-50/50 ${baseStyles}`;
                 }
-                disabled={
-                  action.action === "cancel" && cancellingId === booking.id
-                }
-              >
-                {action.action === "cancel" && cancellingId === booking.id ? (
-                  <LoadingSpinner size="sm" />
-                ) : (
-                  action.label
-                )}
-              </Button>
-            ))}
+              }
+
+              return (
+                <Button
+                  key={action.label}
+                  variant={
+                    action.label === t("actions.showDetails") && !isOnlyButton
+                      ? "outline"
+                      : action.variant
+                  }
+                  className={`border ${buttonStyle}`}
+                  onClick={
+                    action.action === "details"
+                      ? onShowDetails
+                      : action.action === "cancel"
+                      ? onCancel
+                      : action.action === "renew"
+                      ? onRenew
+                      : undefined
+                  }
+                  disabled={
+                    (action.action === "cancel" &&
+                      cancellingId === booking.id) ||
+                    (action.action === "renew" && renewingId === booking.id)
+                  }
+                >
+                  {(action.action === "cancel" &&
+                    cancellingId === booking.id) ||
+                  (action.action === "renew" && renewingId === booking.id) ? (
+                    <LoadingSpinner size="sm" />
+                  ) : (
+                    action.label
+                  )}
+                </Button>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -321,7 +364,7 @@ const Bookings = () => {
   }
 
   const bookings =
-    data?.data.map((booking) => ({
+    data?.data.map((booking: any) => ({
       id: booking.id,
       status: booking.status,
       childName: booking.parent_name,
@@ -344,6 +387,13 @@ const Bookings = () => {
       paymentMethod: "ميسر",
       amount: parseFloat(booking.price_amount),
       notes: [],
+      // Preserve original enrollment data for renewal
+      center_branch_id: booking.center_branch_id || booking.branch_id,
+      branch_price_id: booking.branch_price_id,
+      enrollment_date: booking.enrollment_date,
+      enrollment_type: booking.enrollment_type,
+      children: booking.children || [],
+      originalData: booking, // Keep full booking data
     })) || [];
 
   if (bookings.length === 0) {
@@ -377,6 +427,33 @@ const Bookings = () => {
     }
   };
 
+  // Renew booking handler
+  const handleRenew = async (booking: any) => {
+    if (
+      !booking.center_branch_id ||
+      !booking.branch_price_id ||
+      !booking.children?.length
+    ) {
+      toastError(t("renewError"));
+      return;
+    }
+
+    setRenewingId(booking.id);
+    try {
+      await enrollmentService.createExistingEnrollment({
+        center_branch_id: booking.center_branch_id,
+        branch_price_id: booking.branch_price_id,
+        children: booking.children.map((child: any) => child.id),
+      });
+      toastSuccess(t("renewSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+    } catch (e: any) {
+      toastError(e.message || t("renewError"));
+    } finally {
+      setRenewingId(null);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {bookings.map((booking) => (
@@ -388,7 +465,9 @@ const Bookings = () => {
             setShowDetails(true);
           }}
           onCancel={() => handleCancel(booking)}
+          onRenew={() => handleRenew(booking)}
           cancellingId={cancellingId}
+          renewingId={renewingId}
         />
       ))}
       <InvoiceDialog

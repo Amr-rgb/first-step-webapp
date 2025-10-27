@@ -1684,6 +1684,16 @@ export interface Enrollment {
   response_speed: string;
   enrollment_date: string;
   status: string;
+  center_branch_id?: number;
+  branch_price_id?: number;
+  children?: Array<{
+    id: number;
+    child_name: string;
+    branch?: {
+      name: string;
+      nursery_name: string;
+    };
+  }>;
 }
 
 export interface EnrollmentsResponse {
