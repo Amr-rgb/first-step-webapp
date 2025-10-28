@@ -1100,12 +1100,15 @@
           "renew": "Renew Same Booking Now"
         },
         "status": {
-          "accepted": "Paid",
-          "pending": "Pending Payment",
+          "accepted": "Pending Payment",
+          "pending": "Waiting for Confirmation",
           "rejected": "Rejected",
           "waiting_confirmation": "Waiting for Confirmation",
-          "canceled": "Canceled",
-          "cancelled": "Canceled"
+          "canceled": "Cancelled",
+          "cancelled": "Cancelled",
+          "existing": "Through Center",
+          "paid": "Paid",
+          "expired": "Expired"
         },
         "dialogs": {
           "cancelTitle": "Confirm Booking Cancellation",
@@ -1116,8 +1119,8 @@
         "error": "An error occurred while loading data",
         "cancelSuccess": "Booking cancelled successfully",
         "cancelError": "An error occurred while cancelling the booking",
-        "renewSuccess": "Booking renewed successfully",
-        "renewError": "An error occurred while renewing the booking"
+        "renewSuccess": "Payment request sent to center successfully",
+        "renewError": "An error occurred while sending the payment request"
       },
       "reports": {
         "title": "Daily Reports",

@@ -16,13 +16,24 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
-import { enrollmentService } from "@/services/api";
+import { useAuthUser } from "@/store/authStore";
+import {
+  enrollmentService,
+  parentService as apiParentService,
+  paymentService,
+  nurseryService,
+} from "@/services/api";
 
 const STATUS_STYLES: Record<string, string> = {
-  accepted: "bg-success text-white border-green-400",
-  pending: "bg-warning text-white",
-  rejected: "bg-danger text-white border-red-400",
-  waiting_confirmation: "bg-light-gray text-white",
+  pending: "text-white",
+  accepted: "text-white",
+  existing: "text-white",
+  paid: "text-white",
+  expired: "text-white",
+  rejected: "text-white",
+  canceled: "text-white",
+  cancelled: "text-white",
+  waiting_confirmation: "text-white",
 };
 
 const Bookings = () => {
@@ -35,6 +46,7 @@ const Bookings = () => {
     booking: any | null;
   }>({ open: false, booking: null });
   const queryClient = useQueryClient();
+  const authUser = useAuthUser();
   const { data, isLoading, error } = useQuery({
     queryKey: ["enrollments"],
     queryFn: parentService.getParentEnrollments,
@@ -57,15 +69,27 @@ const Bookings = () => {
   ];
 
   const STATUS_MAP: Record<string, string> = {
-    accepted: t("status.accepted"),
     pending: t("status.pending"),
+    accepted: t("status.accepted"),
+    existing: t("status.existing"),
+    paid: t("status.paid"),
+    expired: t("status.expired"),
     rejected: t("status.rejected"),
-    waiting_confirmation: t("status.waiting_confirmation"),
     canceled: t("status.canceled"),
     cancelled: t("status.cancelled"),
-    paid: t("status.accepted"), // "paid" maps to "Paid"
-    existing: t("status.accepted"), // "existing" maps to "Paid"
-    expired: t("status.accepted"), // "expired" maps to "Paid"
+    waiting_confirmation: t("status.waiting_confirmation"),
+  };
+
+  const STATUS_COLORS: Record<string, string> = {
+    pending: "#9891FF",
+    accepted: "#FFAD0D",
+    existing: "#3B82F6",
+    paid: "#47B881",
+    expired: "#CACACA",
+    rejected: "#F64C4C",
+    canceled: "#000000",
+    cancelled: "#000000",
+    waiting_confirmation: "#9891FF",
   };
 
   const actionsByStatus: Record<
@@ -78,13 +102,27 @@ const Bookings = () => {
   > = {
     [t("status.accepted")]: [
       { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
+    ],
+    [t("status.paid")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.existing")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.expired")]: [
+      { label: t("actions.showDetails"), action: "details" },
       { label: t("actions.renew"), action: "renew" },
     ],
     [t("status.rejected")]: [
       { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
     ],
     [t("status.canceled")]: [
       { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
     ],
     [t("status.waiting_confirmation")]: [
       { label: t("actions.showDetails"), action: "details" },
@@ -97,11 +135,13 @@ const Bookings = () => {
   };
 
   function StatusBadge({ status }: { status: string }) {
+    const backgroundColor = STATUS_COLORS[status] || "#CACACA";
     return (
       <span
-        className={`px-2 py-1 rounded text-xs font-bold border ${
-          STATUS_STYLES[status] || "bg-gray-100 text-gray-700 border-gray-400"
+        className={`px-2 py-1 rounded text-xs font-bold ${
+          STATUS_STYLES[status] || "text-white"
         }`}
+        style={{ backgroundColor }}
       >
         {STATUS_MAP[status] || status}
       </span>
@@ -213,20 +253,44 @@ const Bookings = () => {
               } else if (action.label === t("actions.renew")) {
                 buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
               } else if (action.label === t("actions.showDetails")) {
-                // If it's the only button, use primary style. Otherwise use secondary style
-                if (isOnlyButton) {
+                // Check if there are multiple buttons and one of them is "renew" or "cancel"
+                const hasOtherButton = actionsByStatus[
+                  STATUS_MAP[booking.status]
+                ]?.some((a) => a.action === "renew" || a.action === "cancel");
+
+                // Check statuses that should use primary style (when Details is alone or with specific statuses)
+                const shouldBePrimary =
+                  isOnlyButton ||
+                  booking.status === "accepted" ||
+                  (booking.status === "pending" && !hasOtherButton) ||
+                  (booking.status === "waiting_confirmation" &&
+                    !hasOtherButton) ||
+                  (booking.status === "paid" && !hasOtherButton) ||
+                  (booking.status === "existing" && !hasOtherButton);
+
+                if (shouldBePrimary) {
                   buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
                 } else {
                   // Figma design: transparent/no fill background, gray border, gray text
-                  buttonStyle = `!bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-gray-50/50 ${baseStyles}`;
+                  buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
                 }
               }
+
+              // Check if there are multiple buttons and one of them is "renew" or "cancel"
+              const hasOtherButton = actionsByStatus[
+                STATUS_MAP[booking.status]
+              ]?.some((a) => a.action === "renew" || a.action === "cancel");
 
               return (
                 <Button
                   key={action.label}
                   variant={
-                    action.label === t("actions.showDetails") && !isOnlyButton
+                    action.label === t("actions.showDetails") &&
+                    !isOnlyButton &&
+                    hasOtherButton &&
+                    booking.status !== "pending" &&
+                    booking.status !== "waiting_confirmation" &&
+                    booking.status !== "accepted"
                       ? "outline"
                       : action.variant
                   }
@@ -363,6 +427,16 @@ const Bookings = () => {
     return <div className="text-center py-4 text-red-500">{t("error")}</div>;
   }
 
+  // Log the raw data to see what's available
+  if (data?.data && data.data.length > 0 && data.data[0]) {
+    console.log("Raw enrollment data from API:", data.data[0]);
+    console.log("Total enrollments returned:", data.data.length);
+    console.log(
+      "All enrollment IDs:",
+      data.data.map((e: any) => ({ id: e.id, status: e.status }))
+    );
+  }
+
   const bookings =
     data?.data.map((booking: any) => ({
       id: booking.id,
@@ -388,12 +462,21 @@ const Bookings = () => {
       amount: parseFloat(booking.price_amount),
       notes: [],
       // Preserve original enrollment data for renewal
-      center_branch_id: booking.center_branch_id || booking.branch_id,
-      branch_price_id: booking.branch_price_id,
+      center_branch_id:
+        booking.center_branch_id || booking.branch_id || booking.branch_id,
+      branch_price_id: booking.branch_price_id || null,
       enrollment_date: booking.enrollment_date,
       enrollment_type: booking.enrollment_type,
       children: booking.children || [],
+      parent_phone: booking.parent_phone,
       originalData: booking, // Keep full booking data
+      // Additional fields from API
+      branch_id: booking.branch_id,
+      id_raw: booking.id, // Keep original ID
+      // Additional info from API
+      enrollment_type_name:
+        booking.enrollment_type_name || booking.enrollment_type,
+      price_title: booking.price_title,
     })) || [];
 
   if (bookings.length === 0) {
@@ -427,28 +510,146 @@ const Bookings = () => {
     }
   };
 
-  // Renew booking handler
+  // Renew booking handler - uses same flow as reservation form
   const handleRenew = async (booking: any) => {
-    if (
-      !booking.center_branch_id ||
-      !booking.branch_price_id ||
-      !booking.children?.length
-    ) {
-      toastError(t("renewError"));
+    console.log("Renew booking data:", booking);
+    console.log("Original booking data:", booking.originalData);
+    console.log("Enrollment type from booking:", booking.enrollment_type);
+    console.log(
+      "Enrollment type from originalData:",
+      booking.originalData?.enrollment_type
+    );
+
+    // Use branch_id if center_branch_id is not available
+    const branchId = booking.center_branch_id || booking.branch_id;
+
+    // Get parent phone from booking or fallback to auth user (can be null)
+    const parentPhone =
+      booking.parent_phone ||
+      (authUser as any)?.phone ||
+      (authUser as any)?.user?.phone ||
+      null;
+
+    if (!branchId) {
+      console.error("Missing required data:", {
+        branchId,
+      });
+      toastError("Missing information to renew booking");
       return;
     }
 
     setRenewingId(booking.id);
     try {
-      await enrollmentService.createExistingEnrollment({
-        center_branch_id: booking.center_branch_id,
+      // Fetch children if not already available
+      let childrenIds = booking.children?.map((child: any) => Number(child.id));
+
+      if (!childrenIds || childrenIds.length === 0) {
+        const childrenData = await apiParentService.getChildren();
+        childrenIds = childrenData.map((child: any) => Number(child.id));
+      }
+
+      if (!childrenIds || childrenIds.length === 0) {
+        toastError("No children found to renew booking");
+        return;
+      }
+
+      const branchIdRenew = booking.center_branch_id || booking.branch_id;
+
+      // Get enrollment type from original data or booking
+      const enrollmentType =
+        booking.originalData?.enrollment_type || booking.enrollment_type;
+      console.log("Using enrollment type:", enrollmentType);
+
+      // Check if it's hourly by looking at original data fields
+      const hasDayString =
+        booking.originalData?.day_string !== null &&
+        booking.originalData?.day_string !== undefined;
+      const hasStartingTime =
+        booking.originalData?.starting_time !== null &&
+        booking.originalData?.starting_time !== undefined;
+
+      // Also check by looking at the pricing plan type if we have branch_price_id
+      let isHourlyType =
+        enrollmentType === "hour" || hasDayString || hasStartingTime;
+
+      // If still not sure, check the pricing plan
+      if (!isHourlyType && booking.branch_price_id) {
+        try {
+          const pricingData = await nurseryService.getBranchPricing(
+            branchIdRenew
+          );
+          const selectedPlan = pricingData.find(
+            (plan: any) => plan.id === booking.branch_price_id
+          );
+          if (selectedPlan?.enrollment_type === "hour") {
+            isHourlyType = true;
+            console.log("Detected hourly from pricing plan:", selectedPlan);
+          }
+        } catch (err) {
+          console.error("Could not fetch pricing data:", err);
+        }
+      }
+
+      console.log("Is hourly enrollment?", isHourlyType, {
+        enrollmentType,
+        hasDayString,
+        hasStartingTime,
         branch_price_id: booking.branch_price_id,
-        children: booking.children.map((child: any) => child.id),
       });
+
+      // Prepare enrollment payload same as reservation form
+      const enrollmentPayload: any = {
+        center_branch_id: Number(branchIdRenew),
+        branch_price_id: booking.branch_price_id
+          ? Number(booking.branch_price_id)
+          : 1, // Fallback if not available
+        parent_phone: parentPhone,
+        children: childrenIds,
+      };
+
+      // Add date/time fields based on enrollment type - use today's date
+      const today = new Date();
+      const todayISO = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+      // Check if it's hourly enrollment
+      if (isHourlyType) {
+        // For hourly enrollment, send date in YYYY-MM-DD format
+        enrollmentPayload.day_string = todayISO;
+        enrollmentPayload.starting_time = "09:00"; // Default time
+        console.log("Adding hourly fields:", {
+          day_string: todayISO,
+          starting_time: "09:00",
+        });
+      } else {
+        // For day/week/month/year types - use today's date
+        enrollmentPayload.starting_date = todayISO;
+        console.log("Adding date field:", { starting_date: todayISO });
+      }
+
+      console.log("Final enrollment payload:", enrollmentPayload);
+
+      // Create enrollment (creates with pending status)
+      const enrollmentResponse = await enrollmentService.createEnrollment(
+        enrollmentPayload
+      );
+      console.log("Enrollment created successfully:", enrollmentResponse);
+
+      // Show success message
       toastSuccess(t("renewSuccess"));
-      queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+
+      // Wait a bit before refetching to ensure backend has updated
+      setTimeout(async () => {
+        queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+        await queryClient.refetchQueries({ queryKey: ["enrollments"] });
+      }, 1500);
     } catch (e: any) {
-      toastError(e.message || t("renewError"));
+      console.error("Renew enrollment error:", e);
+      const errorMessage =
+        e?.response?.data?.message || e?.message || t("renewError");
+      const errorDetails = e?.response?.data?.errors
+        ? JSON.stringify(e.response.data.errors)
+        : "";
+      toastError(`${errorMessage} ${errorDetails}`);
     } finally {
       setRenewingId(null);
     }
