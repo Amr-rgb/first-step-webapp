@@ -822,6 +822,7 @@
         "request-ad": "Request Ad",
         "request-blog": "Request Blog",
         "blogs": "Blogs",
+        "permissionError": "You do not have permission to view advertisements or blogs",
         "ad": {
           "title": "Request Advertisement",
           "free-notice": "Your first advertisement for your nursery/center is 100% free on the homepage for one day",
@@ -913,6 +914,7 @@
         "view": "View Branch",
         "edit": "Edit Branch",
         "delete": "Delete Branch",
+        "permissionError": "You do not have permission to view branches",
         "form": {
           "buttons": {
             "add": "Add Branch",
@@ -1621,6 +1623,7 @@
       "saving": "Saving...",
       "saveSuccess": "Portfolio saved successfully!",
       "saveError": "Failed to save portfolio",
+      "permissionError": "You do not have permission to view center data",
       "sections": {
         "hero": "Hero Section",
         "branches": "Branches",

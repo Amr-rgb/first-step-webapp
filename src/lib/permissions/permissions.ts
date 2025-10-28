@@ -12,7 +12,7 @@ export const permissions: Permission[] = [
   {
     resource: "branches",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center"],
   },
   {
     resource: "branches",
@@ -117,22 +117,34 @@ export const permissions: Permission[] = [
   {
     resource: "advertisements",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center"],
   },
   {
     resource: "advertisements",
     action: "create",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center"],
   },
   {
     resource: "advertisements",
     action: "edit",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center"],
   },
   {
     resource: "advertisements",
     action: "delete",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center"],
+  },
+
+  // Center Data permissions
+  {
+    resource: "center-data",
+    action: "view",
+    allowedRoles: ["admin", "center"],
+  },
+  {
+    resource: "center-data",
+    action: "edit",
+    allowedRoles: ["center"],
   },
 
   // Blogs permissions

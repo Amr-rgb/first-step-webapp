@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Ads from "@/components/dashboard/ad-or-blog-request/Ads";
 import DashboardBlogCard from "@/components/dashboard/blog/DashboardBlogCard";
 import BlogViewModal from "@/components/dashboard/blog/BlogViewModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Blog } from "@/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermissions } from "@/hooks/usePermissions";
 import EmptyState from "@/components/common/EmptyState";
+import { toastError } from "@/lib/toast";
 
 const BlogCardSkeleton = () => {
   return (
@@ -176,10 +177,22 @@ const AdsSection = () => {
 
 export default function CenterDashboardRequest() {
   const meta = usePageMetadata();
-
+  const router = useRouter();
+  const t = useTranslations("dashboard.center.ad-or-blog-request");
   const { can } = usePermissions();
   const canViewtAd = can("view", "advertisements");
   const canViewtBlog = can("view", "blogs");
+
+  useEffect(() => {
+    if (!canViewtAd && !canViewtBlog) {
+      toastError(t("permissionError"));
+      router.push("/dashboard/center");
+    }
+  }, [canViewtAd, canViewtBlog, router, t]);
+
+  if (!canViewtAd && !canViewtBlog) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-10">

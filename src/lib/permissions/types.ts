@@ -9,7 +9,8 @@ export type Resource =
   | "notifications"
   | "team"
   | "advertisements"
-  | "blogs";
+  | "blogs"
+  | "center-data";
 
 export type Action = "view" | "create" | "edit" | "delete" | "manage";
 
