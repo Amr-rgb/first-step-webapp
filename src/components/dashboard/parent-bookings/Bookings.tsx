@@ -241,6 +241,21 @@ const Bookings = () => {
               const isOnlyButton =
                 actionsByStatus[STATUS_MAP[booking.status]]?.length === 1;
 
+              // Check if there are multiple buttons and one of them is "renew" or "cancel"
+              const hasOtherButton = actionsByStatus[
+                STATUS_MAP[booking.status]
+              ]?.some((a) => a.action === "renew" || a.action === "cancel");
+
+              // Check statuses that should use primary style for Show Details
+              const shouldBePrimaryForDetails =
+                action.label === t("actions.showDetails") &&
+                (isOnlyButton ||
+                  booking.status === "accepted" ||
+                  booking.status === "waiting_confirmation" ||
+                  (booking.status === "pending" && !hasOtherButton) ||
+                  (booking.status === "paid" && !hasOtherButton) ||
+                  (booking.status === "existing" && !hasOtherButton));
+
               // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
               let buttonStyle = "";
 
@@ -253,33 +268,13 @@ const Bookings = () => {
               } else if (action.label === t("actions.renew")) {
                 buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
               } else if (action.label === t("actions.showDetails")) {
-                // Check if there are multiple buttons and one of them is "renew" or "cancel"
-                const hasOtherButton = actionsByStatus[
-                  STATUS_MAP[booking.status]
-                ]?.some((a) => a.action === "renew" || a.action === "cancel");
-
-                // Check statuses that should use primary style (when Details is alone or with specific statuses)
-                const shouldBePrimary =
-                  isOnlyButton ||
-                  booking.status === "accepted" ||
-                  (booking.status === "pending" && !hasOtherButton) ||
-                  (booking.status === "waiting_confirmation" &&
-                    !hasOtherButton) ||
-                  (booking.status === "paid" && !hasOtherButton) ||
-                  (booking.status === "existing" && !hasOtherButton);
-
-                if (shouldBePrimary) {
+                if (shouldBePrimaryForDetails) {
                   buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
                 } else {
                   // Figma design: transparent/no fill background, gray border, gray text
                   buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
                 }
               }
-
-              // Check if there are multiple buttons and one of them is "renew" or "cancel"
-              const hasOtherButton = actionsByStatus[
-                STATUS_MAP[booking.status]
-              ]?.some((a) => a.action === "renew" || a.action === "cancel");
 
               return (
                 <Button
@@ -294,7 +289,14 @@ const Bookings = () => {
                       ? "outline"
                       : action.variant
                   }
-                  className={`border ${buttonStyle}`}
+                  className={
+                    shouldBePrimaryForDetails
+                      ? buttonStyle
+                      : `border ${buttonStyle}`
+                  }
+                  style={
+                    shouldBePrimaryForDetails ? { color: "#ffffff" } : undefined
+                  }
                   onClick={
                     action.action === "details"
                       ? onShowDetails
