@@ -126,7 +126,9 @@ const Bookings = () => {
     ],
     [t("status.waiting_confirmation")]: [
       { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
+      // Note: Cancel action removed for "waiting_confirmation" because backend
+      // only allows canceling "pending" or "accepted" statuses
+      // { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
     ],
     [t("status.pending")]: [
       { label: t("actions.showDetails"), action: "details" },
@@ -236,92 +238,108 @@ const Bookings = () => {
           </div>
 
           <div className="flex justify-center gap-2 mt-6">
-            {actionsByStatus[STATUS_MAP[booking.status]]?.map((action, idx) => {
-              // Check if this is the only button on the card
-              const isOnlyButton =
-                actionsByStatus[STATUS_MAP[booking.status]]?.length === 1;
+            {(() => {
+              // Filter actions based on backend validation - only "pending" and "accepted" can be canceled
+              const allActions =
+                actionsByStatus[STATUS_MAP[booking.status]] || [];
+              const filteredActions = allActions.filter((action) => {
+                // Backend only allows canceling "pending" or "accepted" statuses
+                // Filter out cancel action for "waiting_confirmation" status
+                if (
+                  action.action === "cancel" &&
+                  booking.status === "waiting_confirmation"
+                ) {
+                  return false;
+                }
+                return true;
+              });
+              const isOnlyButton = filteredActions.length === 1;
 
               // Check if there are multiple buttons and one of them is "renew" or "cancel"
-              const hasOtherButton = actionsByStatus[
-                STATUS_MAP[booking.status]
-              ]?.some((a) => a.action === "renew" || a.action === "cancel");
-
-              // Check statuses that should use primary style for Show Details
-              const shouldBePrimaryForDetails =
-                action.label === t("actions.showDetails") &&
-                (isOnlyButton ||
-                  booking.status === "accepted" ||
-                  booking.status === "waiting_confirmation" ||
-                  (booking.status === "pending" && !hasOtherButton) ||
-                  (booking.status === "paid" && !hasOtherButton) ||
-                  (booking.status === "existing" && !hasOtherButton));
-
-              // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
-              let buttonStyle = "";
-
-              // Base styles for all buttons (using secondary button dimensions as reference)
-              const baseStyles =
-                "py-[10.5px] px-[60px] rounded-lg font-bold text-base leading-[19px] w-full max-w-[258px]";
-
-              if (action.label === t("actions.cancel")) {
-                buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
-              } else if (action.label === t("actions.renew")) {
-                buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-              } else if (action.label === t("actions.showDetails")) {
-                if (shouldBePrimaryForDetails) {
-                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                } else {
-                  // Figma design: transparent/no fill background, gray border, gray text
-                  buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
-                }
-              }
-
-              return (
-                <Button
-                  key={action.label}
-                  variant={
-                    action.label === t("actions.showDetails") &&
-                    !isOnlyButton &&
-                    hasOtherButton &&
-                    booking.status !== "pending" &&
-                    booking.status !== "waiting_confirmation" &&
-                    booking.status !== "accepted"
-                      ? "outline"
-                      : action.variant
-                  }
-                  className={
-                    shouldBePrimaryForDetails
-                      ? buttonStyle
-                      : `border ${buttonStyle}`
-                  }
-                  style={
-                    shouldBePrimaryForDetails ? { color: "#ffffff" } : undefined
-                  }
-                  onClick={
-                    action.action === "details"
-                      ? onShowDetails
-                      : action.action === "cancel"
-                      ? onCancel
-                      : action.action === "renew"
-                      ? onRenew
-                      : undefined
-                  }
-                  disabled={
-                    (action.action === "cancel" &&
-                      cancellingId === booking.id) ||
-                    (action.action === "renew" && renewingId === booking.id)
-                  }
-                >
-                  {(action.action === "cancel" &&
-                    cancellingId === booking.id) ||
-                  (action.action === "renew" && renewingId === booking.id) ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    action.label
-                  )}
-                </Button>
+              const hasOtherButton = filteredActions?.some(
+                (a) => a.action === "renew" || a.action === "cancel"
               );
-            })}
+
+              return filteredActions.map((action, idx) => {
+                // Check statuses that should use primary style for Show Details
+                const shouldBePrimaryForDetails =
+                  action.label === t("actions.showDetails") &&
+                  (isOnlyButton ||
+                    booking.status === "accepted" ||
+                    booking.status === "waiting_confirmation" ||
+                    (booking.status === "pending" && !hasOtherButton) ||
+                    (booking.status === "paid" && !hasOtherButton) ||
+                    (booking.status === "existing" && !hasOtherButton));
+
+                // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
+                let buttonStyle = "";
+
+                // Base styles for all buttons (using secondary button dimensions as reference)
+                const baseStyles =
+                  "py-[10.5px] px-[60px] rounded-lg font-bold text-base leading-[19px] w-full max-w-[258px]";
+
+                if (action.label === t("actions.cancel")) {
+                  buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
+                } else if (action.label === t("actions.renew")) {
+                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
+                } else if (action.label === t("actions.showDetails")) {
+                  if (shouldBePrimaryForDetails) {
+                    buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
+                  } else {
+                    // Figma design: transparent/no fill background, gray border, gray text
+                    buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
+                  }
+                }
+
+                return (
+                  <Button
+                    key={action.label}
+                    variant={
+                      action.label === t("actions.showDetails") &&
+                      !isOnlyButton &&
+                      hasOtherButton &&
+                      booking.status !== "pending" &&
+                      booking.status !== "waiting_confirmation" &&
+                      booking.status !== "accepted"
+                        ? "outline"
+                        : action.variant
+                    }
+                    className={
+                      shouldBePrimaryForDetails
+                        ? buttonStyle
+                        : `border ${buttonStyle}`
+                    }
+                    style={
+                      shouldBePrimaryForDetails
+                        ? { color: "#ffffff" }
+                        : undefined
+                    }
+                    onClick={
+                      action.action === "details"
+                        ? onShowDetails
+                        : action.action === "cancel"
+                        ? onCancel
+                        : action.action === "renew"
+                        ? onRenew
+                        : undefined
+                    }
+                    disabled={
+                      (action.action === "cancel" &&
+                        cancellingId === booking.id) ||
+                      (action.action === "renew" && renewingId === booking.id)
+                    }
+                  >
+                    {(action.action === "cancel" &&
+                      cancellingId === booking.id) ||
+                    (action.action === "renew" && renewingId === booking.id) ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      action.label
+                    )}
+                  </Button>
+                );
+              });
+            })()}
           </div>
         </CardContent>
       </Card>
@@ -520,13 +538,36 @@ const Bookings = () => {
   const confirmCancel = async () => {
     const booking = confirmDialog.booking;
     if (!booking) return;
+
     setCancellingId(booking.id);
     try {
       await parentService.cancelEnrollment(booking.id);
       toastSuccess(t("cancelSuccess"));
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
     } catch (e: any) {
-      toastError(e.message || t("cancelError"));
+      // Check if the error is about status validation
+      const errorMessage =
+        e?.response?.data?.message || e?.message || t("cancelError");
+
+      // If the error mentions that only certain statuses can be canceled,
+      // check if this is a "waiting_confirmation" status issue
+      const actualStatus = booking.status || booking.originalData?.status;
+      if (
+        errorMessage.toLowerCase().includes("only") &&
+        errorMessage.toLowerCase().includes("cancel") &&
+        actualStatus === "waiting_confirmation"
+      ) {
+        // "waiting_confirmation" should be cancellable but backend might reject it
+        // Try to provide a more helpful error message
+        toastError(
+          t("cancelError") +
+            " - " +
+            "This enrollment is in 'waiting for confirmation' status. " +
+            "Please contact support if you need to cancel this enrollment."
+        );
+      } else {
+        toastError(errorMessage);
+      }
     } finally {
       setCancellingId(null);
       setConfirmDialog({ open: false, booking: null });
