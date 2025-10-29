@@ -549,16 +549,14 @@ const Bookings = () => {
       const errorMessage =
         e?.response?.data?.message || e?.message || t("cancelError");
 
-      // If the error mentions that only certain statuses can be canceled,
-      // check if this is a "waiting_confirmation" status issue
+      
       const actualStatus = booking.status || booking.originalData?.status;
       if (
         errorMessage.toLowerCase().includes("only") &&
         errorMessage.toLowerCase().includes("cancel") &&
         actualStatus === "waiting_confirmation"
       ) {
-        // "waiting_confirmation" should be cancellable but backend might reject it
-        // Try to provide a more helpful error message
+       
         toastError(
           t("cancelError") +
             " - " +
