@@ -1090,15 +1090,19 @@
         },
         "actions": {
           "showDetails": "عرض تفاصيل الحجز",
-          "cancel": "الغاء الحجز"
+          "cancel": "الغاء الحجز",
+          "renew": "جدد نفس الحجز الآن"
         },
         "status": {
-          "accepted": "تم الدفع",
-          "pending": "في انتظار الدفع",
+          "accepted": "في انتظار الدفع",
+          "pending": "في انتظار التأكيد",
           "rejected": "مرفوض",
           "waiting_confirmation": "في انتظار التأكيد",
           "canceled": "ملغي",
-          "cancelled": "ملغي"
+          "cancelled": "ملغي",
+          "existing": "من خلال المركز",
+          "paid": "تم الدفع",
+          "expired": "منتهي"
         },
         "dialogs": {
           "cancelTitle": "تأكيد إلغاء الحجز",
@@ -1108,7 +1112,9 @@
         },
         "error": "حدث خطأ أثناء تحميل البيانات",
         "cancelSuccess": "تم إلغاء الحجز بنجاح",
-        "cancelError": "حدث خطأ أثناء إلغاء الحجز"
+        "cancelError": "حدث خطأ أثناء إلغاء الحجز",
+        "renewSuccess": "تم إرسال طلب الدفع للطفل إلى المركز بنجاح",
+        "renewError": "حدث خطأ أثناء إرسال طلب الدفع"
       },
       "reports": {
         "title": "التقارير اليومية",

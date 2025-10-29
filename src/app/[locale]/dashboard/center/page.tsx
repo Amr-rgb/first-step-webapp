@@ -78,12 +78,15 @@ const CARDS = [
 ];
 
 interface NoDataViewProps {
-  stats: {
-    total_branches?: number;
-    total_children?: number;
-    total_team_members?: number;
-    total_enrollments?: number;
-  } | null;
+  stats:
+    | {
+        total_branches?: number;
+        total_children?: number;
+        total_team_members?: number;
+        total_enrollments?: number;
+      }
+    | null
+    | undefined;
   isCenter: boolean;
 }
 
@@ -292,6 +295,11 @@ export default function CenterDashboardHome() {
   }
 
   if (!hasMinimalData(stats)) {
+    return <NoDataView stats={stats} isCenter={isCenter} />;
+  }
+
+  // Safety check: if stats is still undefined after hasMinimalData check
+  if (!stats) {
     return <NoDataView stats={stats} isCenter={isCenter} />;
   }
 
