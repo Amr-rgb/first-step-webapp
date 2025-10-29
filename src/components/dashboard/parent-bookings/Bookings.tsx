@@ -440,46 +440,67 @@ const Bookings = () => {
   }
 
   const bookings =
-    data?.data.map((booking: any) => ({
-      id: booking.id,
-      status: booking.status,
-      childName: booking.parent_name,
-      className: booking.center_name,
-      branch: booking.branch_name,
-      program: booking.enrollment_type,
-      startDay: new Date(booking.enrollment_date).toLocaleDateString("ar-SA", {
-        weekday: "long",
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }),
-      endDay: new Date(booking.enrollment_date).toLocaleDateString("ar-SA", {
-        weekday: "long",
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }),
-      daysCount: 1,
-      paymentMethod: "ميسر",
-      amount: parseFloat(booking.price_amount),
-      notes: [],
-      // Preserve original enrollment data for renewal
-      center_branch_id:
-        booking.center_branch_id || booking.branch_id || booking.branch_id,
-      branch_price_id: booking.branch_price_id || null,
-      enrollment_date: booking.enrollment_date,
-      enrollment_type: booking.enrollment_type,
-      children: booking.children || [],
-      parent_phone: booking.parent_phone,
-      originalData: booking, // Keep full booking data
-      // Additional fields from API
-      branch_id: booking.branch_id,
-      id_raw: booking.id, // Keep original ID
-      // Additional info from API
-      enrollment_type_name:
-        booking.enrollment_type_name || booking.enrollment_type,
-      price_title: booking.price_title,
-    })) || [];
+    data?.data.map((booking: any) => {
+      // Extract children names from children array
+      const childrenNames =
+        booking.children?.length > 0
+          ? booking.children
+              .map((child: any) => child.child_name || child.name)
+              .filter(Boolean)
+              .join("، ")
+          : "";
+
+      // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
+      const programName =
+        booking.enrollment_type_name ||
+        booking.price_title ||
+        booking.enrollment_type ||
+        "";
+
+      return {
+        id: booking.id,
+        status: booking.status,
+        childName: childrenNames || booking.parent_name || "",
+        className: booking.center_name,
+        branch: booking.branch_name,
+        program: programName,
+        startDay: new Date(booking.enrollment_date).toLocaleDateString(
+          "ar-SA",
+          {
+            weekday: "long",
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          }
+        ),
+        endDay: new Date(booking.enrollment_date).toLocaleDateString("ar-SA", {
+          weekday: "long",
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        }),
+        daysCount: 1,
+        paymentMethod: "ميسر",
+        amount: parseFloat(booking.price_amount),
+        notes: [],
+        // Preserve original enrollment data for renewal
+        center_branch_id:
+          booking.center_branch_id || booking.branch_id || booking.branch_id,
+        branch_price_id: booking.branch_price_id || null,
+        enrollment_date: booking.enrollment_date,
+        enrollment_type: booking.enrollment_type,
+        children: booking.children || [],
+        parent_phone: booking.parent_phone,
+        originalData: booking, // Keep full booking data
+        // Additional fields from API
+        branch_id: booking.branch_id,
+        id_raw: booking.id, // Keep original ID
+        // Additional info from API
+        enrollment_type_name:
+          booking.enrollment_type_name || booking.enrollment_type,
+        price_title: booking.price_title,
+      };
+    }) || [];
 
   if (bookings.length === 0) {
     return (
