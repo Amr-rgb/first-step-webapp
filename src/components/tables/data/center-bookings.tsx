@@ -15,18 +15,22 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export type Booking = {
   id: number;
   parentName: string;
+  branchId?: number;
+  branchPriceId?: number;
   childs: {
     id: string;
     name: string;
     enrollmentId: string;
     status: string;
     branch: string;
+    branchId?: number;
     startDate: string;
     type: string;
     amount: number;
   }[];
   branch: string;
   startDate: string;
+  endDate?: string;
   type: string;
   amount: number;
   isDetail?: boolean;

@@ -580,7 +580,7 @@ export const centerService = {
 
   getEnrollments: async () => {
     try {
-      const response = await apiClient.get(`/enrollments`);
+      const response = await apiClient.get(`/enrollments/get-for-moblie`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

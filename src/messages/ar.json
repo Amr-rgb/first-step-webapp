@@ -1941,7 +1941,61 @@
       "title": "الأطفال"
     },
     "center-bookings": {
-      "title": "الحجوزات"
+      "title": "الحجوزات",
+      "viewTable": "جدول",
+      "viewCards": "بطاقات",
+      "viewDetails": "عرض التفاصيل",
+      "viewDetailsButton": "عرض تفاصيل الحجز",
+      "bookingDetails": "تفاصيل الحجز",
+      "parent": "ولي الأمر",
+      "child": "الطفل",
+      "bookingStatus": "حالة الحجز",
+      "acceptBooking": "قبول الحجز",
+      "rejectBooking": "رفض الحجز",
+      "confirmBooking": "تأكيد الحجز",
+      "cancelBooking": "إلغاء الحجز",
+      "sendNotification": "إرسال إشعار لولي الأمر",
+      "children": "أطفال",
+      "filters": {
+        "all": "الكل",
+        "completed": "تم الدفع",
+        "pending": "في انتظار التأكيد",
+        "confirmed": "في انتظار الدفع",
+        "fromCenter": "من خلال المركز",
+        "cancelled": "ملغي",
+        "rejected": "مرفوض",
+        "expired": "منتهي"
+      },
+      "fields": {
+        "childrenLabel": "الطفل/ الأطفال:",
+        "nursery": "الحضانة:",
+        "branch": "الفرع:",
+        "program": "البرنامج:",
+        "bookingStatus": "حالة الحجز:",
+        "startDay": "بداية يوم:",
+        "endDay": "نهاية يوم:",
+        "numberOfDays": "عدد الأيام:",
+        "childAge": "سن الطفل",
+        "month": "الشهر"
+      },
+      "programTypes": {
+        "hourly": "بالساعة",
+        "daily": "يومي",
+        "weekly": "اسبوعي",
+        "monthly": "شهري",
+        "yearly": "سنوي"
+      },
+      "pricingCard": {
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "day": "يوم",
+        "days": "أيام",
+        "week": "أسبوع",
+        "weeks": "أسابيع",
+        "month": "شهر",
+        "months": "أشهر"
+      },
+      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع"
     },
     "center-reports": {
       "title": "التقارير اليومية",
