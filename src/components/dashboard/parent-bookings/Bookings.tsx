@@ -41,6 +41,8 @@ const Bookings = () => {
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [renewingId, setRenewingId] = useState<number | null>(null);
+  const [selectedStatusFilter, setSelectedStatusFilter] =
+    useState<string>("all");
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     booking: any | null;
@@ -622,6 +624,15 @@ const Bookings = () => {
       };
     }) || [];
 
+  // Filter bookings based on selected status
+  const filteredBookings =
+    selectedStatusFilter === "all"
+      ? bookings
+      : bookings.filter((booking) => booking.status === selectedStatusFilter);
+
+  // Get all unique statuses for filter options
+  const allStatuses = Array.from(new Set(bookings.map((b) => b.status)));
+
   if (bookings.length === 0) {
     return (
       <EmptyState
@@ -817,22 +828,61 @@ const Bookings = () => {
     }
   };
 
+  // Prepare filter options: "all" + all unique statuses
+  const filterOptions = [
+    { value: "all", label: t("filterAll") },
+    ...allStatuses.map((status) => ({
+      value: status,
+      label: STATUS_MAP[status] || status,
+    })),
+  ];
+
   return (
     <div className="flex flex-col gap-4">
-      {bookings.map((booking) => (
-        <BookingCard
-          key={booking.id}
-          booking={booking}
-          onShowDetails={() => {
-            setSelectedBooking(booking);
-            setShowDetails(true);
-          }}
-          onCancel={() => handleCancel(booking)}
-          onRenew={() => handleRenew(booking)}
-          cancellingId={cancellingId}
-          renewingId={renewingId}
-        />
-      ))}
+      {/* Status Filter Buttons */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {filterOptions.map((option) => {
+          const isActive = selectedStatusFilter === option.value;
+          return (
+            <button
+              key={option.value}
+              onClick={() => setSelectedStatusFilter(option.value)}
+              className={`
+                px-4 py-2.5 rounded-lg font-bold text-sm transition-all whitespace-nowrap
+                ${
+                  isActive
+                    ? "blue-gradient text-white shadow-sm border-0"
+                    : "bg-[#F7F8FA] text-gray-700 border border-[#D1D5DB] hover:bg-gray-50"
+                }
+              `}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Filtered Bookings List */}
+      {filteredBookings.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          {t("noBookingsForStatus")}
+        </div>
+      ) : (
+        filteredBookings.map((booking) => (
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            onShowDetails={() => {
+              setSelectedBooking(booking);
+              setShowDetails(true);
+            }}
+            onCancel={() => handleCancel(booking)}
+            onRenew={() => handleRenew(booking)}
+            cancellingId={cancellingId}
+            renewingId={renewingId}
+          />
+        ))
+      )}
       <InvoiceDialog
         open={showDetails}
         onOpenChange={setShowDetails}

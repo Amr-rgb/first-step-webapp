@@ -1121,7 +1121,10 @@
         "cancelError": "An error occurred while cancelling the booking",
         "renewSuccess": "Payment request sent to center successfully",
         "renewError": "An error occurred while sending the payment request",
-        "total": "Total"
+        "total": "Total",
+        "filterByStatus": "Filter by status",
+        "filterAll": "All statuses",
+        "noBookingsForStatus": "No bookings found for the selected status"
       },
       "reports": {
         "title": "Daily Reports",
