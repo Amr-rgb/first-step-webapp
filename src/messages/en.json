@@ -1120,7 +1120,8 @@
         "cancelSuccess": "Booking cancelled successfully",
         "cancelError": "An error occurred while cancelling the booking",
         "renewSuccess": "Payment request sent to center successfully",
-        "renewError": "An error occurred while sending the payment request"
+        "renewError": "An error occurred while sending the payment request",
+        "total": "Total"
       },
       "reports": {
         "title": "Daily Reports",

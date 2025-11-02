@@ -14,7 +14,7 @@ import {
 import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
 import { useAuthUser } from "@/store/authStore";
 import {
@@ -355,79 +355,181 @@ const Bookings = () => {
     onOpenChange: (v: boolean) => void;
     booking: any;
   }) {
+    const locale = useLocale();
+    const branchId = booking?.center_branch_id || booking?.branch_id;
+
+    // Fetch pricing plans for the branch
+    const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
+      queryKey: ["branch-plans-dialog", branchId],
+      queryFn: () => nurseryService.getBranchPricing(branchId!),
+      enabled: !!branchId && open,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    });
+
+    // Convert API plans to display format
+    const planList =
+      apiPlans.length > 0
+        ? apiPlans.map((apiPlan: any) => ({
+            id: apiPlan.id,
+            type: apiPlan.enrollment_type,
+            name: apiPlan.title,
+            price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+            planId: apiPlan.id,
+          }))
+        : [];
+
+    // Find the selected plan based on booking's branch_price_id
+    const selectedPlanId = booking?.branch_price_id || null;
+
     if (!booking) return null;
+
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center w-full">
               {t("actions.showDetails")}
             </DialogTitle>
           </DialogHeader>
-          {/* Invoice design based on image */}
-          <div className="flex flex-col items-center gap-4">
-            {/* Price Tabs */}
-            <div className="flex gap-4 mb-2">
-              <div className="flex flex-col items-center">
-                <span className="text-lg font-bold">50 ر.س</span>
-                <span className="text-xs text-gray-500">شهري</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-lg font-bold">50 ر.س</span>
-                <span className="text-xs text-gray-500">اسبوعي</span>
-              </div>
-              <div className="flex flex-col items-center bg-primary/20 rounded-lg px-4 py-1 border-2 border-primary">
-                <span className="text-lg font-bold text-primary">50 ر.س</span>
-                <span className="text-xs text-primary">يومي</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-lg font-bold">50 ر.س</span>
-                <span className="text-xs text-gray-500">سعر بالساعة</span>
-              </div>
+
+          {/* Plan Selection - Same style as ReservationForm */}
+          {loadingPlans ? (
+            <div className="flex justify-center gap-4 mb-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="flex flex-col items-center py-3 px-4 rounded-xl border-2 border-gray-300 bg-gray-100 min-w-[120px]"
+                >
+                  <div className="h-5 w-16 bg-gray-300 rounded mb-2 animate-pulse" />
+                  <div className="w-full h-px bg-gray-300 mb-2" />
+                  <div className="h-4 w-20 bg-gray-300 rounded animate-pulse" />
+                </div>
+              ))}
             </div>
-            {/* Details Section */}
-            <div className="w-full bg-white rounded-lg shadow p-4">
-              <div className="text-primary font-bold mb-2">
-                {t("actions.showDetails")}
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-sm mb-2">
-                {/* Match the order of the main booking page: leftFields first, then rightFields */}
-                {leftFields.map((field, idx) => (
-                  <div key={field.key + "-inv-l-" + idx}>
-                    {field.label}:{" "}
-                    <span className="font-bold">{booking[field.key]}</span>
-                  </div>
-                ))}
-                {rightFields.map((field, idx) => (
-                  <div key={field.key + "-inv-r-" + idx}>
-                    {field.label}:{" "}
-                    <span className="font-bold">
-                      {field.isStatus
-                        ? STATUS_MAP[booking.status]
-                        : booking[field.key]}
+          ) : planList.length > 0 ? (
+            <div
+              className={`flex items-center gap-4 mb-6 ${
+                planList.length > 4
+                  ? "overflow-x-auto pb-2 custom-scrollbar"
+                  : "flex-row justify-center"
+              }`}
+              style={{
+                maxWidth: planList.length > 4 ? "100%" : "32rem",
+                paddingLeft: planList.length > 4 ? 8 : 0,
+                paddingRight: planList.length > 4 ? 8 : 0,
+                paddingTop: 8,
+                paddingBottom: 8,
+                margin: "0 auto",
+              }}
+            >
+              {planList.map((p: any) => {
+                const selected =
+                  selectedPlanId === p.id || selectedPlanId === p.planId;
+                return (
+                  <div
+                    key={p.id}
+                    className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base ${
+                      planList.length > 4
+                        ? "min-w-[120px] flex-shrink-0"
+                        : "flex-1"
+                    }
+                      ${
+                        selected
+                          ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                          : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid"
+                      }
+                    `}
+                  >
+                    <span
+                      className={`text-lg font-extrabold mb-1 ${
+                        selected ? "text-white" : "text-[#4D5EDB]"
+                      }`}
+                    >
+                      {p.price}
+                    </span>
+                    <span className="w-full h-px bg-[#DADADA] mb-1" />
+                    <span
+                      className={`text-base font-bold ${
+                        selected ? "text-white" : "text-[#22336C]"
+                      }`}
+                    >
+                      {p.name}
                     </span>
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-between items-center border-t pt-2 mt-2">
-                <span className="font-bold text-lg">المبلغ</span>
-                <span className="font-bold text-primary text-xl">
-                  {booking.amount} ر.س
+                );
+              })}
+            </div>
+          ) : null}
+
+          {/* Details Section - Matching ReservationForm style */}
+          <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
+            <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+              {t("actions.showDetails")}
+            </h3>
+            <div className="space-y-2 text-sm text-gray-700 mb-4">
+              {/* Match the order of the main booking page: leftFields first, then rightFields */}
+              {leftFields.map((field, idx) => (
+                <div
+                  key={field.key + "-inv-l-" + idx}
+                  className="flex justify-between"
+                >
+                  <span>{field.label}</span>
+                  <span className="font-bold">{booking[field.key]}</span>
+                </div>
+              ))}
+              {rightFields.map((field, idx) => (
+                <div
+                  key={field.key + "-inv-r-" + idx}
+                  className="flex justify-between"
+                >
+                  <span>{field.label}</span>
+                  <span className="font-bold">
+                    {field.isStatus
+                      ? STATUS_MAP[booking.status]
+                      : booking[field.key]}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-[#22336C] text-base">
+                  {t("total")}
                 </span>
-              </div>
-              {/* خدمات */}
-              <div className="mt-2">
-                <div className="font-bold text-sm mb-1">الخدمات:</div>
-                <ul className="list-decimal pr-4 text-xs text-gray-600">
-                  <li>خدمة 1 (مثال: تعليم القران الكريم)</li>
-                  <li>خدمة 2 (مثال: تعليم اللغة الانجليزية)</li>
-                  <li>خدمة 3 (مثال: أنشطة ترفيهية)</li>
-                  <li>خدمة 4 (مثال: وجبات غذائية)</li>
-                  <li>خدمة 5 (مثال: رعاية صحية)</li>
-                </ul>
+                <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                  {booking.amount} {locale === "ar" ? "ر.س" : "SAR"}
+                </span>
               </div>
             </div>
           </div>
+
+          {/* Custom Scrollbar Styles */}
+          <style jsx global>{`
+            .custom-scrollbar {
+              scrollbar-width: thin;
+              scrollbar-color: #4d5edb #f7f8fa;
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+              height: 6px;
+              background: #f7f8fa;
+              border-radius: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #4d5edb;
+              border-radius: 6px;
+              min-width: 40px;
+              transition: background 0.2s;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #22336c;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: #f7f8fa;
+              border-radius: 6px;
+            }
+          `}</style>
         </DialogContent>
       </Dialog>
     );
@@ -549,14 +651,12 @@ const Bookings = () => {
       const errorMessage =
         e?.response?.data?.message || e?.message || t("cancelError");
 
-      
       const actualStatus = booking.status || booking.originalData?.status;
       if (
         errorMessage.toLowerCase().includes("only") &&
         errorMessage.toLowerCase().includes("cancel") &&
         actualStatus === "waiting_confirmation"
       ) {
-       
         toastError(
           t("cancelError") +
             " - " +
