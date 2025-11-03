@@ -13,6 +13,7 @@ import { centerService } from "@/services/dashboardApi";
 import EmptyState from "@/components/common/EmptyState";
 import { BookingCard } from "./BookingCard";
 import { BookingDetailsModal } from "./BookingDetailsModal";
+import { AcceptEnrollmentModal } from "./AcceptEnrollmentModal";
 import { Button } from "@/components/ui/button";
 import { Table, LayoutGrid } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast";
@@ -82,6 +83,12 @@ const Bookings = () => {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [pendingEnrollmentId, setPendingEnrollmentId] = useState<string | null>(
+    null
+  );
+  const [pendingEnrollmentType, setPendingEnrollmentType] =
+    useState<string>("");
 
   const t = useTranslations("dashboard.center-bookings");
   const tTable = useTranslations("dashboard.tables.center-bookings");
@@ -100,29 +107,80 @@ const Bookings = () => {
     mutationFn: async ({
       enrollmentId,
       status,
+      starting_date,
+      starting_time,
+      day_string,
     }: {
       enrollmentId: string;
       status: string;
+      starting_date?: string;
+      starting_time?: string;
+      day_string?: string;
     }) => {
-      await centerService.respondEnrollment(parseInt(enrollmentId), status);
+      return await centerService.respondExistingEnrollment(
+        parseInt(enrollmentId),
+        status,
+        starting_date,
+        starting_time,
+        day_string
+      );
     },
     onSuccess: () => {
       toastSuccess(
         tTable("enrollmentResponseSuccess") || "تم تحديث الحجز بنجاح"
       );
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+      setIsAcceptModalOpen(false);
+      setPendingEnrollmentId(null);
+      setPendingEnrollmentType("");
     },
     onError: () => {
       toastError(tTable("enrollmentResponseError") || "فشل تحديث الحجز");
     },
   });
 
-  const handleAccept = (enrollmentId: string) => {
-    enrollmentMutation.mutate({ enrollmentId, status: "accepted" });
+  const handleAccept = (enrollmentId: string, enrollmentType: string) => {
+    setPendingEnrollmentId(enrollmentId);
+    setPendingEnrollmentType(enrollmentType);
+    setIsAcceptModalOpen(true);
+  };
+
+  const handleConfirmAccept = (data: {
+    startingDate?: string;
+    startingTime?: string;
+    dayString?: string;
+  }) => {
+    if (pendingEnrollmentId) {
+      enrollmentMutation.mutate({
+        enrollmentId: pendingEnrollmentId,
+        status: "paid",
+        starting_date: data.startingDate,
+        starting_time: data.startingTime,
+        day_string: data.dayString,
+      });
+    }
   };
 
   const handleReject = (enrollmentId: string) => {
     enrollmentMutation.mutate({ enrollmentId, status: "rejected" });
+  };
+
+  const notificationMutation = useMutation({
+    mutationFn: async (enrollmentId: number) => {
+      return await centerService.sendExpiredNotification(enrollmentId);
+    },
+    onSuccess: () => {
+      toastSuccess(
+        tTable("notificationSentSuccess") || "تم إرسال الإشعار بنجاح"
+      );
+    },
+    onError: () => {
+      toastError(tTable("notificationSentError") || "فشل إرسال الإشعار");
+    },
+  });
+
+  const handleSendNotification = (enrollmentId: number) => {
+    notificationMutation.mutate(enrollmentId);
   };
 
   const filters: { value: FilterType; label: string }[] = [
@@ -304,6 +362,8 @@ const Bookings = () => {
                 onViewDetails={handleViewDetails}
                 onAccept={handleAccept}
                 onReject={handleReject}
+                onSendNotification={handleSendNotification}
+                isNotificationLoading={notificationMutation.isPending}
               />
             ))}
           </div>
@@ -315,6 +375,15 @@ const Bookings = () => {
         booking={selectedBooking}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+      />
+
+      {/* Accept Enrollment Modal */}
+      <AcceptEnrollmentModal
+        open={isAcceptModalOpen}
+        onOpenChange={setIsAcceptModalOpen}
+        onConfirm={handleConfirmAccept}
+        isLoading={enrollmentMutation.isPending}
+        enrollmentType={pendingEnrollmentType}
       />
     </div>
   );

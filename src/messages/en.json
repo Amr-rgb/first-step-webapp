@@ -1857,7 +1857,9 @@
         "reject": "Reject",
         "processing": "Processing...",
         "enrollmentResponseSuccess": "Enrollment response sent successfully",
-        "enrollmentResponseError": "Failed to send enrollment response"
+        "enrollmentResponseError": "Failed to send enrollment response",
+        "notificationSentSuccess": "Notification sent successfully",
+        "notificationSentError": "Failed to send notification"
       },
       "center-reports": {
         "headers": {
@@ -1957,6 +1959,7 @@
       "confirmBooking": "Confirm Booking",
       "cancelBooking": "Cancel Booking",
       "sendNotification": "Send Notification to Parent",
+      "sendingNotification": "Sending...",
       "children": "children",
       "filters": {
         "all": "All",

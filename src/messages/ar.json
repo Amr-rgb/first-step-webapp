@@ -1829,7 +1829,9 @@
         "reject": "رفض",
         "processing": "جاري المعالجة...",
         "enrollmentResponseSuccess": "تم إرسال الرد بنجاح",
-        "enrollmentResponseError": "فشل في إرسال الرد"
+        "enrollmentResponseError": "فشل في إرسال الرد",
+        "notificationSentSuccess": "تم إرسال الإشعار بنجاح",
+        "notificationSentError": "فشل إرسال الإشعار"
       },
       "ads": {
         "headers": {
@@ -1955,6 +1957,7 @@
       "confirmBooking": "تأكيد الحجز",
       "cancelBooking": "إلغاء الحجز",
       "sendNotification": "إرسال إشعار لولي الأمر",
+      "sendingNotification": "جاري الإرسال...",
       "children": "أطفال",
       "filters": {
         "all": "الكل",

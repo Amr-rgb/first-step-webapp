@@ -9,8 +9,10 @@ import { useReservationStatus } from "@/components/tables/data/shared/status";
 interface BookingCardProps {
   booking: Booking;
   onViewDetails: (booking: Booking) => void;
-  onAccept?: (enrollmentId: string) => void;
+  onAccept?: (enrollmentId: string, enrollmentType: string) => void;
   onReject?: (enrollmentId: string) => void;
+  onSendNotification?: (enrollmentId: number) => void;
+  isNotificationLoading?: boolean;
 }
 
 export const BookingCard = ({
@@ -18,6 +20,8 @@ export const BookingCard = ({
   onViewDetails,
   onAccept,
   onReject,
+  onSendNotification,
+  isNotificationLoading,
 }: BookingCardProps) => {
   const t = useTranslations("dashboard.tables.center-bookings");
   const tBookings = useTranslations("dashboard.center-bookings");
@@ -108,29 +112,49 @@ export const BookingCard = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          {/* paid, expired, cancelled, rejected: View Details + Send notification */}
-          {(status === "paid" ||
-            status === "expired" ||
-            status === "cancelled" ||
-            status === "rejected") && (
+          {/* expired: View Details + Send notification */}
+          {status === "expired" && (
             <>
               <Button
+                size="sm"
                 variant="outline"
                 className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
                 onClick={() => onViewDetails(booking)}
               >
                 {tBookings("viewDetailsButton")}
               </Button>
-              <Button className="flex-1">
-                {tBookings("sendNotification")}
+              <Button
+                size="sm"
+                className="flex-1"
+                onClick={() => onSendNotification?.(booking.id)}
+                disabled={isNotificationLoading}
+              >
+                {isNotificationLoading
+                  ? tBookings("sendingNotification")
+                  : tBookings("sendNotification")}
               </Button>
             </>
+          )}
+
+          {/* paid, cancelled, rejected: View Details only */}
+          {(status === "paid" ||
+            status === "cancelled" ||
+            status === "rejected") && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+              onClick={() => onViewDetails(booking)}
+            >
+              {tBookings("viewDetailsButton")}
+            </Button>
           )}
 
           {/* existing (من خلال المركز): Confirm or Reject */}
           {status === "existing" && firstChild && (
             <>
               <Button
+                size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                 onClick={() => onReject?.(firstChild.enrollmentId)}
@@ -138,26 +162,34 @@ export const BookingCard = ({
                 {tBookings("rejectBooking")}
               </Button>
               <Button
+                size="sm"
                 className="flex-1"
-                onClick={() => onAccept?.(firstChild.enrollmentId)}
+                onClick={() =>
+                  onAccept?.(firstChild.enrollmentId, booking.type)
+                }
               >
                 {tBookings("confirmBooking")}
               </Button>
             </>
           )}
 
-          {/* accepted (waiting for payment): Send notification or Cancel */}
+          {/* accepted (waiting for payment): View Details or Cancel */}
           {status === "accepted" && firstChild && (
             <>
               <Button
+                size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                 onClick={() => onReject?.(firstChild.enrollmentId)}
               >
                 {tBookings("cancelBooking")}
               </Button>
-              <Button className="flex-1">
-                {tBookings("sendNotification")}
+              <Button
+                size="sm"
+                className="flex-1"
+                onClick={() => onViewDetails(booking)}
+              >
+                {tBookings("viewDetailsButton")}
               </Button>
             </>
           )}
@@ -166,6 +198,7 @@ export const BookingCard = ({
           {status === "pending" && firstChild && (
             <>
               <Button
+                size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                 onClick={() => onReject?.(firstChild.enrollmentId)}
@@ -173,8 +206,11 @@ export const BookingCard = ({
                 {tBookings("rejectBooking")}
               </Button>
               <Button
+                size="sm"
                 className="flex-1"
-                onClick={() => onAccept?.(firstChild.enrollmentId)}
+                onClick={() =>
+                  onAccept?.(firstChild.enrollmentId, booking.type)
+                }
               >
                 {tBookings("acceptBooking")}
               </Button>
