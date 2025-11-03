@@ -503,6 +503,14 @@
           "notes": "Additional Notes",
           "notes-placeholder": "Enter any additional information or notes...",
           "description": "Please upload the required documents. Accepted formats: jpg, jpeg, png, pdf, doc, docx, txt, zip. Maximum file size is 3MB.",
+          "services": {
+            "label": "Additional Services"
+          },
+          "other": {
+            "label": "Other Services",
+            "sublabel": "(If you provide any other services)",
+            "placeholder": "Enter service name"
+          },
           "ages": {
             "label": "Accepted Age Groups"
           },
@@ -558,6 +566,10 @@
             "ingredients": "Ingredients",
             "drink": "Drink",
             "add": "Add Meal"
+          },
+          "periods": {
+            "first-period": "First Period",
+            "second-period": "Second Period"
           }
         }
       },
@@ -1086,15 +1098,19 @@
         },
         "actions": {
           "showDetails": "Show Booking Details",
-          "cancel": "Cancel Booking"
+          "cancel": "Cancel Booking",
+          "renew": "Renew Same Booking Now"
         },
         "status": {
-          "accepted": "Paid",
-          "pending": "Pending Payment",
+          "accepted": "Pending Payment",
+          "pending": "Waiting for Confirmation",
           "rejected": "Rejected",
           "waiting_confirmation": "Waiting for Confirmation",
-          "canceled": "Canceled",
-          "cancelled": "Canceled"
+          "canceled": "Cancelled",
+          "cancelled": "Cancelled",
+          "existing": "Through Center",
+          "paid": "Paid",
+          "expired": "Expired"
         },
         "dialogs": {
           "cancelTitle": "Confirm Booking Cancellation",
@@ -1104,7 +1120,9 @@
         },
         "error": "An error occurred while loading data",
         "cancelSuccess": "Booking cancelled successfully",
-        "cancelError": "An error occurred while cancelling the booking"
+        "cancelError": "An error occurred while cancelling the booking",
+        "renewSuccess": "Payment request sent to center successfully",
+        "renewError": "An error occurred while sending the payment request"
       },
       "reports": {
         "title": "Daily Reports",

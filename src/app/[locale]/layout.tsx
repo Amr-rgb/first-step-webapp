@@ -5,11 +5,12 @@ import { routing } from "@/i18n/routing";
 import { Tajawal, Noto_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "../providers";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
-import CookieSync from "@/components/auth/CookieSync";
 import { getMessages } from "next-intl/server";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieSync from "@/components/auth/CookieSync";
 
 const tajawal = Tajawal({
   weight: ["400", "500", "700", "800"],
@@ -43,9 +44,13 @@ export default async function LocaleLayout({
 
   return (
     <>
-      <GoogleAnalytics />
+      <Suspense fallback={null}>
+        <GoogleAnalytics />
+      </Suspense>
       <NextIntlClientProvider messages={messages}>
-        <CookieSync />
+        <Suspense fallback={null}>
+          <CookieSync />
+        </Suspense>
         <Providers>{children}</Providers>
         <Toaster position="bottom-right" />
       </NextIntlClientProvider>

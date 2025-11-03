@@ -21,6 +21,11 @@ export default function CenterDashboardBookings() {
     return <p>loading...</p>;
   }
 
+  // Check if stats exists
+  if (!stats) {
+    return <p>No data available</p>;
+  }
+
   // Build bookingsRows from total_revenue_for_the_lates_5_months
   type RevenueItem = { month: string; total_paid: number | null };
   const revenueArr = (
