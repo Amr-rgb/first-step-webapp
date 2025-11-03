@@ -45,7 +45,10 @@ export const BookingCard = ({
   };
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow border border-gray-200">
+    <Card
+      id={`enrollment-${booking.id}`}
+      className="p-6 hover:shadow-lg transition-all border border-gray-200"
+    >
       <div className="space-y-4">
         {/* Details Grid - 2 columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-3 text-sm">

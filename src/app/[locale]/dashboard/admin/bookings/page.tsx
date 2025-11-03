@@ -1,7 +1,8 @@
 "use client";
 
 import { usePageMetadata } from "@/hooks/usePageMetadata";
-
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import Numbers from "@/components/dashboard/center-bookings/Numbers";
@@ -12,6 +13,32 @@ import { useTranslations } from "next-intl";
 
 export default function BookingsPage() {
   const meta = usePageMetadata();
+  const searchParams = useSearchParams();
+  const enrollmentId = searchParams.get("enrollmentId");
+
+  useEffect(() => {
+    if (enrollmentId) {
+      // Wait for the DOM to render
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`enrollment-${enrollmentId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Add highlight effect
+          element.classList.add("ring-2", "ring-blue-500", "ring-offset-2");
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            element.classList.remove(
+              "ring-2",
+              "ring-blue-500",
+              "ring-offset-2"
+            );
+          }, 3000);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [enrollmentId]);
 
   const t = useTranslations("dashboard.admin");
   const { data: stats, isLoading } = useQuery({

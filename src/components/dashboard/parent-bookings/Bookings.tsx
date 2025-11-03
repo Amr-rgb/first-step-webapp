@@ -197,7 +197,7 @@ const Bookings = () => {
     renewingId: number | null;
   }) {
     return (
-      <Card className="w-full">
+      <Card id={`enrollment-${booking.id}`} className="w-full transition-all">
         <CardContent className="py-6 px-6">
           <div className="grid grid-cols-2 gap-x-20 gap-y-4 text-sm mb-4 justify-center">
             {/* Swap: Render leftFields first, then rightFields */}
@@ -549,14 +549,12 @@ const Bookings = () => {
       const errorMessage =
         e?.response?.data?.message || e?.message || t("cancelError");
 
-      
       const actualStatus = booking.status || booking.originalData?.status;
       if (
         errorMessage.toLowerCase().includes("only") &&
         errorMessage.toLowerCase().includes("cancel") &&
         actualStatus === "waiting_confirmation"
       ) {
-       
         toastError(
           t("cancelError") +
             " - " +

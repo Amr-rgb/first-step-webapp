@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   setGlobalFilterValue?: React.Dispatch<React.SetStateAction<string>>;
   pagination?: boolean;
   isLoading?: boolean;
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
   setGlobalFilterValue,
   pagination,
   isLoading = false,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
@@ -164,7 +166,9 @@ export function DataTable<TData, TValue>({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
+                      id={getRowId ? getRowId(row.original) : undefined}
                       data-state={row.getIsSelected() && "selected"}
+                      className="transition-all"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

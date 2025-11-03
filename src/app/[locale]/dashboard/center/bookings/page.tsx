@@ -1,7 +1,8 @@
 "use client";
 
 import { usePageMetadata } from "@/hooks/usePageMetadata";
-
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useHasRole } from "@/store/authStore";
 import { useCenterStats } from "@/hooks/useCenterStats";
@@ -11,6 +12,32 @@ import Bookings from "@/components/dashboard/center-bookings/Bookings";
 
 export default function CenterDashboardBookings() {
   const meta = usePageMetadata();
+  const searchParams = useSearchParams();
+  const enrollmentId = searchParams.get("enrollmentId");
+
+  useEffect(() => {
+    if (enrollmentId) {
+      // Wait for the DOM to render
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`enrollment-${enrollmentId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Add highlight effect
+          element.classList.add("ring-2", "ring-blue-500", "ring-offset-2");
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            element.classList.remove(
+              "ring-2",
+              "ring-blue-500",
+              "ring-offset-2"
+            );
+          }, 3000);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [enrollmentId]);
 
   const t = useTranslations("dashboard.charts");
   const tBookings = useTranslations("dashboard.charts.bookings");

@@ -97,7 +97,11 @@ const Bookings = () => {
           {t("title")}
         </p>
         {bookingsData.length > 0 ? (
-          <DataTable columns={columns} data={bookingsData} />
+          <DataTable
+            columns={columns}
+            data={bookingsData}
+            getRowId={(row) => `enrollment-${row.id}`}
+          />
         ) : (
           <EmptyState
             icon="📅"
