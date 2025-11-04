@@ -217,7 +217,7 @@ export const BookingDetailsModal = ({
             {/* Child Age */}
             <div className="relative">
               <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-right">
-                {tBookings("fields.childAge")}
+                {currentEnrollment?.age} {tBookings("fields.years")}
               </div>
               <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
             </div>
@@ -290,7 +290,7 @@ export const BookingDetailsModal = ({
           {/* Date Section */}
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">
-              {tBookings("fields.month")}
+              {tBookings("fields.startDay")}
             </p>
             <div className="relative max-w-md mx-auto">
               <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-center">

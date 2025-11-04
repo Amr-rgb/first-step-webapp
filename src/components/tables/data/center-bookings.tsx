@@ -27,6 +27,7 @@ export type Booking = {
     startDate: string;
     type: string;
     amount: number;
+    age: number;
   }[];
   branch: string;
   startDate: string;
@@ -38,6 +39,7 @@ export type Booking = {
   detailChildName?: string;
   detailEnrollmentId?: string;
   detailStatus?: string;
+  count: number;
 };
 
 export interface SelectedChild {

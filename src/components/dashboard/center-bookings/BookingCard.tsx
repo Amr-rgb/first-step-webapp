@@ -105,7 +105,7 @@ export const BookingCard = ({
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-mid-gray">9</span>
+              <span className="text-mid-gray">{booking.count || "-"}</span>
               <span className="font-semibold text-primary">
                 {tBookings("fields.numberOfDays")}
               </span>

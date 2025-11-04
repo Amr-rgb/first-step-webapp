@@ -50,6 +50,7 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           amount: enrollment.price_amount
             ? parseFloat(enrollment.price_amount)
             : 0,
+          age: child.age,
         })),
         branch: enrollment.branch_name || "",
         startDate: enrollment.starting_date || enrollment.enrollment_date || "",
@@ -58,6 +59,7 @@ const transformEnrollmentsData = (data: any): Booking[] => {
         amount: enrollment.price_amount
           ? parseFloat(enrollment.price_amount)
           : 0,
+        count: enrollment.count,
       };
     });
 

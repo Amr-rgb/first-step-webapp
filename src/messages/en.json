@@ -1999,7 +1999,8 @@
         "endDay": "End Day:",
         "numberOfDays": "Number of Days:",
         "childAge": "Child Age",
-        "month": "Month"
+        "month": "Month",
+        "years": "years old"
       },
       "programTypes": {
         "hourly": "Hourly",
