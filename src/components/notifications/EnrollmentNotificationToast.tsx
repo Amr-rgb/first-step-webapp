@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { centerService } from "@/services/dashboardApi";
+import { useRouter } from "@/i18n/navigation";
 
 interface EnrollmentData {
   id: number;
@@ -52,6 +53,7 @@ export function EnrollmentNotificationToast({
   const [status, setStatus] = useState<"pending" | "accepted" | "rejected">(
     "pending"
   );
+  const router = useRouter();
 
   const handleAccept = async () => {
     setIsProcessing(true);
@@ -194,47 +196,64 @@ export function EnrollmentNotificationToast({
       </div>
 
       {/* Action Buttons */}
-      {status === "pending" && (
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handleAccept}
-            disabled={isProcessing}
-            size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-          >
-            {isProcessing ? (
-              <div className="flex items-center gap-2">
-                <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Processing...
-              </div>
-            ) : (
-              <>
-                <Check className="size-4 mr-1" />
-                Accept
-              </>
-            )}
-          </Button>
+      {enrollment.status === "existing" ? (
+        <Button
+          onClick={() => {
+            // Navigate to bookings page with enrollment ID using router
+            router.push(
+              `/dashboard/center/bookings?enrollmentId=${enrollment.id}`
+            );
+            onDismiss?.();
+          }}
+          size="sm"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <UserPlus className="size-4 mr-2" />
+          View Enrollment
+        </Button>
+      ) : (
+        status === "pending" && (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleAccept}
+              disabled={isProcessing}
+              size="sm"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              {isProcessing ? (
+                <div className="flex items-center gap-2">
+                  <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Processing...
+                </div>
+              ) : (
+                <>
+                  <Check className="size-4 mr-1" />
+                  Accept
+                </>
+              )}
+            </Button>
 
-          <Button
-            onClick={handleReject}
-            disabled={isProcessing}
-            size="sm"
-            variant="destructive"
-            className="flex-1"
-          >
-            {isProcessing ? (
-              <div className="flex items-center gap-2">
-                <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Processing...
-              </div>
-            ) : (
-              <>
-                <X className="size-4 mr-1" />
-                Reject
-              </>
-            )}
-          </Button>
-        </div>
+            <Button
+              onClick={handleReject}
+              disabled={isProcessing}
+              size="sm"
+              variant="destructive"
+              className="flex-1"
+            >
+              {isProcessing ? (
+                <div className="flex items-center gap-2">
+                  <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Processing...
+                </div>
+              ) : (
+                <>
+                  <X className="size-4 mr-1" />
+                  Reject
+                </>
+              )}
+            </Button>
+          </div>
+        )
       )}
 
       {/* Status Messages */}
