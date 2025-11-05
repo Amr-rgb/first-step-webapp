@@ -105,14 +105,14 @@ const ServiceSection = ({
     <motion.section
       ref={sectionRef}
       id={`section-${index}`}
-      className="group min-h-[700px] ltr:md:ml-20 rtl:md:mr-20 flex items-center border-b-2 border-gray-200 last:border-b-0"
+      className="group min-h-[500px] ltr:md:ml-20 rtl:md:mr-20 flex items-center border-b-2 border-gray-200 last:border-b-0"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, delay: index * 0.1 }}
     >
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col lg:group-even:flex-row-reverse lg:group-odd:flex-row items-center justify-between gap-12 lg:gap-30 max-w-6xl mx-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:group-even:flex-row-reverse lg:group-odd:flex-row items-center justify-between gap-8 lg:gap-16 max-w-6xl mx-auto">
           <motion.div
             className="flex-1"
             initial={{ opacity: 0, y: 15 }}
@@ -182,7 +182,7 @@ const Services = ({ services }: { services: Service[] }) => {
   // Safety check for services array
   if (!services || services.length === 0) {
     return (
-      <div className="bg-[#f9f4eb] min-h-screen flex items-center justify-center">
+      <div className="bg-white min-h-screen flex items-center justify-center">
         <p className="text-gray-600 text-lg">No services available</p>
       </div>
     );
@@ -298,7 +298,7 @@ const Services = ({ services }: { services: Service[] }) => {
   });
 
   return (
-    <div className="bg-[#f9f4eb] min-h-screen">
+    <div className="bg-white min-h-screen">
       <div ref={mainRef} className="relative container mx-auto px-4">
         {/* Desktop Navigation */}
         <AnimatePresence>
