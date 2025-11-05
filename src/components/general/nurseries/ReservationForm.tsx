@@ -19,6 +19,7 @@ import {
 } from "@/services/api";
 import { useAuthUser } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -260,12 +261,18 @@ const ReservationForm = ({
     const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
     const planId = selectedPlanObjLocal?.planId;
     if (!planId) {
-      alert("No plan selected. Please choose a plan.");
+      toastError(
+        locale === "ar" ? "لم يتم اختيار خطة" : "No plan selected",
+        locale === "ar" ? "يرجى اختيار خطة" : "Please choose a plan"
+      );
       setIsSubmitting(false);
       return;
     }
     if (!selectedBranch || selectedBranch === "") {
-      alert("No branch selected. Please choose a branch.");
+      toastError(
+        locale === "ar" ? "لم يتم اختيار فرع" : "No branch selected",
+        locale === "ar" ? "يرجى اختيار فرع" : "Please choose a branch"
+      );
       setIsSubmitting(false);
       return;
     }
@@ -302,18 +309,29 @@ const ReservationForm = ({
       await enrollmentService.createEnrollment(enrollmentPayload);
       setIsSubmitting(false);
       setSubmitSuccess(true);
+      toastSuccess(
+        locale === "ar"
+          ? "تم إرسال طلب الحجز بنجاح!"
+          : "Reservation Request Sent Successfully!"
+      );
     } catch (err: any) {
       console.error("Payment error details:", err);
       setIsSubmitting(false);
 
       // More specific error handling
-      if (err?.data?.message) {
-        alert(`Payment error: ${err.data.message}`);
-      } else if (err?.message) {
-        alert(`Payment error: ${err.message}`);
-      } else {
-        alert("Payment initiation failed. Please try again.");
+      const errorTitle = locale === "ar" ? "خطأ في الحجز" : "Booking Error";
+      let errorDescription =
+        locale === "ar"
+          ? "فشل إرسال طلب الحجز. يرجى المحاولة مرة أخرى."
+          : "Failed to submit reservation request. Please try again.";
+
+      if (err?.data?.error) {
+        errorDescription = err.data.error;
+      } else if (err?.error) {
+        errorDescription = err.error;
       }
+
+      toastError(errorTitle, errorDescription);
     }
   };
 
