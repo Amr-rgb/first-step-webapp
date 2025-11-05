@@ -287,12 +287,12 @@ const ReservationForm = ({
 
       if (selectedApiPlan?.enrollment_type === "hour") {
         // Require day_string and starting_time
-        const dayString = bookingDate
-          ? new Date(bookingDate).toLocaleDateString("en-US", {
-              weekday: "long",
-            })
-          : undefined;
-        enrollmentPayload.day_string = dayString;
+        // const dayString = bookingDate
+        //   ? new Date(bookingDate).toLocaleDateString("en-US", {
+        //       weekday: "long",
+        //     })
+        //   : undefined;
+        enrollmentPayload.day_string = bookingDate;
         enrollmentPayload.starting_time = fromTime || "09:00";
       } else if (bookingDate) {
         // For day/week/month/year types require starting_date
