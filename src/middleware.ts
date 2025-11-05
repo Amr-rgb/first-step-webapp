@@ -27,12 +27,46 @@ export default function middleware(request: NextRequest) {
     maxAge: 60 * 60 * 24 * 365, // 1 year
   });
 
-  // 4. Dashboard auth & role checks
+  // 4. Get auth token
+  const token = request.cookies.get("auth-storage")?.value;
+
+  // 5. Redirect authenticated users away from auth pages
+  const isAuthRoute =
+    pathname.includes("/sign-in") ||
+    pathname.includes("/sign-up") ||
+    pathname.includes("/forgot-password") ||
+    pathname.includes("/otp-verification") ||
+    pathname.includes("/reset-password");
+
+  if (isAuthRoute && token) {
+    try {
+      const authData = JSON.parse(token);
+      const user = authData.user;
+
+      if (user && user.role) {
+        const url = request.nextUrl.clone();
+        // Redirect to appropriate dashboard based on role
+        if (user.role === "parent") {
+          url.pathname = `/${locale}/dashboard/parent`;
+        } else if (user.role === "center" || user.role === "branch_admin") {
+          url.pathname = `/${locale}/dashboard/center`;
+        } else if (user.role === "admin") {
+          url.pathname = `/${locale}/dashboard/admin`;
+        } else {
+          url.pathname = `/${locale}`;
+        }
+        return NextResponse.redirect(url);
+      }
+    } catch (error) {
+      // Invalid token, allow access to auth pages
+      console.error("Error parsing auth token:", error);
+    }
+  }
+
+  // 6. Dashboard auth & role checks
   const isDashboardRoute = pathname.includes("/dashboard");
 
   if (isDashboardRoute) {
-    const token = request.cookies.get("auth-storage")?.value;
-
     if (!token) {
       const url = request.nextUrl.clone();
       url.pathname = `/${locale}`;
