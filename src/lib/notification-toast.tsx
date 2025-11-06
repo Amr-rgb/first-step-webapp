@@ -131,14 +131,43 @@ export function showNotificationFromData(notification: UniversalNotification) {
     }
   }
 
+  // Determine the onView action based on notification type
+  let onViewAction: (() => void) | undefined;
+
+  // Get current locale from URL
+  const getCurrentLocale = () => {
+    const pathSegments = window.location.pathname.split("/");
+    // Assuming locale is the first segment after the root (e.g., /en/dashboard or /ar/dashboard)
+    return pathSegments[1] || "en";
+  };
+
+  if (type === "daily_report") {
+    // For daily report notifications, navigate to the specific report page
+    const reportId =
+      notificationData.report?.id ||
+      notificationData.report_id ||
+      notificationData.id;
+
+    if (reportId) {
+      const locale = getCurrentLocale();
+      const targetUrl = `/${locale}/dashboard/parent/daily-reports/${reportId}`;
+      onViewAction = () => {
+        window.location.href = targetUrl;
+      };
+    }
+  } else {
+    // For other notifications, navigate to notifications page
+    const locale = getCurrentLocale();
+    onViewAction = () => {
+      window.location.href = `/${locale}/dashboard/parent/all-notifications`;
+    };
+  }
+
   return showNotificationToast({
     title,
     description,
     type,
-    onView: () => {
-      // Navigate to notifications page
-      window.location.href = "/dashboard/notifications";
-    },
+    onView: onViewAction,
   });
 }
 
