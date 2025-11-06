@@ -73,7 +73,7 @@ export default function NotificationsPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border divide-y">
+        <div className="space-y-3">
           {notifications.map((notification) => (
             <NotificationItem
               key={notification.id}

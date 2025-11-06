@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { UniversalNotification } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
-import { FileText, Info, UserPlus, Clock, Check, Dot } from "lucide-react";
+import { FileText, Info, UserPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
@@ -20,6 +20,7 @@ export function NotificationItem({
   notification,
   onMarkAsRead,
 }: NotificationItemProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const locale = useLocale();
   const isRead = !!notification.read_at;
   const user = useAuthUser();
@@ -79,29 +80,33 @@ export function NotificationItem({
 
     // Use notification_type if available
     if (content.notificationType === "daily_report") {
-      return <FileText className="size-5 text-blue-500" />;
+      return <FileText className="size-6 text-blue-600" />;
     }
     if (content.notificationType === "enrollment") {
-      return <UserPlus className="size-5 text-green-500" />;
+      return <UserPlus className="size-6 text-blue-600" />;
     }
 
     // Fallback to title-based detection
     const title = content.title.toLowerCase();
     if (title.includes("daily report") || title.includes("report")) {
-      return <FileText className="size-5 text-blue-500" />;
+      return <FileText className="size-6 text-blue-600" />;
     }
-    if (title.includes("enrollment") || title.includes("enroll")) {
-      return <UserPlus className="size-5 text-green-500" />;
+    if (
+      title.includes("enrollment") ||
+      title.includes("enroll") ||
+      title.includes("حجز")
+    ) {
+      return <UserPlus className="size-6 text-blue-600" />;
     }
     if (title.includes("meeting")) {
-      return <UserPlus className="size-5 text-purple-500" />;
+      return <UserPlus className="size-6 text-purple-600" />;
     }
     if (title.includes("reminder")) {
-      return <Clock className="size-5 text-yellow-500" />;
+      return <Clock className="size-6 text-yellow-600" />;
     }
 
     // Default to info icon
-    return <Info className="size-5 text-orange-500" />;
+    return <Info className="size-6 text-blue-600" />;
   };
 
   // Format the notification time
@@ -115,8 +120,9 @@ export function NotificationItem({
     });
   };
 
-  // Handle click to mark as read
+  // Handle click to toggle expansion
   const handleClick = () => {
+    setIsExpanded(!isExpanded);
     if (!isRead) {
       onMarkAsRead(notification.id);
     }
@@ -190,269 +196,146 @@ export function NotificationItem({
   };
 
   const notificationLink = getNotificationLink();
+  const content = getNotificationContent();
+  const adminNotification = notification as any;
 
-  // Render with Link or div based on whether we have a link
-  if (notificationLink) {
-    return (
-      <Link
-        href={notificationLink}
-        className={cn(
-          "p-4 hover:bg-gray-50 transition-colors cursor-pointer relative block",
-          !isRead && "bg-blue-50/50"
-        )}
-        onClick={() => {
-          if (!isRead) {
-            onMarkAsRead(notification.id);
-          }
-        }}
-      >
-        {/* Unread indicator */}
-        {!isRead && (
-          <Dot className="absolute top-2 right-2 size-6 text-blue-500" />
-        )}
-
-        <div className="flex items-start gap-3">
-          {/* Icon */}
-          <div className="flex-shrink-0 mt-0.5">{getNotificationIcon()}</div>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            {(() => {
-              const content = getNotificationContent();
-              const adminNotification = notification as any;
-
-              return (
-                <>
-                  <div className="flex items-start justify-between gap-2">
-                    <h4
-                      className={cn(
-                        "text-sm font-medium text-gray-900 truncate",
-                        !isRead && "font-semibold"
-                      )}
-                    >
-                      {content.title}
-                    </h4>
-
-                    {!isRead && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onMarkAsRead(notification.id);
-                        }}
-                        className="h-auto p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Check className="size-3" />
-                      </Button>
-                    )}
-                  </div>
-
-                  <p
-                    className="text-sm text-gray-600 mt-1 overflow-hidden"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
-                    {content.description}
-                  </p>
-
-                  {/* Additional info for specific notification types */}
-                  {notification.type ===
-                    "App\\Notifications\\DailyReportNotification" && (
-                    <div className="mt-2 text-xs text-gray-500">
-                      <span className="inline-flex items-center gap-1">
-                        <FileText className="size-3" />
-                        Report ID: {(notification as any).report_id}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Enrollment notification details */}
-                  {content.notificationType === "enrollment" &&
-                    adminNotification.enrollment && (
-                      <div className="mt-2 p-2 bg-blue-50 rounded text-xs space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Amount:</span>
-                          <span className="font-medium">
-                            ${adminNotification.enrollment.price_amount}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Phone:</span>
-                          <span className="font-medium">
-                            {adminNotification.enrollment.parent_phone}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Type:</span>
-                          <span className="font-medium capitalize">
-                            {adminNotification.enrollment.enrollment_type}
-                          </span>
-                        </div>
-                        {adminNotification.enrollment.day_string && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Day:</span>
-                            <span className="font-medium">
-                              {adminNotification.enrollment.day_string}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                  {adminNotification.date && adminNotification.time && (
-                    <div className="mt-2 text-xs text-gray-500">
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="size-3" />
-                        {adminNotification.date} at {adminNotification.time}
-                      </span>
-                    </div>
-                  )}
-                </>
-              );
-            })()}
-
-            {/* Timestamp */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-gray-400">{getTimeDisplay()}</span>
-
-              {isRead && <Check className="size-3 text-gray-400" />}
-            </div>
-          </div>
-        </div>
-      </Link>
-    );
-  }
-
-  // No link - render as div
   return (
     <div
       className={cn(
-        "p-4 hover:bg-gray-50 transition-colors cursor-pointer relative block",
-        !isRead && "bg-blue-50/50"
+        "bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer",
+        !isRead && "border-blue-200 bg-blue-50/30"
       )}
       onClick={handleClick}
     >
-      {/* Unread indicator */}
-      {!isRead && (
-        <Dot className="absolute top-2 right-2 size-6 text-blue-500" />
-      )}
-
-      <div className="flex items-start gap-3">
+      {/* Collapsed View - Always visible */}
+      <div className="flex items-center justify-between gap-3">
         {/* Icon */}
-        <div className="flex-shrink-0 mt-0.5">{getNotificationIcon()}</div>
+        <div className="flex-shrink-0">{getNotificationIcon()}</div>
 
-        {/* Content */}
+        {/* Title and Time */}
         <div className="flex-1 min-w-0">
-          {(() => {
-            const content = getNotificationContent();
-            const adminNotification = notification as any;
-
-            return (
-              <>
-                <div className="flex items-start justify-between gap-2">
-                  <h4
-                    className={cn(
-                      "text-sm font-medium text-gray-900 truncate",
-                      !isRead && "font-semibold"
-                    )}
-                  >
-                    {content.title}
-                  </h4>
-
-                  {!isRead && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMarkAsRead(notification.id);
-                      }}
-                      className="h-auto p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Check className="size-3" />
-                    </Button>
-                  )}
-                </div>
-
-                <p
-                  className="text-sm text-gray-600 mt-1 overflow-hidden"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                  }}
-                >
-                  {content.description}
-                </p>
-
-                {/* Additional info for specific notification types */}
-                {notification.type ===
-                  "App\\Notifications\\DailyReportNotification" && (
-                  <div className="mt-2 text-xs text-gray-500">
-                    <span className="inline-flex items-center gap-1">
-                      <FileText className="size-3" />
-                      Report ID: {(notification as any).report_id}
-                    </span>
-                  </div>
-                )}
-
-                {/* Enrollment notification details */}
-                {content.notificationType === "enrollment" &&
-                  adminNotification.enrollment && (
-                    <div className="mt-2 p-2 bg-blue-50 rounded text-xs space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Amount:</span>
-                        <span className="font-medium">
-                          ${adminNotification.enrollment.price_amount}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Phone:</span>
-                        <span className="font-medium">
-                          {adminNotification.enrollment.parent_phone}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Type:</span>
-                        <span className="font-medium capitalize">
-                          {adminNotification.enrollment.enrollment_type}
-                        </span>
-                      </div>
-                      {adminNotification.enrollment.day_string && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Day:</span>
-                          <span className="font-medium">
-                            {adminNotification.enrollment.day_string}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                {adminNotification.date && adminNotification.time && (
-                  <div className="mt-2 text-xs text-gray-500">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="size-3" />
-                      {adminNotification.date} at {adminNotification.time}
-                    </span>
-                  </div>
-                )}
-              </>
-            );
-          })()}
-
-          {/* Timestamp */}
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-gray-400">{getTimeDisplay()}</span>
-
-            {isRead && <Check className="size-3 text-gray-400" />}
-          </div>
+          <h4
+            className={cn(
+              "text-base font-semibold text-gray-900 truncate",
+              locale === "ar" && "text-right"
+            )}
+          >
+            {content.title}
+          </h4>
         </div>
+
+        {/* Timestamp */}
+        <span
+          className={cn(
+            "text-xs text-green-500 whitespace-nowrap",
+            locale === "ar" && "text-left"
+          )}
+        >
+          {getTimeDisplay()}
+        </span>
       </div>
+
+      {/* Expanded View - Shown when clicked */}
+      {isExpanded && (
+        <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+          {/* Description */}
+          <p className="text-sm text-gray-600">{content.description}</p>
+
+          {/* Enrollment notification details */}
+          {content.notificationType === "enrollment" &&
+            adminNotification.enrollment && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    {locale === "ar" ? "اسم الفرع" : "Branch Name"}:
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    {adminNotification.enrollment.branch_name || "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    {locale === "ar" ? "البرنامج" : "Program"}:
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    {adminNotification.enrollment.program_name || "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    {locale === "ar" ? "مرن بالساعة" : "Flexible by Hour"}:
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    {adminNotification.enrollment.enrollment_type === "flexible"
+                      ? locale === "ar"
+                        ? "نعم"
+                        : "Yes"
+                      : locale === "ar"
+                      ? "لا"
+                      : "No"}
+                  </span>
+                </div>
+                {adminNotification.enrollment.day_string && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">
+                      {locale === "ar" ? "اليوم" : "Day"}:
+                    </span>
+                    <span className="font-medium text-gray-900">
+                      {adminNotification.enrollment.day_string}
+                    </span>
+                  </div>
+                )}
+                {adminNotification.enrollment.start_time && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">
+                      {locale === "ar" ? "بداية من الساعة" : "Start Time"}:
+                    </span>
+                    <span className="font-medium text-gray-900">
+                      {adminNotification.enrollment.start_time}
+                    </span>
+                  </div>
+                )}
+                {adminNotification.date && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">
+                      {locale === "ar" ? "بداية من يوم" : "Start Date"}:
+                    </span>
+                    <span className="font-medium text-gray-900">
+                      {adminNotification.date}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+          {/* Date and Time for other notifications */}
+          {adminNotification.date &&
+            adminNotification.time &&
+            content.notificationType !== "enrollment" && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Clock className="size-4" />
+                <span>
+                  {adminNotification.date} at {adminNotification.time}
+                </span>
+              </div>
+            )}
+
+          {/* Action Button */}
+          {notificationLink && (
+            <div className="pt-2">
+              <Link
+                href={notificationLink}
+                className="block"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button variant="default" size="sm" className="w-full">
+                  {locale === "ar" ? "عرض" : "View"}
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
