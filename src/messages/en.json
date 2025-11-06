@@ -1373,6 +1373,16 @@
       "dashboard": "Dashboard",
       "home": "Home",
       "search": "Search...",
+      "menu": {
+        "notifications": "Notifications",
+        "billing": "Billing History",
+        "accountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
+      },
       "routes": {
         "center": "Center",
         "branches": "Branches",

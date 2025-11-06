@@ -1367,6 +1367,16 @@
       "dashboard": "لوحة التحكم",
       "home": "الرئيسية",
       "search": "بحث",
+      "menu": {
+        "notifications": "الإشعارات",
+        "billing": "سجل الدفع",
+        "accountData": "تعديل بيانات الحساب",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsConditions": "الشروط والأحكام",
+        "faqs": "الاسئلة الشائعة",
+        "contactUs": "تواصل معنا",
+        "logout": "تسجيل الخروج"
+      },
       "routes": {
         "center": "المركز",
         "branches": "الفروع",
