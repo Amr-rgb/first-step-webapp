@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { HeroSection } from "@/components/profile-editor/HeroSection";
 import { BranchesSection } from "@/components/profile-editor/BranchesSection";
 import { PhilosophySection } from "@/components/profile-editor/PhilosophySection";
@@ -24,12 +25,17 @@ import { PlansSection } from "@/components/profile-editor/PlansSection";
 import { ProfilePreview } from "@/components/profile-editor/ProfilePreview";
 import { PortfolioData, PortfolioFormData } from "@/types";
 import { usePortfolio } from "@/hooks/usePortfolio";
+import { usePermissions } from "@/hooks/usePermissions";
 import { Edit, Eye } from "lucide-react";
+import { toastError } from "@/lib/toast";
 
 const ProfileEditor = () => {
   const t = useTranslations("dashboard.profileEditor");
   const params = useParams();
   const locale = params.locale as string;
+  const router = useRouter();
+  const { can } = usePermissions();
+  const canViewCenterData = can("view", "center-data");
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
 
@@ -49,6 +55,14 @@ const ProfileEditor = () => {
     portfolioData
   );
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Check permissions and redirect if unauthorized
+  useEffect(() => {
+    if (!canViewCenterData) {
+      toastError(t("permissionError"));
+      router.push("/dashboard/center");
+    }
+  }, [canViewCenterData, router, t]);
 
   // Update local state when query data changes
   useEffect(() => {
@@ -132,6 +146,10 @@ const ProfileEditor = () => {
     { id: "teams", title: t("sections.teams"), component: TeamsSection },
     { id: "plans", title: t("sections.plans"), component: PlansSection },
   ];
+
+  if (!canViewCenterData) {
+    return null;
+  }
 
   if (isLoadingData || loadError) {
     return (

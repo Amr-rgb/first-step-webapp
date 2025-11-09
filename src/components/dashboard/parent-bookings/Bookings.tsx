@@ -199,7 +199,7 @@ const Bookings = () => {
     renewingId: number | null;
   }) {
     return (
-      <Card className="w-full">
+      <Card id={`enrollment-${booking.id}`} className="w-full transition-all">
         <CardContent className="py-6 px-6">
           <div className="grid grid-cols-2 gap-x-20 gap-y-4 text-sm mb-4 justify-center">
             {/* Swap: Render leftFields first, then rightFields */}

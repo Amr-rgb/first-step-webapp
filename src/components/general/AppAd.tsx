@@ -8,8 +8,8 @@ const AppAd = () => {
   const t = useTranslations("HomePage.AppAd");
 
   return (
-    <section className="blue-gradient text-white overflow-hidden">
-      <div className="relative container mx-auto px-4 flex flex-col-reverse lg:flex-row justify-center items-center gap-20 lg:gap-0">
+    <section className="blue-gradient text-white overflow-hidden py-12">
+      <div className="relative container mx-auto px-4 flex flex-col-reverse lg:flex-row justify-center items-center gap-12 lg:gap-0">
         <div className="z-20 grow flex flex-col justify-center items-center lg:items-start gap-y-4 text-center rtl:lg:text-right ltr:lg:text-left">
           <h2 className="heading-3">{t("title")}</h2>
           <p className="heading-4 font-medium">{t("description")}</p>

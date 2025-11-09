@@ -27,6 +27,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect, useState } from "react";
 import { useAuthUser } from "@/store/authStore";
 import ParentAccountsModal from "@/components/modals/ParentAccountsModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface NavbarItem {
   title: string;
@@ -173,6 +174,12 @@ const DashboardSideBar = () => {
   const user = useAuthUser();
   const [isParentAccountsModalOpen, setIsParentAccountsModalOpen] =
     useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Wait for Zustand to hydrate from localStorage
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Auto-expand sidebar when switching from mobile to desktop
   useEffect(() => {
@@ -181,11 +188,21 @@ const DashboardSideBar = () => {
     }
   }, [isMobile, state, setOpen]);
 
-  const navbar = pathname.includes("/dashboard/center")
+  let navbar = pathname.includes("/dashboard/center")
     ? getCenterNavbar(t)
     : pathname.includes("dashboard/admin")
     ? getAdminNavbar(t)
     : getParentNavbar(t);
+
+  // Filter out specific items for branch_admin (only after hydration)
+  if (isHydrated && user?.role === "branch_admin") {
+    navbar = navbar.filter(
+      (item) =>
+        !item.url.includes("/branches") &&
+        !item.url.includes("/center-data") &&
+        !item.url.includes("/ad-or-blog-request")
+    );
+  }
 
   const basePathname = pathname.includes("/dashboard/center")
     ? "/dashboard/center"
@@ -249,76 +266,100 @@ const DashboardSideBar = () => {
       </SidebarHeader>
       <SidebarContent className="transition-all duration-300 ease-in-out">
         <SidebarGroup>
-          {/* <SidebarGroupLabel>app</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu>
-              {navbar.map((item) => {
-                const isActive =
-                  pathname === item.url ||
-                  (pathname.startsWith(item.url + "/") &&
-                    item.url !== basePathname);
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Button
-                        asChild
-                        variant={isActive ? "default" : "defaultNoGradient"}
-                        className="bg-transparent shadow-none"
-                        onClick={isMobile ? () => toggleSidebar() : undefined}
-                      >
-                        <Link
-                          href={item.url}
-                          className={cn(
-                            "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
-                            isActive
-                              ? "!bg-primary !text-white !font-bold scale-[0.98] py-6.5"
-                              : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99] py-6.5"
-                          )}
-                        >
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                className={cn(
-                                  "rounded-[.5rem] w-fit",
-                                  isActive ? "bg-white" : "",
-                                  !isActive && state === "expanded"
-                                    ? "blue-gradient"
-                                    : "",
-                                  state === "collapsed"
-                                    ? "bg-transparent"
-                                    : "p-2"
-                                )}
-                              >
-                                <item.icon
-                                  className={cn(
-                                    state === "collapsed"
-                                      ? "size-4.5"
-                                      : "size-4",
-                                    state === "collapsed" && !isActive
-                                      ? "text-primary"
-                                      : state === "collapsed" && isActive
-                                      ? "text-white"
-                                      : isActive
-                                      ? "text-primary"
-                                      : "text-white"
-                                  )}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            {state === "collapsed" && (
-                              <TooltipContent side="right" align="center">
-                                {item.title}
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
-                          {state !== "collapsed" && <span>{item.title}</span>}
-                        </Link>
-                      </Button>
-                    </SidebarMenuButton>
+              {!isHydrated ? (
+                // Skeleton loader while hydrating
+                <>
+                  <SidebarMenuItem className="mb-3">
+                    <Skeleton className="h-20 w-20 mx-auto rounded-full" />
                   </SidebarMenuItem>
-                );
-              })}
+
+                  {[...Array(6)].map((_, index) => (
+                    <SidebarMenuItem key={index}>
+                      <div className="flex items-center space-x-2 px-4 py-2">
+                        <Skeleton
+                          className={cn(
+                            "rounded-[.5rem]",
+                            state === "collapsed" ? "size-4.5" : "size-8"
+                          )}
+                        />
+                        {state !== "collapsed" && (
+                          <Skeleton className="h-4 w-24" />
+                        )}
+                      </div>
+                    </SidebarMenuItem>
+                  ))}
+                </>
+              ) : (
+                navbar.map((item) => {
+                  const isActive =
+                    pathname === item.url ||
+                    (pathname.startsWith(item.url + "/") &&
+                      item.url !== basePathname);
+
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Button
+                          asChild
+                          variant={isActive ? "default" : "defaultNoGradient"}
+                          className="bg-transparent shadow-none"
+                          onClick={isMobile ? () => toggleSidebar() : undefined}
+                        >
+                          <Link
+                            href={item.url}
+                            className={cn(
+                              "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
+                              isActive
+                                ? "!bg-primary !text-white !font-bold scale-[0.98] py-6.5"
+                                : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99] py-6.5"
+                            )}
+                          >
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className={cn(
+                                    "rounded-[.5rem] w-fit",
+                                    isActive ? "bg-white" : "",
+                                    !isActive && state === "expanded"
+                                      ? "blue-gradient"
+                                      : "",
+                                    state === "collapsed"
+                                      ? "bg-transparent"
+                                      : "p-2"
+                                  )}
+                                >
+                                  <item.icon
+                                    className={cn(
+                                      state === "collapsed"
+                                        ? "size-4.5"
+                                        : "size-4",
+                                      state === "collapsed" && !isActive
+                                        ? "text-primary"
+                                        : state === "collapsed" && isActive
+                                        ? "text-white"
+                                        : isActive
+                                        ? "text-primary"
+                                        : "text-white"
+                                    )}
+                                  />
+                                </div>
+                              </TooltipTrigger>
+                              {state === "collapsed" && (
+                                <TooltipContent side="right" align="center">
+                                  {item.title}
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                            {state !== "collapsed" && <span>{item.title}</span>}
+                          </Link>
+                        </Button>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

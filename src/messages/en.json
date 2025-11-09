@@ -834,6 +834,7 @@
         "request-ad": "Request Ad",
         "request-blog": "Request Blog",
         "blogs": "Blogs",
+        "permissionError": "You do not have permission to view advertisements or blogs",
         "ad": {
           "title": "Request Advertisement",
           "free-notice": "Your first advertisement for your nursery/center is 100% free on the homepage for one day",
@@ -925,6 +926,7 @@
         "view": "View Branch",
         "edit": "Edit Branch",
         "delete": "Delete Branch",
+        "permissionError": "You do not have permission to view branches",
         "form": {
           "buttons": {
             "add": "Add Branch",
@@ -1371,6 +1373,16 @@
       "dashboard": "Dashboard",
       "home": "Home",
       "search": "Search...",
+      "menu": {
+        "notifications": "Notifications",
+        "billing": "Billing History",
+        "accountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
+      },
       "routes": {
         "center": "Center",
         "branches": "Branches",
@@ -1643,6 +1655,7 @@
       "saving": "Saving...",
       "saveSuccess": "Portfolio saved successfully!",
       "saveError": "Failed to save portfolio",
+      "permissionError": "You do not have permission to view center data",
       "sections": {
         "hero": "Hero Section",
         "branches": "Branches",
@@ -1876,7 +1889,9 @@
         "reject": "Reject",
         "processing": "Processing...",
         "enrollmentResponseSuccess": "Enrollment response sent successfully",
-        "enrollmentResponseError": "Failed to send enrollment response"
+        "enrollmentResponseError": "Failed to send enrollment response",
+        "notificationSentSuccess": "Notification sent successfully",
+        "notificationSentError": "Failed to send notification"
       },
       "center-reports": {
         "headers": {
@@ -1962,7 +1977,63 @@
       "title": "Children"
     },
     "center-bookings": {
-      "title": "Bookings"
+      "title": "Bookings",
+      "viewTable": "Table",
+      "viewCards": "Cards",
+      "viewDetails": "View Details",
+      "viewDetailsButton": "View Booking Details",
+      "bookingDetails": "Booking Details",
+      "parent": "Parent",
+      "child": "Child",
+      "bookingStatus": "Booking Status",
+      "acceptBooking": "Accept Booking",
+      "rejectBooking": "Reject Booking",
+      "confirmBooking": "Confirm Booking",
+      "cancelBooking": "Cancel Booking",
+      "sendNotification": "Send Notification to Parent",
+      "sendingNotification": "Sending...",
+      "children": "children",
+      "filters": {
+        "all": "All",
+        "completed": "Completed",
+        "pending": "Pending Confirmation",
+        "confirmed": "Awaiting Payment",
+        "fromCenter": "From Center",
+        "cancelled": "Cancelled",
+        "rejected": "Rejected",
+        "expired": "Expired"
+      },
+      "fields": {
+        "childrenLabel": "Child/Children:",
+        "nursery": "Nursery:",
+        "branch": "Branch:",
+        "program": "Program:",
+        "bookingStatus": "Booking Status:",
+        "startDay": "Start Day:",
+        "endDay": "End Day:",
+        "numberOfDays": "Number of Days:",
+        "childAge": "Child Age",
+        "month": "Month",
+        "years": "years old"
+      },
+      "programTypes": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      },
+      "pricingCard": {
+        "hour": "hour",
+        "hours": "hours",
+        "day": "day",
+        "days": "days",
+        "week": "week",
+        "weeks": "weeks",
+        "month": "month",
+        "months": "months"
+      },
+      "noPricingPlans": "No pricing plans available for this branch"
     },
     "center-reports": {
       "title": "Daily Reports",

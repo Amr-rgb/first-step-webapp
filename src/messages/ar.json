@@ -830,6 +830,7 @@
         "view": "عرض الفرع",
         "edit": "تعديل الفرع",
         "delete": "حذف الفرع",
+        "permissionError": "ليس لديك صلاحية لعرض الفروع",
         "form": {
           "buttons": {
             "add": "إضافة فرع",
@@ -890,6 +891,7 @@
         "request-ad": "طلب إعلان",
         "request-blog": "طلب مدونة",
         "blogs": "المدونات",
+        "permissionError": "ليس لديك صلاحية لعرض الإعلانات أو المدونات",
         "ad": {
           "title": "طلب إعلان",
           "free-notice": "الإعلان الأول لحضانتك/ مركزك مجاني 100% في الصفحة الرئيسية لمدة يوم واحد",
@@ -1365,6 +1367,16 @@
       "dashboard": "لوحة التحكم",
       "home": "الرئيسية",
       "search": "بحث",
+      "menu": {
+        "notifications": "الإشعارات",
+        "billing": "سجل الدفع",
+        "accountData": "تعديل بيانات الحساب",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsConditions": "الشروط والأحكام",
+        "faqs": "الاسئلة الشائعة",
+        "contactUs": "تواصل معنا",
+        "logout": "تسجيل الخروج"
+      },
       "routes": {
         "center": "المركز",
         "branches": "الفروع",
@@ -1637,6 +1649,7 @@
       "saving": "جارٍ الحفظ...",
       "saveSuccess": "تم الحفظ بنجاح!",
       "saveError": "فشل في الحفظ",
+      "permissionError": "ليس لديك صلاحية لعرض بيانات المركز",
       "sections": {
         "hero": "القسم الرئيسي",
         "branches": "الفروع",
@@ -1848,7 +1861,9 @@
         "reject": "رفض",
         "processing": "جاري المعالجة...",
         "enrollmentResponseSuccess": "تم إرسال الرد بنجاح",
-        "enrollmentResponseError": "فشل في إرسال الرد"
+        "enrollmentResponseError": "فشل في إرسال الرد",
+        "notificationSentSuccess": "تم إرسال الإشعار بنجاح",
+        "notificationSentError": "فشل إرسال الإشعار"
       },
       "ads": {
         "headers": {
@@ -1960,7 +1975,63 @@
       "title": "الأطفال"
     },
     "center-bookings": {
-      "title": "الحجوزات"
+      "title": "الحجوزات",
+      "viewTable": "جدول",
+      "viewCards": "بطاقات",
+      "viewDetails": "عرض التفاصيل",
+      "viewDetailsButton": "عرض تفاصيل الحجز",
+      "bookingDetails": "تفاصيل الحجز",
+      "parent": "ولي الأمر",
+      "child": "الطفل",
+      "bookingStatus": "حالة الحجز",
+      "acceptBooking": "قبول الحجز",
+      "rejectBooking": "رفض الحجز",
+      "confirmBooking": "تأكيد الحجز",
+      "cancelBooking": "إلغاء الحجز",
+      "sendNotification": "إرسال إشعار لولي الأمر",
+      "sendingNotification": "جاري الإرسال...",
+      "children": "أطفال",
+      "filters": {
+        "all": "الكل",
+        "completed": "تم الدفع",
+        "pending": "في انتظار التأكيد",
+        "confirmed": "في انتظار الدفع",
+        "fromCenter": "من خلال المركز",
+        "cancelled": "ملغي",
+        "rejected": "مرفوض",
+        "expired": "منتهي"
+      },
+      "fields": {
+        "childrenLabel": "الطفل/ الأطفال:",
+        "nursery": "الحضانة:",
+        "branch": "الفرع:",
+        "program": "البرنامج:",
+        "bookingStatus": "حالة الحجز:",
+        "startDay": "بداية يوم:",
+        "endDay": "نهاية يوم:",
+        "numberOfDays": "عدد الأيام:",
+        "childAge": "سن الطفل",
+        "month": "الشهر",
+        "years": "سنة"
+      },
+      "programTypes": {
+        "hourly": "بالساعة",
+        "daily": "يومي",
+        "weekly": "اسبوعي",
+        "monthly": "شهري",
+        "yearly": "سنوي"
+      },
+      "pricingCard": {
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "day": "يوم",
+        "days": "أيام",
+        "week": "أسبوع",
+        "weeks": "أسابيع",
+        "month": "شهر",
+        "months": "أشهر"
+      },
+      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع"
     },
     "center-reports": {
       "title": "التقارير اليومية",
