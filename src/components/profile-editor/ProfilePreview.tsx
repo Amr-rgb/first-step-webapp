@@ -152,40 +152,45 @@ const PlansPreview = ({ locale }: { locale: string }) => {
                 <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                   {branchData.branch_name}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {branchData.pricing.map((plan: any) => (
-                    <div
-                      key={plan.id}
-                      className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
-                    >
-                      <h4 className="text-xl font-semibold text-gray-900 mb-4">
-                        {plan.title}
-                      </h4>
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">
-                            {t("plans.ageRange")}: {plan.start_age}-
-                            {plan.end_age} {locale === "ar" ? "سنة" : "years"}
-                          </span>
+                <div className="max-h-[500px] overflow-y-auto pr-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {branchData.pricing.map((plan: any) => (
+                      <div
+                        key={plan.id}
+                        className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+                      >
+                        <h4 className="text-xl font-semibold text-gray-900 mb-4">
+                          {plan.title}
+                        </h4>
+                        <div className="space-y-3 mb-6">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">
+                              {t("plans.ageRange")}: {plan.start_age}-
+                              {plan.end_age} {locale === "ar" ? "سنة" : "years"}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">
+                              {t("plans.duration")}:{" "}
+                              {getDurationLabel(
+                                plan.count,
+                                plan.enrollment_type
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">
+                              {t("plans.price")}: {plan.price_amount}{" "}
+                              {locale === "ar" ? "ريال" : "SAR"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">
-                            {t("plans.duration")}:{" "}
-                            {getDurationLabel(plan.count, plan.enrollment_type)}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">
-                            {t("plans.price")}: {plan.price_amount}{" "}
-                            {locale === "ar" ? "ريال" : "SAR"}
-                          </span>
-                        </div>
+                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium opacity-50 cursor-not-allowed">
+                          {t("plans.bookNow")}
+                        </button>
                       </div>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium opacity-50 cursor-not-allowed">
-                        {t("plans.bookNow")}
-                      </button>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             );
