@@ -96,6 +96,7 @@ export default async function NurseryPage({
       {/* 7. Statistics Section */}
       {portfolio.nursery_state && (
         <Stats
+          preview={false}
           stats={[
             ...(portfolio.nursery_state.area
               ? [
@@ -205,9 +206,6 @@ export default async function NurseryPage({
                 ]
               : []),
           ]}
-          buttonText={t("branches.cta")}
-          locale={locale}
-          nurseryName={readableName}
         />
       )}
 
@@ -218,9 +216,7 @@ export default async function NurseryPage({
             title={portfolio.activity_section_title}
             subtitle={portfolio.activity_section_subtitle}
             activities={portfolio.images_activities}
-            buttonText={t("branches.cta")}
-            locale={locale}
-            nurseryName={readableName}
+            preview={false}
           />
         )}
 
