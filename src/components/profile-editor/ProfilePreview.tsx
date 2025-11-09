@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useTranslations } from "next-intl";
 import { PortfolioData } from "@/types";
 import Advertisment from "@/components/general/Advertisment";
@@ -15,6 +16,14 @@ import Team from "@/components/general/nurseries/sections/Team";
 import { useQuery } from "@tanstack/react-query";
 import { useBranches } from "@/hooks/useBranches";
 import { centerService } from "@/services/dashboardApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface ProfilePreviewProps {
   data: PortfolioData & {
@@ -31,42 +40,31 @@ interface ProfilePreviewProps {
 const PlansPreview = ({ locale }: { locale: string }) => {
   const t = useTranslations("nurseryDetails");
   const { data: branches = [] } = useBranches();
+  const [selectedBranchId, setSelectedBranchId] = React.useState<number | null>(
+    null
+  );
 
   // Type assertion for branches
   const typedBranches = branches as any[];
 
-  // Fetch plans for all branches
-  const { data: allPlans = [] } = useQuery({
-    queryKey: ["all-branch-pricing", typedBranches.map((b) => b.id)],
+  // Select first branch automatically
+  React.useEffect(() => {
+    if (typedBranches.length > 0 && !selectedBranchId) {
+      setSelectedBranchId(typedBranches[0].id);
+    }
+  }, [typedBranches, selectedBranchId]);
+
+  // Fetch plans for selected branch
+  const { data: branchPlans = [], isLoading: isPricingLoading } = useQuery({
+    queryKey: ["branch-pricing-preview", selectedBranchId],
     queryFn: async () => {
-      if (typedBranches.length === 0) return [];
-
-      const pricingPromises = typedBranches.map(async (branch: any) => {
-        try {
-          const response = await centerService.getBranchPricing(
-            branch.id.toString()
-          );
-          return {
-            branch_id: branch.id,
-            branch_name: branch.nursery_name_branch || branch.name,
-            pricing: response.data || [],
-          };
-        } catch (error) {
-          console.error(
-            `Error fetching pricing for branch ${branch.id}:`,
-            error
-          );
-          return {
-            branch_id: branch.id,
-            branch_name: branch.nursery_name_branch || branch.name,
-            pricing: [],
-          };
-        }
-      });
-
-      return await Promise.all(pricingPromises);
+      if (!selectedBranchId) return [];
+      const response = await centerService.getBranchPricing(
+        selectedBranchId.toString()
+      );
+      return response.data || [];
     },
-    enabled: branches.length > 0,
+    enabled: !!selectedBranchId,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -95,11 +93,9 @@ const PlansPreview = ({ locale }: { locale: string }) => {
     }`;
   };
 
-  const hasAnyPlans = allPlans.some(
-    (branchData: any) => branchData.pricing.length > 0
-  );
+  const selectedBranch = typedBranches.find((b) => b.id === selectedBranchId);
 
-  if (!hasAnyPlans) {
+  if (typedBranches.length === 0) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -134,7 +130,7 @@ const PlansPreview = ({ locale }: { locale: string }) => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             {t("plans.title")}
           </h2>
@@ -143,59 +139,86 @@ const PlansPreview = ({ locale }: { locale: string }) => {
           </p>
         </div>
 
-        <div className="space-y-12">
-          {allPlans.map((branchData: any) => {
-            if (branchData.pricing.length === 0) return null;
-
-            return (
-              <div key={branchData.branch_id}>
-                <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                  {branchData.branch_name}
-                </h3>
-                <div className="max-h-[500px] overflow-y-auto pr-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {branchData.pricing.map((plan: any) => (
-                      <div
-                        key={plan.id}
-                        className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
-                      >
-                        <h4 className="text-xl font-semibold text-gray-900 mb-4">
-                          {plan.title}
-                        </h4>
-                        <div className="space-y-3 mb-6">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-600">
-                              {t("plans.ageRange")}: {plan.start_age}-
-                              {plan.end_age} {locale === "ar" ? "سنة" : "years"}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-600">
-                              {t("plans.duration")}:{" "}
-                              {getDurationLabel(
-                                plan.count,
-                                plan.enrollment_type
-                              )}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-600">
-                              {t("plans.price")}: {plan.price_amount}{" "}
-                              {locale === "ar" ? "ريال" : "SAR"}
-                            </span>
-                          </div>
-                        </div>
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium opacity-50 cursor-not-allowed">
-                          {t("plans.bookNow")}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* Branch Selector */}
+        <div className="max-w-md mx-auto mb-8">
+          <Label>{t("plans.selectBranch")}</Label>
+          <Select
+            value={selectedBranchId?.toString()}
+            onValueChange={(value) => setSelectedBranchId(Number(value))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t("plans.selectBranch")} />
+            </SelectTrigger>
+            <SelectContent>
+              {typedBranches.map((branch: any) => (
+                <SelectItem key={branch.id} value={branch.id.toString()}>
+                  {branch.nursery_name_branch || branch.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Plans Grid */}
+        {isPricingLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : branchPlans.length > 0 ? (
+          <div className="max-h-[500px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {branchPlans.map((plan: any) => (
+                <div
+                  key={plan.id}
+                  className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4">
+                    {plan.title}
+                  </h4>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">
+                        {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
+                        {locale === "ar" ? "سنة" : "years"}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">
+                        {t("plans.duration")}:{" "}
+                        {getDurationLabel(plan.count, plan.enrollment_type)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">
+                        {t("plans.price")}: {plan.price_amount}{" "}
+                        {locale === "ar" ? "ريال" : "SAR"}
+                      </span>
+                    </div>
+                  </div>
+                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium opacity-50 cursor-not-allowed">
+                    {t("plans.bookNow")}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <div className="text-4xl mb-4">📋</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {locale === "ar"
+                  ? "لا توجد برامج متاحة حالياً"
+                  : "No Programs Available"}
+              </h3>
+              <p className="text-gray-600">
+                {locale === "ar"
+                  ? "سيتم إضافة البرامج قريباً. تحقق من الفرع لاحقاً."
+                  : "Programs will be added soon. Please check back later."}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
