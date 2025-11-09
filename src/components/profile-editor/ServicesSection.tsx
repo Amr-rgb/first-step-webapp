@@ -113,7 +113,12 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                 </div>
 
                 <div>
-                  <Label>{t("serviceDescription")}</Label>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label>{t("serviceDescription")}</Label>
+                    <span className="text-xs text-muted-foreground">
+                      {service.description.length}/200
+                    </span>
+                  </div>
                   <Textarea
                     value={service.description}
                     onChange={(e) =>
@@ -121,6 +126,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                     }
                     placeholder={t("serviceDescriptionPlaceholder")}
                     rows={3}
+                    maxLength={200}
                   />
                 </div>
 

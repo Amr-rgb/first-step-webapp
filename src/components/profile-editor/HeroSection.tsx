@@ -52,13 +52,19 @@ export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">{t("description")}</Label>
+        <div className="flex justify-between items-center">
+          <Label htmlFor="description">{t("description")}</Label>
+          <span className="text-xs text-muted-foreground">
+            {data.description.length}/120
+          </span>
+        </div>
         <Textarea
           id="description"
           value={data.description}
           onChange={(e) => handleChange("description", e.target.value)}
           placeholder={t("descriptionPlaceholder")}
           rows={4}
+          maxLength={120}
         />
       </div>
 
