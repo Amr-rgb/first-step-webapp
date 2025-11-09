@@ -69,17 +69,12 @@ const Activities = ({
       );
     } else {
       return (
-        <div
+        <img
           key={index}
-          className={`rounded-2xl w-full ${height} bg-gray-100 flex items-center justify-center`}
-        >
-          <div className="flex flex-col items-center space-y-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#6A8DFF] border-t-transparent"></div>
-            <span className="text-[#22336C] text-sm font-medium">
-              Loading...
-            </span>
-          </div>
-        </div>
+          src="/assets/illustrations/nursery_activity.png"
+          alt={`activity${index + 1}`}
+          className={`rounded-2xl object-cover w-full ${height}`}
+        />
       );
     }
   };
