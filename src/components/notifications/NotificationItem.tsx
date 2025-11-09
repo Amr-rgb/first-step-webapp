@@ -250,58 +250,37 @@ export function NotificationItem({
                     {locale === "ar" ? "اسم الفرع" : "Branch Name"}:
                   </span>
                   <span className="font-medium text-gray-900">
-                    {adminNotification.enrollment.branch_name || "N/A"}
+                    {adminNotification.enrollment.branch?.nursery_name || "N/A"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">
                     {locale === "ar" ? "البرنامج" : "Program"}:
                   </span>
-                  <span className="font-medium text-gray-900">
-                    {adminNotification.enrollment.program_name || "N/A"}
+                  <span className="font-medium text-gray-900 capitalize">
+                    {adminNotification.enrollment.enrollment_type || "N/A"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    {locale === "ar" ? "مرن بالساعة" : "Flexible by Hour"}:
-                  </span>
-                  <span className="font-medium text-gray-900">
-                    {adminNotification.enrollment.enrollment_type === "flexible"
-                      ? locale === "ar"
-                        ? "نعم"
-                        : "Yes"
-                      : locale === "ar"
-                      ? "لا"
-                      : "No"}
-                  </span>
-                </div>
-                {adminNotification.enrollment.day_string && (
+                {adminNotification.enrollment.enrollment_type === "hour" &&
+                  adminNotification.enrollment.starting_time && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">
+                        {locale === "ar" ? "بداية من الساعة" : "Starting Time"}:
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        {adminNotification.enrollment.starting_time}
+                      </span>
+                    </div>
+                  )}
+                {(adminNotification.enrollment.day_string ||
+                  adminNotification.enrollment.starting_date) && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500">
-                      {locale === "ar" ? "اليوم" : "Day"}:
+                      {locale === "ar" ? "بداية من يوم" : "Starting Date"}:
                     </span>
                     <span className="font-medium text-gray-900">
-                      {adminNotification.enrollment.day_string}
-                    </span>
-                  </div>
-                )}
-                {adminNotification.enrollment.start_time && (
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
-                      {locale === "ar" ? "بداية من الساعة" : "Start Time"}:
-                    </span>
-                    <span className="font-medium text-gray-900">
-                      {adminNotification.enrollment.start_time}
-                    </span>
-                  </div>
-                )}
-                {adminNotification.date && (
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
-                      {locale === "ar" ? "بداية من يوم" : "Start Date"}:
-                    </span>
-                    <span className="font-medium text-gray-900">
-                      {adminNotification.date}
+                      {adminNotification.enrollment.day_string ||
+                        adminNotification.enrollment.starting_date}
                     </span>
                   </div>
                 )}
