@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,13 +18,29 @@ interface TeamsSectionProps {
 
 export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
   const t = useTranslations("dashboard.profileEditor.teams");
+  const [scrollToIndex, setScrollToIndex] = useState<number | null>(null);
+  const teamRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const addTeamMember = () => {
+    const newIndex = data.teams.length;
     onChange({
       ...data,
       teams: [...data.teams, { name: "", mission: "", image: "" }],
     });
+    setScrollToIndex(newIndex);
   };
+
+  useEffect(() => {
+    if (scrollToIndex !== null && teamRefs.current[scrollToIndex]) {
+      setTimeout(() => {
+        teamRefs.current[scrollToIndex]?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+        setScrollToIndex(null);
+      }, 100);
+    }
+  }, [scrollToIndex, data.teams.length]);
 
   const updateTeamMember = (
     index: number,
@@ -64,7 +81,13 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
         </p>
       ) : (
         data.teams.map((member, index) => (
-          <Card key={index} className="p-4">
+          <Card
+            key={index}
+            ref={(el) => {
+              teamRefs.current[index] = el;
+            }}
+            className="p-4"
+          >
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h4 className="font-semibold">
