@@ -107,12 +107,12 @@ const SignIn = () => {
               {t("options.dont-have")}
             </p>
 
-            <div className="w-full flex flex-col gap-y-4 sm:flex-row justify-center gap-x-16">
+            <div className="w-full flex flex-row gap-x-4">
               <Button
                 variant={"outline"}
                 size={"lg"}
                 type="button"
-                className="w-full sm:w-fit font-bold text-mid-gray !border-light-gray"
+                className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs flex-1 font-bold text-mid-gray !border-light-gray"
                 disabled={mutation.isPending || mutation.isSuccess}
               >
                 <Link href={"/sign-up/center"}>
@@ -123,7 +123,7 @@ const SignIn = () => {
                 variant={"outline"}
                 size={"lg"}
                 type="button"
-                className="w-full sm:w-fit font-bold"
+                className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs flex-1 font-bold"
                 disabled={mutation.isPending || mutation.isSuccess}
               >
                 <Link href={"/sign-up/parent"}>
