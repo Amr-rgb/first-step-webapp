@@ -78,7 +78,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="px-5 sm:px-10 py-20">
+    <div className="px-5 sm:px-10  pb-20">
       {mutation.isSuccess && <LoadingOverlay content={t("sign-in.loading")} />}
 
       <div className="flex flex-col items-center gap-y-12">

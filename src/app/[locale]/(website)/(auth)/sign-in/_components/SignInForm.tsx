@@ -186,8 +186,8 @@ const SignInForm = ({
             <Image
               src="/assets/icons/google_icon.svg"
               alt="Google Logo"
-              width={36}
-              height={36}
+              width={20}
+              height={20}
             />
           </Button>
         </div>
