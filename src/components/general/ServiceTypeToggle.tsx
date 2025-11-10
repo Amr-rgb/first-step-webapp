@@ -34,7 +34,7 @@ const ServiceTypeToggle = ({
     "w-[140px] h-[200px] lg:w-[180px] lg:h-[240px] border-2 rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300";
 
   return (
-    <div className="flex justify-center gap-8 pt-12">
+    <div className="flex justify-center gap-8 py-8">
       {TOGGLE_OPTIONS.map((item, index) => {
         const isSelected = selectedType === item.type;
         return (

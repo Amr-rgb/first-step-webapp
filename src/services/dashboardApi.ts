@@ -580,7 +580,7 @@ export const centerService = {
 
   getEnrollments: async () => {
     try {
-      const response = await apiClient.get(`/enrollments`);
+      const response = await apiClient.get(`/enrollments/get-for-moblie`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -592,6 +592,35 @@ export const centerService = {
       const response = await apiClient.patch(`/enrollments/${id}`, {
         status,
       });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  respondExistingEnrollment: async (
+    id: number,
+    status: string,
+    starting_date?: string,
+    starting_time?: string,
+    day_string?: string
+  ) => {
+    try {
+      const payload: any = { status };
+      if (starting_date) payload.starting_date = starting_date;
+      if (starting_time) payload.starting_time = starting_time;
+      if (day_string) payload.day_string = day_string;
+
+      const response = await apiClient.put(`/enrollments/${id}/paid`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  sendExpiredNotification: async (id: number) => {
+    try {
+      const response = await apiClient.post(`/send-notification-expired/${id}`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

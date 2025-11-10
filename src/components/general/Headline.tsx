@@ -5,7 +5,7 @@ const Headline = () => {
   const t = useTranslations("headline");
 
   return (
-    <section className="flex items-center justify-center gap-x-2 md:gap-x-14">
+    <section className="flex items-center justify-center gap-x-2 md:gap-x-14 py-8">
       <Image
         className="ltr:order-3 rotate-180 rotate-y-180 rotate-z-180"
         src="/assets/logos/logo.svg"
@@ -22,7 +22,7 @@ const Headline = () => {
               <span className="font-extrabold text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
                 {chunks}
               </span>
-            )
+            ),
           })}
         </span>
       </p>

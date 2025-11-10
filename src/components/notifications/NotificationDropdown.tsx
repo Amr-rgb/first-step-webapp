@@ -65,7 +65,7 @@ export function NotificationDropdown() {
         </div>
 
         {/* Content */}
-        <ScrollArea className="max-h-96">
+        <ScrollArea className="h-96">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="size-6 animate-spin text-gray-400" />

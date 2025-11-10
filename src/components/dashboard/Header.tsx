@@ -101,7 +101,7 @@ export default function Header({
     // This controls whether toast notifications appear when new pusher notifications arrive
     notifications: {
       icon: Bell,
-      label: settingsT("notifications"),
+      label: t("menu.notifications"),
       type: "toggle" as const,
       value: userPreferencesStore.preferences.notificationToastsEnabled,
       onChange: userPreferencesStore.setNotificationToastsEnabled,
@@ -111,7 +111,7 @@ export default function Header({
       role === "center"
         ? {
             icon: CreditCard,
-            label: settingsT("billingHistory"),
+            label: t("menu.billing"),
             type: "link" as const,
             href: `/dashboard/${role}/billing`,
           }
@@ -120,7 +120,7 @@ export default function Header({
       role !== "admin"
         ? {
             icon: User,
-            label: settingsT("editAccountData"),
+            label: t("menu.accountData"),
             type: "link" as const,
             href: `/dashboard/${role}/account`,
           }
@@ -128,32 +128,32 @@ export default function Header({
     separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
-      label: settingsT("privacyPolicy"),
+      label: t("menu.privacyPolicy"),
       type: "link" as const,
       href: "/privacy-policy",
     },
     termsConditions: {
       icon: FileText,
-      label: settingsT("termsConditions"),
+      label: t("menu.termsConditions"),
       type: "link" as const,
       href: "/terms-conditions",
     },
     faqs: {
       icon: HelpCircle,
-      label: settingsT("faqs"),
+      label: t("menu.faqs"),
       type: "link" as const,
       href: "/faqs",
     },
     contactUs: {
       icon: Mail,
-      label: settingsT("contactUs"),
+      label: t("menu.contactUs"),
       type: "link" as const,
       href: "/contact",
     },
     separator3: { type: "separator" as const },
     logout: {
       icon: LogOut,
-      label: settingsT("logout"),
+      label: t("menu.logout"),
       type: "action" as const,
       variant: "destructive" as const,
       onClick: () => {
@@ -526,7 +526,7 @@ export default function Header({
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between p-2"
+                    className="flex items-center justify-between p-2 cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <item.icon className="size-4" />
@@ -544,7 +544,10 @@ export default function Header({
               if (item?.type === "link") {
                 return (
                   <DropdownMenuItem key={key} asChild>
-                    <Link href={item.href} className="flex items-center gap-2">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <item.icon className="size-4" />
                       <span>{item.label}</span>
                     </Link>
@@ -558,6 +561,7 @@ export default function Header({
                     key={key}
                     variant={item.variant}
                     onClick={item.onClick}
+                    className="cursor-pointer"
                   >
                     <item.icon className="size-4" />
                     <span>{item.label}</span>

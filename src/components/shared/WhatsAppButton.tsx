@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 const WhatsAppIcon = () => (
   <svg
     viewBox="-1.5 0 259 259"
@@ -23,13 +27,43 @@ const WhatsAppIcon = () => (
 const WhatsAppButton = () => {
   const phoneNumber = "966539949732";
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const [bottomPosition, setBottomPosition] = useState(24); // 24px = bottom-6
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const footer = document.querySelector("footer");
+      if (!footer) return;
+
+      const footerRect = footer.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const buttonHeight = 64; // Approximate button height with padding
+
+      // When footer enters viewport, calculate distance from bottom
+      if (footerRect.top < windowHeight - buttonHeight - 24) {
+        const distanceFromBottom = windowHeight - footerRect.top + 24;
+        setBottomPosition(distanceFromBottom);
+      } else {
+        setBottomPosition(24); // Reset to default bottom-6 (24px)
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
 
   return (
     <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-300 z-50"
+      className="fixed right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 z-50"
+      style={{ bottom: `${bottomPosition}px` }}
       aria-label="Contact us on WhatsApp"
     >
       <WhatsAppIcon />
