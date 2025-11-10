@@ -91,12 +91,13 @@ export default function Header({
   } = useDashboardSearch();
 
   // Menu items configuration
+  const settingsT = useTranslations("dashboard.header.settings");
   const menuItems = {
     // Toggle for enabling/disabling pusher notification toasts
     // This controls whether toast notifications appear when new pusher notifications arrive
     notifications: {
       icon: Bell,
-      label: "الإشعارات",
+      label: settingsT("notifications"),
       type: "toggle" as const,
       value: userPreferencesStore.preferences.notificationToastsEnabled,
       onChange: userPreferencesStore.setNotificationToastsEnabled,
@@ -106,7 +107,7 @@ export default function Header({
       role === "center"
         ? {
             icon: CreditCard,
-            label: "سجل الدفع",
+            label: settingsT("billingHistory"),
             type: "link" as const,
             href: `/dashboard/${role}/billing`,
           }
@@ -115,7 +116,7 @@ export default function Header({
       role !== "admin"
         ? {
             icon: User,
-            label: "تعديل بيانات الحساب",
+            label: settingsT("editAccountData"),
             type: "link" as const,
             href: `/dashboard/${role}/account`,
           }
@@ -123,32 +124,32 @@ export default function Header({
     separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
-      label: "سياسة الخصوصية",
+      label: settingsT("privacyPolicy"),
       type: "link" as const,
       href: "/privacy-policy",
     },
     termsConditions: {
       icon: FileText,
-      label: "الشروط والأحكام",
+      label: settingsT("termsConditions"),
       type: "link" as const,
       href: "/terms-conditions",
     },
     faqs: {
       icon: HelpCircle,
-      label: "الاسئلة الشائعة",
+      label: settingsT("faqs"),
       type: "link" as const,
       href: "/faqs",
     },
     contactUs: {
       icon: Mail,
-      label: "تواصل معنا",
+      label: settingsT("contactUs"),
       type: "link" as const,
       href: "/contact",
     },
     separator3: { type: "separator" as const },
     logout: {
       icon: LogOut,
-      label: "تسجيل الخروج",
+      label: settingsT("logout"),
       type: "action" as const,
       variant: "destructive" as const,
       onClick: () => {

@@ -1410,6 +1410,16 @@
         "allChildren": "All Children",
         "parents": "Parents",
         "parentDetails": "Parent Details"
+      },
+      "settings": {
+        "notifications": "Notifications",
+        "billingHistory": "Billing History",
+        "editAccountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
       }
     },
     "search": {
