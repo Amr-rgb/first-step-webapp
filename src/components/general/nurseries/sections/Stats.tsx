@@ -38,9 +38,7 @@ const Stats = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
           {stats.map((stat, idx) => (
             <div key={idx} className="flex flex-col items-center group">
-              <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                {stat.icon}
-              </div>
+              <div className="mb-6">{stat.icon}</div>
               <div
                 className={`text-5xl md:text-6xl font-bold ${stat.color} mb-3`}
               >
