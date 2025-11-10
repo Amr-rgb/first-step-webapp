@@ -1531,7 +1531,8 @@
       "empty": {
         "add-now": "Add Now"
       },
-      "loading": "Loading Data..."
+      "loading": "Loading Data...",
+      "error": "An error occurred"
     },
     "emptyStates": {
       "bookings": {

@@ -1525,7 +1525,8 @@
       "empty": {
         "add-now": "أضف الآن"
       },
-      "loading": "جارى تحميل البيانا..."
+      "loading": "جارى تحميل البيانا...",
+      "error": "حدث خطأ"
     },
     "emptyStates": {
       "bookings": {

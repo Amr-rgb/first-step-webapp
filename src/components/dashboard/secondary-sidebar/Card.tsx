@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocale } from "next-intl";
 import { Pencil, Trash, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,13 @@ const Card = ({ id, type, title, date, rawDate }: CardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
   const [newDate, setNewDate] = useState(rawDate.toISOString().split("T")[0]);
+
+  // Auto-enter edit mode if title is empty
+  useEffect(() => {
+    if (!title && type === "occasion") {
+      setIsEditing(true);
+    }
+  }, [title, type]);
 
   const { editBirthday, deleteBirthday } = useEventsStore();
   const { updateOccasion, deleteOccasion } = useOccasions();
