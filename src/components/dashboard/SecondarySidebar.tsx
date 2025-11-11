@@ -22,6 +22,9 @@ const SecondarySidebar = () => {
   const locale = useLocale();
   const t = useTranslations("dashboard.secondary-sidebar");
   const subscriptionRequired = useSubscriptionRequired();
+  
+  // Map locale to proper locale string for date formatting
+  const dateLocale = locale === "ar" ? "ar-SA" : "en-US";
   const [newItemId, setNewItemId] = React.useState<string | null>(null);
   const [isAddingTask, setIsAddingTask] = React.useState(false);
   const [isAddingOccasion, setIsAddingOccasion] = React.useState(false);
@@ -63,7 +66,7 @@ const SecondarySidebar = () => {
                   onClick={() => {
                     setIsAddingOccasion(true);
                     addOccasion.mutate({
-                      title: t("add.occasion"),
+                      title: "",
                       date: new Date(),
                     });
                   }}
@@ -79,14 +82,14 @@ const SecondarySidebar = () => {
                 <div className="mt-4 text-center text-error">
                   {occasionsError instanceof Error
                     ? occasionsError.message
-                    : "An error occurred"}
+                    : t("error")}
                 </div>
               ) : occasions.length === 0 ? (
                 <EmptyState
                   onAdd={() => {
                     setIsAddingOccasion(true);
                     addOccasion.mutate({
-                      title: t("add.occasion"),
+                      title: "",
                       date: new Date(),
                     });
                   }}
@@ -100,7 +103,7 @@ const SecondarySidebar = () => {
                       type="occasion"
                       title={item.title}
                       rawDate={item.date}
-                      date={item.date.toLocaleDateString(locale, {
+                      date={item.date.toLocaleDateString(dateLocale, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
@@ -129,7 +132,7 @@ const SecondarySidebar = () => {
                 <div className="mt-4 text-center text-error">
                   {birthdaysError instanceof Error
                     ? birthdaysError.message
-                    : "An error occurred"}
+                    : t("error")}
                 </div>
               ) : birthdays.length === 0 ? (
                 <EmptyState />
@@ -142,7 +145,7 @@ const SecondarySidebar = () => {
                       type="birthday"
                       title={item.title}
                       rawDate={item.date}
-                      date={item.date.toLocaleDateString(locale, {
+                      date={item.date.toLocaleDateString(dateLocale, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
@@ -185,7 +188,7 @@ const SecondarySidebar = () => {
                 </div>
               ) : error ? (
                 <div className="mt-4 text-center text-error">
-                  {error instanceof Error ? error.message : "An error occurred"}
+                  {error instanceof Error ? error.message : t("error")}
                 </div>
               ) : tasks.length === 0 ? (
                 <EmptyState
@@ -208,7 +211,7 @@ const SecondarySidebar = () => {
                         id={item.id}
                         title={item.title}
                         rawDate={item.date}
-                        date={item.date.toLocaleDateString(locale, {
+                        date={item.date.toLocaleDateString(dateLocale, {
                           day: "numeric",
                           month: "numeric",
                           year: "numeric",

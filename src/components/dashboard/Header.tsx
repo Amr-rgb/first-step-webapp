@@ -16,9 +16,10 @@ import {
   Mail,
   LogOut,
 } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
 import { useDashboardSearch } from "@/hooks/use-dashboard-search";
 import SearchResults from "./SearchResults";
 import {
@@ -68,8 +69,11 @@ export default function Header({
   secondarySidebarOpen,
 }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("dashboard.header");
   const commonT = useTranslations("common");
+  const languageT = useTranslations("language");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -91,6 +95,7 @@ export default function Header({
   } = useDashboardSearch();
 
   // Menu items configuration
+  const settingsT = useTranslations("dashboard.header.settings");
   const menuItems = {
     // Toggle for enabling/disabling pusher notification toasts
     // This controls whether toast notifications appear when new pusher notifications arrive
@@ -426,6 +431,83 @@ export default function Header({
         </div>
 
         <NotificationDropdown />
+
+        {/* Language Switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center justify-center hover:bg-gray-100 rounded-lg p-1 transition-colors">
+              <div className="flex items-center gap-x-1.5">
+                <Image
+                  src={
+                    locale === "en"
+                      ? "/assets/icons/english.svg"
+                      : "/assets/icons/arabic.svg"
+                  }
+                  alt={locale === "en" ? "English" : "Arabic"}
+                  width={20}
+                  height={20}
+                />
+                <span className="text-sm font-medium text-mid-gray">
+                  {locale === "en" ? languageT("en") : languageT("ar")}
+                </span>
+              </div>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem
+              onClick={() => {
+                if (locale !== "ar") {
+                  // pathname from usePathname() already excludes the locale prefix
+                  const newPath = `/ar${pathname}`;
+                  // Force full page reload to get new locale messages
+                  window.location.href = newPath;
+                }
+              }}
+              className={locale === "ar" ? "opacity-50" : ""}
+            >
+              <div className="flex items-center justify-between w-full gap-x-2">
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src="/assets/icons/arabic.svg"
+                    alt="Arabic"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-sm font-medium">{languageT("ar")}</span>
+                </div>
+                {locale === "ar" && (
+                  <span className="text-xs text-primary">✓</span>
+                )}
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (locale !== "en") {
+                  // pathname from usePathname() already excludes the locale prefix
+                  const newPath = `/en${pathname}`;
+                  // Force full page reload to get new locale messages
+                  window.location.href = newPath;
+                }
+              }}
+              className={locale === "en" ? "opacity-50" : ""}
+            >
+              <div className="flex items-center justify-between w-full gap-x-2">
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src="/assets/icons/english.svg"
+                    alt="English"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-sm font-medium">{languageT("en")}</span>
+                </div>
+                {locale === "en" && (
+                  <span className="text-xs text-primary">✓</span>
+                )}
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Settings Dropdown Menu */}
         <DropdownMenu>

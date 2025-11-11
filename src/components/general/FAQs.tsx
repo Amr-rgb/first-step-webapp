@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -46,32 +48,77 @@ const FAQs = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
   );
 };
 
-const FAQAccordion = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
+const FAQAccordion = ({
+  commonQuestions,
+}: {
+  commonQuestions: CommonQuestion[];
+}) => {
+  const hasMoreThanFive = commonQuestions.length > 5;
+  const firstItemId =
+    commonQuestions.length > 0 ? `item-${commonQuestions[0].id}` : undefined;
+
   return (
-    <div className="grow w-full max-w-[600px] mx-auto rounded-lg">
-      <Accordion
-        type="multiple"
-        className="w-full flex flex-col gap-y-2 md:gap-y-4 text-mid-gray"
+    <>
+      <div
+        className={`grow w-full max-w-[600px] mx-auto rounded-lg ${
+          hasMoreThanFive
+            ? "max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+            : ""
+        }`}
       >
-        {commonQuestions.map((item) => (
-          <AccordionItem
-            className="bg-white rounded-2xl stroke-1 stroke-light-gray"
-            key={item.id}
-            value={`item-${item.id}`}
-          >
-            <AccordionTrigger className="text-left font-medium md:!text-lg lg:!text-xl p-4 lg:p-6">
-              {item.question}
-            </AccordionTrigger>
-            <AccordionContent className="px-4 lg:px-6">
-              <div 
-                className="prose max-w-none text-gray-700 leading-7"
-                dangerouslySetInnerHTML={{ __html: item.answer }}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </div>
+        <Accordion
+          type="multiple"
+          defaultValue={firstItemId ? [firstItemId] : undefined}
+          className="w-full flex flex-col gap-y-2 md:gap-y-4 text-mid-gray"
+        >
+          {commonQuestions.map((item) => (
+            <AccordionItem
+              className="bg-white rounded-2xl stroke-1 stroke-light-gray"
+              key={item.id}
+              value={`item-${item.id}`}
+            >
+              <AccordionTrigger className="text-left font-medium md:!text-lg lg:!text-xl p-4 lg:p-6">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent className="px-4 lg:px-6">
+                <div
+                  className="prose max-w-none text-gray-700 leading-7"
+                  dangerouslySetInnerHTML={{ __html: item.answer }}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+
+      {/* Custom Scrollbar Styles */}
+      {hasMoreThanFive && (
+        <style jsx global>{`
+          .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #4d5edb #f7f8fa;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4d5edb;
+            border-radius: 6px;
+            min-height: 40px;
+            transition: background 0.2s;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #22336c;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+        `}</style>
+      )}
+    </>
   );
 };
 

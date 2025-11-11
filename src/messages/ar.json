@@ -1416,6 +1416,16 @@
         "allChildren": "جميع الأطفال",
         "parents": "أولياء الأمور",
         "parentDetails": "تفاصيل ولي الأمر"
+      },
+      "settings": {
+        "notifications": "الإشعارات",
+        "billingHistory": "سجل الدفع",
+        "editAccountData": "تعديل بيانات الحساب",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsConditions": "الشروط والأحكام",
+        "faqs": "الاسئلة الشائعة",
+        "contactUs": "تواصل معنا",
+        "logout": "تسجيل الخروج"
       }
     },
     "search": {
@@ -1527,7 +1537,8 @@
       "empty": {
         "add-now": "أضف الآن"
       },
-      "loading": "جارى تحميل البيانا..."
+      "loading": "جارى تحميل البيانا...",
+      "error": "حدث خطأ"
     },
     "emptyStates": {
       "bookings": {

@@ -1422,6 +1422,16 @@
         "allChildren": "All Children",
         "parents": "Parents",
         "parentDetails": "Parent Details"
+      },
+      "settings": {
+        "notifications": "Notifications",
+        "billingHistory": "Billing History",
+        "editAccountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
       }
     },
     "search": {
@@ -1533,7 +1543,8 @@
       "empty": {
         "add-now": "Add Now"
       },
-      "loading": "Loading Data..."
+      "loading": "Loading Data...",
+      "error": "An error occurred"
     },
     "emptyStates": {
       "bookings": {
