@@ -68,21 +68,21 @@ const Card = ({
   };
 
   const cardClasses = cn(
-    "group relative w-full p-2 rounded-xl text-sm space-y-2 text-center",
+    "group/card relative w-full p-2 rounded-xl text-sm space-y-2 text-center",
     "text-mid-gray first:text-primary"
   );
 
   const dateClasses = "text-light-gray text-center";
 
   const ActionButtons = () => (
-    <div className="bg-white flex items-center gap-x-1 px-2">
+    <div className="opacity-0 group-hover/card:opacity-100 bg-white flex items-center gap-x-1 px-2">
       <Pencil
         onClick={() => setIsEditing(true)}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-primary cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-primary cursor-pointer"
       />
       <Trash
         onClick={handleDelete}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-destructive cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-destructive cursor-pointer"
       />
     </div>
   );

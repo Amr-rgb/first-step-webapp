@@ -65,19 +65,19 @@ const TaskCard = ({
   };
 
   const cardClasses = cn(
-    "group relative w-full p-2 pt-2.5 pb-2.5 rounded-xl text-sm bg-white",
+    "group/task relative w-full p-2 pt-2.5 pb-2.5 rounded-xl text-sm bg-white",
     done ? "text-success" : "text-warning"
   );
 
   const ActionButtons = () => (
-    <div className="bg-white flex items-center gap-x-1 px-2">
+    <div className="opacity-0 group-hover/task:opacity-100 bg-white flex items-center gap-x-1 px-2">
       <Pencil
         onClick={() => setIsEditing(true)}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-primary cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-primary cursor-pointer"
       />
       <Trash
         onClick={() => deleteTask.mutate(id)}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-destructive cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-destructive cursor-pointer"
       />
     </div>
   );
