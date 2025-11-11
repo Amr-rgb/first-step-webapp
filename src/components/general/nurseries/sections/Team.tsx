@@ -26,19 +26,19 @@ const Team = ({ members }: TeamProps) => {
       <h2 className="text-2xl md:text-3xl font-bold text-center text-[#47B881] mb-8">
         {t("team.title")}
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-4">
         {members.map((member, idx) => (
           <div key={idx} className="flex flex-col items-center">
             {member.isSkeleton ? (
-              <div className="rounded-3xl w-64 h-80 mb-4 bg-gray-200 animate-pulse" />
+              <div className="rounded-3xl aspect-[16/17] mb-4 bg-gray-200 animate-pulse" />
             ) : member.image ? (
               <img
                 src={member.image}
                 alt={member.name}
-                className="rounded-3xl object-cover w-64 h-80 mb-4 shadow-lg"
+                className="rounded-3xl object-cover aspect-[16/17] mb-4 shadow-lg"
               />
             ) : (
-              <div className="rounded-3xl w-64 h-80 mb-4 bg-gray-200 flex items-center justify-center shadow-lg">
+              <div className="rounded-3xl aspect-[16/17] mb-4 bg-gray-200 flex items-center justify-center shadow-lg">
                 <svg
                   className="w-32 h-32 text-gray-400"
                   fill="none"
