@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { PlusCircle } from "lucide-react";
 import {
@@ -21,6 +22,9 @@ const SecondarySidebar = () => {
   const locale = useLocale();
   const t = useTranslations("dashboard.secondary-sidebar");
   const subscriptionRequired = useSubscriptionRequired();
+  const [newItemId, setNewItemId] = React.useState<string | null>(null);
+  const [isAddingTask, setIsAddingTask] = React.useState(false);
+  const [isAddingOccasion, setIsAddingOccasion] = React.useState(false);
 
   const {
     occasions,
@@ -56,12 +60,13 @@ const SecondarySidebar = () => {
                   {t("upcoming-occasions")}
                 </p>
                 <PlusCircle
-                  onClick={() =>
+                  onClick={() => {
+                    setIsAddingOccasion(true);
                     addOccasion.mutate({
                       title: t("add.occasion"),
                       date: new Date(),
-                    })
-                  }
+                    });
+                  }}
                   className="size-4 text-light-gray hover:text-primary cursor-pointer"
                 />
               </div>
@@ -78,16 +83,17 @@ const SecondarySidebar = () => {
                 </div>
               ) : occasions.length === 0 ? (
                 <EmptyState
-                  onAdd={() =>
+                  onAdd={() => {
+                    setIsAddingOccasion(true);
                     addOccasion.mutate({
                       title: t("add.occasion"),
                       date: new Date(),
-                    })
-                  }
+                    });
+                  }}
                 />
               ) : (
                 <div className="mt-2 flex flex-col items-center gap-y-2">
-                  {occasions.map((item: Occasion) => (
+                  {occasions.map((item: Occasion, index: number) => (
                     <Card
                       key={item.id}
                       id={item.id}
@@ -99,6 +105,8 @@ const SecondarySidebar = () => {
                         day: "numeric",
                         month: "short",
                       })}
+                      isNew={isAddingOccasion && index === occasions.length - 1}
+                      onEditComplete={() => setIsAddingOccasion(false)}
                     />
                   ))}
                   <div className="w-4/5 h-px bg-light-gray rounded-full" />
@@ -158,13 +166,14 @@ const SecondarySidebar = () => {
                     })}
                   </p>
                   <PlusCircle
-                    onClick={() =>
+                    onClick={() => {
+                      setIsAddingTask(true);
                       addTask.mutate({
                         title: t("add.task"),
                         date: new Date(),
                         done: false,
-                      })
-                    }
+                      });
+                    }}
                     className="size-4 text-light-gray hover:text-primary cursor-pointer"
                   />
                 </div>
@@ -180,19 +189,20 @@ const SecondarySidebar = () => {
                 </div>
               ) : tasks.length === 0 ? (
                 <EmptyState
-                  onAdd={() =>
+                  onAdd={() => {
+                    setIsAddingTask(true);
                     addTask.mutate({
                       title: t("add.task"),
                       date: new Date(),
                       done: false,
-                    })
-                  }
+                    });
+                  }}
                 />
               ) : (
                 <div className="mt-2 flex flex-col gap-y-2">
                   {/* Tasks list */}
                   <div className="flex flex-col items-center gap-y-2">
-                    {tasks.map((item: Task) => (
+                    {tasks.map((item: Task, index: number) => (
                       <TaskCard
                         key={item.id}
                         id={item.id}
@@ -204,6 +214,8 @@ const SecondarySidebar = () => {
                           year: "numeric",
                         })}
                         done={item.done}
+                        isNew={isAddingTask && index === tasks.length - 1}
+                        onEditComplete={() => setIsAddingTask(false)}
                       />
                     ))}
                     <div className="w-4/5 h-px bg-light-gray rounded-full mt-1" />
