@@ -171,7 +171,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section id="plans-section" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -231,63 +231,65 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         ) : plans.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plans.map((plan: Plan) => (
-              <Card
-                key={plan.id}
-                className="hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardContent className="p-6">
-                  {/* Program Title */}
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    {plan.title}
-                  </h3>
+          <div className="max-h-[500px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {plans.map((plan: Plan) => (
+                <Card
+                  key={plan.id}
+                  className="hover:shadow-lg transition-shadow duration-300"
+                >
+                  <CardContent className="p-6">
+                    {/* Program Title */}
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      {plan.title}
+                    </h3>
 
-                  {/* Program Details */}
-                  <div className="space-y-3 mb-6">
-                    {/* Age Range */}
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <Users className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm text-gray-600">
-                        {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
-                        {locale === "ar" ? "سنة" : "years"}
-                      </span>
+                    {/* Program Details */}
+                    <div className="space-y-3 mb-6">
+                      {/* Age Range */}
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <Users className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm text-gray-600">
+                          {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
+                          {locale === "ar" ? "سنة" : "years"}
+                        </span>
+                      </div>
+
+                      {/* Duration */}
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <Clock className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-gray-600">
+                          {t("plans.duration")}:{" "}
+                          {getDurationLabel(plan.count, plan.enrollment_type)}
+                        </span>
+                      </div>
+
+                      {/* Price */}
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <DollarSign className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm text-gray-600">
+                          {t("plans.price")}: {plan.price_amount}{" "}
+                          {locale === "ar" ? "ريال" : "SAR"}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Duration */}
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <Clock className="w-4 h-4 text-green-600" />
-                      <span className="text-sm text-gray-600">
-                        {t("plans.duration")}:{" "}
-                        {getDurationLabel(plan.count, plan.enrollment_type)}
-                      </span>
-                    </div>
-
-                    {/* Price */}
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <DollarSign className="w-4 h-4 text-yellow-600" />
-                      <span className="text-sm text-gray-600">
-                        {t("plans.price")}: {plan.price_amount}{" "}
-                        {locale === "ar" ? "ريال" : "SAR"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Booking Button */}
-                  <Button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => {
-                      if (!preview) {
-                        // Navigate to booking page with plan details
-                        window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
-                      }
-                    }}
-                  >
-                    {t("plans.bookNow")}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    {/* Booking Button */}
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => {
+                        if (!preview) {
+                          // Navigate to booking page with plan details
+                          window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
+                        }
+                      }}
+                    >
+                      {t("plans.bookNow")}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-center py-12">

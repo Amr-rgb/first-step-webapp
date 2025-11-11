@@ -45,7 +45,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         );
       }
       return (
-        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary-blue-400 to-primary-blue-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
           C
         </div>
       );
@@ -53,7 +53,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
     // Parent type - first two letters of name
     return (
-      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
+      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary-blue-400 to-primary-blue-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
         {chat.name.substring(0, 2).toUpperCase()}
       </div>
     );
@@ -175,10 +175,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                         <span
                           className={`inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-medium ${
                             chat.type === "center"
-                              ? "bg-blue-100 text-blue-800"
+                              ? "bg-blue-100 text-primary-blue"
                               : chat.type === "parent"
                               ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                              : "bg-red-100 text-secondary-burgundy"
                           }`}
                         >
                           <span className="hidden sm:inline">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocale } from "next-intl";
 import { Pencil, Trash, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ type TaskCardProps = {
   date: string;
   rawDate: Date;
   done: boolean;
+  isNew?: boolean;
+  onEditComplete?: () => void;
 };
 
 const TaskCard = ({
@@ -22,13 +24,24 @@ const TaskCard = ({
   date,
   rawDate,
   done = false,
+  isNew = false,
+  onEditComplete,
 }: TaskCardProps) => {
   const locale = useLocale();
   const isRTL = locale === "ar";
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isNew);
   const [newTitle, setNewTitle] = useState(title);
   const [newDate, setNewDate] = useState(rawDate.toISOString().split("T")[0]);
+
+  // Focus on title input when entering edit mode
+  useEffect(() => {
+    if (isEditing && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditing]);
 
   const { updateTask, deleteTask, toggleTaskDone } = useTasks();
 
@@ -43,25 +56,28 @@ const TaskCard = ({
         },
       },
       {
-        onSuccess: () => setIsEditing(false),
+        onSuccess: () => {
+          setIsEditing(false);
+          onEditComplete?.();
+        },
       }
     );
   };
 
   const cardClasses = cn(
-    "group relative w-full p-2 pt-2.5 pb-2.5 rounded-xl text-sm bg-white",
+    "group/task relative w-full p-2 pt-2.5 pb-2.5 rounded-xl text-sm bg-white",
     done ? "text-success" : "text-warning"
   );
 
   const ActionButtons = () => (
-    <div className="bg-white flex items-center gap-x-1 px-2">
+    <div className="opacity-0 group-hover/task:opacity-100 bg-white flex items-center gap-x-1 px-2">
       <Pencil
         onClick={() => setIsEditing(true)}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-primary cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-primary cursor-pointer"
       />
       <Trash
         onClick={() => deleteTask.mutate(id)}
-        className="hidden group-hover:block size-4 text-gray-400 hover:text-destructive cursor-pointer"
+        className="transition-opacity size-4 text-gray-400 hover:text-destructive cursor-pointer"
       />
     </div>
   );
@@ -78,6 +94,7 @@ const TaskCard = ({
           setIsEditing(false);
           setNewTitle(title);
           setNewDate(rawDate.toISOString().split("T")[0]);
+          onEditComplete?.();
         }}
       />
     </>
@@ -85,35 +102,59 @@ const TaskCard = ({
 
   return (
     <div className={cardClasses}>
-      <div
-        className={cn("flex items-center gap-2", !isRTL && "flex-row-reverse")}
-      >
-        {/* Action buttons - Start side in RTL, End side in LTR */}
+      {isEditing ? (
+        <div className="space-y-2">
+          <Input
+            ref={titleInputRef}
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="text-sm"
+            placeholder="Task title"
+          />
+          <Input
+            type="date"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            className="text-sm"
+          />
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              onClick={() => {
+                setIsEditing(false);
+                setNewTitle(title);
+                setNewDate(rawDate.toISOString().split("T")[0]);
+                onEditComplete?.();
+              }}
+              className="p-1.5 rounded hover:bg-gray-100"
+            >
+              <X className="size-4 text-gray-400 hover:text-destructive" />
+            </button>
+            <button
+              onClick={handleSave}
+              className="p-1.5 rounded hover:bg-gray-100"
+            >
+              <Check className="size-4 text-success" />
+            </button>
+          </div>
+        </div>
+      ) : (
         <div
           className={cn(
-            "absolute flex gap-1 inset-y-0 items-center",
-            !isRTL ? "right-2" : "left-2"
+            "flex items-center gap-2",
+            !isRTL && "flex-row-reverse"
           )}
         >
-          {isEditing ? <EditButtons /> : <ActionButtons />}
-        </div>
-
-        {/* Content */}
-        {isEditing ? (
-          <div className="flex-1 mx-8">
-            <Input
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              className="text-sm mb-1"
-            />
-            <Input
-              type="date"
-              value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-              className="text-sm"
-            />
+          {/* Action buttons - Start side in RTL, End side in LTR */}
+          <div
+            className={cn(
+              "absolute flex gap-1 inset-y-0 items-center",
+              !isRTL ? "right-2" : "left-2"
+            )}
+          >
+            <ActionButtons />
           </div>
-        ) : (
+
+          {/* Content */}
           <div
             className={cn(
               "flex justify-between items-center flex-1 mx-2 overflow-hidden",
@@ -134,21 +175,21 @@ const TaskCard = ({
               {date}
             </p>
           </div>
-        )}
 
-        {/* Checkbox - End side in RTL, Start side in LTR */}
-        <div
-          className={cn(
-            "absolute inset-y-0 flex items-center",
-            !isRTL ? "left-2" : "right-2"
-          )}
-        >
-          <Checkbox
-            checked={Boolean(done)}
-            onCheckedChange={() => toggleTaskDone.mutate({ id, done: !done })}
-          />
+          {/* Checkbox - End side in RTL, Start side in LTR */}
+          <div
+            className={cn(
+              "absolute inset-y-0 flex items-center",
+              !isRTL ? "left-2" : "right-2"
+            )}
+          >
+            <Checkbox
+              checked={Boolean(done)}
+              onCheckedChange={() => toggleTaskDone.mutate({ id, done: !done })}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -10,6 +10,7 @@ interface ImageUploaderProps {
   accept?: string;
   disabled?: boolean;
   maxSizeMB?: number;
+  aspectRatio?: string;
 }
 
 export function ImageUploader({
@@ -18,6 +19,7 @@ export function ImageUploader({
   accept = "image/*",
   disabled,
   maxSizeMB = 5,
+  aspectRatio = "aspect-[16/5]",
 }: ImageUploaderProps) {
   const inputId = useId();
   const [isDragging, setIsDragging] = useState(false);
@@ -109,7 +111,11 @@ export function ImageUploader({
 
       {previewUrl && (
         <div className="relative">
-          <div className="aspect-[16/5] w-full rounded-md overflow-hidden bg-muted">
+          <div
+            className={`${
+              aspectRatio || "aspect-[16/5]"
+            } w-full rounded-md overflow-hidden bg-muted`}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={previewUrl}
