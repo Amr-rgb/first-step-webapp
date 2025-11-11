@@ -104,42 +104,48 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
                 </Button>
               </div>
 
-              <div>
-                <Label>{t("memberName")}</Label>
-                <Input
-                  value={member.name}
-                  onChange={(e) =>
-                    updateTeamMember(index, "name", e.target.value)
-                  }
-                  placeholder={t("memberNamePlaceholder")}
-                />
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-4">
+                {/* Left side - Name and Mission */}
+                <div className="space-y-4">
+                  <div>
+                    <Label>{t("memberName")}</Label>
+                    <Input
+                      value={member.name}
+                      onChange={(e) =>
+                        updateTeamMember(index, "name", e.target.value)
+                      }
+                      placeholder={t("memberNamePlaceholder")}
+                    />
+                  </div>
 
-              <div>
-                <Label>{t("memberMission")}</Label>
-                <Textarea
-                  value={member.mission}
-                  onChange={(e) =>
-                    updateTeamMember(index, "mission", e.target.value)
-                  }
-                  placeholder={t("memberMissionPlaceholder")}
-                  rows={3}
-                />
-              </div>
+                  <div>
+                    <Label>{t("memberMission")}</Label>
+                    <Input
+                      value={member.mission}
+                      onChange={(e) =>
+                        updateTeamMember(index, "mission", e.target.value)
+                      }
+                      placeholder={t("memberMissionPlaceholder")}
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <Label>{t("memberImage")}</Label>
-                <ImageUploader
-                  value={
-                    typeof member.image === "string"
-                      ? member.image
-                      : member.image || null
-                  }
-                  onChange={(file) =>
-                    updateTeamMember(index, "image", file || "")
-                  }
-                  accept="image/*"
-                />
+                {/* Right side - Image */}
+                <div>
+                  <Label>{t("memberImage")}</Label>
+                  <ImageUploader
+                    value={
+                      typeof member.image === "string"
+                        ? member.image
+                        : member.image || null
+                    }
+                    onChange={(file) =>
+                      updateTeamMember(index, "image", file || "")
+                    }
+                    accept="image/*"
+                    aspectRatio="aspect-auto"
+                  />
+                </div>
               </div>
             </div>
           </Card>
