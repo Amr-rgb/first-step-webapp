@@ -34,7 +34,7 @@ const getAvatarContent = (user: {
       );
     }
     return (
-      <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+      <div className="w-8 h-8 rounded-full bg-info text-white flex items-center justify-center text-xs font-bold">
         C
       </div>
     );
@@ -42,7 +42,7 @@ const getAvatarContent = (user: {
 
   // Parent type - first two letters of name
   return (
-    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+    <div className="w-8 h-8 rounded-full bg-secondary-burgundy text-white flex items-center justify-center text-xs font-bold">
       {user.senderName.substring(0, 2).toUpperCase()}
     </div>
   );
