@@ -22,7 +22,7 @@ const SecondarySidebar = () => {
   const locale = useLocale();
   const t = useTranslations("dashboard.secondary-sidebar");
   const subscriptionRequired = useSubscriptionRequired();
-  
+
   // Map locale to proper locale string for date formatting
   const dateLocale = locale === "ar" ? "ar-SA" : "en-US";
   const [newItemId, setNewItemId] = React.useState<string | null>(null);
@@ -66,7 +66,7 @@ const SecondarySidebar = () => {
                   onClick={() => {
                     setIsAddingOccasion(true);
                     addOccasion.mutate({
-                      title: "",
+                      title: t("add.occasion"),
                       date: new Date(),
                     });
                   }}
@@ -89,7 +89,7 @@ const SecondarySidebar = () => {
                   onAdd={() => {
                     setIsAddingOccasion(true);
                     addOccasion.mutate({
-                      title: "",
+                      title: t("add.occasion"),
                       date: new Date(),
                     });
                   }}
