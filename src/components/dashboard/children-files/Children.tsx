@@ -22,28 +22,41 @@ const Children = () => {
   });
 
   const flattenedChildren = useMemo((): Child[] => {
-    if (!Array.isArray(children)) return [];
-    return children.flatMap((child: any): Child[] => {
+    const childrenArray = Array.isArray(children) ? children : children?.data;
+    if (!Array.isArray(childrenArray)) return [];
+
+    return childrenArray.flatMap((child: any): Child[] => {
       const enrollments = Array.isArray(child?.enrollments)
         ? child.enrollments
         : [];
-      if (enrollments.length === 0) return [child] as Child[];
 
-      return enrollments.map((enrollment: any) => {
-        const row: Child = {
+      if (enrollments.length === 0) {
+        return [
+          {
+            id: child.id,
+            child_name: child.child_name,
+            birthday_date: child.birthday_date,
+            parent_name: child.parent_name || child.user?.name || "",
+            branch_name: "",
+            enrollments: [{ status: "pending" }],
+          },
+        ];
+      }
+
+      return enrollments.map(
+        (enrollment: any): Child => ({
           id: child.id,
           child_name: child.child_name,
           birthday_date: child.birthday_date,
-          parent_name: enrollment.parent_name ?? child.parent_name,
-          branch_name: enrollment.branch_name ?? child.branch_name,
-          enrollments: [
-            {
-              status: enrollment.status,
-            },
-          ],
-        };
-        return row;
-      });
+          parent_name:
+            enrollment.parent_name ||
+            child.parent_name ||
+            child.user?.name ||
+            "",
+          branch_name: enrollment.branch_name || "",
+          enrollments: [{ status: enrollment.status || "pending" }],
+        })
+      );
     });
   }, [children]);
 
