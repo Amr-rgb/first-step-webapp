@@ -17,7 +17,7 @@ import {
   parentService,
   enrollmentService,
 } from "@/services/api";
-import { useAuthUser } from "@/store/authStore";
+import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/lib/toast";
 
@@ -236,7 +236,29 @@ const ReservationForm = ({
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
   );
 
-  // Fetch parent's children
+  // Restore auth state after payment redirect
+  useEffect(() => {
+    if (submitSuccess && typeof window !== "undefined") {
+      try {
+        // Try to restore auth from localStorage
+        const authStorage = localStorage.getItem("auth-storage");
+        if (authStorage) {
+          const authData = JSON.parse(authStorage);
+          if (authData?.state?.token && authData?.state?.user) {
+            // Restore auth state
+            useAuthStore.getState().setUserToken(
+              authData.state.user,
+              authData.state.token
+            );
+          }
+        }
+      } catch (e) {
+        console.error("Error restoring auth after payment:", e);
+      }
+    }
+  }, [submitSuccess]);
+
+  // Fetch parent's children (only if authenticated and not on success page)
   const {
     data: realChildren = [],
     isLoading: isChildrenLoading,
@@ -244,6 +266,7 @@ const ReservationForm = ({
   } = useQuery({
     queryKey: ["parent-children"],
     queryFn: () => parentService.getChildren(),
+    enabled: !submitSuccess && !!authUser, // Don't fetch on success page
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -456,7 +479,35 @@ const ReservationForm = ({
             {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
           </button>
           <button
-            onClick={() => router.push(dashboardReservationsUrl)}
+            onClick={() => {
+              // Check if user is authenticated before redirecting
+              const isAuthenticated = authUser && typeof window !== "undefined";
+              
+              if (!isAuthenticated) {
+                // If not authenticated, try to restore from localStorage/cookies
+                try {
+                  const authStorage = localStorage.getItem("auth-storage");
+                  if (authStorage) {
+                    const authData = JSON.parse(authStorage);
+                    if (authData?.state?.token) {
+                      // Token exists, use full page reload to restore session
+                      window.location.href = dashboardReservationsUrl;
+                      return;
+                    }
+                  }
+                } catch (e) {
+                  console.error("Error checking auth:", e);
+                }
+                
+                // If still not authenticated, redirect to login first
+                const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(dashboardReservationsUrl)}`;
+                window.location.href = loginUrl;
+              } else {
+                // User is authenticated, navigate normally
+                // Use window.location.href for full page reload to ensure session is preserved
+                window.location.href = dashboardReservationsUrl;
+              }
+            }}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
               border-2 border-[#4D5EDB] text-[#4D5EDB] bg-white hover:bg-[#f7f8fa] hover:border-[#22336C] hover:text-[#22336C] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
           >

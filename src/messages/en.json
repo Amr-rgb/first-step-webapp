@@ -1099,7 +1099,8 @@
         "actions": {
           "showDetails": "Show Booking Details",
           "cancel": "Cancel Booking",
-          "renew": "Renew Same Booking Now"
+          "renew": "Renew Same Booking Now",
+          "confirmReservation": "Confirm the reservation now"
         },
         "status": {
           "accepted": "Pending Payment",
@@ -1126,7 +1127,31 @@
         "total": "Total",
         "filterByStatus": "Filter by status",
         "filterAll": "All statuses",
-        "noBookingsForStatus": "No bookings found for the selected status"
+        "noBookingsForStatus": "No bookings found for the selected status",
+        "confirmReservation": {
+          "title": "Booking Details",
+          "originalPrice": "Original Price",
+          "required": "Required",
+          "finalAmount": "Amount Required",
+          "notes": "Notes",
+          "note1": "A payment notification will be sent via email.",
+          "note2": "The paid amount cannot be refunded for any reason.",
+          "note3": "Please ensure the correctness of the information before proceeding with the payment.",
+          "payNow": "Pay Now",
+          "success": "Reservation confirmed successfully"
+        },
+        "coupon": {
+          "label": "Discount Coupon",
+          "placeholder": "Enter coupon code",
+          "apply": "Apply",
+          "changeCoupon": "Change Coupon",
+          "info": "You can change the coupon and add another coupon",
+          "code": "Coupon Code",
+          "saved": "Saved",
+          "appliedSuccess": "Coupon applied successfully",
+          "applyError": "Failed to apply coupon",
+          "emptyError": "Please enter a coupon code"
+        }
       },
       "reports": {
         "title": "Daily Reports",

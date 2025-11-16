@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +23,8 @@ import {
   paymentService,
   nurseryService,
 } from "@/services/api";
+import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "text-white",
@@ -99,11 +101,11 @@ const Bookings = () => {
     {
       label: string;
       variant?: "destructive" | "default";
-      action: "details" | "cancel" | "renew" | null;
+      action: "details" | "cancel" | "renew" | "confirmReservation" | null;
     }[]
   > = {
     [t("status.accepted")]: [
-      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.confirmReservation"), action: "confirmReservation" },
       { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
     ],
     [t("status.paid")]: [
@@ -188,6 +190,7 @@ const Bookings = () => {
     onShowDetails,
     onCancel,
     onRenew,
+    onConfirmReservation,
     cancellingId,
     renewingId,
   }: {
@@ -195,6 +198,7 @@ const Bookings = () => {
     onShowDetails: () => void;
     onCancel: () => void;
     onRenew: () => void;
+    onConfirmReservation: () => void;
     cancellingId: number | null;
     renewingId: number | null;
   }) {
@@ -284,6 +288,8 @@ const Bookings = () => {
                   buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
                 } else if (action.label === t("actions.renew")) {
                   buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
+                } else if (action.label === t("actions.confirmReservation")) {
+                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
                 } else if (action.label === t("actions.showDetails")) {
                   if (shouldBePrimaryForDetails) {
                     buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
@@ -323,6 +329,8 @@ const Bookings = () => {
                         ? onCancel
                         : action.action === "renew"
                         ? onRenew
+                        : action.action === "confirmReservation"
+                        ? onConfirmReservation
                         : undefined
                     }
                     disabled={
@@ -352,13 +360,84 @@ const Bookings = () => {
     open,
     onOpenChange,
     booking,
+    onConfirm,
   }: {
     open: boolean;
     onOpenChange: (v: boolean) => void;
     booking: any;
+    onConfirm?: (booking: any, couponCode?: string) => Promise<void>;
   }) {
     const locale = useLocale();
     const branchId = booking?.center_branch_id || booking?.branch_id;
+    const [couponCode, setCouponCode] = useState<string>("");
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+    const [couponDiscount, setCouponDiscount] = useState<number>(0);
+    const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+
+    // Initialize coupon from booking if it exists
+    useEffect(() => {
+      if (booking && open) {
+        const existingCoupon = booking.coupon_code || booking.originalData?.coupon_code;
+        const existingDiscount = booking.discount_amount || booking.originalData?.discount_amount || 0;
+        
+        if (existingCoupon) {
+          setAppliedCoupon(existingCoupon);
+          setCouponCode(existingCoupon);
+          setCouponDiscount(existingDiscount);
+        } else {
+          setAppliedCoupon(null);
+          setCouponCode("");
+          setCouponDiscount(0);
+        }
+      }
+    }, [booking, open]);
+
+    const originalPrice = booking?.amount || 0;
+    const discountAmount = couponDiscount;
+    const finalPrice = originalPrice - discountAmount;
+
+    const handleApplyCoupon = async () => {
+      if (!couponCode.trim()) {
+        toastError(t("coupon.emptyError") || "Please enter a coupon code");
+        return;
+      }
+
+      setIsApplyingCoupon(true);
+      try {
+        // TODO: Replace with actual API call to validate coupon
+        // For now, simulate a 10% discount
+        const discount = originalPrice * 0.1;
+        setCouponDiscount(discount);
+        setAppliedCoupon(couponCode);
+        toastSuccess(t("coupon.appliedSuccess") || "Coupon applied successfully");
+      } catch (error: any) {
+        toastError(error?.message || t("coupon.applyError") || "Failed to apply coupon");
+      } finally {
+        setIsApplyingCoupon(false);
+      }
+    };
+
+    const handleRemoveCoupon = () => {
+      setAppliedCoupon(null);
+      setCouponCode("");
+      setCouponDiscount(0);
+    };
+
+    const handleConfirm = async () => {
+      if (!onConfirm) return;
+      setIsConfirming(true);
+      try {
+        await onConfirm(booking, appliedCoupon || undefined);
+        onOpenChange(false);
+      } catch (error) {
+        // Error handling is done in the parent component
+      } finally {
+        setIsConfirming(false);
+      }
+    };
+
+    const isAcceptedStatus = booking?.status === "accepted";
 
     // Fetch pricing plans for the branch
     const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
@@ -495,17 +574,131 @@ const Bookings = () => {
               ))}
             </div>
 
+            {/* Coupon Section - Only show for accepted status */}
+            {isAcceptedStatus && (
+              <div className="border-t pt-4 mt-4 space-y-3">
+                <div>
+                  <label className="text-primary-blue font-bold text-sm block mb-2">
+                    {t("coupon.label") || "كوبون الخصم"}:
+                  </label>
+                  {appliedCoupon ? (
+                    <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
+                      <span className="text-purple-700 font-bold flex-1">
+                        {appliedCoupon}
+                      </span>
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="text-purple-700 hover:text-purple-900"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        placeholder={t("coupon.placeholder") || "أدخل كود الكوبون"}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={handleApplyCoupon}
+                        disabled={isApplyingCoupon || !couponCode.trim()}
+                        className="px-4"
+                      >
+                        {isApplyingCoupon ? (
+                          <LoadingSpinner size="sm" />
+                        ) : (
+                          t("coupon.apply") || "تطبيق"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                  <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+                    {t("coupon.info") || "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
+                    <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
+                      ?
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="border-t pt-4 mt-4">
-              <div className="flex justify-between items-center">
-                <span className="font-bold text-[#22336C] text-base">
-                  {t("total")}
-                </span>
-                <span className="font-extrabold text-2xl text-[#4D5EDB]">
-                  {booking.amount} {locale === "ar" ? "ر.س" : "SAR"}
-                </span>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#22336C] text-base">
+                    {isAcceptedStatus ? (t("confirmReservation.required") || "المطلوب") : t("total")}:
+                  </span>
+                  <span className="font-bold">
+                    {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
+                  </span>
+                </div>
+                {isAcceptedStatus && appliedCoupon && discountAmount > 0 && (
+                  <>
+                    <div className="flex justify-between text-red-500">
+                      <span className="font-bold">-10%</span>
+                      <span className="font-bold">
+                        -{discountAmount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{t("coupon.code") || "كود الكوبون"}: {appliedCoupon}</span>
+                      <span>
+                        {t("coupon.saved") || "وفرت"}: {discountAmount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                      </span>
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <span className="font-bold text-lg text-[#22336C]">
+                    {isAcceptedStatus ? (t("confirmReservation.finalAmount") || "المبلغ المطلوب") : t("total")}:
+                  </span>
+                  <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                    {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Notes and Pay Now Button - Only for accepted status */}
+          {isAcceptedStatus && onConfirm && (
+            <>
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-bold text-[#22336C] mb-2">
+                  {t("confirmReservation.notes") || "ملاحظات"}:
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                  <li>
+                    {t("confirmReservation.note1") ||
+                      "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note2") ||
+                      "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note3") ||
+                      "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-4">
+                <Button
+                  onClick={handleConfirm}
+                  disabled={isConfirming}
+                  className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
+                >
+                  {isConfirming ? (
+                    <LoadingSpinner size="sm" />
+                  ) : (
+                    t("confirmReservation.payNow") || "ادفع الآن"
+                  )}
+                </Button>
+              </div>
+            </>
+          )}
 
           {/* Custom Scrollbar Styles */}
           <style jsx global>{`
@@ -828,6 +1021,60 @@ const Bookings = () => {
     }
   };
 
+  // Confirm reservation handler
+  const confirmReservation = async (booking: any, couponCode?: string) => {
+    try {
+      // Get child IDs from booking
+      const childIds = booking.children?.map((child: any) => child.id || child.child_id) || [];
+      
+      if (childIds.length === 0) {
+        toastError("No children found for this booking");
+        return;
+      }
+
+      // Prepare payment payload
+      const paymentPayload: any = {
+        enrollment_id: booking.id,
+        child_ids: childIds,
+      };
+
+      // Add optional fields if they exist
+      if (booking.enrollment_date) {
+        paymentPayload.booking_date = booking.enrollment_date;
+      }
+      if (booking.starting_time) {
+        paymentPayload.from_time = booking.starting_time;
+      }
+      if (booking.ending_time) {
+        paymentPayload.to_time = booking.ending_time;
+      }
+
+      // Add coupon code if provided
+      if (couponCode) {
+        paymentPayload.coupon_code = couponCode;
+      }
+
+      // Call payment service to redirect to payment page
+      const response = await paymentService.payOrder(paymentPayload);
+      
+      // If the response contains a payment URL, redirect to it
+      if (response?.payment_url || response?.url) {
+        window.location.href = response.payment_url || response.url;
+      } else if (response?.redirect_url) {
+        window.location.href = response.redirect_url;
+      } else {
+        // If no URL in response, construct it from the API base URL
+        const paymentUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/pay-order`;
+        // You might need to redirect with the enrollment_id as a parameter
+        window.location.href = `${paymentUrl}?enrollment_id=${booking.id}`;
+      }
+    } catch (e: any) {
+      const errorMessage = e?.response?.data?.message || e?.message || "Failed to process payment";
+      toastError(errorMessage);
+      throw e;
+    }
+  };
+
   // Prepare filter options: "all" + all unique statuses
   const filterOptions = [
     { value: "all", label: t("filterAll") },
@@ -878,6 +1125,10 @@ const Bookings = () => {
             }}
             onCancel={() => handleCancel(booking)}
             onRenew={() => handleRenew(booking)}
+            onConfirmReservation={() => {
+              setSelectedBooking(booking);
+              setShowDetails(true);
+            }}
             cancellingId={cancellingId}
             renewingId={renewingId}
           />
@@ -887,6 +1138,7 @@ const Bookings = () => {
         open={showDetails}
         onOpenChange={setShowDetails}
         booking={selectedBooking}
+        onConfirm={selectedBooking?.status === "accepted" ? confirmReservation : undefined}
       />
       <ConfirmationDialog
         isOpen={confirmDialog.open}
