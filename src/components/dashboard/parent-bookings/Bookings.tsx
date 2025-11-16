@@ -25,6 +25,7 @@ import {
 } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import ReservationForm from "@/components/general/nurseries/ReservationForm";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "text-white",
@@ -49,8 +50,11 @@ const Bookings = () => {
     open: boolean;
     booking: any | null;
   }>({ open: false, booking: null });
+  const [showRenewDialog, setShowRenewDialog] = useState(false);
+  const [renewBooking, setRenewBooking] = useState<any>(null);
   const queryClient = useQueryClient();
   const authUser = useAuthUser();
+  const locale = useLocale();
   const { data, isLoading, error } = useQuery({
     queryKey: ["enrollments"],
     queryFn: parentService.getParentEnrollments,
@@ -378,9 +382,11 @@ const Bookings = () => {
     // Initialize coupon from booking if it exists
     useEffect(() => {
       if (booking && open) {
-        const existingCoupon = booking.coupon_code || booking.originalData?.coupon_code;
-        const existingDiscount = booking.discount_amount || booking.originalData?.discount_amount || 0;
-        
+        const existingCoupon =
+          booking.coupon_code || booking.originalData?.coupon_code;
+        const existingDiscount =
+          booking.discount_amount || booking.originalData?.discount_amount || 0;
+
         if (existingCoupon) {
           setAppliedCoupon(existingCoupon);
           setCouponCode(existingCoupon);
@@ -410,9 +416,13 @@ const Bookings = () => {
         const discount = originalPrice * 0.1;
         setCouponDiscount(discount);
         setAppliedCoupon(couponCode);
-        toastSuccess(t("coupon.appliedSuccess") || "Coupon applied successfully");
+        toastSuccess(
+          t("coupon.appliedSuccess") || "Coupon applied successfully"
+        );
       } catch (error: any) {
-        toastError(error?.message || t("coupon.applyError") || "Failed to apply coupon");
+        toastError(
+          error?.message || t("coupon.applyError") || "Failed to apply coupon"
+        );
       } finally {
         setIsApplyingCoupon(false);
       }
@@ -598,7 +608,9 @@ const Bookings = () => {
                       <Input
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
-                        placeholder={t("coupon.placeholder") || "أدخل كود الكوبون"}
+                        placeholder={
+                          t("coupon.placeholder") || "أدخل كود الكوبون"
+                        }
                         className="flex-1"
                       />
                       <Button
@@ -628,7 +640,10 @@ const Bookings = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[#22336C] text-base">
-                    {isAcceptedStatus ? (t("confirmReservation.required") || "المطلوب") : t("total")}:
+                    {isAcceptedStatus
+                      ? t("confirmReservation.required") || "المطلوب"
+                      : t("total")}
+                    :
                   </span>
                   <span className="font-bold">
                     {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
@@ -639,23 +654,32 @@ const Bookings = () => {
                     <div className="flex justify-between text-red-500">
                       <span className="font-bold">-10%</span>
                       <span className="font-bold">
-                        -{discountAmount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                        -{discountAmount.toFixed(2)}{" "}
+                        {locale === "ar" ? "ر.س" : "SAR"}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm text-gray-600">
-                      <span>{t("coupon.code") || "كود الكوبون"}: {appliedCoupon}</span>
                       <span>
-                        {t("coupon.saved") || "وفرت"}: {discountAmount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                        {t("coupon.code") || "كود الكوبون"}: {appliedCoupon}
+                      </span>
+                      <span>
+                        {t("coupon.saved") || "وفرت"}:{" "}
+                        {discountAmount.toFixed(2)}{" "}
+                        {locale === "ar" ? "ر.س" : "SAR"}
                       </span>
                     </div>
                   </>
                 )}
                 <div className="flex justify-between items-center pt-2 border-t">
                   <span className="font-bold text-lg text-[#22336C]">
-                    {isAcceptedStatus ? (t("confirmReservation.finalAmount") || "المبلغ المطلوب") : t("total")}:
+                    {isAcceptedStatus
+                      ? t("confirmReservation.finalAmount") || "المبلغ المطلوب"
+                      : t("total")}
+                    :
                   </span>
                   <span className="font-extrabold text-2xl text-[#4D5EDB]">
-                    {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
+                    {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice}{" "}
+                    {locale === "ar" ? "ر.س" : "SAR"}
                   </span>
                 </div>
               </div>
@@ -876,157 +900,29 @@ const Bookings = () => {
     }
   };
 
-  // Renew booking handler - uses same flow as reservation form
-  const handleRenew = async (booking: any) => {
-    console.log("Renew booking data:", booking);
-    console.log("Original booking data:", booking.originalData);
-    console.log("Enrollment type from booking:", booking.enrollment_type);
-    console.log(
-      "Enrollment type from originalData:",
-      booking.originalData?.enrollment_type
-    );
+  // Renew booking handler - opens ReservationForm in dialog
+  const handleRenew = (booking: any) => {
+    setRenewBooking(booking);
+    setShowRenewDialog(true);
+  };
 
-    // Use branch_id if center_branch_id is not available
-    const branchId = booking.center_branch_id || booking.branch_id;
-
-    // Get parent phone from booking or fallback to auth user (can be null)
-    const parentPhone =
-      booking.parent_phone ||
-      (authUser as any)?.phone ||
-      (authUser as any)?.user?.phone ||
-      null;
-
-    if (!branchId) {
-      console.error("Missing required data:", {
-        branchId,
-      });
-      toastError("Missing information to renew booking");
-      return;
-    }
-
-    setRenewingId(booking.id);
-    try {
-      // Fetch children if not already available
-      let childrenIds = booking.children?.map((child: any) => Number(child.id));
-
-      if (!childrenIds || childrenIds.length === 0) {
-        const childrenData = await apiParentService.getChildren();
-        childrenIds = childrenData.map((child: any) => Number(child.id));
-      }
-
-      if (!childrenIds || childrenIds.length === 0) {
-        toastError("No children found to renew booking");
-        return;
-      }
-
-      const branchIdRenew = booking.center_branch_id || booking.branch_id;
-
-      // Get enrollment type from original data or booking
-      const enrollmentType =
-        booking.originalData?.enrollment_type || booking.enrollment_type;
-      console.log("Using enrollment type:", enrollmentType);
-
-      // Check if it's hourly by looking at original data fields
-      const hasDayString =
-        booking.originalData?.day_string !== null &&
-        booking.originalData?.day_string !== undefined;
-      const hasStartingTime =
-        booking.originalData?.starting_time !== null &&
-        booking.originalData?.starting_time !== undefined;
-
-      // Also check by looking at the pricing plan type if we have branch_price_id
-      let isHourlyType =
-        enrollmentType === "hour" || hasDayString || hasStartingTime;
-
-      // If still not sure, check the pricing plan
-      if (!isHourlyType && booking.branch_price_id) {
-        try {
-          const pricingData = await nurseryService.getBranchPricing(
-            branchIdRenew
-          );
-          const selectedPlan = pricingData.find(
-            (plan: any) => plan.id === booking.branch_price_id
-          );
-          if (selectedPlan?.enrollment_type === "hour") {
-            isHourlyType = true;
-            console.log("Detected hourly from pricing plan:", selectedPlan);
-          }
-        } catch (err) {
-          console.error("Could not fetch pricing data:", err);
-        }
-      }
-
-      console.log("Is hourly enrollment?", isHourlyType, {
-        enrollmentType,
-        hasDayString,
-        hasStartingTime,
-        branch_price_id: booking.branch_price_id,
-      });
-
-      // Prepare enrollment payload same as reservation form
-      const enrollmentPayload: any = {
-        center_branch_id: Number(branchIdRenew),
-        branch_price_id: booking.branch_price_id
-          ? Number(booking.branch_price_id)
-          : 1, // Fallback if not available
-        parent_phone: parentPhone,
-        children: childrenIds,
-      };
-
-      // Add date/time fields based on enrollment type - use today's date
-      const today = new Date();
-      const todayISO = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-
-      // Check if it's hourly enrollment
-      if (isHourlyType) {
-        // For hourly enrollment, send date in YYYY-MM-DD format
-        enrollmentPayload.day_string = todayISO;
-        enrollmentPayload.starting_time = "09:00"; // Default time
-        console.log("Adding hourly fields:", {
-          day_string: todayISO,
-          starting_time: "09:00",
-        });
-      } else {
-        // For day/week/month/year types - use today's date
-        enrollmentPayload.starting_date = todayISO;
-        console.log("Adding date field:", { starting_date: todayISO });
-      }
-
-      console.log("Final enrollment payload:", enrollmentPayload);
-
-      // Create enrollment (creates with pending status)
-      const enrollmentResponse = await enrollmentService.createEnrollment(
-        enrollmentPayload
-      );
-      console.log("Enrollment created successfully:", enrollmentResponse);
-
-      // Show success message
-      toastSuccess(t("renewSuccess"));
-
-      // Wait a bit before refetching to ensure backend has updated
-      setTimeout(async () => {
-        queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-        await queryClient.refetchQueries({ queryKey: ["enrollments"] });
-      }, 1500);
-    } catch (e: any) {
-      console.error("Renew enrollment error:", e);
-      const errorMessage =
-        e?.response?.data?.message || e?.message || t("renewError");
-      const errorDetails = e?.response?.data?.errors
-        ? JSON.stringify(e.response.data.errors)
-        : "";
-      toastError(`${errorMessage} ${errorDetails}`);
-    } finally {
-      setRenewingId(null);
-    }
+  // Handle renew dialog close
+  const handleRenewDialogClose = () => {
+    setShowRenewDialog(false);
+    setRenewBooking(null);
+    // Refetch enrollments after dialog closes (in case a new booking was created)
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+    }, 500);
   };
 
   // Confirm reservation handler
   const confirmReservation = async (booking: any, couponCode?: string) => {
     try {
       // Get child IDs from booking
-      const childIds = booking.children?.map((child: any) => child.id || child.child_id) || [];
-      
+      const childIds =
+        booking.children?.map((child: any) => child.id || child.child_id) || [];
+
       if (childIds.length === 0) {
         toastError("No children found for this booking");
         return;
@@ -1056,7 +952,7 @@ const Bookings = () => {
 
       // Call payment service to redirect to payment page
       const response = await paymentService.payOrder(paymentPayload);
-      
+
       // If the response contains a payment URL, redirect to it
       if (response?.payment_url || response?.url) {
         window.location.href = response.payment_url || response.url;
@@ -1069,7 +965,8 @@ const Bookings = () => {
         window.location.href = `${paymentUrl}?enrollment_id=${booking.id}`;
       }
     } catch (e: any) {
-      const errorMessage = e?.response?.data?.message || e?.message || "Failed to process payment";
+      const errorMessage =
+        e?.response?.data?.message || e?.message || "Failed to process payment";
       toastError(errorMessage);
       throw e;
     }
@@ -1138,7 +1035,11 @@ const Bookings = () => {
         open={showDetails}
         onOpenChange={setShowDetails}
         booking={selectedBooking}
-        onConfirm={selectedBooking?.status === "accepted" ? confirmReservation : undefined}
+        onConfirm={
+          selectedBooking?.status === "accepted"
+            ? confirmReservation
+            : undefined
+        }
       />
       <ConfirmationDialog
         isOpen={confirmDialog.open}
@@ -1150,6 +1051,34 @@ const Bookings = () => {
         cancelText={t("dialogs.cancelCancel")}
         variant="destructive"
       />
+      {/* Renew Booking Dialog */}
+      {renewBooking && (
+        <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-center w-full">
+                {t("actions.renew")}
+              </DialogTitle>
+            </DialogHeader>
+            <ReservationForm
+              nurseryName={
+                renewBooking.originalData?.center_name ||
+                renewBooking.className ||
+                "nursery"
+              }
+              selectedProgram={renewBooking.program || ""}
+              locale={locale as "ar" | "en"}
+              selectedBranch={
+                renewBooking.center_branch_id || renewBooking.branch_id
+              }
+              isDialogMode={true}
+              onClose={handleRenewDialogClose}
+              preSelectedPlanId={renewBooking.branch_price_id}
+              showOnlySelectedPlan={true}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

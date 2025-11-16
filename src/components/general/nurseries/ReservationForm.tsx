@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { UserPlus } from "lucide-react";
+import { UserPlus, X } from "lucide-react";
 import {
   paymentService,
   nurseryService,
@@ -20,6 +20,7 @@ import {
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/lib/toast";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -27,6 +28,11 @@ interface ReservationFormProps {
   locale: "ar" | "en";
   selectedBranch?: string;
   selectedPlan?: string;
+  // New props for dialog mode and renewal
+  isDialogMode?: boolean;
+  onClose?: () => void;
+  preSelectedPlanId?: number | string;
+  showOnlySelectedPlan?: boolean;
 }
 
 interface FormData {
@@ -114,6 +120,10 @@ const ReservationForm = ({
   locale,
   selectedBranch,
   selectedPlan,
+  isDialogMode = false,
+  onClose,
+  preSelectedPlanId,
+  showOnlySelectedPlan = false,
 }: ReservationFormProps) => {
   const t = useTranslations();
   const router = useRouter();
@@ -183,9 +193,11 @@ const ReservationForm = ({
     });
   }
 
-  // Set default plan to first in list if not found
+  // Set default plan to first in list if not found, or use preSelectedPlanId
   const [selectedPlanId, setSelectedPlanId] = useState<string | number>(
-    selectedPlan && findSelectedPlan(planList, selectedPlan)
+    preSelectedPlanId
+      ? preSelectedPlanId
+      : selectedPlan && findSelectedPlan(planList, selectedPlan)
       ? findSelectedPlan(planList, selectedPlan)!.id
       : selectedProgram && findSelectedPlan(planList, selectedProgram)
       ? findSelectedPlan(planList, selectedProgram)!.id
@@ -207,12 +219,13 @@ const ReservationForm = ({
   const [hasInitialized, setHasInitialized] = useState(false);
   useEffect(() => {
     if (planList.length > 0 && !hasInitialized) {
-      const foundPlan =
-        selectedPlan && findSelectedPlan(planList, selectedPlan)
-          ? findSelectedPlan(planList, selectedPlan)!.id
-          : selectedProgram && findSelectedPlan(planList, selectedProgram)
-          ? findSelectedPlan(planList, selectedProgram)!.id
-          : planList[0]?.id;
+      const foundPlan = preSelectedPlanId
+        ? preSelectedPlanId
+        : selectedPlan && findSelectedPlan(planList, selectedPlan)
+        ? findSelectedPlan(planList, selectedPlan)!.id
+        : selectedProgram && findSelectedPlan(planList, selectedProgram)
+        ? findSelectedPlan(planList, selectedProgram)!.id
+        : planList[0]?.id;
 
       if (foundPlan && foundPlan !== selectedPlanId) {
         console.log(
@@ -225,12 +238,24 @@ const ReservationForm = ({
       }
       setHasInitialized(true);
     }
-  }, [planList, selectedPlan, selectedProgram, hasInitialized, selectedPlanId]);
+  }, [
+    planList,
+    selectedPlan,
+    selectedProgram,
+    hasInitialized,
+    selectedPlanId,
+    preSelectedPlanId,
+  ]);
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Coupon state
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   // Show success if redirected from payment
   const [submitSuccess, setSubmitSuccess] = useState(
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
@@ -246,10 +271,9 @@ const ReservationForm = ({
           const authData = JSON.parse(authStorage);
           if (authData?.state?.token && authData?.state?.user) {
             // Restore auth state
-            useAuthStore.getState().setUserToken(
-              authData.state.user,
-              authData.state.token
-            );
+            useAuthStore
+              .getState()
+              .setUserToken(authData.state.user, authData.state.token);
           }
         }
       } catch (e) {
@@ -275,6 +299,51 @@ const ReservationForm = ({
     setSelectedChildren((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+  };
+
+  // Coupon handlers
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toastError(
+        locale === "ar"
+          ? "يرجى إدخال كود الكوبون"
+          : "Please enter a coupon code"
+      );
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    try {
+      // TODO: Replace with actual API call to validate coupon
+      // For now, simulate a 10% discount
+      const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
+      const numericPrice = selectedPlanObjLocal
+        ? parseFloat(selectedPlanObjLocal.price.replace(/[^\d.]/g, ""))
+        : 0;
+      const numberOfChildren = selectedChildren.length || 0;
+      const total = numericPrice * numberOfChildren;
+      const discount = total * 0.1;
+      setCouponDiscount(discount);
+      setAppliedCoupon(couponCode);
+      toastSuccess(
+        locale === "ar"
+          ? "تم تطبيق الكوبون بنجاح"
+          : "Coupon applied successfully"
+      );
+    } catch (error: any) {
+      toastError(
+        error?.message ||
+          (locale === "ar" ? "فشل في تطبيق الكوبون" : "Failed to apply coupon")
+      );
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponDiscount(0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -315,6 +384,11 @@ const ReservationForm = ({
         children: selectedChildren.map((id) => Number(id)),
       };
 
+      // Add coupon code if applied
+      if (appliedCoupon) {
+        enrollmentPayload.coupon_code = appliedCoupon;
+      }
+
       if (selectedApiPlan?.enrollment_type === "hour") {
         // Require day_string and starting_time
         // const dayString = bookingDate
@@ -337,6 +411,13 @@ const ReservationForm = ({
           ? "تم إرسال طلب الحجز بنجاح!"
           : "Reservation Request Sent Successfully!"
       );
+
+      // If in dialog mode, close the dialog after success
+      if (isDialogMode && onClose) {
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      }
     } catch (err: any) {
       console.error("Payment error details:", err);
       setIsSubmitting(false);
@@ -482,7 +563,7 @@ const ReservationForm = ({
             onClick={() => {
               // Check if user is authenticated before redirecting
               const isAuthenticated = authUser && typeof window !== "undefined";
-              
+
               if (!isAuthenticated) {
                 // If not authenticated, try to restore from localStorage/cookies
                 try {
@@ -498,9 +579,11 @@ const ReservationForm = ({
                 } catch (e) {
                   console.error("Error checking auth:", e);
                 }
-                
+
                 // If still not authenticated, redirect to login first
-                const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(dashboardReservationsUrl)}`;
+                const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(
+                  dashboardReservationsUrl
+                )}`;
                 window.location.href = loginUrl;
               } else {
                 // User is authenticated, navigate normally
@@ -552,7 +635,10 @@ const ReservationForm = ({
           stiffness: 60,
         }}
       >
-        {planList.map((p) => {
+        {(showOnlySelectedPlan
+          ? planList.filter((p) => p.id === selectedPlanId)
+          : planList
+        ).map((p) => {
           const selected =
             selectedPlanId === p.id ||
             p.type === selectedPlanId ||
@@ -577,8 +663,10 @@ const ReservationForm = ({
                     ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
                     : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none"
                 }
+                ${showOnlySelectedPlan ? "cursor-default" : ""}
               `}
               onClick={() => {
+                if (showOnlySelectedPlan) return;
                 console.log(
                   "Plan clicked:",
                   p.id,
@@ -587,7 +675,8 @@ const ReservationForm = ({
                 );
                 setSelectedPlanId(p.id);
               }}
-              tabIndex={0}
+              disabled={showOnlySelectedPlan}
+              tabIndex={showOnlySelectedPlan ? -1 : 0}
             >
               <span
                 className={`text-lg font-extrabold mb-1 ${
@@ -957,7 +1046,27 @@ const ReservationForm = ({
               </span>
             </div>
           )}
-          <div className="flex justify-between items-center">
+          {appliedCoupon && couponDiscount > 0 && (
+            <>
+              <div className="flex justify-between text-red-500 mb-2">
+                <span className="font-bold">-10%</span>
+                <span className="font-bold">
+                  -{couponDiscount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>
+                  {locale === "ar" ? "كود الكوبون" : "Coupon Code"}:{" "}
+                  {appliedCoupon}
+                </span>
+                <span>
+                  {locale === "ar" ? "وفرت" : "Saved"}:{" "}
+                  {couponDiscount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                </span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between items-center pt-2 border-t">
             <span className="font-bold text-[#22336C] text-base">
               {locale === "ar" ? "السعر الإجمالي" : "Total"}
             </span>
@@ -971,15 +1080,82 @@ const ReservationForm = ({
                 );
                 const numberOfChildren = selectedChildren.length || 0;
                 const total = numericPrice * numberOfChildren;
+                const finalTotal = total - couponDiscount;
 
                 // Extract currency from price string
                 const currency = locale === "ar" ? "ر.س" : "SAR";
 
-                return `${total.toFixed(2)} ${currency}`;
+                return `${finalTotal.toFixed(2)} ${currency}`;
               })()}
             </span>
           </div>
         </div>
+      </motion.div>
+
+      {/* Coupon Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
+        className="max-w-md mx-auto bg-white rounded-xl shadow p-6 mb-4"
+      >
+        <label className="text-primary-blue font-bold text-sm block mb-2">
+          {locale === "ar" ? "كوبون الخصم" : "Discount Coupon"}:
+        </label>
+        {appliedCoupon ? (
+          <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
+            <span className="text-purple-700 font-bold flex-1">
+              {appliedCoupon}
+            </span>
+            <button
+              type="button"
+              onClick={handleRemoveCoupon}
+              className="text-purple-700 hover:text-purple-900"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Input
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              placeholder={
+                locale === "ar"
+                  ? "أدخل كود الكوبون (مثال: night15)"
+                  : "Enter coupon code (e.g., night15)"
+              }
+              className="flex-1"
+            />
+            <Button
+              type="button"
+              onClick={handleApplyCoupon}
+              disabled={isApplyingCoupon || !couponCode.trim()}
+              className="px-4"
+            >
+              {isApplyingCoupon ? (
+                <LoadingSpinner size="sm" />
+              ) : locale === "ar" ? (
+                "جرب الكوبون"
+              ) : (
+                "Try Coupon"
+              )}
+            </Button>
+          </div>
+        )}
+        <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+          {locale === "ar"
+            ? "لا يعمل الكوبون في هذه الخطوة ويفعل عند الدفع بعد الموافقة على طلب الحجز"
+            : "The coupon does not work at this step and is activated upon payment after approval of the booking request"}
+          <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
+            ?
+          </span>
+        </p>
       </motion.div>
 
       {/* Notice Paragraph */}
