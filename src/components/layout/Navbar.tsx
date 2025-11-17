@@ -289,7 +289,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
             <Menu size={24} />
           </Button>
 
-          <div className="ml-8 hidden sm:block">
+          <div className="ltr:ml-8 rtl:mr-8 hidden sm:block">
             {children ? children : <NavbarButton />}
           </div>
         </div>

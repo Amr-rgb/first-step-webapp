@@ -268,21 +268,21 @@ export const PlansSection = () => {
                   {t("noPlansYet")}
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[400px] overflow-y-auto space-y-3 pr-2">
                   {branchPricing.map((plan) => (
                     <Card key={plan.id} className="p-4 shadow-sm">
                       <div className="flex justify-between items-start">
                         <div>
                           <h4 className="font-semibold">{plan.title}</h4>
                           {/* <p className="text-sm text-muted-foreground">
-                            {t("ageRange", {
-                              start: plan.start_age,
-                              end: plan.end_age,
-                            })}
-                          </p>
-                          <p className="text-sm">
-                            {t("priceAmount", { amount: plan.price_amount })}
-                          </p> */}
+                              {t("ageRange", {
+                                start: plan.start_age,
+                                end: plan.end_age,
+                              })}
+                            </p>
+                            <p className="text-sm">
+                              {t("priceAmount", { amount: plan.price_amount })}
+                            </p> */}
                         </div>
                         <div className="flex gap-2">
                           <Button

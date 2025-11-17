@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "../icons";
 import { Blog } from "@/types";
 import { useTranslations, useLocale } from "next-intl";
+import { Clock } from "lucide-react";
 
 interface AdminBlogCardProps {
   blog: Blog;
@@ -21,7 +22,7 @@ const AdminBlogCard = ({
   const locale = useLocale();
 
   return (
-    <div className="bg-white shadow-card min-w-60 p-2 pb-4 flex flex-col items-start gap-y-2 rounded-2xl text-left rtl:text-right relative">
+    <div className="bg-white shadow-card min-w-60 p-2 pb-4 flex flex-col items-start gap-y-2 rounded-2xl text-left rtl:text-right relative hover:shadow-sm transition-shadow duration-300">
       <div className="w-full h-40 rounded-xl overflow-hidden relative">
         <Image
           src={blog.image}
@@ -35,9 +36,9 @@ const AdminBlogCard = ({
         />
       </div>
 
-      <h3 className="text-primary font-bold">
+      <p className="text-primary font-bold">
         {typeof blog.title === "string" ? blog.title : blog.title?.[locale]}
-      </h3>
+      </p>
 
       <p className="text-gray text-sm line-clamp-3">
         {typeof blog.description === "string"
@@ -45,21 +46,25 @@ const AdminBlogCard = ({
           : blog.description?.[locale]}
       </p>
 
-      <div className="w-full flex items-end justify-between text-sm">
-        <div className="flex flex-col gap-y-2">
-          <span className="text-secondary-orange font-medium text-sm">
-            {blog.reading_time} {t("minutes")}
-          </span>
-        </div>
+      <div className="mt-auto w-full flex items-end justify-between text-sm">
         <div className="flex items-center gap-x-0.5">
-          <Icons.calendar className="fill-gray" width={12} height={12} />
-          <span className="font-medium">
+          <Icons.calendar className="fill-gray text-gray size-4" />
+          <span className="font-medium text-gray">
             {new Date(blog.published_at).toLocaleDateString(locale, {
               year: "numeric",
               month: "short",
               day: "numeric",
             })}
           </span>
+        </div>
+
+        <div className="flex flex-col gap-y-2">
+          <div className="flex items-center gap-x-0.5">
+            <Clock className="text-info size-4" />
+            <span className="text-info font-medium text-sm">
+              {blog.reading_time} {t("minutes")}
+            </span>
+          </div>
         </div>
       </div>
 

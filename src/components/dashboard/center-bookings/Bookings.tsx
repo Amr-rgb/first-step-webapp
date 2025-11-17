@@ -17,6 +17,7 @@ import { AcceptEnrollmentModal } from "./AcceptEnrollmentModal";
 import { Button } from "@/components/ui/button";
 import { Table, LayoutGrid } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast";
+import { FilterButtons } from "@/components/common/FilterButtons";
 
 const transformEnrollmentsData = (data: any): Booking[] => {
   // Handle both direct array and wrapped response
@@ -327,23 +328,11 @@ const Bookings = () => {
         </div>
 
         {/* Filter Buttons */}
-        <div className="w-full overflow-x-auto">
-          <div className="flex gap-2 pb-2 w-2.5 max-w-full">
-            {filters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setActiveFilter(filter.value)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border whitespace-nowrap transition-all flex-shrink-0 ${
-                  activeFilter === filter.value
-                    ? "bg-primary text-white border-primary"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-primary"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <FilterButtons
+          filters={filters}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
 
         {/* Table View */}
         {viewMode === "table" && (

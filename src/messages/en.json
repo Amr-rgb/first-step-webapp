@@ -1854,12 +1854,14 @@
     "tables": {
       "shared": {
         "status": {
-          "confirmed": "Payment Confirmed",
+          "confirmed": "Waiting for Payment",
           "waitingForPayment": "Waiting for Payment",
           "waitingForConfirmation": "Waiting for Confirmation",
           "rejected": "Rejected",
           "cancelled": "Cancelled",
           "paid": "Paid",
+          "existing": "Through Center",
+          "expired": "Expired",
           "selectChild": "Select Child"
         }
       },

@@ -50,21 +50,6 @@ const Activities = ({
             </div>
           ))}
         </div>
-        {buttonText && (
-          <div className="flex justify-center mb-12">
-            <div className="relative group">
-              <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50">
-                {buttonText}
-              </button>
-              {!preview ? (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                  Wait until the nursery adds its plans or programs
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        )}
       </section>
     );
   }
@@ -84,17 +69,12 @@ const Activities = ({
       );
     } else {
       return (
-        <div
+        <img
           key={index}
-          className={`rounded-2xl w-full ${height} bg-gray-100 flex items-center justify-center`}
-        >
-          <div className="flex flex-col items-center space-y-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#6A8DFF] border-t-transparent"></div>
-            <span className="text-[#22336C] text-sm font-medium">
-              Loading...
-            </span>
-          </div>
-        </div>
+          src="/assets/illustrations/nursery_activity.png"
+          alt={`activity${index + 1}`}
+          className={`rounded-2xl object-cover w-full ${height}`}
+        />
       );
     }
   };
@@ -126,22 +106,6 @@ const Activities = ({
           {createImageSlot(5, "h-80")}
         </div>
       </div>
-
-      {buttonText && (
-        <div className="flex justify-center mb-12">
-          <div className="relative group">
-            <button className="bg-gray-400 text-white rounded-xl px-12 py-4 font-bold text-lg shadow-lg opacity-50">
-              {buttonText}
-            </button>
-            {!preview ? (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                Wait until the nursery adds its plans or programs
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      )}
     </section>
   );
 };
