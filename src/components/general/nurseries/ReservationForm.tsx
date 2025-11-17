@@ -604,25 +604,30 @@ const ReservationForm = ({
   }
 
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      dir={dir}
-      className="space-y-8"
-      initial={{ opacity: 0, y: 32 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
-    >
+    <>
+      <motion.form
+        id={isDialogMode ? "reservation-form" : undefined}
+        onSubmit={handleSubmit}
+        dir={dir}
+        className={`space-y-8 ${isDialogMode ? "pb-4" : ""}`}
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
+      >
       {/* Plan Selection */}
       <motion.div
-        className={`flex items-center gap-4 max-w-2xl mx-auto mb-6 ${
-          planList.length > 4
-            ? "overflow-x-auto pb-2 custom-scrollbar"
-            : "flex-row"
+        className={`flex gap-4 mb-6 ${
+          showOnlySelectedPlan
+            ? "justify-center items-center"
+            : planList.length > 4
+            ? "overflow-x-auto pb-2 custom-scrollbar justify-start"
+            : "flex-row justify-center items-center"
         }`}
         style={{
-          maxWidth: planList.length > 4 ? "100%" : "32rem",
-          paddingLeft: planList.length > 4 ? 8 : 0,
-          paddingRight: planList.length > 4 ? 8 : 0,
+          maxWidth: showOnlySelectedPlan ? "100%" : planList.length > 4 ? "100%" : "32rem",
+          margin: "0 auto",
+          paddingLeft: showOnlySelectedPlan ? 0 : planList.length > 4 ? 8 : 0,
+          paddingRight: showOnlySelectedPlan ? 0 : planList.length > 4 ? 8 : 0,
           paddingTop: 8,
           paddingBottom: 8,
         }}
@@ -655,8 +660,8 @@ const ReservationForm = ({
             <button
               key={p.id}
               type="button"
-              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2 ${
-                planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
+              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base ${
+                showOnlySelectedPlan ? "" : planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
               }
                 ${
                   selected
@@ -1121,7 +1126,7 @@ const ReservationForm = ({
             </button>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Input
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
@@ -1130,13 +1135,13 @@ const ReservationForm = ({
                   ? "أدخل كود الكوبون (مثال: night15)"
                   : "Enter coupon code (e.g., night15)"
               }
-              className="flex-1"
+              className="flex-1 h-9"
             />
             <Button
               type="button"
               onClick={handleApplyCoupon}
               disabled={isApplyingCoupon || !couponCode.trim()}
-              className="px-4"
+              className="px-4 h-9"
             >
               {isApplyingCoupon ? (
                 <LoadingSpinner size="sm" />
@@ -1148,7 +1153,7 @@ const ReservationForm = ({
             </Button>
           </div>
         )}
-        <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+        <p className={`text-xs text-blue-400 flex items-center gap-1 mt-1 ${locale === "ar" ? "flex-row-reverse" : ""}`}>
           {locale === "ar"
             ? "لا يعمل الكوبون في هذه الخطوة ويفعل عند الدفع بعد الموافقة على طلب الحجز"
             : "The coupon does not work at this step and is activated upon payment after approval of the booking request"}
@@ -1175,54 +1180,86 @@ const ReservationForm = ({
           : "Confirming the booking means you accept the terms and conditions and our privacy policy."}
       </motion.div>
 
-      {/* Submit Button */}
-      <motion.button
-        type="submit"
-        disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
-        className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.35,
-          duration: 0.4,
-          type: "spring",
-          stiffness: 60,
-        }}
-      >
-        {isSubmitting
-          ? locale === "ar"
-            ? "جاري الإرسال..."
-            : "Submitting..."
-          : locale === "ar"
-          ? "قم بتأكيد الحجز الآن"
-          : "Confirm Booking Now"}
-      </motion.button>
+      {/* Submit Button - Inside form for non-dialog mode */}
+      {!isDialogMode && (
+        <motion.button
+          type="submit"
+          disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
+          className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.35,
+            duration: 0.4,
+            type: "spring",
+            stiffness: 60,
+          }}
+        >
+          {isSubmitting
+            ? locale === "ar"
+              ? "جاري الإرسال..."
+              : "Submitting..."
+            : locale === "ar"
+            ? "قم بتأكيد الحجز الآن"
+            : "Confirm Booking Now"}
+        </motion.button>
+      )}
       {/* Custom Scrollbar Styles - must be inside the component */}
-      <style jsx global>{`
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #4d5edb #f7f8fa;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 6px;
-          background: #f7f8fa;
-          border-radius: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #4d5edb;
-          border-radius: 6px;
-          min-width: 40px;
-          transition: background 0.2s;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #22336c;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f7f8fa;
-          border-radius: 6px;
-        }
-      `}</style>
+      {!isDialogMode && (
+        <style jsx global>{`
+          .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #4d5edb #f7f8fa;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4d5edb;
+            border-radius: 6px;
+            min-width: 40px;
+            transition: background 0.2s;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #22336c;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+        `}</style>
+      )}
     </motion.form>
+      {/* Fixed Submit Button for Dialog Mode */}
+      {isDialogMode && (
+        <div className="sticky bottom-0 bg-white border-t pt-4 mt-4 -mx-6 px-6 pb-4 z-10">
+          <motion.button
+            type="submit"
+            form="reservation-form"
+            disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
+            className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.35,
+              duration: 0.4,
+              type: "spring",
+              stiffness: 60,
+            }}
+          >
+            {isSubmitting
+              ? locale === "ar"
+                ? "جاري الإرسال..."
+                : "Submitting..."
+              : locale === "ar"
+              ? "قم بتأكيد الحجز الآن"
+              : "Confirm Booking Now"}
+          </motion.button>
+        </div>
+      )}
+    </>
   );
 };
 

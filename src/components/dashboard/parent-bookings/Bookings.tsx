@@ -477,12 +477,15 @@ const Bookings = () => {
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle className="text-center w-full">
               {t("actions.showDetails")}
             </DialogTitle>
           </DialogHeader>
+          
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
 
           {/* Plan Selection - Same style as ReservationForm */}
           {loadingPlans ? (
@@ -499,52 +502,23 @@ const Bookings = () => {
               ))}
             </div>
           ) : planList.length > 0 ? (
-            <div
-              className={`flex items-center gap-4 mb-6 ${
-                planList.length > 4
-                  ? "overflow-x-auto pb-2 custom-scrollbar"
-                  : "flex-row justify-center"
-              }`}
-              style={{
-                maxWidth: planList.length > 4 ? "100%" : "32rem",
-                paddingLeft: planList.length > 4 ? 8 : 0,
-                paddingRight: planList.length > 4 ? 8 : 0,
-                paddingTop: 8,
-                paddingBottom: 8,
-                margin: "0 auto",
-              }}
-            >
-              {planList.map((p: any) => {
-                const selected =
-                  selectedPlanId === p.id || selectedPlanId === p.planId;
+            <div className="flex justify-center gap-4 mb-6">
+              {planList
+                .filter((p: any) => {
+                  // Only show the selected plan (current booking's plan)
+                  return selectedPlanId === p.id || selectedPlanId === p.planId;
+                })
+                .map((p: any) => {
                 return (
                   <div
                     key={p.id}
-                    className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base ${
-                      planList.length > 4
-                        ? "min-w-[120px] flex-shrink-0"
-                        : "flex-1"
-                    }
-                      ${
-                        selected
-                          ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
-                          : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid"
-                      }
-                    `}
+                    className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
                   >
-                    <span
-                      className={`text-lg font-extrabold mb-1 ${
-                        selected ? "text-white" : "text-[#4D5EDB]"
-                      }`}
-                    >
+                    <span className="text-lg font-extrabold mb-1 text-white">
                       {p.price}
                     </span>
-                    <span className="w-full h-px bg-[#DADADA] mb-1" />
-                    <span
-                      className={`text-base font-bold ${
-                        selected ? "text-white" : "text-[#22336C]"
-                      }`}
-                    >
+                    <span className="w-full h-px bg-white/30 mb-1" />
+                    <span className="text-base font-bold text-white">
                       {p.name}
                     </span>
                   </div>
@@ -604,19 +578,19 @@ const Bookings = () => {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <Input
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         placeholder={
                           t("coupon.placeholder") || "أدخل كود الكوبون"
                         }
-                        className="flex-1"
+                        className="flex-1 h-9"
                       />
                       <Button
                         onClick={handleApplyCoupon}
                         disabled={isApplyingCoupon || !couponCode.trim()}
-                        className="px-4"
+                        className="px-4 h-9"
                       >
                         {isApplyingCoupon ? (
                           <LoadingSpinner size="sm" />
@@ -686,42 +660,45 @@ const Bookings = () => {
             </div>
           </div>
 
-          {/* Notes and Pay Now Button - Only for accepted status */}
+          {/* Notes - Only for accepted status */}
           {isAcceptedStatus && onConfirm && (
-            <>
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-bold text-[#22336C] mb-2">
-                  {t("confirmReservation.notes") || "ملاحظات"}:
-                </h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                  <li>
-                    {t("confirmReservation.note1") ||
-                      "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
-                  </li>
-                  <li>
-                    {t("confirmReservation.note2") ||
-                      "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
-                  </li>
-                  <li>
-                    {t("confirmReservation.note3") ||
-                      "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-4">
-                <Button
-                  onClick={handleConfirm}
-                  disabled={isConfirming}
-                  className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
-                >
-                  {isConfirming ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    t("confirmReservation.payNow") || "ادفع الآن"
-                  )}
-                </Button>
-              </div>
-            </>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-bold text-[#22336C] mb-2">
+                {t("confirmReservation.notes") || "ملاحظات"}:
+              </h4>
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                <li>
+                  {t("confirmReservation.note1") ||
+                    "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
+                </li>
+                <li>
+                  {t("confirmReservation.note2") ||
+                    "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
+                </li>
+                <li>
+                  {t("confirmReservation.note3") ||
+                    "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
+                </li>
+              </ul>
+            </div>
+          )}
+          </div>
+
+          {/* Fixed Footer with Pay Now Button - Only for accepted status */}
+          {isAcceptedStatus && onConfirm && (
+            <div className="border-t bg-white px-6 py-4 sticky bottom-0 z-10">
+              <Button
+                onClick={handleConfirm}
+                disabled={isConfirming}
+                className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
+              >
+                {isConfirming ? (
+                  <LoadingSpinner size="sm" />
+                ) : (
+                  t("confirmReservation.payNow") || "ادفع الآن"
+                )}
+              </Button>
+            </div>
           )}
 
           {/* Custom Scrollbar Styles */}
@@ -731,14 +708,14 @@ const Bookings = () => {
               scrollbar-color: #4d5edb #f7f8fa;
             }
             .custom-scrollbar::-webkit-scrollbar {
-              height: 6px;
+              width: 6px;
               background: #f7f8fa;
               border-radius: 6px;
             }
             .custom-scrollbar::-webkit-scrollbar-thumb {
               background: #4d5edb;
               border-radius: 6px;
-              min-width: 40px;
+              min-height: 40px;
               transition: background 0.2s;
             }
             .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -1054,28 +1031,55 @@ const Bookings = () => {
       {/* Renew Booking Dialog */}
       {renewBooking && (
         <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="px-6 pt-6 pb-4">
               <DialogTitle className="text-center w-full">
                 {t("actions.renew")}
               </DialogTitle>
             </DialogHeader>
-            <ReservationForm
-              nurseryName={
-                renewBooking.originalData?.center_name ||
-                renewBooking.className ||
-                "nursery"
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
+              <ReservationForm
+                nurseryName={
+                  renewBooking.originalData?.center_name ||
+                  renewBooking.className ||
+                  "nursery"
+                }
+                selectedProgram={renewBooking.program || ""}
+                locale={locale as "ar" | "en"}
+                selectedBranch={
+                  renewBooking.center_branch_id || renewBooking.branch_id
+                }
+                isDialogMode={true}
+                onClose={handleRenewDialogClose}
+                preSelectedPlanId={renewBooking.branch_price_id}
+                showOnlySelectedPlan={true}
+              />
+            </div>
+            {/* Custom Scrollbar Styles */}
+            <style jsx global>{`
+              .custom-scrollbar {
+                scrollbar-width: thin;
+                scrollbar-color: #4d5edb #f7f8fa;
               }
-              selectedProgram={renewBooking.program || ""}
-              locale={locale as "ar" | "en"}
-              selectedBranch={
-                renewBooking.center_branch_id || renewBooking.branch_id
+              .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+                background: #f7f8fa;
+                border-radius: 6px;
               }
-              isDialogMode={true}
-              onClose={handleRenewDialogClose}
-              preSelectedPlanId={renewBooking.branch_price_id}
-              showOnlySelectedPlan={true}
-            />
+              .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #4d5edb;
+                border-radius: 6px;
+                min-height: 40px;
+                transition: background 0.2s;
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #22336c;
+              }
+              .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f7f8fa;
+                border-radius: 6px;
+              }
+            `}</style>
           </DialogContent>
         </Dialog>
       )}
