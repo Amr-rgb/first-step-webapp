@@ -8,7 +8,7 @@ const BlogsWrapper = async ({
   locale: string;
   number?: number;
 }) => {
-  let blogs = [];
+  let blogs: any = [];
   let error = null;
 
   try {
@@ -20,7 +20,7 @@ const BlogsWrapper = async ({
 
   const latestBlogs = blogs
     .sort(
-      (a, b) =>
+      (a: any, b: any) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     )
     .slice(0, number);
