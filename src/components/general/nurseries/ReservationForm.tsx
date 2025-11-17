@@ -10,16 +10,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { UserPlus } from "lucide-react";
+import { UserPlus, X } from "lucide-react";
 import {
   paymentService,
   nurseryService,
   parentService,
   enrollmentService,
 } from "@/services/api";
-import { useAuthUser } from "@/store/authStore";
+import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/lib/toast";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -27,6 +28,11 @@ interface ReservationFormProps {
   locale: "ar" | "en";
   selectedBranch?: string;
   selectedPlan?: string;
+  // New props for dialog mode and renewal
+  isDialogMode?: boolean;
+  onClose?: () => void;
+  preSelectedPlanId?: number | string;
+  showOnlySelectedPlan?: boolean;
 }
 
 interface FormData {
@@ -114,6 +120,10 @@ const ReservationForm = ({
   locale,
   selectedBranch,
   selectedPlan,
+  isDialogMode = false,
+  onClose,
+  preSelectedPlanId,
+  showOnlySelectedPlan = false,
 }: ReservationFormProps) => {
   const t = useTranslations();
   const router = useRouter();
@@ -183,9 +193,11 @@ const ReservationForm = ({
     });
   }
 
-  // Set default plan to first in list if not found
+  // Set default plan to first in list if not found, or use preSelectedPlanId
   const [selectedPlanId, setSelectedPlanId] = useState<string | number>(
-    selectedPlan && findSelectedPlan(planList, selectedPlan)
+    preSelectedPlanId
+      ? preSelectedPlanId
+      : selectedPlan && findSelectedPlan(planList, selectedPlan)
       ? findSelectedPlan(planList, selectedPlan)!.id
       : selectedProgram && findSelectedPlan(planList, selectedProgram)
       ? findSelectedPlan(planList, selectedProgram)!.id
@@ -207,12 +219,13 @@ const ReservationForm = ({
   const [hasInitialized, setHasInitialized] = useState(false);
   useEffect(() => {
     if (planList.length > 0 && !hasInitialized) {
-      const foundPlan =
-        selectedPlan && findSelectedPlan(planList, selectedPlan)
-          ? findSelectedPlan(planList, selectedPlan)!.id
-          : selectedProgram && findSelectedPlan(planList, selectedProgram)
-          ? findSelectedPlan(planList, selectedProgram)!.id
-          : planList[0]?.id;
+      const foundPlan = preSelectedPlanId
+        ? preSelectedPlanId
+        : selectedPlan && findSelectedPlan(planList, selectedPlan)
+        ? findSelectedPlan(planList, selectedPlan)!.id
+        : selectedProgram && findSelectedPlan(planList, selectedProgram)
+        ? findSelectedPlan(planList, selectedProgram)!.id
+        : planList[0]?.id;
 
       if (foundPlan && foundPlan !== selectedPlanId) {
         console.log(
@@ -225,18 +238,51 @@ const ReservationForm = ({
       }
       setHasInitialized(true);
     }
-  }, [planList, selectedPlan, selectedProgram, hasInitialized, selectedPlanId]);
+  }, [
+    planList,
+    selectedPlan,
+    selectedProgram,
+    hasInitialized,
+    selectedPlanId,
+    preSelectedPlanId,
+  ]);
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Coupon state
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   // Show success if redirected from payment
   const [submitSuccess, setSubmitSuccess] = useState(
     typeof window !== "undefined" && searchParams?.get("payment") === "success"
   );
 
-  // Fetch parent's children
+  // Restore auth state after payment redirect
+  useEffect(() => {
+    if (submitSuccess && typeof window !== "undefined") {
+      try {
+        // Try to restore auth from localStorage
+        const authStorage = localStorage.getItem("auth-storage");
+        if (authStorage) {
+          const authData = JSON.parse(authStorage);
+          if (authData?.state?.token && authData?.state?.user) {
+            // Restore auth state
+            useAuthStore
+              .getState()
+              .setUserToken(authData.state.user, authData.state.token);
+          }
+        }
+      } catch (e) {
+        console.error("Error restoring auth after payment:", e);
+      }
+    }
+  }, [submitSuccess]);
+
+  // Fetch parent's children (only if authenticated and not on success page)
   const {
     data: realChildren = [],
     isLoading: isChildrenLoading,
@@ -244,6 +290,7 @@ const ReservationForm = ({
   } = useQuery({
     queryKey: ["parent-children"],
     queryFn: () => parentService.getChildren(),
+    enabled: !submitSuccess && !!authUser, // Don't fetch on success page
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -252,6 +299,51 @@ const ReservationForm = ({
     setSelectedChildren((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+  };
+
+  // Coupon handlers
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toastError(
+        locale === "ar"
+          ? "يرجى إدخال كود الكوبون"
+          : "Please enter a coupon code"
+      );
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    try {
+      // TODO: Replace with actual API call to validate coupon
+      // For now, simulate a 10% discount
+      const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
+      const numericPrice = selectedPlanObjLocal
+        ? parseFloat(selectedPlanObjLocal.price.replace(/[^\d.]/g, ""))
+        : 0;
+      const numberOfChildren = selectedChildren.length || 0;
+      const total = numericPrice * numberOfChildren;
+      const discount = total * 0.1;
+      setCouponDiscount(discount);
+      setAppliedCoupon(couponCode);
+      toastSuccess(
+        locale === "ar"
+          ? "تم تطبيق الكوبون بنجاح"
+          : "Coupon applied successfully"
+      );
+    } catch (error: any) {
+      toastError(
+        error?.message ||
+          (locale === "ar" ? "فشل في تطبيق الكوبون" : "Failed to apply coupon")
+      );
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponDiscount(0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -292,6 +384,11 @@ const ReservationForm = ({
         children: selectedChildren.map((id) => Number(id)),
       };
 
+      // Add coupon code if applied
+      if (appliedCoupon) {
+        enrollmentPayload.coupon_code = appliedCoupon;
+      }
+
       if (selectedApiPlan?.enrollment_type === "hour") {
         // Require day_string and starting_time
         // const dayString = bookingDate
@@ -314,6 +411,13 @@ const ReservationForm = ({
           ? "تم إرسال طلب الحجز بنجاح!"
           : "Reservation Request Sent Successfully!"
       );
+
+      // If in dialog mode, close the dialog after success
+      if (isDialogMode && onClose) {
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      }
     } catch (err: any) {
       console.error("Payment error details:", err);
       setIsSubmitting(false);
@@ -456,7 +560,37 @@ const ReservationForm = ({
             {locale === "ar" ? "إرسال طلب آخر" : "Submit Another Request"}
           </button>
           <button
-            onClick={() => router.push(dashboardReservationsUrl)}
+            onClick={() => {
+              // Check if user is authenticated before redirecting
+              const isAuthenticated = authUser && typeof window !== "undefined";
+
+              if (!isAuthenticated) {
+                // If not authenticated, try to restore from localStorage/cookies
+                try {
+                  const authStorage = localStorage.getItem("auth-storage");
+                  if (authStorage) {
+                    const authData = JSON.parse(authStorage);
+                    if (authData?.state?.token) {
+                      // Token exists, use full page reload to restore session
+                      window.location.href = dashboardReservationsUrl;
+                      return;
+                    }
+                  }
+                } catch (e) {
+                  console.error("Error checking auth:", e);
+                }
+
+                // If still not authenticated, redirect to login first
+                const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(
+                  dashboardReservationsUrl
+                )}`;
+                window.location.href = loginUrl;
+              } else {
+                // User is authenticated, navigate normally
+                // Use window.location.href for full page reload to ensure session is preserved
+                window.location.href = dashboardReservationsUrl;
+              }
+            }}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
               border-2 border-[#4D5EDB] text-[#4D5EDB] bg-white hover:bg-[#f7f8fa] hover:border-[#22336C] hover:text-[#22336C] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
           >
@@ -470,25 +604,30 @@ const ReservationForm = ({
   }
 
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      dir={dir}
-      className="space-y-8"
-      initial={{ opacity: 0, y: 32 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
-    >
+    <>
+      <motion.form
+        id={isDialogMode ? "reservation-form" : undefined}
+        onSubmit={handleSubmit}
+        dir={dir}
+        className={`space-y-8 ${isDialogMode ? "pb-4" : ""}`}
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
+      >
       {/* Plan Selection */}
       <motion.div
-        className={`flex items-center gap-4 max-w-2xl mx-auto mb-6 ${
-          planList.length > 4
-            ? "overflow-x-auto pb-2 custom-scrollbar"
-            : "flex-row"
+        className={`flex gap-4 mb-6 ${
+          showOnlySelectedPlan
+            ? "justify-center items-center"
+            : planList.length > 4
+            ? "overflow-x-auto pb-2 custom-scrollbar justify-start"
+            : "flex-row justify-center items-center"
         }`}
         style={{
-          maxWidth: planList.length > 4 ? "100%" : "32rem",
-          paddingLeft: planList.length > 4 ? 8 : 0,
-          paddingRight: planList.length > 4 ? 8 : 0,
+          maxWidth: showOnlySelectedPlan ? "100%" : planList.length > 4 ? "100%" : "32rem",
+          margin: "0 auto",
+          paddingLeft: showOnlySelectedPlan ? 0 : planList.length > 4 ? 8 : 0,
+          paddingRight: showOnlySelectedPlan ? 0 : planList.length > 4 ? 8 : 0,
           paddingTop: 8,
           paddingBottom: 8,
         }}
@@ -501,7 +640,10 @@ const ReservationForm = ({
           stiffness: 60,
         }}
       >
-        {planList.map((p) => {
+        {(showOnlySelectedPlan
+          ? planList.filter((p) => p.id === selectedPlanId)
+          : planList
+        ).map((p) => {
           const selected =
             selectedPlanId === p.id ||
             p.type === selectedPlanId ||
@@ -518,16 +660,18 @@ const ReservationForm = ({
             <button
               key={p.id}
               type="button"
-              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base mb-2 ${
-                planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
+              className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base ${
+                showOnlySelectedPlan ? "" : planList.length > 4 ? "min-w-[120px] flex-shrink-0" : "flex-1"
               }
                 ${
                   selected
                     ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
                     : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none"
                 }
+                ${showOnlySelectedPlan ? "cursor-default" : ""}
               `}
               onClick={() => {
+                if (showOnlySelectedPlan) return;
                 console.log(
                   "Plan clicked:",
                   p.id,
@@ -536,7 +680,8 @@ const ReservationForm = ({
                 );
                 setSelectedPlanId(p.id);
               }}
-              tabIndex={0}
+              disabled={showOnlySelectedPlan}
+              tabIndex={showOnlySelectedPlan ? -1 : 0}
             >
               <span
                 className={`text-lg font-extrabold mb-1 ${
@@ -906,7 +1051,27 @@ const ReservationForm = ({
               </span>
             </div>
           )}
-          <div className="flex justify-between items-center">
+          {appliedCoupon && couponDiscount > 0 && (
+            <>
+              <div className="flex justify-between text-red-500 mb-2">
+                <span className="font-bold">-10%</span>
+                <span className="font-bold">
+                  -{couponDiscount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>
+                  {locale === "ar" ? "كود الكوبون" : "Coupon Code"}:{" "}
+                  {appliedCoupon}
+                </span>
+                <span>
+                  {locale === "ar" ? "وفرت" : "Saved"}:{" "}
+                  {couponDiscount.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                </span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between items-center pt-2 border-t">
             <span className="font-bold text-[#22336C] text-base">
               {locale === "ar" ? "السعر الإجمالي" : "Total"}
             </span>
@@ -920,15 +1085,82 @@ const ReservationForm = ({
                 );
                 const numberOfChildren = selectedChildren.length || 0;
                 const total = numericPrice * numberOfChildren;
+                const finalTotal = total - couponDiscount;
 
                 // Extract currency from price string
                 const currency = locale === "ar" ? "ر.س" : "SAR";
 
-                return `${total.toFixed(2)} ${currency}`;
+                return `${finalTotal.toFixed(2)} ${currency}`;
               })()}
             </span>
           </div>
         </div>
+      </motion.div>
+
+      {/* Coupon Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.4,
+          type: "spring",
+          stiffness: 60,
+        }}
+        className="max-w-md mx-auto bg-white rounded-xl shadow p-6 mb-4"
+      >
+        <label className="text-primary-blue font-bold text-sm block mb-2">
+          {locale === "ar" ? "كوبون الخصم" : "Discount Coupon"}:
+        </label>
+        {appliedCoupon ? (
+          <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
+            <span className="text-purple-700 font-bold flex-1">
+              {appliedCoupon}
+            </span>
+            <button
+              type="button"
+              onClick={handleRemoveCoupon}
+              className="text-purple-700 hover:text-purple-900"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <Input
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              placeholder={
+                locale === "ar"
+                  ? "أدخل كود الكوبون (مثال: night15)"
+                  : "Enter coupon code (e.g., night15)"
+              }
+              className="flex-1 h-9"
+            />
+            <Button
+              type="button"
+              onClick={handleApplyCoupon}
+              disabled={isApplyingCoupon || !couponCode.trim()}
+              className="px-4 h-9"
+            >
+              {isApplyingCoupon ? (
+                <LoadingSpinner size="sm" />
+              ) : locale === "ar" ? (
+                "جرب الكوبون"
+              ) : (
+                "Try Coupon"
+              )}
+            </Button>
+          </div>
+        )}
+        <p className={`text-xs text-blue-400 flex items-center gap-1 mt-1 ${locale === "ar" ? "flex-row-reverse" : ""}`}>
+          {locale === "ar"
+            ? "لا يعمل الكوبون في هذه الخطوة ويفعل عند الدفع بعد الموافقة على طلب الحجز"
+            : "The coupon does not work at this step and is activated upon payment after approval of the booking request"}
+          <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
+            ?
+          </span>
+        </p>
       </motion.div>
 
       {/* Notice Paragraph */}
@@ -948,54 +1180,86 @@ const ReservationForm = ({
           : "Confirming the booking means you accept the terms and conditions and our privacy policy."}
       </motion.div>
 
-      {/* Submit Button */}
-      <motion.button
-        type="submit"
-        disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
-        className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.35,
-          duration: 0.4,
-          type: "spring",
-          stiffness: 60,
-        }}
-      >
-        {isSubmitting
-          ? locale === "ar"
-            ? "جاري الإرسال..."
-            : "Submitting..."
-          : locale === "ar"
-          ? "قم بتأكيد الحجز الآن"
-          : "Confirm Booking Now"}
-      </motion.button>
+      {/* Submit Button - Inside form for non-dialog mode */}
+      {!isDialogMode && (
+        <motion.button
+          type="submit"
+          disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
+          className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.35,
+            duration: 0.4,
+            type: "spring",
+            stiffness: 60,
+          }}
+        >
+          {isSubmitting
+            ? locale === "ar"
+              ? "جاري الإرسال..."
+              : "Submitting..."
+            : locale === "ar"
+            ? "قم بتأكيد الحجز الآن"
+            : "Confirm Booking Now"}
+        </motion.button>
+      )}
       {/* Custom Scrollbar Styles - must be inside the component */}
-      <style jsx global>{`
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #4d5edb #f7f8fa;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 6px;
-          background: #f7f8fa;
-          border-radius: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #4d5edb;
-          border-radius: 6px;
-          min-width: 40px;
-          transition: background 0.2s;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #22336c;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f7f8fa;
-          border-radius: 6px;
-        }
-      `}</style>
+      {!isDialogMode && (
+        <style jsx global>{`
+          .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #4d5edb #f7f8fa;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4d5edb;
+            border-radius: 6px;
+            min-width: 40px;
+            transition: background 0.2s;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #22336c;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f7f8fa;
+            border-radius: 6px;
+          }
+        `}</style>
+      )}
     </motion.form>
+      {/* Fixed Submit Button for Dialog Mode */}
+      {isDialogMode && (
+        <div className="sticky bottom-0 bg-white border-t pt-4 mt-4 -mx-6 px-6 pb-4 z-10">
+          <motion.button
+            type="submit"
+            form="reservation-form"
+            disabled={isSubmitting || !bookingDate || selectedChildren.length === 0}
+            className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.35,
+              duration: 0.4,
+              type: "spring",
+              stiffness: 60,
+            }}
+          >
+            {isSubmitting
+              ? locale === "ar"
+                ? "جاري الإرسال..."
+                : "Submitting..."
+              : locale === "ar"
+              ? "قم بتأكيد الحجز الآن"
+              : "Confirm Booking Now"}
+          </motion.button>
+        </div>
+      )}
+    </>
   );
 };
 
