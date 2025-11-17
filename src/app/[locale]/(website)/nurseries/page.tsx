@@ -68,7 +68,16 @@ export default async function NurseriesPage({
   //   },
   // ];
 
-  const nurseries = await nurseryService.getNurseries(locale);
+  let nurseries: any[] = [];
+  try {
+    nurseries = await nurseryService.getNurseries(locale);
+  } catch (error: any) {
+    // Log error for debugging
+    console.error("Error fetching nurseries:", error);
+    // Re-throw the error so the error boundary can handle it
+    // The error is already formatted by ApiErrorHandler with user-friendly messages
+    throw error;
+  }
 
   return (
     <div>
