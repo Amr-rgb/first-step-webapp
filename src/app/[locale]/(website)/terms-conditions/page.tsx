@@ -42,6 +42,8 @@ export default async function TermsConditionsPage({
 
   // Extract content from the API response
   let content = "";
+  let hasError = false;
+
   if (termsContent && termsContent.length > 0) {
     // The content might be in different fields - check both
     content =
@@ -50,9 +52,63 @@ export default async function TermsConditionsPage({
       termsContent[0]?.content ||
       termsContent[0]?.description ||
       (typeof termsContent === "string" ? termsContent : "");
+  } else {
+    hasError = true;
   }
 
-  // If still no content, show not found
+  // If still no content and there was an error, show error message
+  if ((!content || content.trim() === "") && hasError) {
+    return (
+      <div>
+        {/* Header Section */}
+        <div className="relative">
+          <Image
+            src="/assets/backgrounds/blog-bg.png"
+            alt="Terms and Conditions Header"
+            width={1440}
+            height={400}
+            className="w-full h-[400px] object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                {locale === "ar" ? "الشروط والأحكام" : "Terms and Conditions"}
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Content */}
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-lg shadow-lg p-8 md:p-12 text-center space-y-6">
+              <div className="text-destructive text-6xl">⚠️</div>
+              <h2 className="text-2xl font-bold text-primary">
+                {locale === "ar"
+                  ? "حدث خطأ في تحميل الشروط والأحكام"
+                  : "Error Loading Terms and Conditions"}
+              </h2>
+              <p className="text-gray-600">
+                {locale === "ar"
+                  ? "نعتذر، حدث خطأ أثناء تحميل محتوى الشروط والأحكام. يرجى المحاولة مرة أخرى لاحقاً."
+                  : "Sorry, an error occurred while loading the terms and conditions content. Please try again later."}
+              </p>
+              <a
+                href={`/${locale}`}
+                className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                {locale === "ar" ? "العودة للرئيسية" : "Back to Home"}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <Contact />
+      </div>
+    );
+  }
+
+  // If no content but no error, show not found
   if (!content || content.trim() === "") {
     notFound();
   }

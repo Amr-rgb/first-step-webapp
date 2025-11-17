@@ -8,7 +8,16 @@ const BlogsWrapper = async ({
   locale: string;
   number?: number;
 }) => {
-  const blogs = await blogService.getBlogs(locale);
+  let blogs = [];
+  let error = null;
+
+  try {
+    blogs = await blogService.getBlogs(locale);
+  } catch (err: any) {
+    console.error("Error fetching blogs in BlogsWrapper:", err);
+    error = err;
+  }
+
   const latestBlogs = blogs
     .sort(
       (a, b) =>
@@ -16,7 +25,9 @@ const BlogsWrapper = async ({
     )
     .slice(0, number);
 
-  return <Blogs blogs={number ? latestBlogs : blogs} />;
+  return (
+    <Blogs blogs={number ? latestBlogs : blogs} error={error} locale={locale} />
+  );
 };
 
 export default BlogsWrapper;

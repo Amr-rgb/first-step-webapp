@@ -25,8 +25,23 @@ const valuesConstants = [
   },
 ];
 
-const Values = async ({ locale }: { locale: "ar" | "en" }) => {
-  const values = await websiteService.getOurValues(locale);
+const Values = async ({
+  locale,
+  error,
+}: {
+  locale: "ar" | "en";
+  error?: any;
+}) => {
+  let values: any[] = [];
+
+  if (!error) {
+    try {
+      values = await websiteService.getOurValues(locale);
+    } catch (err) {
+      console.error("Error fetching values:", err);
+      error = err;
+    }
+  }
 
   return (
     <section dir="rtl" className="container mx-auto px-4 text-center space-y-9">
@@ -34,7 +49,12 @@ const Values = async ({ locale }: { locale: "ar" | "en" }) => {
         <span>{locale === "ar" ? "قيم" : "Values"}</span>
         <span className="block">First Step</span>
       </h2>
-      <ValuesGridClient values={values} valuesConstants={valuesConstants} />
+      <ValuesGridClient
+        values={values}
+        valuesConstants={valuesConstants}
+        error={error}
+        locale={locale}
+      />
     </section>
   );
 };
