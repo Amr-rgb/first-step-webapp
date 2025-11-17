@@ -1822,12 +1822,14 @@
     "tables": {
       "shared": {
         "status": {
-          "confirmed": "تم الدفع",
+          "confirmed": "في انتظار الدفع",
           "waitingForPayment": "في انتظار الدفع",
           "waitingForConfirmation": "في انتظار التأكيد",
           "rejected": "مرفوض",
           "cancelled": "ملغي",
           "paid": "تم الدفع",
+          "existing": "من خلال المركز",
+          "expired": "منتهي",
           "selectChild": "اختر الطفل"
         }
       },

@@ -51,7 +51,11 @@ const CheckboxGroup = <T extends FieldValues>({
                   disabled={readOnly}
                 />
               </FormControl>
-              <FormLabel className="cursor-pointer min-w-[max-content]">
+              <FormLabel
+                className={`${
+                  readOnly ? "text-foreground" : ""
+                } cursor-pointer min-w-[max-content]`}
+              >
                 {item.label}
               </FormLabel>
             </FormItem>

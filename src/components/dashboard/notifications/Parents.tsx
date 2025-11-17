@@ -44,7 +44,9 @@ const Parents = ({
 
   const isAdmin = useHasRole("admin");
 
-  const { data: childrenData, isLoading } = useQuery<ChildFile[]>({
+  const { data: childrenData, isLoading } = useQuery<
+    ChildFile[] | { data: ChildFile[] }
+  >({
     queryKey: [isAdmin ? "children" : "children-files"],
     queryFn: isAdmin
       ? adminService.getChildren
@@ -55,10 +57,15 @@ const Parents = ({
   const transformedData: Parent[] = React.useMemo(() => {
     if (!childrenData) return [];
 
+    // Normalize the data structure
+    const childrenArray = Array.isArray(childrenData)
+      ? childrenData
+      : childrenData.data;
+
     // Group children by parent
     const parentMap = new Map<number, Parent>();
 
-    childrenData.forEach((child: ChildFile) => {
+    childrenArray.forEach((child: ChildFile) => {
       const enrollment = child.enrollments[0];
       if (!enrollment) return;
 
@@ -83,7 +90,7 @@ const Parents = ({
     });
 
     return Array.from(parentMap.values());
-  }, [childrenData]);
+  }, [childrenData, mapStatus]);
 
   return (
     <div>

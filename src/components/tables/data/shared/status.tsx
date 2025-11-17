@@ -7,6 +7,8 @@ export type ReservationStatus =
   | "rejected"
   | "cancelled"
   | "paid"
+  | "existing"
+  | "expired"
   | "selectChild";
 
 export function useReservationStatus() {
@@ -24,6 +26,10 @@ export function useReservationStatus() {
         return "cancelled";
       case "paid":
         return "paid";
+      case "existing":
+        return "existing";
+      case "expired":
+        return "expired";
       default:
         return status as ReservationStatus;
     }
@@ -38,13 +44,21 @@ export function useReservationStatus() {
     const mappedStatus = mapStatus(status);
     switch (mappedStatus) {
       case "confirmed":
-        return "bg-success text-white";
+        return "bg-warning text-white";
       case "waitingForPayment":
         return "bg-warning text-white";
       case "waitingForConfirmation":
-        return "bg-light-gray text-white";
+        return "bg-[#9891FF] text-white";
       case "rejected":
         return "bg-danger text-white";
+      case "cancelled":
+        return "bg-black text-white";
+      case "paid":
+        return "bg-success text-white";
+      case "existing":
+        return "bg-info text-white";
+      case "expired":
+        return "bg-mid-gray text-white";
       case "selectChild":
         return "bg-info text-white";
       default:

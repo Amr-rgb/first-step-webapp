@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Booking } from "@/components/tables/data/center-bookings";
 import { useReservationStatus } from "@/components/tables/data/shared/status";
+import { useAuthUser } from "@/store/authStore";
 
 interface BookingCardProps {
   booking: Booking;
@@ -26,6 +27,8 @@ export const BookingCard = ({
   const t = useTranslations("dashboard.tables.center-bookings");
   const tBookings = useTranslations("dashboard.center-bookings");
   const { getStatusText, getStatusColorClass } = useReservationStatus();
+
+  const user = useAuthUser();
 
   const firstChild = booking.childs[0];
   const status = firstChild?.status || "-";
@@ -61,7 +64,7 @@ export const BookingCard = ({
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-mid-gray">{booking.branch}</span>
+              <span className="text-mid-gray">{user?.nursery_name}</span>
               <span className="font-semibold text-primary">
                 {tBookings("fields.nursery")}
               </span>

@@ -67,6 +67,13 @@ const Card = ({
     }
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+    setNewTitle(title);
+    setNewDate(rawDate.toISOString().split("T")[0]);
+    onEditComplete?.();
+  };
+
   const cardClasses = cn(
     "group/card relative w-full p-2 rounded-xl text-sm space-y-2 text-center",
     "text-mid-gray first:text-primary"
@@ -95,12 +102,7 @@ const Card = ({
       />
       <X
         className="size-4 text-gray-400 hover:text-destructive cursor-pointer"
-        onClick={() => {
-          setIsEditing(false);
-          setNewTitle(title);
-          setNewDate(rawDate.toISOString().split("T")[0]);
-          onEditComplete?.();
-        }}
+        onClick={handleCancel}
       />
     </>
   );
@@ -124,12 +126,7 @@ const Card = ({
           />
           <div className="flex justify-end gap-2 pt-1">
             <button
-              onClick={() => {
-                setIsEditing(false);
-                setNewTitle(title);
-                setNewDate(rawDate.toISOString().split("T")[0]);
-                onEditComplete?.();
-              }}
+              onClick={handleCancel}
               className="p-1.5 rounded hover:bg-gray-100"
             >
               <X className="size-4 text-gray-400 hover:text-destructive" />
