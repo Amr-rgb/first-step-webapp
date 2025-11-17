@@ -2436,5 +2436,32 @@
     "accountsCreatedSuccessfully": "تم إنشاء حسابات أولياء الأمور بنجاح",
     "errorCreatingAccounts": "خطأ في إنشاء حسابات أولياء الأمور",
     "creatingAccounts": "جاري إنشاء الحسابات..."
+  },
+  "discountCodes": {
+    "title": "كوبونات الخصم",
+    "addButton": "إضافة كوبون خصم",
+    "searchPlaceholder": "ابحث عن كوبون خصم",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "notStarted": "لم يبدأ بعد",
+      "paused": "موقوف",
+      "expired": "منتهي"
+    },
+    "table": {
+      "code": "اسم كوبون الخصم",
+      "actions": "الإجراء",
+      "status": "حالة الكوبون",
+      "discountValue": "قيمة الخصم",
+      "discountPercentage": "نسبة الخصم",
+      "pendingUsage": "الاستخدامات المعلقة",
+      "usedCount": "عدد مرات الاستخدام",
+      "usageLimit": "الحد الأقصى للاستخدام",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "usage": "استخدام",
+      "currency": "ر.س",
+      "percentage": "%"
+    }
   }
 }

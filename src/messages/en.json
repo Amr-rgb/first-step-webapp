@@ -2424,5 +2424,32 @@
     "accountsCreatedSuccessfully": "Parent accounts created successfully",
     "errorCreatingAccounts": "Error creating parent accounts",
     "creatingAccounts": "Creating accounts..."
+  },
+  "discountCodes": {
+    "title": "Discount Codes",
+    "addButton": "Add Discount Code",
+    "searchPlaceholder": "Search for discount code",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "notStarted": "Not Started",
+      "paused": "Paused",
+      "expired": "Expired"
+    },
+    "table": {
+      "code": "Discount Code Name",
+      "actions": "Actions",
+      "status": "Coupon Status",
+      "discountValue": "Discount Value",
+      "discountPercentage": "Discount Percentage",
+      "pendingUsage": "Pending Usage",
+      "usedCount": "Usage Count",
+      "usageLimit": "Usage Limit",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "usage": "usage",
+      "currency": "SAR",
+      "percentage": "%"
+    }
   }
 }
