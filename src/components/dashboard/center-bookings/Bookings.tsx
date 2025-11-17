@@ -340,6 +340,7 @@ const Bookings = () => {
             columns={columns}
             data={bookingsData}
             isLoading={isLoading}
+            pagination
           />
         )}
 
