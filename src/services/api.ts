@@ -619,23 +619,80 @@ export const nurseryService = {
             .join("&")
         : "";
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
-          },
-          next: {
-            revalidate: 1,
-          },
+      let res: Response;
+      try {
+        res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              lang: locale,
+              "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+              "X-Authorization-Secret":
+                process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            },
+            next: {
+              revalidate: 1,
+            },
+          }
+        );
+      } catch (fetchError: any) {
+        // Handle network errors (fetch failed, connection refused, timeout, etc.)
+        if (fetchError instanceof TypeError && fetchError.message.includes("fetch failed")) {
+          throw {
+            message: locale === "ar" 
+              ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+              : "Network connection failed. Please check your internet connection and try again.",
+            errors: {},
+            status: 0,
+            isNetworkError: true,
+          };
         }
-      );
+        // Re-throw other fetch errors
+        throw {
+          message: locale === "ar"
+            ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+            : "An error occurred while connecting to the server. Please try again.",
+          errors: {},
+          status: 0,
+          originalError: fetchError.message,
+        };
+      }
 
-      const data = await res.json();
+      // Check response status before trying to parse JSON
+      if (!res.ok) {
+        let errorData: any = {};
+        try {
+          errorData = await res.json();
+        } catch {
+          // If JSON parsing fails, use default error
+          errorData = {};
+        }
+        throw {
+          message: errorData?.message || (locale === "ar"
+            ? "فشل في جلب بيانات الحضانات"
+            : "Failed to fetch nurseries"),
+          errors: errorData?.errors || {},
+          status: res.status,
+          data: errorData,
+        };
+      }
+
+      // Parse JSON response
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (jsonError: any) {
+        throw {
+          message: locale === "ar"
+            ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
+            : "Failed to parse server response. Please try again.",
+          errors: {},
+          status: res.status,
+          isParseError: true,
+        };
+      }
+
       if (Array.isArray(data.data)) {
         console.log(
           "nurseries (nursery_name, user_id): ",
@@ -646,16 +703,13 @@ export const nurseryService = {
         );
       }
 
-      if (!res.ok) {
-        throw {
-          message: "Failed to fetch nurseries",
-          errors: {},
-          status: res.status,
-        };
-      }
-
       return data.data as NurseryResponse[];
-    } catch (error) {
+    } catch (error: any) {
+      // If error is already formatted, pass it through
+      if (error.message && error.status !== undefined) {
+        throw ApiErrorHandler.handle(error);
+      }
+      // Otherwise, let ApiErrorHandler format it
       throw ApiErrorHandler.handle(error);
     }
   },
