@@ -2462,6 +2462,32 @@
       "usage": "استخدام",
       "currency": "ر.س",
       "percentage": "%"
-    }
+    },
+    "createModal": {
+      "step1Title": "تفاصيل الكوبون",
+      "step2Title": "اختيار المراكز والحضانات",
+      "couponName": "اسم الكوبون",
+      "couponNamePlaceholder": "مثال: Night10",
+      "startDate": "تاريخ بداية الكوبون",
+      "endDate": "تاريخ نهاية الكوبون",
+      "percentage": "نسبة الخصم %",
+      "amount": "قيمة الخصم ر.س",
+      "maxUsage": "الحد الأقصى للمستفيدين",
+      "childrenOnly": "متاح للأطفال الحدد فقط",
+      "centersAndNurseries": "المراكز والحضانات",
+      "allCentersAndBranches": "كل الحضانات والمراكز بكل الفروع",
+      "mainCenterBranches": "فروع مركز الأمل",
+      "allBranches": "كل الفروع",
+      "returnPlaceholder": "الرجوع",
+      "cancel": "إلغاء",
+      "continue": "متابعة",
+      "back": "الرجوع",
+      "createCoupon": "إنشاء كوبون الخصم",
+      "creating": "جاري الإنشاء...",
+      "success": "تم إنشاء كوبون الخصم بنجاح",
+      "error": "حدث خطأ أثناء إنشاء كوبون الخصم"
+    },
+    "loading": "جاري تحميل كوبونات الخصم...",
+    "error": "خطأ في تحميل كوبونات الخصم"
   }
 }

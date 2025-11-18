@@ -2450,6 +2450,32 @@
       "usage": "usage",
       "currency": "SAR",
       "percentage": "%"
-    }
+    },
+    "createModal": {
+      "step1Title": "Coupon Details",
+      "step2Title": "Select Centers and Nurseries",
+      "couponName": "Coupon Name",
+      "couponNamePlaceholder": "Example: Night10",
+      "startDate": "Coupon Start Date",
+      "endDate": "Coupon End Date",
+      "percentage": "Discount Percentage %",
+      "amount": "Discount Amount SAR",
+      "maxUsage": "Maximum Beneficiaries",
+      "childrenOnly": "Available for children only",
+      "centersAndNurseries": "Centers and Nurseries",
+      "allCentersAndBranches": "All nurseries and centers with all branches",
+      "mainCenterBranches": "Main Center Branches",
+      "allBranches": "All Branches",
+      "returnPlaceholder": "Return",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "back": "Back",
+      "createCoupon": "Create Discount Coupon",
+      "creating": "Creating...",
+      "success": "Discount coupon created successfully",
+      "error": "An error occurred while creating the discount coupon"
+    },
+    "loading": "Loading discount codes...",
+    "error": "Error loading discount codes"
   }
 }
