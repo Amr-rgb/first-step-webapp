@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { X, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/form";
 import DatePicker from "@/components/general/DatePicker";
 import { adminService } from "@/services/promocodeService";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { adminService as dashboardAdminService } from "@/services/dashboardApi";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,26 +46,16 @@ const promocodeSchema = z
 
 type FormData = z.infer<typeof promocodeSchema>;
 
-// Mock data - replace with actual API data
-const mockCenters = [
-  {
-    id: 1,
-    name: "حضانة عالم التعلم",
-    branches: [
-      { id: 10, name: "فرع الرياض" },
-      { id: 11, name: "فرع جدة" },
-      { id: 12, name: "فرع المدينة" },
-    ],
-  },
-  {
-    id: 2,
-    name: "حضانة عالم التعلم",
-    branches: [
-      { id: 20, name: "فرع مكة" },
-      { id: 21, name: "فرع الطائف" },
-    ],
-  },
-];
+interface Center {
+  id: number;
+  nursery_name: string;
+  logo: string;
+  branches: Array<{
+    id: number;
+    name: string;
+    nursery_name: string;
+  }>;
+}
 
 export default function CreatePromocodeModal({
   isOpen,
@@ -72,13 +63,22 @@ export default function CreatePromocodeModal({
 }: CreatePromocodeModalProps) {
   const t = useTranslations("discountCodes.createModal");
   const locale = useLocale();
-  const isRTL = locale === "ar";
   const queryClient = useQueryClient();
+
+  const { data: centersData, isLoading: centersLoading } = useQuery({
+    queryKey: ["centers"],
+    queryFn: dashboardAdminService.getCenters,
+    enabled: isOpen,
+  });
 
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedCenters, setSelectedCenters] = useState<number[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<number[]>([]);
   const [allowChildrenOnly, setAllowChildrenOnly] = useState(false);
+  const [selectAllCenters, setSelectAllCenters] = useState(false);
+  const [selectAllBranches, setSelectAllBranches] = useState(false);
+
+  const centers: Center[] = centersData || [];
 
   const form = useForm<FormData>({
     resolver: zodResolver(promocodeSchema),
@@ -146,6 +146,33 @@ export default function CreatePromocodeModal({
         : [...prev, branchId]
     );
   };
+
+  const handleSelectAllCenters = (checked: boolean) => {
+    setSelectAllCenters(checked);
+    if (checked) {
+      setSelectedCenters(centers.map((c) => c.id));
+    } else {
+      setSelectedCenters([]);
+    }
+  };
+
+  const handleSelectAllBranches = (checked: boolean) => {
+    setSelectAllBranches(checked);
+    if (checked) {
+      const allBranchIds = centers.flatMap((c) => c.branches.map((b) => b.id));
+      setSelectedBranches(allBranchIds);
+    } else {
+      setSelectedBranches([]);
+    }
+  };
+
+  useEffect(() => {
+    if (centers.length > 0) {
+      setSelectAllCenters(selectedCenters.length === centers.length);
+      const allBranchIds = centers.flatMap((c) => c.branches.map((b) => b.id));
+      setSelectAllBranches(selectedBranches.length === allBranchIds.length);
+    }
+  }, [selectedCenters, selectedBranches, centers]);
 
   const incrementValue = (
     field: "percentage" | "amount" | "max_number_of_usage"
@@ -421,7 +448,11 @@ export default function CreatePromocodeModal({
                       </h3>
                       <div className="space-y-3 border rounded-lg p-4 max-h-96 overflow-y-auto">
                         <div className="flex items-center gap-2 pb-3 border-b">
-                          <Checkbox id="all-centers" />
+                          <Checkbox
+                            id="all-centers"
+                            checked={selectAllCenters}
+                            onCheckedChange={handleSelectAllCenters}
+                          />
                           <Label
                             htmlFor="all-centers"
                             className="cursor-pointer"
@@ -429,27 +460,45 @@ export default function CreatePromocodeModal({
                             {t("allCentersAndBranches")}
                           </Label>
                         </div>
-                        {mockCenters.map((center) => (
-                          <div
-                            key={center.id}
-                            className="flex items-center gap-2"
-                          >
-                            <Checkbox
-                              id={`center-${center.id}`}
-                              checked={selectedCenters.includes(center.id)}
-                              onCheckedChange={() =>
-                                handleCenterToggle(center.id)
-                              }
-                            />
-                            <Label
-                              htmlFor={`center-${center.id}`}
-                              className="cursor-pointer flex items-center gap-2"
-                            >
-                              <div className="w-8 h-8 bg-gradient-to-br from-red-400 to-green-400 rounded-full" />
-                              {center.name}
-                            </Label>
+                        {centersLoading ? (
+                          <div className="text-center py-4 text-gray-500">
+                            {t("loading") || "Loading..."}
                           </div>
-                        ))}
+                        ) : centers.length === 0 ? (
+                          <div className="text-center py-4 text-gray-500">
+                            {t("noCenters") || "No centers available"}
+                          </div>
+                        ) : (
+                          centers.map((center) => (
+                            <div
+                              key={center.id}
+                              className="flex items-center gap-2"
+                            >
+                              <Checkbox
+                                id={`center-${center.id}`}
+                                checked={selectedCenters.includes(center.id)}
+                                onCheckedChange={() =>
+                                  handleCenterToggle(center.id)
+                                }
+                              />
+                              <Label
+                                htmlFor={`center-${center.id}`}
+                                className="cursor-pointer flex items-center gap-2"
+                              >
+                                {center.logo ? (
+                                  <img
+                                    src={center.logo}
+                                    alt={center.nursery_name}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-8 h-8 bg-gradient-to-br from-red-400 to-green-400 rounded-full" />
+                                )}
+                                {center.nursery_name}
+                              </Label>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 
@@ -460,7 +509,11 @@ export default function CreatePromocodeModal({
                       </h3>
                       <div className="space-y-3 border rounded-lg p-4 max-h-96 overflow-y-auto">
                         <div className="flex items-center gap-2 pb-3 border-b">
-                          <Checkbox id="all-branches" />
+                          <Checkbox
+                            id="all-branches"
+                            checked={selectAllBranches}
+                            onCheckedChange={handleSelectAllBranches}
+                          />
                           <Label
                             htmlFor="all-branches"
                             className="cursor-pointer"
@@ -468,27 +521,37 @@ export default function CreatePromocodeModal({
                             {t("allBranches")}
                           </Label>
                         </div>
-                        {mockCenters.flatMap((center) =>
-                          center.branches.map((branch) => (
-                            <div
-                              key={branch.id}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                id={`branch-${branch.id}`}
-                                checked={selectedBranches.includes(branch.id)}
-                                onCheckedChange={() =>
-                                  handleBranchToggle(branch.id)
-                                }
-                              />
-                              <Label
-                                htmlFor={`branch-${branch.id}`}
-                                className="cursor-pointer"
+                        {centersLoading ? (
+                          <div className="text-center py-4 text-gray-500">
+                            {t("loading") || "Loading..."}
+                          </div>
+                        ) : centers.length === 0 ? (
+                          <div className="text-center py-4 text-gray-500">
+                            {t("noBranches") || "No branches available"}
+                          </div>
+                        ) : (
+                          centers.flatMap((center) =>
+                            center.branches.map((branch) => (
+                              <div
+                                key={branch.id}
+                                className="flex items-center gap-2"
                               >
-                                {branch.name}
-                              </Label>
-                            </div>
-                          ))
+                                <Checkbox
+                                  id={`branch-${branch.id}`}
+                                  checked={selectedBranches.includes(branch.id)}
+                                  onCheckedChange={() =>
+                                    handleBranchToggle(branch.id)
+                                  }
+                                />
+                                <Label
+                                  htmlFor={`branch-${branch.id}`}
+                                  className="cursor-pointer"
+                                >
+                                  {branch.nursery_name}
+                                </Label>
+                              </div>
+                            ))
+                          )
                         )}
                       </div>
                     </div>
