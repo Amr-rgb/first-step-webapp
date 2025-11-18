@@ -97,15 +97,17 @@ const Bookings = () => {
   const t = useTranslations("dashboard.center-bookings");
   const tTable = useTranslations("dashboard.tables.center-bookings");
   const queryClient = useQueryClient();
-  const columns = useCenterBookingsColumns(
-    selectedChildMap,
-    setSelectedChildMap
-  );
 
   const handleViewDetails = (booking: Booking) => {
     setSelectedBooking(booking);
     setIsModalOpen(true);
   };
+
+  const columns = useCenterBookingsColumns(
+    selectedChildMap,
+    setSelectedChildMap,
+    handleViewDetails
+  );
 
   const enrollmentMutation = useMutation({
     mutationFn: async ({

@@ -47,6 +47,24 @@ export const BookingCard = ({
     return typeMap[type] || type;
   };
 
+  // Format children names
+  const formatChildrenNames = () => {
+    const uniqueChildren = Array.from(
+      new Map(booking.childs.map((child) => [child.id, child.name])).values()
+    );
+
+    if (uniqueChildren.length === 0) return "-";
+    if (uniqueChildren.length === 1) return uniqueChildren[0];
+    if (uniqueChildren.length === 2)
+      return `${uniqueChildren[0]}, ${uniqueChildren[1]}`;
+
+    const remaining = uniqueChildren.length - 2;
+    return `${uniqueChildren[0]}, ${uniqueChildren[1]} ${tBookings(
+      "andOthers",
+      { count: remaining.toString() }
+    )}`;
+  };
+
   return (
     <Card
       id={`enrollment-${booking.id}`}
@@ -58,7 +76,7 @@ export const BookingCard = ({
           {/* Right Column */}
           <div className="text-right space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-mid-gray">{firstChild?.name}</span>
+              <span className="text-mid-gray">{formatChildrenNames()}</span>
               <span className="font-semibold text-primary">
                 {tBookings("fields.childrenLabel")}
               </span>

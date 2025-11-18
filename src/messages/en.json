@@ -2031,6 +2031,7 @@
       "sendNotification": "Send Notification to Parent",
       "sendingNotification": "Sending...",
       "children": "children",
+      "andOthers": "and {count} others",
       "filters": {
         "all": "All",
         "completed": "Completed",
