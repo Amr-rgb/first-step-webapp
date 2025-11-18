@@ -92,6 +92,7 @@ const Bookings = () => {
   );
   const [pendingEnrollmentType, setPendingEnrollmentType] =
     useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const t = useTranslations("dashboard.center-bookings");
   const tTable = useTranslations("dashboard.tables.center-bookings");
@@ -208,43 +209,61 @@ const Bookings = () => {
 
   console.log("baseData (first item):", baseData[0]);
 
-  // Filter bookings based on active filter
+  // Filter bookings based on active filter and search query
   const filteredBaseData = baseData.filter((booking) => {
     // Skip bookings with no children
     if (!booking.childs || booking.childs.length === 0) return false;
 
-    if (activeFilter === "all") return true;
+    // Apply status filter
+    if (activeFilter !== "all") {
+      const firstChild = booking.childs[0];
+      const status = firstChild?.status;
 
-    const firstChild = booking.childs[0];
-    const status = firstChild?.status;
+      if (!status) return false;
 
-    if (!status) return false;
+      let statusMatch = false;
+      switch (activeFilter) {
+        case "completed":
+          statusMatch = status === "paid";
+          break;
+        case "pending":
+          statusMatch = status === "pending";
+          break;
+        case "confirmed":
+          statusMatch = status === "accepted";
+          break;
+        case "from-center":
+          statusMatch = status === "existing";
+          break;
+        case "cancelled":
+          statusMatch = status === "cancelled";
+          break;
+        case "rejected":
+          statusMatch = status === "rejected";
+          break;
+        case "expired":
+          statusMatch = status === "expired";
+          break;
+        default:
+          statusMatch = true;
+      }
 
-    switch (activeFilter) {
-      case "completed":
-        // تم الدفع - paid
-        return status === "paid";
-      case "pending":
-        // في انتظار التأكيد - waiting for confirmation
-        return status === "pending";
-      case "confirmed":
-        // في انتظار الدفع - waiting for payment (accepted)
-        return status === "accepted";
-      case "from-center":
-        // من خلال المركز - from center (existing)
-        return status === "existing";
-      case "cancelled":
-        // ملغي - cancelled
-        return status === "cancelled";
-      case "rejected":
-        // مرفوض - rejected
-        return status === "rejected";
-      case "expired":
-        // منتهي - expired
-        return status === "expired";
-      default:
-        return true;
+      if (!statusMatch) return false;
     }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      const parentNameMatch = booking.parentName.toLowerCase().includes(query);
+      const branchMatch = booking.branch.toLowerCase().includes(query);
+      const childMatch = booking.childs.some((child) =>
+        child.name.toLowerCase().includes(query)
+      );
+
+      return parentNameMatch || branchMatch || childMatch;
+    }
+
+    return true;
   });
 
   console.log("filteredBaseData (first item):", filteredBaseData[0]);
@@ -322,6 +341,8 @@ const Bookings = () => {
             <input
               type="search"
               placeholder="بحث"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 text-right"
             />
           </div>
