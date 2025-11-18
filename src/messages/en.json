@@ -775,7 +775,8 @@
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team",
-        "chat": "Chat"
+        "chat": "Chat",
+        "discount-coupons": "Discount Coupons"
       }
     },
     "account": {
@@ -826,6 +827,26 @@
         "title": "Confirm Password",
         "passwordLabel": "Enter your password to confirm",
         "passwordPlaceholder": "••••••••"
+      }
+    },
+    "coupons": {
+      "couponName": "Coupon Name",
+      "discountPercentage": "Discount Percentage",
+      "discountValue": "Discount Value (SAR)",
+      "startDate": "Start Day",
+      "endDate": "End Day",
+      "usageCount": "Number of times used by you",
+      "currency": "SAR",
+      "times": "times",
+      "requestAddCoupon": "Request to Add Discount Coupon",
+      "searchPlaceholder": "Search for discount coupon",
+      "noCouponsFound": "No coupons found",
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "notStarted": "Not Started Yet",
+        "paused": "Paused",
+        "expired": "Expired"
       }
     },
     "center": {
@@ -1427,6 +1448,7 @@
         "team": "Team",
         "addTeamMember": "Add Team Member",
         "teamMemberDetails": "Team Member Details",
+        "discountCoupons": "Discount Coupons",
         "parent": "Parent",
         "myChildren": "My Children",
         "addChild": "Add Child",
@@ -1676,6 +1698,34 @@
             "title": "Start Taking Bookings",
             "description": "Begin accepting children's bookings and organizing your center's schedule"
           }
+        }
+      }
+    },
+    "portfolioProgress": {
+      "welcome": "Welcome {centerName}",
+      "question": "Are you ready to complete your profile on our site?",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "tasks": {
+        "branches": {
+          "title": "Add your branches",
+          "description": "Add your branches and follow them through the control panel"
+        },
+        "children": {
+          "title": "Register your center's children",
+          "description": "Add parent accounts directly"
+        },
+        "profile": {
+          "title": "Complete your profile",
+          "description": "Add your services and center activities on our website"
+        },
+        "advertisement": {
+          "title": "Your free advertisement",
+          "description": "Advertise through First Step for free for the first time"
+        },
+        "blog": {
+          "title": "Write a blog post",
+          "description": "Advertise through First Step for free for the first time"
         }
       }
     },

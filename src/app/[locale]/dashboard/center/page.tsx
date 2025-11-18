@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format, parse } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
+import PortfolioProgressBar from "@/components/dashboard/PortfolioProgressBar";
 
 const CARDS = [
   {
@@ -362,6 +363,9 @@ export default function CenterDashboardHome() {
 
   return (
     <div className="grid gap-y-10">
+      {/* Portfolio Progress Bar */}
+      <PortfolioProgressBar />
+
       <div className="flex flex-wrap gap-5 xl:gap-20 text-center">
         {CARDS.map((card, index) => {
           let value = 0;
