@@ -833,6 +833,7 @@
       "usageCount": "عدد مرات الاستخدام من خلالك",
       "currency": "ر.س",
       "times": "مرات",
+      "activatedBranches": "الفروع المفعل فيها",
       "requestAddCoupon": "طلب إضافة كوبون خصم",
       "searchPlaceholder": "ابحث عن كوبون خصم",
       "noCouponsFound": "لا توجد كوبونات",
