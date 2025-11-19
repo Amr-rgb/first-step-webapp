@@ -5,12 +5,30 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" }
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "إنشاء حساب",
@@ -49,15 +67,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "centers": { "title": "المراكز", "path": "/centers" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" },
-      "help": { "title": "المساعدة", "path": "/help" },
-      "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "المراكز",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "المساعدة",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "الخصوصية",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "الشروط والأحكام",
         "path": "/terms-conditions"
@@ -1058,6 +1103,18 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "عدد الأطفال",
+        "enrollmentsCount": "عدد الاشتراكات",
+        "upcomingEnrollments": "الاشتراكات القادمة",
+        "currentEnrollments": "الاشتراكات الحالية",
+        "enrollmentStartsOn": "يبدأ حجز الطفل {number} يوم {date}",
+        "enrollmentEndsOn": "ينتهي حجز الطفل {number} يوم {date}",
+        "noUpcomingEnrollments": "لا توجد اشتراكات قادمة.",
+        "noCurrentEnrollments": "لا توجد اشتراكات حالية.",
+        "viewAll": "عرض الكل",
+        "bookNow": "احجز لطفلك الآن"
+      },
       "children": {
         "title": "الأطفال",
         "add": "إضافة طفل",
@@ -2129,7 +2186,6 @@
         "title": "إدارة ملفات الأطفال والتواصل مع أولياء الأمور",
         "description": "قاعدة بيانات متكاملة لملفات الأطفال وأولياء الأمور مع إمكانية إرسال تقارير يومية بحالة الطفل داخل الحضانة."
       },
-
       "taskOrganization": {
         "title": "تنظيم المهام وإرسال الإشعارات الفورية",
         "description": "تقويم رقمي لإدارة المناسبات والمهام اليومية، مع إشعارات فورية للتنبيه بالمستجدات والأحداث الهامة."

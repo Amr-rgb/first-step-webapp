@@ -5,12 +5,30 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our story", "path": "/our-story" },
-      "contact": { "title": "Contact us", "path": "/contact" }
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact us",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "Sign Up",
@@ -52,15 +70,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Our Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "centers": { "title": "Centers", "path": "/centers" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our Story", "path": "/our-story" },
-      "contact": { "title": "Contact Us", "path": "/contact" },
-      "help": { "title": "Help", "path": "/help" },
-      "privacy-policy": { "title": "Privacy", "path": "/privacy-policy" },
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Our Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "Centers",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our Story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "Help",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "Privacy",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "Terms and Conditions",
         "path": "/terms-conditions"
@@ -762,7 +807,6 @@
         "advertisement": "Advertisement",
         "blog": "Blog",
         "notifications": "Notifications",
-
         "chat": "Chat"
       },
       "center": {
@@ -1064,6 +1108,18 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "Children Count",
+        "enrollmentsCount": "Enrollments Count",
+        "upcomingEnrollments": "Upcoming Enrollments",
+        "currentEnrollments": "Current Enrollments",
+        "enrollmentStartsOn": "Enrollment {number} starts on {date}",
+        "enrollmentEndsOn": "Enrollment {number} ends on {date}",
+        "noUpcomingEnrollments": "No upcoming enrollments found.",
+        "noCurrentEnrollments": "No current enrollments found.",
+        "viewAll": "View All",
+        "bookNow": "Book for your child now"
+      },
       "children": {
         "title": "Children",
         "add": "Add Child",
@@ -1711,7 +1767,6 @@
         "subtitlePlaceholder": "Enter hero subtitle",
         "description": "Description",
         "descriptionPlaceholder": "Enter hero description",
-
         "ctaTextPlaceholder": "Enter CTA text",
         "ctaLink": "Call to Action Link",
         "ctaLinkPlaceholder": "Enter CTA link",
@@ -1736,7 +1791,6 @@
         "methodologyContent": "Methodology Content",
         "methodologyContentPlaceholder": "Enter methodology content",
         "goals": "Goals",
-
         "goalTitle": "Goal Title",
         "goalTitlePlaceholder": "Enter goal title",
         "goalContent": "Goal Content",
@@ -2115,7 +2169,6 @@
       }
     }
   },
-
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -2132,7 +2185,6 @@
         "title": "Child File Management and Communication with Parents",
         "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
       },
-
       "taskOrganization": {
         "title": "Task Organization and Instant Notifications",
         "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."
