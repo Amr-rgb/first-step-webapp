@@ -90,11 +90,11 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
 ];
 
 const getParentNavbar = (t: any): NavbarItem[] => [
-  // {
-  //   title: t("parent.home"),
-  //   url: "/dashboard/parent",
-  //   icon: dashboardIcons.home,
-  // },
+  {
+    title: t("parent.home"),
+    url: "/dashboard/parent",
+    icon: dashboardIcons.home,
+  },
   {
     title: t("parent.children"),
     url: "/dashboard/parent/children",
@@ -127,6 +127,11 @@ const getAdminNavbar = (t: any): NavbarItem[] => [
     title: t("admin.centers"),
     url: "/dashboard/admin/centers",
     icon: dashboardIcons.building,
+  },
+  {
+    title: t("admin.discount-codes"),
+    url: "/dashboard/admin/discount-codes",
+    icon: dashboardIcons.dicount,
   },
   {
     title: t("admin.centers-subscriptions"),

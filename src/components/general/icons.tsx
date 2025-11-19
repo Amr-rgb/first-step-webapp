@@ -293,6 +293,29 @@ export const Icons = {
 };
 
 export const dashboardIcons = {
+  dicount: (props?: React.SVGProps<SVGSVGElement>) => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="m5.52 10.5 5-5M1.5 12a1 1 0 0 0 .998 1h11.004a1 1 0 0 0 .998-1V9.966a2.037 2.037 0 0 1 0-3.932V4a1 1 0 0 0-.998-1H2.498A1 1 0 0 0 1.5 4v2.03a2.037 2.037 0 0 1 0 3.94z"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6.02 6.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m4 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ),
   visa: (props?: React.SVGProps<SVGSVGElement>) => (
     <svg
       width={25}
