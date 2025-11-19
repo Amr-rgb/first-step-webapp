@@ -1114,7 +1114,15 @@
         "noUpcomingEnrollments": "لا توجد اشتراكات قادمة.",
         "noCurrentEnrollments": "لا توجد اشتراكات حالية.",
         "viewAll": "عرض الكل",
-        "bookNow": "احجز لطفلك الآن"
+        "bookNow": "احجز لطفلك الآن",
+        "upcomingEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات قادمة",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات حالية",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        }
       },
       "children": {
         "title": "الأطفال",

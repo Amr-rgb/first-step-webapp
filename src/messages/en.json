@@ -1119,7 +1119,15 @@
         "noUpcomingEnrollments": "No upcoming enrollments found.",
         "noCurrentEnrollments": "No current enrollments found.",
         "viewAll": "View All",
-        "bookNow": "Book for your child now"
+        "bookNow": "Book for your child now",
+        "upcomingEnrollmentsEmpty": {
+          "title": "No upcoming enrollments",
+          "description": "Browse nurseries and book for your child now"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "No current enrollments",
+          "description": "Browse nurseries and book for your child now"
+        }
       },
       "children": {
         "title": "Children",
