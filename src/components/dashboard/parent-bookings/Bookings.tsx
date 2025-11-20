@@ -23,6 +23,7 @@ import {
   paymentService,
   nurseryService,
 } from "@/services/api";
+import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import ReservationForm from "@/components/general/nurseries/ReservationForm";
@@ -409,13 +410,37 @@ const Bookings = () => {
         return;
       }
 
+      // Validate required fields
+      if (!branchId) {
+        toastError(
+          locale === "ar"
+            ? "معلومات الفرع غير متوفرة"
+            : "Branch information not available"
+        );
+        return;
+      }
+
+      const branchPriceId = booking?.branch_price_id;
+      if (!branchPriceId) {
+        toastError(
+          locale === "ar"
+            ? "معلومات الخطة غير متوفرة"
+            : "Plan information not available"
+        );
+        return;
+      }
+
       setIsApplyingCoupon(true);
       try {
-        // TODO: Replace with actual API call to validate coupon
-        // For now, simulate a 10% discount
-        const discount = originalPrice * 0.1;
-        setCouponDiscount(discount);
-        setAppliedCoupon(couponCode);
+        const response = await promoCodeService.applyPromoCode({
+          branch_price_id: Number(branchPriceId),
+          branch_id: Number(branchId),
+          promo_code: couponCode.trim().toUpperCase(),
+        });
+
+        // Use the discount from the API response
+        setCouponDiscount(response.discount);
+        setAppliedCoupon(response.promo_code);
         toastSuccess(
           t("coupon.appliedSuccess") || "Coupon applied successfully"
         );

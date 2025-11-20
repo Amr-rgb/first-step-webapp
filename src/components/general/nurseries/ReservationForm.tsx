@@ -17,6 +17,7 @@ import {
   parentService,
   enrollmentService,
 } from "@/services/api";
+import { promoCodeService } from "@/services/dashboardApi";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/lib/toast";
@@ -312,19 +313,37 @@ const ReservationForm = ({
       return;
     }
 
+    // Validate required fields
+    if (!selectedBranch) {
+      toastError(
+        locale === "ar"
+          ? "يرجى اختيار الفرع أولاً"
+          : "Please select a branch first"
+      );
+      return;
+    }
+
+    if (!selectedPlanId) {
+      toastError(
+        locale === "ar"
+          ? "يرجى اختيار الخطة أولاً"
+          : "Please select a plan first"
+      );
+      return;
+    }
+
     setIsApplyingCoupon(true);
     try {
-      // TODO: Replace with actual API call to validate coupon
-      // For now, simulate a 10% discount
-      const selectedPlanObjLocal = findSelectedPlan(planList, selectedPlanId);
-      const numericPrice = selectedPlanObjLocal
-        ? parseFloat(selectedPlanObjLocal.price.replace(/[^\d.]/g, ""))
-        : 0;
-      const numberOfChildren = selectedChildren.length || 0;
-      const total = numericPrice * numberOfChildren;
-      const discount = total * 0.1;
+      const response = await promoCodeService.applyPromoCode({
+        branch_price_id: Number(selectedPlanId),
+        branch_id: Number(selectedBranch),
+        promo_code: couponCode.trim().toUpperCase(),
+      });
+
+      // Calculate discount based on response
+      const discount = response.discount;
       setCouponDiscount(discount);
-      setAppliedCoupon(couponCode);
+      setAppliedCoupon(response.promo_code);
       toastSuccess(
         locale === "ar"
           ? "تم تطبيق الكوبون بنجاح"
