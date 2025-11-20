@@ -33,11 +33,36 @@ export default function DiscountCodes() {
   const t = useTranslations("discountCodes");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const columns = useDiscountCodesColumns();
+  const [selectedPromocodeId, setSelectedPromocodeId] = useState<string | null>(
+    null
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterStatus>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
+
+  const handleEdit = (id: string) => {
+    setSelectedPromocodeId(id);
+    setIsViewMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (id: string) => {
+    setSelectedPromocodeId(id);
+    setIsViewMode(true);
+    setIsModalOpen(true);
+  };
+
+  const columns = useDiscountCodesColumns({
+    onEdit: handleEdit,
+    onView: handleView,
+  });
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPromocodeId(null);
+  };
 
   // Fetch promocodes from API
   const {
@@ -142,7 +167,11 @@ export default function DiscountCodes() {
         <Button
           size="sm"
           variant="default"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setSelectedPromocodeId(null);
+            setIsViewMode(false);
+            setIsModalOpen(true);
+          }}
         >
           <Plus className="w-5 h-5" />
           <span>{t("addButton")}</span>
@@ -175,8 +204,12 @@ export default function DiscountCodes() {
 
       {/* Create Promocode Modal */}
       <CreatePromocodeModal
+        key={selectedPromocodeId || "create"}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
+        promocodeId={selectedPromocodeId}
+        isViewMode={isViewMode}
+        onSwitchToEdit={() => setIsViewMode(false)}
       />
     </div>
   );

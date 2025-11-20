@@ -29,7 +29,13 @@ const getStatusColorClass = (status: DiscountCodeStatus): string => {
   return colorMap[status] || "bg-gray-400 text-white";
 };
 
-export const useDiscountCodesColumns = () => {
+export const useDiscountCodesColumns = ({
+  onEdit,
+  onView,
+}: {
+  onEdit?: (id: string) => void;
+  onView?: (id: string) => void;
+} = {}) => {
   const t = useTranslations("discountCodes");
 
   const getStatusText = (status: DiscountCodeStatus): string => {
@@ -166,19 +172,13 @@ export const useDiscountCodesColumns = () => {
           <div className="flex items-center justify-center gap-2">
             <button
               className="p-1.5 hover:bg-gray-100 rounded transition-colors"
-              onClick={() => {
-                // Handle view action
-                console.log("View", row.original.id);
-              }}
+              onClick={() => onView?.(row.original.id)}
             >
               <Eye className="w-4 h-4 text-gray-600" />
             </button>
             <button
               className="p-1.5 hover:bg-gray-100 rounded transition-colors"
-              onClick={() => {
-                // Handle edit action
-                console.log("Edit", row.original.id);
-              }}
+              onClick={() => onEdit?.(row.original.id)}
             >
               <Pencil className="w-4 h-4 text-gray-600" />
             </button>
