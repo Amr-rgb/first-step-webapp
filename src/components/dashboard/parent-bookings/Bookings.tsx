@@ -508,205 +508,208 @@ const Bookings = () => {
               {t("actions.showDetails")}
             </DialogTitle>
           </DialogHeader>
-          
+
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
-
-          {/* Plan Selection - Same style as ReservationForm */}
-          {loadingPlans ? (
-            <div className="flex justify-center gap-4 mb-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center py-3 px-4 rounded-xl border-2 border-gray-300 bg-gray-100 min-w-[120px]"
-                >
-                  <div className="h-5 w-16 bg-gray-300 rounded mb-2 animate-pulse" />
-                  <div className="w-full h-px bg-gray-300 mb-2" />
-                  <div className="h-4 w-20 bg-gray-300 rounded animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : planList.length > 0 ? (
-            <div className="flex justify-center gap-4 mb-6">
-              {planList
-                .filter((p: any) => {
-                  // Only show the selected plan (current booking's plan)
-                  return selectedPlanId === p.id || selectedPlanId === p.planId;
-                })
-                .map((p: any) => {
-                return (
+            {/* Plan Selection - Same style as ReservationForm */}
+            {loadingPlans ? (
+              <div className="flex justify-center gap-4 mb-6">
+                {[1, 2, 3, 4].map((i) => (
                   <div
-                    key={p.id}
-                    className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                    key={i}
+                    className="flex flex-col items-center py-3 px-4 rounded-xl border-2 border-gray-300 bg-gray-100 min-w-[120px]"
                   >
-                    <span className="text-lg font-extrabold mb-1 text-white">
-                      {p.price}
-                    </span>
-                    <span className="w-full h-px bg-white/30 mb-1" />
-                    <span className="text-base font-bold text-white">
-                      {p.name}
+                    <div className="h-5 w-16 bg-gray-300 rounded mb-2 animate-pulse" />
+                    <div className="w-full h-px bg-gray-300 mb-2" />
+                    <div className="h-4 w-20 bg-gray-300 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : planList.length > 0 ? (
+              <div className="flex justify-center gap-4 mb-6">
+                {planList
+                  .filter((p: any) => {
+                    // Only show the selected plan (current booking's plan)
+                    return (
+                      selectedPlanId === p.id || selectedPlanId === p.planId
+                    );
+                  })
+                  .map((p: any) => {
+                    return (
+                      <div
+                        key={p.id}
+                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                      >
+                        <span className="text-lg font-extrabold mb-1 text-white">
+                          {p.price}
+                        </span>
+                        <span className="w-full h-px bg-white/30 mb-1" />
+                        <span className="text-base font-bold text-white">
+                          {p.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : null}
+
+            {/* Details Section - Matching ReservationForm style */}
+            <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
+              <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+                {t("actions.showDetails")}
+              </h3>
+              <div className="space-y-2 text-sm text-gray-700 mb-4">
+                {/* Match the order of the main booking page: leftFields first, then rightFields */}
+                {leftFields.map((field, idx) => (
+                  <div
+                    key={field.key + "-inv-l-" + idx}
+                    className="flex justify-between"
+                  >
+                    <span>{field.label}</span>
+                    <span className="font-bold">{booking[field.key]}</span>
+                  </div>
+                ))}
+                {rightFields.map((field, idx) => (
+                  <div
+                    key={field.key + "-inv-r-" + idx}
+                    className="flex justify-between"
+                  >
+                    <span>{field.label}</span>
+                    <span className="font-bold">
+                      {field.isStatus
+                        ? STATUS_MAP[booking.status]
+                        : booking[field.key]}
                     </span>
                   </div>
-                );
-              })}
-            </div>
-          ) : null}
+                ))}
+              </div>
 
-          {/* Details Section - Matching ReservationForm style */}
-          <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
-            <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
-              {t("actions.showDetails")}
-            </h3>
-            <div className="space-y-2 text-sm text-gray-700 mb-4">
-              {/* Match the order of the main booking page: leftFields first, then rightFields */}
-              {leftFields.map((field, idx) => (
-                <div
-                  key={field.key + "-inv-l-" + idx}
-                  className="flex justify-between"
-                >
-                  <span>{field.label}</span>
-                  <span className="font-bold">{booking[field.key]}</span>
-                </div>
-              ))}
-              {rightFields.map((field, idx) => (
-                <div
-                  key={field.key + "-inv-r-" + idx}
-                  className="flex justify-between"
-                >
-                  <span>{field.label}</span>
-                  <span className="font-bold">
-                    {field.isStatus
-                      ? STATUS_MAP[booking.status]
-                      : booking[field.key]}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Coupon Section - Only show for accepted status */}
-            {isAcceptedStatus && (
-              <div className="border-t pt-4 mt-4 space-y-3">
-                <div>
-                  <label className="text-primary-blue font-bold text-sm block mb-2">
-                    {t("coupon.label") || "كوبون الخصم"}:
-                  </label>
-                  {appliedCoupon ? (
-                    <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
-                      <span className="text-purple-700 font-bold flex-1">
-                        {appliedCoupon}
+              {/* Coupon Section - Only show for accepted status */}
+              {isAcceptedStatus && (
+                <div className="border-t pt-4 mt-4 space-y-3">
+                  <div>
+                    <label className="text-primary-blue font-bold text-sm block mb-2">
+                      {t("coupon.label") || "كوبون الخصم"}:
+                    </label>
+                    {appliedCoupon ? (
+                      <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
+                        <span className="text-purple-700 font-bold flex-1">
+                          {appliedCoupon}
+                        </span>
+                        <button
+                          onClick={handleRemoveCoupon}
+                          className="text-purple-700 hover:text-purple-900"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          placeholder={
+                            t("coupon.placeholder") || "أدخل كود الكوبون"
+                          }
+                          className="flex-1 h-9"
+                        />
+                        <Button
+                          onClick={handleApplyCoupon}
+                          disabled={isApplyingCoupon || !couponCode.trim()}
+                          className="px-4 h-9"
+                        >
+                          {isApplyingCoupon ? (
+                            <LoadingSpinner size="sm" />
+                          ) : (
+                            t("coupon.apply") || "تطبيق"
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+                      {t("coupon.info") ||
+                        "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
+                      <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
+                        ?
                       </span>
-                      <button
-                        onClick={handleRemoveCoupon}
-                        className="text-purple-700 hover:text-purple-900"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2 items-center">
-                      <Input
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        placeholder={
-                          t("coupon.placeholder") || "أدخل كود الكوبون"
-                        }
-                        className="flex-1 h-9"
-                      />
-                      <Button
-                        onClick={handleApplyCoupon}
-                        disabled={isApplyingCoupon || !couponCode.trim()}
-                        className="px-4 h-9"
-                      >
-                        {isApplyingCoupon ? (
-                          <LoadingSpinner size="sm" />
-                        ) : (
-                          t("coupon.apply") || "تطبيق"
-                        )}
-                      </Button>
-                    </div>
-                  )}
-                  <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
-                    {t("coupon.info") || "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
-                    <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
-                      ?
-                    </span>
-                  </p>
+                    </p>
+                  </div>
                 </div>
+              )}
+
+              <div className="border-t pt-4 mt-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-[#22336C] text-base">
+                      {isAcceptedStatus
+                        ? t("confirmReservation.required") || "المطلوب"
+                        : t("total")}
+                      :
+                    </span>
+                    <span className="font-bold">
+                      {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
+                    </span>
+                  </div>
+                  {isAcceptedStatus && appliedCoupon && discountAmount > 0 && (
+                    <>
+                      <div className="flex justify-between text-red-500">
+                        <span className="font-bold">-10%</span>
+                        <span className="font-bold">
+                          -{discountAmount.toFixed(2)}{" "}
+                          {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>
+                          {t("coupon.code") || "كود الكوبون"}: {appliedCoupon}
+                        </span>
+                        <span>
+                          {t("coupon.saved") || "وفرت"}:{" "}
+                          {discountAmount.toFixed(2)}{" "}
+                          {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="font-bold text-lg text-[#22336C]">
+                      {isAcceptedStatus
+                        ? t("confirmReservation.finalAmount") ||
+                          "المبلغ المطلوب"
+                        : t("total")}
+                      :
+                    </span>
+                    <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                      {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice}{" "}
+                      {locale === "ar" ? "ر.س" : "SAR"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes - Only for accepted status */}
+            {isAcceptedStatus && onConfirm && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-bold text-[#22336C] mb-2">
+                  {t("confirmReservation.notes") || "ملاحظات"}:
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                  <li>
+                    {t("confirmReservation.note1") ||
+                      "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note2") ||
+                      "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note3") ||
+                      "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
+                  </li>
+                </ul>
               </div>
             )}
-
-            <div className="border-t pt-4 mt-4">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-[#22336C] text-base">
-                    {isAcceptedStatus
-                      ? t("confirmReservation.required") || "المطلوب"
-                      : t("total")}
-                    :
-                  </span>
-                  <span className="font-bold">
-                    {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
-                  </span>
-                </div>
-                {isAcceptedStatus && appliedCoupon && discountAmount > 0 && (
-                  <>
-                    <div className="flex justify-between text-red-500">
-                      <span className="font-bold">-10%</span>
-                      <span className="font-bold">
-                        -{discountAmount.toFixed(2)}{" "}
-                        {locale === "ar" ? "ر.س" : "SAR"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>
-                        {t("coupon.code") || "كود الكوبون"}: {appliedCoupon}
-                      </span>
-                      <span>
-                        {t("coupon.saved") || "وفرت"}:{" "}
-                        {discountAmount.toFixed(2)}{" "}
-                        {locale === "ar" ? "ر.س" : "SAR"}
-                      </span>
-                    </div>
-                  </>
-                )}
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <span className="font-bold text-lg text-[#22336C]">
-                    {isAcceptedStatus
-                      ? t("confirmReservation.finalAmount") || "المبلغ المطلوب"
-                      : t("total")}
-                    :
-                  </span>
-                  <span className="font-extrabold text-2xl text-[#4D5EDB]">
-                    {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice}{" "}
-                    {locale === "ar" ? "ر.س" : "SAR"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Notes - Only for accepted status */}
-          {isAcceptedStatus && onConfirm && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold text-[#22336C] mb-2">
-                {t("confirmReservation.notes") || "ملاحظات"}:
-              </h4>
-              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                <li>
-                  {t("confirmReservation.note1") ||
-                    "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
-                </li>
-                <li>
-                  {t("confirmReservation.note2") ||
-                    "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
-                </li>
-                <li>
-                  {t("confirmReservation.note3") ||
-                    "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
-                </li>
-              </ul>
-            </div>
-          )}
           </div>
 
           {/* Fixed Footer with Pay Now Button - Only for accepted status */}
@@ -798,6 +801,13 @@ const Bookings = () => {
         booking.enrollment_type ||
         "";
 
+      // For hourly enrollments, use day_string if available, otherwise use enrollment_date
+      const isHourly = booking.enrollment_type === "hour";
+      const dateToUse =
+        isHourly && booking.day_string
+          ? booking.day_string
+          : booking.enrollment_date || booking.starting_date;
+
       return {
         id: booking.id,
         status: booking.status,
@@ -805,21 +815,22 @@ const Bookings = () => {
         className: booking.center_name,
         branch: booking.branch_name,
         program: programName,
-        startDay: new Date(booking.enrollment_date).toLocaleDateString(
-          "ar-SA",
-          {
-            weekday: "long",
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }
-        ),
-        endDay: new Date(booking.enrollment_date).toLocaleDateString("ar-SA", {
-          weekday: "long",
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        }),
+        startDay: dateToUse
+          ? new Date(dateToUse).toLocaleDateString("ar-SA", {
+              weekday: "long",
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            })
+          : "",
+        endDay: dateToUse
+          ? new Date(dateToUse).toLocaleDateString("ar-SA", {
+              weekday: "long",
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            })
+          : "",
         daysCount: 1,
         paymentMethod: "ميسر",
         amount: parseFloat(booking.price_amount),
