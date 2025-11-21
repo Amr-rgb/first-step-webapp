@@ -10,8 +10,12 @@ import { useAuthUser } from "@/store/authStore";
 interface BookingCardProps {
   booking: Booking;
   onViewDetails: (booking: Booking) => void;
-  onAccept?: (enrollmentId: string, enrollmentType: string) => void;
-  onReject?: (enrollmentId: string) => void;
+  onAccept?: (
+    enrollmentId: string,
+    enrollmentType: string,
+    currentStatus: string
+  ) => void;
+  onReject?: (enrollmentId: string, currentStatus: string) => void;
   onSendNotification?: (enrollmentId: number) => void;
   isNotificationLoading?: boolean;
 }
@@ -181,7 +185,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("rejectBooking")}
               </Button>
@@ -189,7 +193,7 @@ export const BookingCard = ({
                 size="sm"
                 className="flex-1"
                 onClick={() =>
-                  onAccept?.(firstChild.enrollmentId, booking.type)
+                  onAccept?.(firstChild.enrollmentId, booking.type, status)
                 }
               >
                 {tBookings("confirmBooking")}
@@ -204,7 +208,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("cancelBooking")}
               </Button>
@@ -225,7 +229,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("rejectBooking")}
               </Button>
@@ -233,7 +237,7 @@ export const BookingCard = ({
                 size="sm"
                 className="flex-1"
                 onClick={() =>
-                  onAccept?.(firstChild.enrollmentId, booking.type)
+                  onAccept?.(firstChild.enrollmentId, booking.type, status)
                 }
               >
                 {tBookings("acceptBooking")}

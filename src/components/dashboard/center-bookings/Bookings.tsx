@@ -92,6 +92,8 @@ const Bookings = () => {
   );
   const [pendingEnrollmentType, setPendingEnrollmentType] =
     useState<string>("");
+  const [pendingEnrollmentStatus, setPendingEnrollmentStatus] =
+    useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const t = useTranslations("dashboard.center-bookings");
@@ -113,23 +115,32 @@ const Bookings = () => {
     mutationFn: async ({
       enrollmentId,
       status,
+      currentStatus,
       starting_date,
       starting_time,
       day_string,
     }: {
       enrollmentId: string;
       status: string;
+      currentStatus?: string;
       starting_date?: string;
       starting_time?: string;
       day_string?: string;
     }) => {
-      return await centerService.respondExistingEnrollment(
-        parseInt(enrollmentId),
-        status,
-        starting_date,
-        starting_time,
-        day_string
-      );
+      if (currentStatus === "existing") {
+        return await centerService.respondExistingEnrollment(
+          parseInt(enrollmentId),
+          status,
+          starting_date,
+          starting_time,
+          day_string
+        );
+      } else {
+        return await centerService.respondEnrollment(
+          parseInt(enrollmentId),
+          status
+        );
+      }
     },
     onSuccess: () => {
       toastSuccess(
@@ -145,10 +156,23 @@ const Bookings = () => {
     },
   });
 
-  const handleAccept = (enrollmentId: string, enrollmentType: string) => {
-    setPendingEnrollmentId(enrollmentId);
-    setPendingEnrollmentType(enrollmentType);
-    setIsAcceptModalOpen(true);
+  const handleAccept = (
+    enrollmentId: string,
+    enrollmentType: string,
+    currentStatus: string
+  ) => {
+    if (currentStatus === "existing") {
+      setPendingEnrollmentId(enrollmentId);
+      setPendingEnrollmentType(enrollmentType);
+      setPendingEnrollmentStatus(currentStatus);
+      setIsAcceptModalOpen(true);
+    } else {
+      enrollmentMutation.mutate({
+        enrollmentId,
+        status: "accepted",
+        currentStatus,
+      });
+    }
   };
 
   const handleConfirmAccept = (data: {
@@ -159,7 +183,8 @@ const Bookings = () => {
     if (pendingEnrollmentId) {
       enrollmentMutation.mutate({
         enrollmentId: pendingEnrollmentId,
-        status: "paid",
+        status: pendingEnrollmentStatus === "pending" ? "accepted" : "paid",
+        currentStatus: pendingEnrollmentStatus,
         starting_date: data.startingDate,
         starting_time: data.startingTime,
         day_string: data.dayString,
@@ -167,8 +192,12 @@ const Bookings = () => {
     }
   };
 
-  const handleReject = (enrollmentId: string) => {
-    enrollmentMutation.mutate({ enrollmentId, status: "rejected" });
+  const handleReject = (enrollmentId: string, currentStatus: string) => {
+    enrollmentMutation.mutate({
+      enrollmentId,
+      status: "rejected",
+      currentStatus,
+    });
   };
 
   const notificationMutation = useMutation({
