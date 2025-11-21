@@ -2547,7 +2547,11 @@
       "successUpdate": "Discount coupon updated successfully",
       "statusUpdated": "Status updated successfully",
       "updating": "Updating...",
-      "updateCoupon": "Update Coupon"
+      "updateCoupon": "Update Coupon",
+      "searchBranches": "Search Branches",
+      "searchCenters": "Search Centers",
+      "noBranches": "No branches found",
+      "noCenters": "No centers found"
     },
     "loading": "Loading discount codes...",
     "error": "Error loading discount codes"

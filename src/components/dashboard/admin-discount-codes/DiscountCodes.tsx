@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/promocodeService";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type FilterStatus = "all" | DiscountCodeStatus;
 
@@ -132,10 +133,45 @@ export default function DiscountCodes() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t("loading") || "Loading..."}</p>
+      <div className="space-y-6">
+        {/* Filter Buttons Skeleton */}
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-10 w-24 rounded-full" />
+          ))}
+        </div>
+
+        {/* Search and Add Button Skeleton */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-12 w-full sm:w-96 rounded-lg" />
+        </div>
+
+        {/* Table Skeleton */}
+        <div className="space-y-4">
+          <div className="border-b border-gray-200 flex justify-center pb-4">
+            <Skeleton className="h-7 w-32" />
+          </div>
+          <div className="border rounded-md">
+            <div className="border-b p-4 bg-gray-50/50">
+              <div className="flex gap-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-4 w-full" />
+                ))}
+              </div>
+            </div>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="p-4 border-b last:border-0">
+                <div className="flex gap-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

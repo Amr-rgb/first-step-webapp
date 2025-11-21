@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { X, Plus, Minus, Check } from "lucide-react";
+import { Plus, Minus, Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Form,
   FormControl,
@@ -16,6 +17,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import DatePicker from "@/components/general/DatePicker";
 import { adminService } from "@/services/promocodeService";
 import { adminService as dashboardAdminService } from "@/services/dashboardApi";
@@ -117,20 +124,39 @@ export default function CreatePromocodeModal({
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [isFormReady, setIsFormReady] = useState(!promocodeId);
   const [activeCenterId, setActiveCenterId] = useState<number | null>(null);
+  const [centerSearchQuery, setCenterSearchQuery] = useState("");
+  const [branchSearchQuery, setBranchSearchQuery] = useState("");
 
   const centers: Center[] = centersData || [];
+
+  const filteredCenters = useMemo(() => {
+    if (!centerSearchQuery) return centers;
+    return centers.filter((center) =>
+      center.nursery_name
+        .toLowerCase()
+        .includes(centerSearchQuery.toLowerCase())
+    );
+  }, [centers, centerSearchQuery]);
 
   const effectiveActiveCenterId = activeCenterId ?? centers[0]?.id;
 
   const filteredBranches = useMemo(() => {
     if (!effectiveActiveCenterId) return [];
     const activeCenter = centers.find((c) => c.id === effectiveActiveCenterId);
-    return activeCenter ? activeCenter.branches : [];
-  }, [centers, effectiveActiveCenterId]);
+    const branches = activeCenter ? activeCenter.branches : [];
+
+    if (!branchSearchQuery) return branches;
+    return branches.filter((branch) =>
+      branch.nursery_name
+        .toLowerCase()
+        .includes(branchSearchQuery.toLowerCase())
+    );
+  }, [centers, effectiveActiveCenterId, branchSearchQuery]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(promocodeSchema),
     defaultValues,
+    mode: "onChange",
   });
 
   const createMutation = useMutation({
@@ -151,6 +177,7 @@ export default function CreatePromocodeModal({
     onSuccess: () => {
       toast.success(t("successUpdate") || "Promocode updated successfully");
       queryClient.invalidateQueries({ queryKey: ["promocodes"] });
+      queryClient.invalidateQueries({ queryKey: ["promocode", promocodeId] });
       onClose();
       resetForm();
     },
@@ -166,6 +193,7 @@ export default function CreatePromocodeModal({
       setStatus(newStatus);
       toast.success(t("statusUpdated") || "Status updated successfully");
       queryClient.invalidateQueries({ queryKey: ["promocodes"] });
+      queryClient.invalidateQueries({ queryKey: ["promocode", promocodeId] });
     },
     onError: (error: any) => {
       toast.error(error.message || t("error"));
@@ -180,7 +208,10 @@ export default function CreatePromocodeModal({
     setAllowChildrenOnly(false);
     setSelectedColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
     setStatus("active");
+    setStatus("active");
     setActiveCenterId(null);
+    setCenterSearchQuery("");
+    setBranchSearchQuery("");
   };
 
   useEffect(() => {
@@ -198,7 +229,7 @@ export default function CreatePromocodeModal({
           max_number_of_usage: Number(data.max_number_of_usage),
           amount: Number(data.amount),
         });
-        setAllowChildrenOnly(data.kind_of_child === "new-child");
+        setAllowChildrenOnly(data.kind_of_child === "new_child");
         setSelectedColor(data.color || COLORS[0]);
 
         const centerIds =
@@ -226,6 +257,12 @@ export default function CreatePromocodeModal({
   }, [isOpen, promocodeData, promocodeId, form]);
 
   const onSubmit = (data: FormData) => {
+    // Prevent submission if in step 1 (e.g. via Enter key) and just move to step 2
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
+
     const payload = {
       title: data.title,
       description: data.description,
@@ -233,7 +270,7 @@ export default function CreatePromocodeModal({
       start_date: format(data.start_date, "yyyy-MM-dd"),
       end_date: format(data.end_date, "yyyy-MM-dd"),
       max_number_of_usage: data.max_number_of_usage,
-      kind_of_child: allowChildrenOnly ? "new-child" : "all",
+      kind_of_child: allowChildrenOnly ? "new_child" : "all",
       status: status, // Use current status state
       color: selectedColor,
       amount: data.amount,
@@ -318,28 +355,28 @@ export default function CreatePromocodeModal({
     form.setValue(field, Math.max(0, currentValue - 1));
   };
 
-  const handleStep1Continue = async () => {
+  const handleStep1Continue = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     const isValid = await form.trigger([
       "title",
+      "description",
       "start_date",
       "end_date",
       "percentage",
       "amount",
       "max_number_of_usage",
     ]);
+
     if (isValid) {
       setStep(2);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-primary">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="lg:max-w-4xl sm:max-w-2xl max-h-[90vh] p-0 flex flex-col gap-0">
+        <DialogHeader className="p-6 border-b">
+          <DialogTitle className="text-2xl font-bold text-primary">
             {promocodeId
               ? isViewMode
                 ? t("viewTitle") || "View Coupon Details"
@@ -347,24 +384,75 @@ export default function CreatePromocodeModal({
               : step === 1
               ? t("step1Title")
               : t("step2Title")}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-6 h-6 text-gray-500" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         {/* Content */}
         {promocodeId && !isFormReady ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="p-6 space-y-6">
+            {/* Status Skeleton */}
+            <div className="flex items-center justify-between mb-6">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-6 w-12 rounded-full" />
+            </div>
+
+            {/* Title Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+
+            {/* Description Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+
+            {/* Dates Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+
+            {/* Percentage & Amount Skeleton */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+
+            {/* Max Usage Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+
+            {/* Color Skeleton */}
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-32" />
+              <div className="flex gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-12 w-12 rounded-full" />
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="p-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col min-h-0 overflow-hidden"
+            >
+              <div className="flex-1 overflow-y-auto p-6">
                 {step === 1 ? (
                   // Step 1: Coupon Details
                   <div className="space-y-6">
@@ -667,7 +755,7 @@ export default function CreatePromocodeModal({
                 ) : (
                   // Step 2: Select Centers and Branches
                   <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-rows-2 sm:grid-cols-2 gap-6">
                       {/* Centers List */}
                       <div>
                         <h3 className="text-lg font-semibold mb-4 text-right">
@@ -688,16 +776,42 @@ export default function CreatePromocodeModal({
                               {t("allCentersAndBranches")}
                             </Label>
                           </div>
+
+                          {/* Center Search */}
+                          <div className="relative mb-2">
+                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Input
+                              placeholder={
+                                t("searchCenters") || "Search centers..."
+                              }
+                              value={centerSearchQuery}
+                              onChange={(e) =>
+                                setCenterSearchQuery(e.target.value)
+                              }
+                              className="pl-8 h-9 text-sm"
+                              disabled={isViewMode}
+                            />
+                          </div>
+
                           {centersLoading ? (
-                            <div className="text-center py-4 text-gray-500">
-                              {t("loading") || "Loading..."}
+                            <div className="space-y-2">
+                              {[1, 2, 3, 4, 5].map((i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-2 p-2 border rounded-lg"
+                                >
+                                  <Skeleton className="h-4 w-4" />
+                                  <Skeleton className="h-8 w-8 rounded-full" />
+                                  <Skeleton className="h-4 w-32" />
+                                </div>
+                              ))}
                             </div>
-                          ) : centers.length === 0 ? (
+                          ) : filteredCenters.length === 0 ? (
                             <div className="text-center py-4 text-gray-500">
                               {t("noCenters") || "No centers available"}
                             </div>
                           ) : (
-                            centers.map((center) => {
+                            filteredCenters.map((center) => {
                               const isSelected = selectedCenters.includes(
                                 center.id
                               );
@@ -764,9 +878,34 @@ export default function CreatePromocodeModal({
                               {t("allBranches")}
                             </Label>
                           </div>
+
+                          {/* Branch Search */}
+                          <div className="relative mb-2">
+                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Input
+                              placeholder={
+                                t("searchBranches") || "Search branches..."
+                              }
+                              value={branchSearchQuery}
+                              onChange={(e) =>
+                                setBranchSearchQuery(e.target.value)
+                              }
+                              className="pl-8 h-9 text-sm"
+                              disabled={isViewMode}
+                            />
+                          </div>
+
                           {centersLoading ? (
-                            <div className="text-center py-4 text-gray-500">
-                              {t("loading") || "Loading..."}
+                            <div className="space-y-2">
+                              {[1, 2, 3, 4, 5].map((i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-2 p-2 border rounded-lg"
+                                >
+                                  <Skeleton className="h-4 w-4" />
+                                  <Skeleton className="h-4 w-32" />
+                                </div>
+                              ))}
                             </div>
                           ) : filteredBranches.length === 0 ? (
                             <div className="text-center py-4 text-gray-500">
@@ -805,7 +944,7 @@ export default function CreatePromocodeModal({
                   </div>
                 )}
               </div>
-              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 flex gap-4">
+              <div className="p-6 border-t bg-white flex gap-4">
                 {step === 1 ? (
                   <>
                     <Button
@@ -823,7 +962,7 @@ export default function CreatePromocodeModal({
                     <Button
                       size="sm"
                       type="button"
-                      onClick={handleStep1Continue}
+                      onClick={(e) => handleStep1Continue(e)}
                       className="flex-1 bg-primary"
                     >
                       {t("continue")}
@@ -879,7 +1018,7 @@ export default function CreatePromocodeModal({
             </form>
           </Form>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

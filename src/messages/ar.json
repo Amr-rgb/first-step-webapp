@@ -2563,7 +2563,11 @@
       "successUpdate": "تم تحديث كوبون الخصم بنجاح",
       "statusUpdated": "تم تحديث الحالة بنجاح",
       "updating": "جاري التحديث...",
-      "updateCoupon": "تحديث كوبون الخصم"
+      "updateCoupon": "تحديث كوبون الخصم",
+      "searchBranches": "بحث عن الفروع",
+      "searchCenters": "بحث عن المراكز",
+      "noBranches": "لا توجد فروع",
+      "noCenters": "لا توجد مراكز"
     },
     "loading": "جاري تحميل كوبونات الخصم...",
     "error": "خطأ في تحميل كوبونات الخصم"
