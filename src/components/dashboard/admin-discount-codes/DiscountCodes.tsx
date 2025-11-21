@@ -213,7 +213,7 @@ export default function DiscountCodes() {
           <span>{t("addButton")}</span>
         </Button>
 
-        <div className="relative w-full sm:w-96">
+        <div className="relative w-full lg:w-96">
           <input
             type="text"
             placeholder={t("searchPlaceholder")}

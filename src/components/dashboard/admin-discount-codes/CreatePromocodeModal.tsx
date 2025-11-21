@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
+import { Branch } from "@/types";
 
 interface CreatePromocodeModalProps {
   isOpen: boolean;
@@ -208,14 +209,13 @@ export default function CreatePromocodeModal({
     setAllowChildrenOnly(false);
     setSelectedColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
     setStatus("active");
-    setStatus("active");
     setActiveCenterId(null);
     setCenterSearchQuery("");
     setBranchSearchQuery("");
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && centersData) {
       if (promocodeId && promocodeData) {
         // Edit Mode: Populate from backend data
         const data = promocodeData.data || promocodeData;
@@ -232,20 +232,60 @@ export default function CreatePromocodeModal({
         setAllowChildrenOnly(data.kind_of_child === "new_child");
         setSelectedColor(data.color || COLORS[0]);
 
-        const centerIds =
+        const initialCenterIds =
           data.center_ids?.map(Number) ||
           data.centers?.map((c: any) => c.id) ||
           [];
-        const branchIds =
+        const initialBranchIds =
           data.branch_ids?.map(Number) ||
           data.branches?.map((b: any) => b.id) ||
           [];
 
-        setSelectedCenters(centerIds);
-        setSelectedBranches(branchIds);
-        if (centerIds.length > 0) {
-          setActiveCenterId(centerIds[0]);
+        // Logic to ensure consistency:
+        // 1. If a center is selected, ALL its branches must be selected.
+        // 2. If ALL branches of a center are selected, the center must be selected.
+
+        let newSelectedCenters = [...initialCenterIds];
+        let newSelectedBranches = [...initialBranchIds];
+
+        // Pass 1: For every selected center, ensure all its branches are selected
+        newSelectedCenters.forEach((centerId) => {
+          const center = centersData.find((c: Center) => c.id === centerId);
+          if (center) {
+            const centerBranchIds = center.branches.map((b: Branch) => b.id);
+            newSelectedBranches = [
+              ...new Set([...newSelectedBranches, ...centerBranchIds]),
+            ];
+          }
+        });
+
+        // Pass 2: For every center, if all its branches are in newSelectedBranches, ensure center is selected
+        centersData.forEach((center: Center) => {
+          const centerBranchIds = center.branches.map((b) => b.id);
+          if (
+            centerBranchIds.length > 0 &&
+            centerBranchIds.every((id) => newSelectedBranches.includes(id))
+          ) {
+            if (!newSelectedCenters.includes(center.id)) {
+              newSelectedCenters.push(center.id);
+            }
+          }
+        });
+
+        setSelectedCenters(newSelectedCenters);
+        setSelectedBranches(newSelectedBranches);
+
+        if (newSelectedCenters.length > 0) {
+          setActiveCenterId(newSelectedCenters[0]);
+        } else if (initialBranchIds.length > 0) {
+          // If no center selected but branches are, find the center of the first branch
+          const firstBranchId = initialBranchIds[0];
+          const center = centersData.find((c: Center) =>
+            c.branches.some((b) => b.id === firstBranchId)
+          );
+          if (center) setActiveCenterId(center.id);
         }
+
         setStatus(data.status === "active" ? "active" : "inactive");
         setIsFormReady(true);
       } else if (!promocodeId) {
@@ -254,7 +294,7 @@ export default function CreatePromocodeModal({
         setIsFormReady(true);
       }
     }
-  }, [isOpen, promocodeData, promocodeId, form]);
+  }, [isOpen, promocodeData, promocodeId, form, centersData]);
 
   const onSubmit = (data: FormData) => {
     // Prevent submission if in step 1 (e.g. via Enter key) and just move to step 2
@@ -262,6 +302,15 @@ export default function CreatePromocodeModal({
       setStep(2);
       return;
     }
+
+    // Calculate branches to send: only those whose parent center is NOT selected
+    const branchesToSend = selectedBranches.filter((branchId) => {
+      const center = centers.find((c) =>
+        c.branches.some((b) => b.id === branchId)
+      );
+      if (!center) return true;
+      return !selectedCenters.includes(center.id);
+    });
 
     const payload = {
       title: data.title,
@@ -275,7 +324,7 @@ export default function CreatePromocodeModal({
       color: selectedColor,
       amount: data.amount,
       center_ids: selectedCenters,
-      branch_ids: selectedBranches,
+      branch_ids: branchesToSend,
     };
 
     if (promocodeId) {
@@ -286,48 +335,109 @@ export default function CreatePromocodeModal({
   };
 
   const handleCenterToggle = (centerId: number) => {
-    setSelectedCenters((prev) =>
-      prev.includes(centerId)
-        ? prev.filter((id) => id !== centerId)
-        : [...prev, centerId]
-    );
+    const center = centers.find((c) => c.id === centerId);
+    if (!center) return;
+
+    const centerBranchIds = center.branches.map((b) => b.id);
+
+    if (selectedCenters.includes(centerId)) {
+      // Deselect Center -> Deselect all its branches
+      setSelectedCenters((prev) => prev.filter((id) => id !== centerId));
+      setSelectedBranches((prev) =>
+        prev.filter((id) => !centerBranchIds.includes(id))
+      );
+    } else {
+      // Select Center -> Select all its branches
+      setSelectedCenters((prev) => [...prev, centerId]);
+      setSelectedBranches((prev) => [
+        ...new Set([...prev, ...centerBranchIds]),
+      ]);
+    }
     setActiveCenterId(centerId);
   };
 
   const handleBranchToggle = (branchId: number) => {
-    setSelectedBranches((prev) =>
-      prev.includes(branchId)
-        ? prev.filter((id) => id !== branchId)
-        : [...prev, branchId]
+    // Find the center this branch belongs to
+    // Since we are likely in the context of activeCenterId, we can check that first,
+    // but to be safe and support global search logic if added later, we search in all centers.
+    const center = centers.find((c) =>
+      c.branches.some((b) => b.id === branchId)
     );
+    if (!center) return;
+
+    let newSelectedBranches: number[] = [];
+
+    if (selectedBranches.includes(branchId)) {
+      // Deselect Branch
+      newSelectedBranches = selectedBranches.filter((id) => id !== branchId);
+      // If we deselect a branch, the parent center is no longer fully selected
+      setSelectedCenters((prev) => prev.filter((id) => id !== center.id));
+    } else {
+      // Select Branch
+      newSelectedBranches = [...selectedBranches, branchId];
+      // Check if ALL branches of this center are now selected
+      const centerBranchIds = center.branches.map((b) => b.id);
+      const allSelected = centerBranchIds.every((id) =>
+        newSelectedBranches.includes(id)
+      );
+      if (allSelected) {
+        setSelectedCenters((prev) =>
+          prev.includes(center.id) ? prev : [...prev, center.id]
+        );
+      }
+    }
+    setSelectedBranches(newSelectedBranches);
   };
 
   const handleSelectAllCenters = (checked: boolean) => {
     setSelectAllCenters(checked);
     if (checked) {
       setSelectedCenters(centers.map((c) => c.id));
+      // Select all branches of all centers
+      const allBranchIds = centers.flatMap((c) => c.branches.map((b) => b.id));
+      setSelectedBranches(allBranchIds);
     } else {
       setSelectedCenters([]);
+      setSelectedBranches([]);
     }
   };
 
   const handleSelectAllBranches = (checked: boolean) => {
     setSelectAllBranches(checked);
+    // This usually applies to the filtered/visible branches (of the active center)
     const visibleBranchIds = filteredBranches.map((b) => b.id);
 
+    // Find the active center
+    const activeCenter = centers.find((c) => c.id === effectiveActiveCenterId);
+
     if (checked) {
-      // Add visible branches to selection without removing others
-      setSelectedBranches((prev) => {
-        const newSet = new Set(prev);
-        visibleBranchIds.forEach((id) => newSet.add(id));
-        return Array.from(newSet);
-      });
+      // Add visible branches to selection
+      const newBranches = [
+        ...new Set([...selectedBranches, ...visibleBranchIds]),
+      ];
+      setSelectedBranches(newBranches);
+
+      // If active center exists and all its branches are now selected, select the center
+      if (activeCenter) {
+        const centerBranchIds = activeCenter.branches.map((b) => b.id);
+        if (centerBranchIds.every((id) => newBranches.includes(id))) {
+          setSelectedCenters((prev) => [
+            ...new Set([...prev, activeCenter.id]),
+          ]);
+        }
+      }
     } else {
       // Remove visible branches from selection
       const visibleIdsSet = new Set(visibleBranchIds);
       setSelectedBranches((prev) =>
         prev.filter((id) => !visibleIdsSet.has(id))
       );
+      // Deselect the active center since we are unchecking branches
+      if (activeCenter) {
+        setSelectedCenters((prev) =>
+          prev.filter((id) => id !== activeCenter.id)
+        );
+      }
     }
   };
 
@@ -755,7 +865,7 @@ export default function CreatePromocodeModal({
                 ) : (
                   // Step 2: Select Centers and Branches
                   <div className="space-y-6">
-                    <div className="grid grid-rows-2 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 gap-6">
                       {/* Centers List */}
                       <div>
                         <h3 className="text-lg font-semibold mb-4 text-right">
@@ -811,49 +921,88 @@ export default function CreatePromocodeModal({
                               {t("noCenters") || "No centers available"}
                             </div>
                           ) : (
-                            filteredCenters.map((center) => {
-                              const isSelected = selectedCenters.includes(
-                                center.id
-                              );
-                              const isActive =
-                                center.id === effectiveActiveCenterId;
-                              const rowClass = isActive
-                                ? "bg-blue-50 border-blue-200"
-                                : "hover:bg-gray-50 border-transparent";
+                            (() => {
+                              // Grouping Logic
+                              let relevantCenters: Center[] = [];
+                              let otherCenters: Center[] = [];
+
+                              if (promocodeId) {
+                                // View/Edit Mode: Separate relevant centers
+                                filteredCenters.forEach((center) => {
+                                  const isSelected = selectedCenters.includes(
+                                    center.id
+                                  );
+                                  const hasSelectedBranches =
+                                    center.branches.some((b) =>
+                                      selectedBranches.includes(b.id)
+                                    );
+
+                                  if (isSelected || hasSelectedBranches) {
+                                    relevantCenters.push(center);
+                                  } else {
+                                    otherCenters.push(center);
+                                  }
+                                });
+                              } else {
+                                // Create Mode: No separation
+                                otherCenters = filteredCenters;
+                              }
+
+                              const renderCenterRow = (center: Center) => {
+                                const isSelected = selectedCenters.includes(
+                                  center.id
+                                );
+                                const isActive =
+                                  center.id === effectiveActiveCenterId;
+                                const rowClass = isActive
+                                  ? "bg-blue-50 border-blue-200"
+                                  : "hover:bg-gray-50 border-transparent";
+
+                                return (
+                                  <div
+                                    key={center.id}
+                                    className={`flex items-center gap-2 p-2 rounded-lg border transition-colors cursor-pointer ${rowClass}`}
+                                    onClick={() => setActiveCenterId(center.id)}
+                                  >
+                                    <Checkbox
+                                      id={`center-${center.id}`}
+                                      checked={isSelected}
+                                      onCheckedChange={() =>
+                                        handleCenterToggle(center.id)
+                                      }
+                                      disabled={isViewMode}
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                    <Label
+                                      htmlFor={`center-${center.id}`}
+                                      className="cursor-pointer flex items-center gap-2 w-full pointer-events-none"
+                                    >
+                                      {center.logo ? (
+                                        <img
+                                          src={center.logo}
+                                          alt={center.nursery_name}
+                                          className="w-8 h-8 rounded-full object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-8 h-8 bg-gradient-to-br from-red-400 to-green-400 rounded-full" />
+                                      )}
+                                      {center.nursery_name}
+                                    </Label>
+                                  </div>
+                                );
+                              };
 
                               return (
-                                <div
-                                  key={center.id}
-                                  className={`flex items-center gap-2 p-2 rounded-lg border transition-colors cursor-pointer ${rowClass}`}
-                                  onClick={() => setActiveCenterId(center.id)}
-                                >
-                                  <Checkbox
-                                    id={`center-${center.id}`}
-                                    checked={isSelected}
-                                    onCheckedChange={() =>
-                                      handleCenterToggle(center.id)
-                                    }
-                                    disabled={isViewMode}
-                                    onClick={(e) => e.stopPropagation()}
-                                  />
-                                  <Label
-                                    htmlFor={`center-${center.id}`}
-                                    className="cursor-pointer flex items-center gap-2 w-full pointer-events-none"
-                                  >
-                                    {center.logo ? (
-                                      <img
-                                        src={center.logo}
-                                        alt={center.nursery_name}
-                                        className="w-8 h-8 rounded-full object-cover"
-                                      />
-                                    ) : (
-                                      <div className="w-8 h-8 bg-gradient-to-br from-red-400 to-green-400 rounded-full" />
+                                <>
+                                  {relevantCenters.map(renderCenterRow)}
+                                  {relevantCenters.length > 0 &&
+                                    otherCenters.length > 0 && (
+                                      <div className="my-2 border-t border-dashed border-gray-300" />
                                     )}
-                                    {center.nursery_name}
-                                  </Label>
-                                </div>
+                                  {otherCenters.map(renderCenterRow)}
+                                </>
                               );
-                            })
+                            })()
                           )}
                         </div>
                       </div>
@@ -984,15 +1133,20 @@ export default function CreatePromocodeModal({
                     </Button>
                     {isViewMode ? (
                       <Button
+                        key="edit-btn"
                         size="sm"
                         type="button"
-                        onClick={onSwitchToEdit}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onSwitchToEdit?.();
+                        }}
                         className="flex-1 bg-primary"
                       >
                         {t("edit") || "Edit"}
                       </Button>
                     ) : (
                       <Button
+                        key="submit-btn"
                         size="sm"
                         type="submit"
                         className="flex-1 bg-primary"
