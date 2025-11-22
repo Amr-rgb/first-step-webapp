@@ -1,58 +1,55 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import CouponCard from "@/components/coupons/CouponCard";
+import { websiteService } from "@/services/promocodeService";
+import { toast } from "sonner";
 
-const COLORS = [
-  "#2B3990", // Blue
-  "#D9534F", // Peach
-  "#83CBAA", // Sage
-  "#B12F53", // Rose
-];
-
-const DUMMY_COUPONS = [
-  {
-    id: 1,
-    title: "اليوم الوطني السعودي",
-    endDate: "2025 / 06 / 06",
-    percentage: 20,
-    code: "NIGHT10",
-    color: COLORS[0],
-    centers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-  },
-  {
-    id: 2,
-    title: "عرض الصيف المميز",
-    endDate: "2025 / 08 / 30",
-    percentage: 15,
-    code: "SUMMER15",
-    color: COLORS[1],
-    centers: [1, 2],
-  },
-  {
-    id: 3,
-    title: "خصم العودة للمدارس",
-    endDate: "2025 / 09 / 15",
-    percentage: 25,
-    code: "SCHOOL25",
-    color: COLORS[2],
-    centers: [1, 2],
-  },
-  {
-    id: 4,
-    title: "خصم خاص للأعضاء",
-    endDate: "2025 / 12 / 31",
-    percentage: 10,
-    code: "MEMBER10",
-    color: COLORS[3],
-    centers: [1, 2],
-  },
-];
+interface Coupon {
+  id: number;
+  title: string;
+  description: string | null;
+  percentage: string;
+  end_date: string;
+  color: string;
+  centers: {
+    id: number;
+    name: string;
+    logo: string;
+  }[];
+  branches: {
+    id: number;
+    name: string;
+    center_id: number;
+    logo: string;
+  }[];
+}
 
 export default function CouponCodesPage() {
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await websiteService.getPromocodes();
+        if (response.success) {
+          setCoupons(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch coupons:", error);
+        toast.error("فشل في تحميل الكوبونات");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoupons();
+  }, []);
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
@@ -75,17 +72,27 @@ export default function CouponCodesPage() {
 
         {/* Coupons Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-20">
-          {DUMMY_COUPONS.map((coupon) => (
-            <CouponCard
-              key={coupon.id}
-              title={coupon.title}
-              endDate={coupon.endDate}
-              percentage={coupon.percentage}
-              code={coupon.code}
-              color={coupon.color}
-              centers={coupon.centers}
-            />
-          ))}
+          {loading ? (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              جاري التحميل...
+            </div>
+          ) : coupons.length > 0 ? (
+            coupons.map((coupon) => (
+              <CouponCard
+                key={coupon.id}
+                title={coupon.description || coupon.title} // User said description is main text, title is code. But if description is null, fallback to title? Or maybe empty string.
+                endDate={coupon.end_date}
+                percentage={parseFloat(coupon.percentage)}
+                code={coupon.title}
+                color={coupon.color}
+                centers={[...coupon.centers, ...(coupon.branches || [])]}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              لا توجد كوبونات متاحة حالياً
+            </div>
+          )}
         </div>
       </div>
     </div>

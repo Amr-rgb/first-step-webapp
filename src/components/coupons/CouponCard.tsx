@@ -5,6 +5,12 @@ import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CouponCardProps {
   title: string;
@@ -12,7 +18,7 @@ interface CouponCardProps {
   percentage: number;
   code: string;
   color: string;
-  centers: number[];
+  centers: { id: number; logo: string; name: string }[];
 }
 
 const COLORS = [
@@ -37,15 +43,38 @@ export default function CouponCard({
 
   return (
     <div className="group hover:-translate-y-1 transition-transform duration-300">
-      <div className="overflow-x-auto w-full px-4 no-scrollbar">
-        <div className="mb-4 flex items-center justify-center gap-2 flex-nowrap">
-          {centers.map((center, index) => (
-            <div
-              key={center}
-              className="w-9 h-9 bg-primary-blue rounded-full z-10 transition-all duration-300 ease-in-out group-hover:translate-x-[calc(var(--index)*8px-16px)] flex-shrink-0"
-              style={{ "--index": index } as React.CSSProperties}
-            />
-          ))}
+      <div className="overflow-x-auto w-full px-4 no-scrollbar" dir="ltr">
+        <div className="mb-4 flex items-center justify-start py-2 group/stack">
+          <TooltipProvider>
+            {centers.map((center, index) => (
+              <Tooltip key={center.id}>
+                <TooltipTrigger asChild>
+                  <div
+                    className={cn(
+                      "w-9 h-9 bg-white rounded-full flex-shrink-0 overflow-hidden border-2 border-white cursor-pointer transition-all duration-300 ease-out relative",
+                      // Default overlap
+                      index !== 0 && "-ml-3",
+                      // Expand on hover
+                      "group-hover/stack:ml-1",
+                      // Hover effect on individual item
+                      "hover:scale-125 hover:z-30"
+                    )}
+                  >
+                    <Image
+                      src={center.logo}
+                      alt={center.name}
+                      width={36}
+                      height={36}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{center.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
         </div>
       </div>
 

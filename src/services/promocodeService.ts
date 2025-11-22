@@ -1,6 +1,17 @@
 import { apiClient } from "./api";
 import { ApiErrorHandler } from "@/lib/error-handling";
 
+export const websiteService = {
+  getPromocodes: async () => {
+    try {
+      const response = await apiClient.get("/coupons");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
 export const adminService = {
   getPromocodes: async () => {
     try {
