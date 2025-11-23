@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useAuthToken, useAuthUser } from "@/store/authStore";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { openSignInModal } from "@/components/modals/SignInModalHandler";
 import { handleLogout } from "@/lib/auth-utils";
@@ -8,7 +8,9 @@ import { handleLogout } from "@/lib/auth-utils";
 const NavbarButton = () => {
   const token = useAuthToken();
   const user = useAuthUser();
+  const pathname = usePathname();
   const tBtns = useTranslations("navbar.buttons");
+  const isSignInPage = pathname === "/sign-in";
 
   // Determine dashboard path based on user role
   let dashboardPath = null;
@@ -27,26 +29,30 @@ const NavbarButton = () => {
     <div className="flex gap-2 items-center">
       {!token ? (
         <>
-          <Button
-            size={"sm"}
-            className="hidden sm:inline-flex font-semibold"
-            onClick={openSignInModal}
-          >
-            <div className="flex items-center gap-1">
-              <span className="font-normal text-xs">
-                {tBtns("already-have-account")}
-              </span>
-              <span>{tBtns("sign-in")}</span>
-            </div>
-          </Button>
-          <Button asChild size={"sm"} className="sm:hidden font-semibold">
-            <Link href="/sign-in">
-              <span className="font-normal text-xs">
-                {tBtns("already-have-account")}
-              </span>
-              <span>{tBtns("sign-in")}</span>
-            </Link>
-          </Button>
+          {!isSignInPage && (
+            <>
+              <Button
+                size={"sm"}
+                className="hidden sm:inline-flex font-semibold"
+                onClick={openSignInModal}
+              >
+                <div className="flex items-center gap-1">
+                  <span className="font-normal text-xs">
+                    {tBtns("already-have-account")}
+                  </span>
+                  <span>{tBtns("sign-in")}</span>
+                </div>
+              </Button>
+              <Button asChild size={"sm"} className="sm:hidden font-semibold">
+                <Link href="/sign-in">
+                  <span className="font-normal text-xs">
+                    {tBtns("already-have-account")}
+                  </span>
+                  <span>{tBtns("sign-in")}</span>
+                </Link>
+              </Button>
+            </>
+          )}
         </>
       ) : (
         <>

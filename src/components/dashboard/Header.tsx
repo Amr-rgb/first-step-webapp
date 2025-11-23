@@ -212,6 +212,7 @@ export default function Header({
         { path: "team", titleKey: "team" },
         { path: "team/add", titleKey: "addTeamMember" },
         { path: "team/[memberId]", titleKey: "teamMemberDetails" },
+        { path: "discount-coupons", titleKey: "discountCoupons" },
       ],
     },
     {

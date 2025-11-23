@@ -87,6 +87,11 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
     url: "/dashboard/center/chat",
     icon: dashboardIcons.chat,
   },
+  {
+    title: t("center.discount-coupons"),
+    url: "/dashboard/center/discount-coupons",
+    icon: dashboardIcons.coupon,
+  },
 ];
 
 const getParentNavbar = (t: any): NavbarItem[] => [

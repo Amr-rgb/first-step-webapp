@@ -816,7 +816,8 @@
         "ad-or-blog-request": "طلب إعلان أو مقال",
         "notifications": "الإشعارات",
         "team": "الفريق",
-        "chat": "المحادثات"
+        "chat": "المحادثات",
+        "discount-coupons": "كوبونات الخصم"
       }
     },
     "account": {
@@ -867,6 +868,27 @@
         "title": "تأكيد كلمة المرور",
         "passwordLabel": "أدخل كلمة المرور للتأكيد",
         "passwordPlaceholder": "••••••••"
+      }
+    },
+    "coupons": {
+      "couponName": "اسم الكوبون",
+      "discountPercentage": "نسبة الخصم",
+      "discountValue": "قيمة الخصم (ر.س)",
+      "startDate": "بداية يوم",
+      "endDate": "نهاية يوم",
+      "usageCount": "عدد مرات الاستخدام من خلالك",
+      "currency": "ر.س",
+      "times": "مرات",
+      "activatedBranches": "الفروع المفعل فيها",
+      "requestAddCoupon": "طلب إضافة كوبون خصم",
+      "searchPlaceholder": "ابحث عن كوبون خصم",
+      "noCouponsFound": "لا توجد كوبونات",
+      "filters": {
+        "all": "الكل",
+        "active": "نشط",
+        "notStarted": "لم يبدأ بعد",
+        "paused": "موقوف",
+        "expired": "منتهي"
       }
     },
     "center": {
@@ -1487,6 +1509,7 @@
         "team": "الفريق",
         "addTeamMember": "إضافة عضو",
         "teamMemberDetails": "تفاصيل العضو",
+        "discountCoupons": "كوبونات الخصم",
         "parent": "ولي الأمر",
         "myChildren": "أطفالي",
         "addChild": "إضافة طفل",
@@ -1736,6 +1759,34 @@
             "title": "بدء الحجوزات",
             "description": "ابدأ في استقبال حجوزات الأطفال وتنظيم جدول المركز"
           }
+        }
+      }
+    },
+    "portfolioProgress": {
+      "welcome": "مرحبا {centerName}",
+      "question": "هل أنت جاهز لإكمال ملفك الخاص على موقعنا؟",
+      "expand": "توسيع",
+      "collapse": "طي",
+      "tasks": {
+        "branches": {
+          "title": "اضف فروعك",
+          "description": "اضف فروعك وتابعها من خلال لوحة التحكم"
+        },
+        "children": {
+          "title": "سجل أطفال مركزك",
+          "description": "اضف حسابات أولياء الأمور مباشرة"
+        },
+        "profile": {
+          "title": "اكمل ملفك الخاص",
+          "description": "اضف خدماتك وأنشطة مركزك على موقعنا الإلكتروني"
+        },
+        "advertisement": {
+          "title": "إعلانك المجاني",
+          "description": "اعلن من خلال فريست ستيب بشكل مجاني لأول مرة"
+        },
+        "blog": {
+          "title": "اكتب مدونة",
+          "description": "اعلن من خلال فريست ستيب بشكل مجاني لأول مرة"
         }
       }
     },

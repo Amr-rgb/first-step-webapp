@@ -1737,6 +1737,36 @@ export const notificationService = {
   },
 };
 
+export interface ApplyPromoCodeRequest {
+  branch_price_id: number;
+  branch_id: number;
+  promo_code: string;
+}
+
+export interface ApplyPromoCodeResponse {
+  promo_code: string;
+  branch: string;
+  center: string;
+  original_amount: number;
+  discount: number;
+  final_amount: number;
+  discount_type: string;
+  paid_enrollments_count: number;
+}
+
+export const promoCodeService = {
+  applyPromoCode: async (
+    payload: ApplyPromoCodeRequest
+  ): Promise<ApplyPromoCodeResponse> => {
+    try {
+      const response = await apiClient.post(`/promo-codes/apply`, payload);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
 export interface Enrollment {
   id: number;
   branch_id: number;

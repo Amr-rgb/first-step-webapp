@@ -46,7 +46,9 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           branch: enrollment.branch_name || "",
           branchId: enrollment.branch_id,
           startDate:
-            enrollment.starting_date || enrollment.enrollment_date || "",
+            enrollment.enrollment_type === "hour" && enrollment.day_string
+              ? enrollment.day_string
+              : enrollment.starting_date || enrollment.enrollment_date || "",
           type: enrollment.enrollment_type || "",
           amount: enrollment.price_amount
             ? parseFloat(enrollment.price_amount)
@@ -54,7 +56,10 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           age: child.age,
         })),
         branch: enrollment.branch_name || "",
-        startDate: enrollment.starting_date || enrollment.enrollment_date || "",
+        startDate:
+          enrollment.enrollment_type === "hour" && enrollment.day_string
+            ? enrollment.day_string
+            : enrollment.starting_date || enrollment.enrollment_date || "",
         endDate: enrollment.ending_date || "",
         type: enrollment.enrollment_type || "",
         amount: enrollment.price_amount
