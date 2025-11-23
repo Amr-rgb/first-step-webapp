@@ -460,8 +460,7 @@ export default function Header({
                 if (locale !== "ar") {
                   // pathname from usePathname() already excludes the locale prefix
                   const newPath = `/ar${pathname}`;
-                  // Force full page reload to get new locale messages
-                  window.location.href = newPath;
+                  router.push(newPath);
                 }
               }}
               className={locale === "ar" ? "opacity-50" : ""}
@@ -486,8 +485,7 @@ export default function Header({
                 if (locale !== "en") {
                   // pathname from usePathname() already excludes the locale prefix
                   const newPath = `/en${pathname}`;
-                  // Force full page reload to get new locale messages
-                  window.location.href = newPath;
+                  router.push(newPath);
                 }
               }}
               className={locale === "en" ? "opacity-50" : ""}
