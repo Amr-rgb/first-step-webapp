@@ -2238,6 +2238,14 @@
       "description": "There's nothing to show here yet. Get started by adding some content."
     }
   },
+  "NewsletterPopup": {
+    "title": "We send you all our offers and coupons",
+    "subtitle": "Subscribe via email",
+    "placeholder": "Enter your email",
+    "button": "Subscribe Now",
+    "success": "Subscribed successfully!",
+    "loading": "Subscribing..."
+  },
   "HomePage": {
     "Features": {
       "title": "First Step Features",
