@@ -2606,5 +2606,20 @@
     },
     "loading": "Loading discount codes...",
     "error": "Error loading discount codes"
+  },
+  "couponCodes": {
+    "subscribeButton": "Subscribe to Coupon Newsletter",
+    "searchPlaceholder": "Search for coupon, nursery, or center",
+    "loading": "Loading...",
+    "noCoupons": "No coupons available at the moment",
+    "noResults": "No coupons match your search",
+    "sort": {
+      "newest": "Newest",
+      "percentage": "Highest Discount"
+    },
+    "card": {
+      "validUntil": "Valid until",
+      "copySuccess": "Code copied successfully"
+    }
   }
 }

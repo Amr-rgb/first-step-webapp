@@ -11,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 
 interface CouponCardProps {
   title: string;
@@ -28,6 +29,10 @@ const COLORS = [
   "#B12F53", // Rose
 ];
 
+// ... existing imports
+
+// ... existing interface and constants
+
 export default function CouponCard({
   title,
   endDate,
@@ -36,9 +41,11 @@ export default function CouponCard({
   color,
   centers,
 }: CouponCardProps) {
+  const t = useTranslations("couponCodes.card");
+
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast.success("تم نسخ الكود بنجاح");
+    toast.success(t("copySuccess"));
   };
 
   return (
@@ -167,7 +174,7 @@ export default function CouponCard({
             {title}
           </h3>
           <p className="text-sm text-gray-500 font-medium">
-            متاح حتى يوم {endDate}
+            {t("validUntil")} {endDate}
           </p>
         </div>
       </div>
