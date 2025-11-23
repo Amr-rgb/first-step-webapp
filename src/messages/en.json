@@ -841,7 +841,10 @@
       "activatedBranches": "Branches where it's activated",
       "requestAddCoupon": "Request to Add Discount Coupon",
       "searchPlaceholder": "Search for discount coupon",
-      "noCouponsFound": "No coupons found",
+      "noCouponsFound": {
+        "title": "No coupons found",
+        "description": "You don't have any discount coupons yet. Request to add a discount coupon to get started."
+      },
       "filters": {
         "all": "All",
         "active": "Active",
