@@ -1340,17 +1340,24 @@ export const paymentService = {
     }
   },
 
-  payOrder: async (params: {
-    enrollment_id: number;
-    child_ids: Array<string | number>;
-    booking_date?: string;
-    from_time?: string;
-    to_time?: string;
-  }) => {
+  payOrder: async (params: { enrollment_id: number; coupon_code?: string }) => {
     try {
-      const response = await apiClient.post("/payment/pay-order", params);
+      // Only send enrollment_id and title (coupon code) if it exists
+      const payload: { enrollment_id: number; title?: string } = {
+        enrollment_id: params.enrollment_id,
+      };
+
+      // Ensure coupon code is trimmed and uppercased if provided, send as 'title'
+      if (params.coupon_code && params.coupon_code.trim()) {
+        payload.title = params.coupon_code.trim().toUpperCase();
+      }
+
+      console.log("Payment service - payOrder request:", payload);
+      const response = await apiClient.post("/payment/pay-order", payload);
+      console.log("Payment service - payOrder response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("Payment service - payOrder error:", error);
       throw ApiErrorHandler.handle(error);
     }
   },

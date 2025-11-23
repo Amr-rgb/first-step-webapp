@@ -883,7 +883,10 @@
       "activatedBranches": "الفروع المفعل فيها",
       "requestAddCoupon": "طلب إضافة كوبون خصم",
       "searchPlaceholder": "ابحث عن كوبون خصم",
-      "noCouponsFound": "لا توجد كوبونات",
+      "noCouponsFound": {
+        "title": "لا توجد كوبونات",
+        "description": "ليس لديك أي كوبونات خصم بعد. اطلب إضافة كوبون خصم للبدء."
+      },
       "filters": {
         "all": "الكل",
         "active": "نشط",
