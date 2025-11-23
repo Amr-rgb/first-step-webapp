@@ -10,8 +10,17 @@ import {
 } from "@/components/ui/accordion";
 import { CommonQuestion } from "@/types";
 
-const FAQs = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
-  const locale = useLocale();
+const FAQs = ({
+  commonQuestions,
+  error,
+  locale: propLocale,
+}: {
+  commonQuestions: CommonQuestion[];
+  error?: any;
+  locale?: string;
+}) => {
+  const localeFromHook = useLocale();
+  const locale = propLocale || localeFromHook;
   const t = useTranslations("faqs");
 
   return (
@@ -42,7 +51,11 @@ const FAQs = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
           />
         </div>
 
-        <FAQAccordion commonQuestions={commonQuestions} />
+        <FAQAccordion
+          commonQuestions={commonQuestions}
+          error={error}
+          locale={locale}
+        />
       </div>
     </section>
   );
@@ -50,12 +63,53 @@ const FAQs = ({ commonQuestions }: { commonQuestions: CommonQuestion[] }) => {
 
 const FAQAccordion = ({
   commonQuestions,
+  error,
+  locale,
 }: {
   commonQuestions: CommonQuestion[];
+  error?: any;
+  locale: string;
 }) => {
   const hasMoreThanFive = commonQuestions.length > 5;
   const firstItemId =
     commonQuestions.length > 0 ? `item-${commonQuestions[0].id}` : undefined;
+
+  if (error) {
+    return (
+      <div className="grow w-full max-w-[600px] mx-auto">
+        <div className="bg-white rounded-2xl p-8 text-center">
+          <p className="text-destructive mb-4">
+            {locale === "ar"
+              ? "حدث خطأ في تحميل الأسئلة الشائعة"
+              : "Error loading FAQs"}
+          </p>
+          <p className="text-gray-600 text-sm">
+            {error?.isNetworkError
+              ? locale === "ar"
+                ? "يرجى التحقق من اتصالك بالإنترنت"
+                : "Please check your internet connection"
+              : locale === "ar"
+              ? "يرجى المحاولة مرة أخرى لاحقاً"
+              : "Please try again later"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (commonQuestions.length === 0) {
+    return (
+      <div className="grow w-full max-w-[600px] mx-auto">
+        <div className="bg-white rounded-2xl p-8 text-center">
+          <p className="text-gray-600">
+            {locale === "ar"
+              ? "لا توجد أسئلة شائعة متاحة حالياً"
+              : "No FAQs available at the moment"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

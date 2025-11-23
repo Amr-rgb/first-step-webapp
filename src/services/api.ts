@@ -638,11 +638,15 @@ export const nurseryService = {
         );
       } catch (fetchError: any) {
         // Handle network errors (fetch failed, connection refused, timeout, etc.)
-        if (fetchError instanceof TypeError && fetchError.message.includes("fetch failed")) {
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("fetch failed")
+        ) {
           throw {
-            message: locale === "ar" 
-              ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
-              : "Network connection failed. Please check your internet connection and try again.",
+            message:
+              locale === "ar"
+                ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+                : "Network connection failed. Please check your internet connection and try again.",
             errors: {},
             status: 0,
             isNetworkError: true,
@@ -650,9 +654,10 @@ export const nurseryService = {
         }
         // Re-throw other fetch errors
         throw {
-          message: locale === "ar"
-            ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
-            : "An error occurred while connecting to the server. Please try again.",
+          message:
+            locale === "ar"
+              ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+              : "An error occurred while connecting to the server. Please try again.",
           errors: {},
           status: 0,
           originalError: fetchError.message,
@@ -669,9 +674,11 @@ export const nurseryService = {
           errorData = {};
         }
         throw {
-          message: errorData?.message || (locale === "ar"
-            ? "فشل في جلب بيانات الحضانات"
-            : "Failed to fetch nurseries"),
+          message:
+            errorData?.message ||
+            (locale === "ar"
+              ? "فشل في جلب بيانات الحضانات"
+              : "Failed to fetch nurseries"),
           errors: errorData?.errors || {},
           status: res.status,
           data: errorData,
@@ -684,9 +691,10 @@ export const nurseryService = {
         data = await res.json();
       } catch (jsonError: any) {
         throw {
-          message: locale === "ar"
-            ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
-            : "Failed to parse server response. Please try again.",
+          message:
+            locale === "ar"
+              ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
+              : "Failed to parse server response. Please try again.",
           errors: {},
           status: res.status,
           isParseError: true,
@@ -1135,9 +1143,21 @@ export const authService = {
         password,
       });
 
-      if (!response.data.token) {
+      // Check if the response indicates an error (some APIs return 200 with error inside)
+      if (response.data.status === "401" || response.data.status === 401) {
         throw {
-          message: "Login failed: No authentication token received",
+          message: response.data.message || "Login failed",
+          errors: {},
+          status: 401,
+        };
+      }
+
+      // Validate that we have the required data
+      if (!response.data.token || !response.data.user) {
+        throw {
+          message:
+            response.data.message ||
+            "Login failed: Invalid response from server",
           errors: {},
           status: 401,
         };

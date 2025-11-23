@@ -13,7 +13,46 @@ export default async function BlogPage({
   const { locale, blogId } = await params;
   const t = await getTranslations("blog");
 
-  const blog = await blogService.getBlogById(blogId, locale);
+  let blog;
+  let error = null;
+
+  try {
+    blog = await blogService.getBlogById(blogId, locale);
+  } catch (err: any) {
+    console.error("Error fetching blog:", err);
+    error = err;
+  }
+
+  if (error || !blog) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto text-center space-y-6">
+          <div className="text-destructive text-6xl">⚠️</div>
+          <h1 className="text-2xl font-bold text-primary">
+            {locale === "ar"
+              ? "حدث خطأ في تحميل المقال"
+              : "Error Loading Blog Post"}
+          </h1>
+          <p className="text-gray-600">
+            {error?.isNetworkError
+              ? locale === "ar"
+                ? "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى"
+                : "Please check your internet connection and try again"
+              : error?.message ||
+                (locale === "ar"
+                  ? "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى"
+                  : "An unexpected error occurred. Please try again")}
+          </p>
+          <a
+            href={`/${locale}/blog`}
+            className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            {locale === "ar" ? "العودة إلى المدونة" : "Back to Blog"}
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-9">

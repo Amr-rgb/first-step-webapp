@@ -16,10 +16,15 @@ export function SignUp({
   submitHandler,
   isLoading,
   formRef,
+  currentStepRef,
 }: {
   submitHandler: (data: SignUpCenterFormData) => void;
   isLoading: boolean;
   formRef: React.RefObject<UseFormReturn<SignUpCenterFormData> | null>;
+  currentStepRef?: React.RefObject<{
+    currentStep: number;
+    setCurrentStep: (step: number) => void;
+  } | null>;
 }) {
   const t = useTranslations("auth.center-signup");
   const locale = useLocale();
@@ -114,6 +119,16 @@ export function SignUp({
       formRef.current = methods;
     }
   }, [methods, formRef]);
+
+  // Attach the step control ref
+  useEffect(() => {
+    if (currentStepRef) {
+      currentStepRef.current = {
+        currentStep,
+        setCurrentStep,
+      };
+    }
+  }, [currentStep, currentStepRef]);
 
   return (
     <div className="flex flex-col items-center container mx-auto px-4">

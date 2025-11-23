@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { ReservationStatus, useReservationStatus } from "./shared/status";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, X, Eye } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -55,7 +55,8 @@ export function useCenterBookingsColumns(
   selectedChildMap: Record<number, SelectedChild>,
   setSelectedChildMap: React.Dispatch<
     React.SetStateAction<Record<number, SelectedChild>>
-  >
+  >,
+  onViewDetails?: (booking: Booking) => void
 ) {
   const t = useTranslations("dashboard.tables.center-bookings");
   const { getStatusText, getStatusColorClass } = useReservationStatus();
@@ -306,37 +307,53 @@ export function useCenterBookingsColumns(
           : selectedChild.enrollmentId;
         const isWaitingForConfirmation = effectiveStatus === "pending";
 
-        if (!isWaitingForConfirmation) return null;
-
         const isExpandedParent = (row.original as any).isExpandedParent;
         if (!isDetail && isExpandedParent) return "";
 
         return (
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() =>
-                handleEnrollmentResponse(effectiveEnrollmentId, "accepted")
-              }
-              disabled={enrollmentMutation.isPending}
-            >
-              <Check className="w-4 h-4" />
-              {enrollmentMutation.isPending ? t("processing") : t("accept")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() =>
-                handleEnrollmentResponse(effectiveEnrollmentId, "rejected")
-              }
-              disabled={enrollmentMutation.isPending}
-            >
-              <X className="w-4 h-4" />
-              {enrollmentMutation.isPending ? t("processing") : t("reject")}
-            </Button>
+            {/* View Details Button - Always visible */}
+            {onViewDetails && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+                onClick={() => onViewDetails(row.original)}
+                title={t("view") || "View"}
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+            )}
+
+            {/* Accept/Reject Buttons - Only for pending status */}
+            {isWaitingForConfirmation && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() =>
+                    handleEnrollmentResponse(effectiveEnrollmentId, "accepted")
+                  }
+                  disabled={enrollmentMutation.isPending}
+                >
+                  <Check className="w-4 h-4" />
+                  {enrollmentMutation.isPending ? t("processing") : t("accept")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 h-fit text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() =>
+                    handleEnrollmentResponse(effectiveEnrollmentId, "rejected")
+                  }
+                  disabled={enrollmentMutation.isPending}
+                >
+                  <X className="w-4 h-4" />
+                  {enrollmentMutation.isPending ? t("processing") : t("reject")}
+                </Button>
+              </>
+            )}
           </div>
         );
       },

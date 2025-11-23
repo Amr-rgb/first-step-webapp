@@ -10,8 +10,12 @@ import { useAuthUser } from "@/store/authStore";
 interface BookingCardProps {
   booking: Booking;
   onViewDetails: (booking: Booking) => void;
-  onAccept?: (enrollmentId: string, enrollmentType: string) => void;
-  onReject?: (enrollmentId: string) => void;
+  onAccept?: (
+    enrollmentId: string,
+    enrollmentType: string,
+    currentStatus: string
+  ) => void;
+  onReject?: (enrollmentId: string, currentStatus: string) => void;
   onSendNotification?: (enrollmentId: number) => void;
   isNotificationLoading?: boolean;
 }
@@ -47,6 +51,24 @@ export const BookingCard = ({
     return typeMap[type] || type;
   };
 
+  // Format children names
+  const formatChildrenNames = () => {
+    const uniqueChildren = Array.from(
+      new Map(booking.childs.map((child) => [child.id, child.name])).values()
+    );
+
+    if (uniqueChildren.length === 0) return "-";
+    if (uniqueChildren.length === 1) return uniqueChildren[0];
+    if (uniqueChildren.length === 2)
+      return `${uniqueChildren[0]}, ${uniqueChildren[1]}`;
+
+    const remaining = uniqueChildren.length - 2;
+    return `${uniqueChildren[0]}, ${uniqueChildren[1]} ${tBookings(
+      "andOthers",
+      { count: remaining.toString() }
+    )}`;
+  };
+
   return (
     <Card
       id={`enrollment-${booking.id}`}
@@ -58,7 +80,7 @@ export const BookingCard = ({
           {/* Right Column */}
           <div className="text-right space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-mid-gray">{firstChild?.name}</span>
+              <span className="text-mid-gray">{formatChildrenNames()}</span>
               <span className="font-semibold text-primary">
                 {tBookings("fields.childrenLabel")}
               </span>
@@ -163,7 +185,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("rejectBooking")}
               </Button>
@@ -171,7 +193,7 @@ export const BookingCard = ({
                 size="sm"
                 className="flex-1"
                 onClick={() =>
-                  onAccept?.(firstChild.enrollmentId, booking.type)
+                  onAccept?.(firstChild.enrollmentId, booking.type, status)
                 }
               >
                 {tBookings("confirmBooking")}
@@ -186,7 +208,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("cancelBooking")}
               </Button>
@@ -207,7 +229,7 @@ export const BookingCard = ({
                 size="sm"
                 variant="outline"
                 className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                onClick={() => onReject?.(firstChild.enrollmentId)}
+                onClick={() => onReject?.(firstChild.enrollmentId, status)}
               >
                 {tBookings("rejectBooking")}
               </Button>
@@ -215,7 +237,7 @@ export const BookingCard = ({
                 size="sm"
                 className="flex-1"
                 onClick={() =>
-                  onAccept?.(firstChild.enrollmentId, booking.type)
+                  onAccept?.(firstChild.enrollmentId, booking.type, status)
                 }
               >
                 {tBookings("acceptBooking")}
