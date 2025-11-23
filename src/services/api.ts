@@ -638,11 +638,15 @@ export const nurseryService = {
         );
       } catch (fetchError: any) {
         // Handle network errors (fetch failed, connection refused, timeout, etc.)
-        if (fetchError instanceof TypeError && fetchError.message.includes("fetch failed")) {
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("fetch failed")
+        ) {
           throw {
-            message: locale === "ar" 
-              ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
-              : "Network connection failed. Please check your internet connection and try again.",
+            message:
+              locale === "ar"
+                ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+                : "Network connection failed. Please check your internet connection and try again.",
             errors: {},
             status: 0,
             isNetworkError: true,
@@ -650,9 +654,10 @@ export const nurseryService = {
         }
         // Re-throw other fetch errors
         throw {
-          message: locale === "ar"
-            ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
-            : "An error occurred while connecting to the server. Please try again.",
+          message:
+            locale === "ar"
+              ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+              : "An error occurred while connecting to the server. Please try again.",
           errors: {},
           status: 0,
           originalError: fetchError.message,
@@ -669,9 +674,11 @@ export const nurseryService = {
           errorData = {};
         }
         throw {
-          message: errorData?.message || (locale === "ar"
-            ? "فشل في جلب بيانات الحضانات"
-            : "Failed to fetch nurseries"),
+          message:
+            errorData?.message ||
+            (locale === "ar"
+              ? "فشل في جلب بيانات الحضانات"
+              : "Failed to fetch nurseries"),
           errors: errorData?.errors || {},
           status: res.status,
           data: errorData,
@@ -684,9 +691,10 @@ export const nurseryService = {
         data = await res.json();
       } catch (jsonError: any) {
         throw {
-          message: locale === "ar"
-            ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
-            : "Failed to parse server response. Please try again.",
+          message:
+            locale === "ar"
+              ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
+              : "Failed to parse server response. Please try again.",
           errors: {},
           status: res.status,
           isParseError: true,
@@ -1288,17 +1296,24 @@ export const paymentService = {
     }
   },
 
-  payOrder: async (params: {
-    enrollment_id: number;
-    child_ids: Array<string | number>;
-    booking_date?: string;
-    from_time?: string;
-    to_time?: string;
-  }) => {
+  payOrder: async (params: { enrollment_id: number; coupon_code?: string }) => {
     try {
-      const response = await apiClient.post("/payment/pay-order", params);
+      // Only send enrollment_id and title (coupon code) if it exists
+      const payload: { enrollment_id: number; title?: string } = {
+        enrollment_id: params.enrollment_id,
+      };
+
+      // Ensure coupon code is trimmed and uppercased if provided, send as 'title'
+      if (params.coupon_code && params.coupon_code.trim()) {
+        payload.title = params.coupon_code.trim().toUpperCase();
+      }
+
+      console.log("Payment service - payOrder request:", payload);
+      const response = await apiClient.post("/payment/pay-order", payload);
+      console.log("Payment service - payOrder response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("Payment service - payOrder error:", error);
       throw ApiErrorHandler.handle(error);
     }
   },

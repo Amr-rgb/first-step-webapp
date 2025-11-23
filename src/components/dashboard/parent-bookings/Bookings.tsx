@@ -932,52 +932,42 @@ const Bookings = () => {
   // Confirm reservation handler
   const confirmReservation = async (booking: any, couponCode?: string) => {
     try {
-      // Get child IDs from booking
-      const childIds =
-        booking.children?.map((child: any) => child.id || child.child_id) || [];
-
-      if (childIds.length === 0) {
-        toastError("No children found for this booking");
-        return;
-      }
-
-      // Prepare payment payload
-      const paymentPayload: any = {
+      // Prepare payment payload - only send enrollment_id and coupon_code if exists
+      const paymentPayload: {
+        enrollment_id: number;
+        coupon_code?: string;
+      } = {
         enrollment_id: booking.id,
-        child_ids: childIds,
       };
 
-      // Add optional fields if they exist
-      if (booking.enrollment_date) {
-        paymentPayload.booking_date = booking.enrollment_date;
-      }
-      if (booking.starting_time) {
-        paymentPayload.from_time = booking.starting_time;
-      }
-      if (booking.ending_time) {
-        paymentPayload.to_time = booking.ending_time;
+      // Add coupon code if provided - ensure it's trimmed and uppercased
+      if (couponCode && couponCode.trim()) {
+        paymentPayload.coupon_code = couponCode.trim().toUpperCase();
       }
 
-      // Add coupon code if provided
-      if (couponCode) {
-        paymentPayload.coupon_code = couponCode;
-      }
+      console.log("Confirm reservation - Payment payload:", paymentPayload);
 
-      // Call payment service to redirect to payment page
+      // Call payment service
       const response = await paymentService.payOrder(paymentPayload);
 
-      // If the response contains a payment URL, redirect to it
-      if (response?.payment_url || response?.url) {
-        window.location.href = response.payment_url || response.url;
-      } else if (response?.redirect_url) {
-        window.location.href = response.redirect_url;
+      // Log the response
+      console.log("Confirm reservation - Payment response:", response);
+
+      // Redirect to Moyasar payment page if payment URL is available
+      const paymentUrl =
+        response?.payment_url || response?.url || response?.redirect_url;
+
+      if (paymentUrl) {
+        console.log("Redirecting to Moyasar payment URL:", paymentUrl);
+        window.location.href = paymentUrl;
       } else {
-        // If no URL in response, construct it from the API base URL
-        const paymentUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/pay-order`;
-        // You might need to redirect with the enrollment_id as a parameter
-        window.location.href = `${paymentUrl}?enrollment_id=${booking.id}`;
+        console.error("No payment URL in response:", response);
+        toastError(
+          "Payment URL not received. Please contact support or try again."
+        );
       }
     } catch (e: any) {
+      console.error("Confirm reservation error:", e);
       const errorMessage =
         e?.response?.data?.message || e?.message || "Failed to process payment";
       toastError(errorMessage);
