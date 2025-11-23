@@ -959,6 +959,7 @@ const Bookings = () => {
 
       if (paymentUrl) {
         console.log("Redirecting to Moyasar payment URL:", paymentUrl);
+        // Redirect to Moyasar for payment
         window.location.href = paymentUrl;
       } else {
         console.error("No payment URL in response:", response);
