@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import { usePlans } from "@/hooks/usePlans";
 import { Skeleton } from "../ui/skeleton";
 import { SubscriptionWarningModal } from "../modals/SubscriptionWarningModal";
+import { toastError, toastWarning } from "@/lib/toast";
 
 const SubscriptionSection = () => {
   const t = useTranslations("HomePage.Subscription");
@@ -119,7 +120,19 @@ const SubscriptionSection = () => {
     // Check if user is authenticated first
     const isAuthenticated = useAuthStore.getState().isAuthenticated();
     if (!isAuthenticated) {
-      alert("Please log in to subscribe to a plan.");
+      toastWarning(
+        "Authentication Required",
+        "Please log in to subscribe to a plan."
+      );
+      return;
+    }
+
+    // Check if user is a parent - parents cannot subscribe to center plans
+    if (currentUser?.role === "parent") {
+      toastError(
+        "Access Denied",
+        "Parent accounts cannot subscribe to center plans. Please use a center account to subscribe."
+      );
       return;
     }
 
@@ -166,10 +179,9 @@ const SubscriptionSection = () => {
         window.location.href = data.payment_url;
       } else {
         console.error("Payment initiation failed - Invalid response:", data);
-        alert(
-          `Payment initiation failed: ${
-            data.message || "Invalid response from server"
-          }`
+        toastError(
+          "Payment Failed",
+          data.message || "Invalid response from server"
         );
       }
     } catch (err: any) {
@@ -184,25 +196,30 @@ const SubscriptionSection = () => {
       });
 
       // Provide more specific error messages based on the error type
+      let errorTitle = "Payment Failed";
       let errorMessage =
         "Payment initiation failed. Please check your connection and try again.";
 
       if (err.status === 401) {
-        errorMessage = "Authentication required. Please log in again.";
+        errorTitle = "Authentication Required";
+        errorMessage = "Please log in again to continue.";
       } else if (err.status === 403) {
+        errorTitle = "Access Denied";
         errorMessage = "You don't have permission to perform this action.";
       } else if (err.status === 422) {
-        errorMessage =
-          "Invalid request. Please check your input and try again.";
+        errorTitle = "Invalid Request";
+        errorMessage = "Please check your input and try again.";
       } else if (err.status === 500) {
-        errorMessage = "Server error. Please try again later.";
+        errorTitle = "Server Error";
+        errorMessage = "Please try again later.";
       } else if (err.status === 0 || !err.status) {
-        errorMessage = "Network error. Please check your internet connection.";
+        errorTitle = "Network Error";
+        errorMessage = "Please check your internet connection.";
       } else if (err.message) {
         errorMessage = err.message;
       }
 
-      alert(errorMessage);
+      toastError(errorTitle, errorMessage);
     }
   };
 
