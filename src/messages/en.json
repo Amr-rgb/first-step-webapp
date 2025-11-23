@@ -5,12 +5,30 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our story", "path": "/our-story" },
-      "contact": { "title": "Contact us", "path": "/contact" }
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact us",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "Sign Up",
@@ -52,15 +70,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Our Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "centers": { "title": "Centers", "path": "/centers" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our Story", "path": "/our-story" },
-      "contact": { "title": "Contact Us", "path": "/contact" },
-      "help": { "title": "Help", "path": "/help" },
-      "privacy-policy": { "title": "Privacy", "path": "/privacy-policy" },
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Our Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "Centers",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our Story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "Help",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "Privacy",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "Terms and Conditions",
         "path": "/terms-conditions"
@@ -756,13 +801,13 @@
       "admin": {
         "home": "Home",
         "centers": "Nurseries & Centers",
+        "discount-codes": "Discount Codes",
         "centers-subscriptions": "Centers Subscriptions Log",
         "parents": "Parents",
         "bookings": "Bookings",
         "advertisement": "Advertisement",
         "blog": "Blog",
         "notifications": "Notifications",
-
         "chat": "Chat"
       },
       "center": {
@@ -1089,6 +1134,26 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "Children Count",
+        "enrollmentsCount": "Enrollments Count",
+        "upcomingEnrollments": "Upcoming Enrollments",
+        "currentEnrollments": "Current Enrollments",
+        "enrollmentStartsOn": "Enrollment {number} starts on {date}",
+        "enrollmentEndsOn": "Enrollment {number} ends on {date}",
+        "noUpcomingEnrollments": "No upcoming enrollments found.",
+        "noCurrentEnrollments": "No current enrollments found.",
+        "viewAll": "View All",
+        "bookNow": "Book for your child now",
+        "upcomingEnrollmentsEmpty": {
+          "title": "No upcoming enrollments",
+          "description": "Browse nurseries and book for your child now"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "No current enrollments",
+          "description": "Browse nurseries and book for your child now"
+        }
+      },
       "children": {
         "title": "Children",
         "add": "Add Child",
@@ -1765,7 +1830,6 @@
         "subtitlePlaceholder": "Enter hero subtitle",
         "description": "Description",
         "descriptionPlaceholder": "Enter hero description",
-
         "ctaTextPlaceholder": "Enter CTA text",
         "ctaLink": "Call to Action Link",
         "ctaLinkPlaceholder": "Enter CTA link",
@@ -1790,7 +1854,6 @@
         "methodologyContent": "Methodology Content",
         "methodologyContentPlaceholder": "Enter methodology content",
         "goals": "Goals",
-
         "goalTitle": "Goal Title",
         "goalTitlePlaceholder": "Enter goal title",
         "goalContent": "Goal Content",
@@ -2085,6 +2148,7 @@
       "sendNotification": "Send Notification to Parent",
       "sendingNotification": "Sending...",
       "children": "children",
+      "andOthers": "and {count} others",
       "filters": {
         "all": "All",
         "completed": "Completed",
@@ -2168,7 +2232,6 @@
       }
     }
   },
-
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -2185,7 +2248,6 @@
         "title": "Child File Management and Communication with Parents",
         "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
       },
-
       "taskOrganization": {
         "title": "Task Organization and Instant Notifications",
         "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."
@@ -2478,5 +2540,74 @@
     "accountsCreatedSuccessfully": "Parent accounts created successfully",
     "errorCreatingAccounts": "Error creating parent accounts",
     "creatingAccounts": "Creating accounts..."
+  },
+  "discountCodes": {
+    "title": "Discount Codes",
+    "addButton": "Add Discount Code",
+    "searchPlaceholder": "Search for discount code",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "notStarted": "Not Started",
+      "paused": "Paused",
+      "expired": "Expired"
+    },
+    "table": {
+      "code": "Discount Code Name",
+      "actions": "Actions",
+      "status": "Coupon Status",
+      "discountValue": "Discount Value",
+      "discountPercentage": "Discount Percentage",
+      "pendingUsage": "Pending Usage",
+      "usedCount": "Usage Count",
+      "usageLimit": "Usage Limit",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "usage": "usage",
+      "currency": "SAR",
+      "percentage": "%"
+    },
+    "createModal": {
+      "step1Title": "Coupon Details",
+      "step2Title": "Select Centers and Nurseries",
+      "couponName": "Coupon Name",
+      "couponNamePlaceholder": "Example: Night10",
+      "couponDescription": "Coupon Description",
+      "couponDescriptionPlaceholder": "Example: 50% discount on all bookings for Saudi National Day",
+      "startDate": "Coupon Start Date",
+      "endDate": "Coupon End Date",
+      "percentage": "Discount Percentage %",
+      "amount": "Discount Amount SAR",
+      "maxUsage": "Maximum Beneficiaries",
+      "childrenOnly": "Available for new children only",
+      "couponDesign": "Coupon Design",
+      "centersAndNurseries": "Centers and Nurseries",
+      "allCentersAndBranches": "All nurseries and centers with all branches",
+      "mainCenterBranches": "Main Center Branches",
+      "allBranches": "All Branches",
+      "returnPlaceholder": "Return",
+      "close": "Close",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "back": "Back",
+      "createCoupon": "Create Discount Coupon",
+      "creating": "Creating...",
+      "success": "Discount coupon created successfully",
+      "error": "An error occurred while creating the discount coupon",
+      "editTitle": "Edit Coupon Details",
+      "viewTitle": "View Coupon Details",
+      "couponStatus": "Coupon Status",
+      "successUpdate": "Discount coupon updated successfully",
+      "statusUpdated": "Status updated successfully",
+      "updating": "Updating...",
+      "updateCoupon": "Update Coupon",
+      "searchBranches": "Search Branches",
+      "searchCenters": "Search Centers",
+      "noBranches": "No branches found",
+      "noCenters": "No centers found"
+    },
+    "loading": "Loading discount codes...",
+    "error": "Error loading discount codes"
   }
 }

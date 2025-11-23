@@ -95,11 +95,11 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
 ];
 
 const getParentNavbar = (t: any): NavbarItem[] => [
-  // {
-  //   title: t("parent.home"),
-  //   url: "/dashboard/parent",
-  //   icon: dashboardIcons.home,
-  // },
+  {
+    title: t("parent.home"),
+    url: "/dashboard/parent",
+    icon: dashboardIcons.home,
+  },
   {
     title: t("parent.children"),
     url: "/dashboard/parent/children",
@@ -132,6 +132,11 @@ const getAdminNavbar = (t: any): NavbarItem[] => [
     title: t("admin.centers"),
     url: "/dashboard/admin/centers",
     icon: dashboardIcons.building,
+  },
+  {
+    title: t("admin.discount-codes"),
+    url: "/dashboard/admin/discount-codes",
+    icon: dashboardIcons.dicount,
   },
   {
     title: t("admin.centers-subscriptions"),
@@ -435,6 +440,68 @@ const DashboardSideBar = () => {
                   {locale === "ar"
                     ? "إنشاء حسابات أولياء الأمور"
                     : "Create Parent Accounts"}
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+        )}
+
+        {/* Parent Banner - Only show for parent role */}
+        {user?.role === "parent" && (
+          <div
+            className={cn(
+              "w-full mb-4",
+              state === "collapsed" ? "px-0" : "px-4"
+            )}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/nurseries" className="block w-full">
+                  <div
+                    className={cn(
+                      "w-full transition-all duration-200 rounded-xl border-1 border-secondary-mint-green flex items-center overflow-hidden relative",
+                      state === "collapsed"
+                        ? "h-auto p-0 border-0 bg-transparent justify-center"
+                        : "bg-white py-4 px-3 gap-3"
+                    )}
+                  >
+                    {state === "collapsed" ? (
+                      <Image
+                        src="/assets/illustrations/globe-location.png"
+                        alt="Find Nursery"
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 object-contain"
+                      />
+                    ) : (
+                      <>
+                        <Image
+                          src="/assets/illustrations/globe-location.png"
+                          alt="Globe"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 object-contain shrink-0"
+                        />
+                        <div className="flex flex-col items-start z-10">
+                          <span className="text-sm font-bold text-gray-800 whitespace-nowrap">
+                            {locale === "ar"
+                              ? "لديك إشتراك؟"
+                              : "Have a subscription?"}
+                          </span>
+                          <span className="text-[10px] text-gray-500 text-start leading-tight">
+                            {locale === "ar"
+                              ? "اعثر على حضانة أو مركز طفلك"
+                              : "Find your child's nursery"}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Link>
+              </TooltipTrigger>
+              {state === "collapsed" && (
+                <TooltipContent side="right" align="center">
+                  {locale === "ar" ? "اعثر على حضانة" : "Find a nursery"}
                 </TooltipContent>
               )}
             </Tooltip>

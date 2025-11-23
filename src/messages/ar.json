@@ -5,12 +5,30 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" }
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "إنشاء حساب",
@@ -49,15 +67,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "centers": { "title": "المراكز", "path": "/centers" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" },
-      "help": { "title": "المساعدة", "path": "/help" },
-      "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "المراكز",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "المساعدة",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "الخصوصية",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "الشروط والأحكام",
         "path": "/terms-conditions"
@@ -752,6 +797,7 @@
       "admin": {
         "home": "الرئيسية",
         "centers": "الحضانات والمراكز",
+        "discount-codes": "أكواد الخصم",
         "centers-subscriptions": "سجل اشتراكات المراكز",
         "parents": "أولياء الأمور",
         "bookings": "الحجوزات",
@@ -1083,6 +1129,26 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "عدد الأطفال",
+        "enrollmentsCount": "عدد الاشتراكات",
+        "upcomingEnrollments": "الاشتراكات القادمة",
+        "currentEnrollments": "الاشتراكات الحالية",
+        "enrollmentStartsOn": "يبدأ حجز الطفل {number} يوم {date}",
+        "enrollmentEndsOn": "ينتهي حجز الطفل {number} يوم {date}",
+        "noUpcomingEnrollments": "لا توجد اشتراكات قادمة.",
+        "noCurrentEnrollments": "لا توجد اشتراكات حالية.",
+        "viewAll": "عرض الكل",
+        "bookNow": "احجز لطفلك الآن",
+        "upcomingEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات قادمة",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات حالية",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        }
+      },
       "children": {
         "title": "الأطفال",
         "add": "إضافة طفل",
@@ -2083,6 +2149,7 @@
       "sendNotification": "إرسال إشعار لولي الأمر",
       "sendingNotification": "جاري الإرسال...",
       "children": "أطفال",
+      "andOthers": "و {count} آخرين",
       "filters": {
         "all": "الكل",
         "completed": "تم الدفع",
@@ -2182,7 +2249,6 @@
         "title": "إدارة ملفات الأطفال والتواصل مع أولياء الأمور",
         "description": "قاعدة بيانات متكاملة لملفات الأطفال وأولياء الأمور مع إمكانية إرسال تقارير يومية بحالة الطفل داخل الحضانة."
       },
-
       "taskOrganization": {
         "title": "تنظيم المهام وإرسال الإشعارات الفورية",
         "description": "تقويم رقمي لإدارة المناسبات والمهام اليومية، مع إشعارات فورية للتنبيه بالمستجدات والأحداث الهامة."
@@ -2490,5 +2556,74 @@
     "accountsCreatedSuccessfully": "تم إنشاء حسابات أولياء الأمور بنجاح",
     "errorCreatingAccounts": "خطأ في إنشاء حسابات أولياء الأمور",
     "creatingAccounts": "جاري إنشاء الحسابات..."
+  },
+  "discountCodes": {
+    "title": "كوبونات الخصم",
+    "addButton": "إضافة كوبون خصم",
+    "searchPlaceholder": "ابحث عن كوبون خصم",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "notStarted": "لم يبدأ بعد",
+      "paused": "موقوف",
+      "expired": "منتهي"
+    },
+    "table": {
+      "code": "اسم كوبون الخصم",
+      "actions": "الإجراء",
+      "status": "حالة الكوبون",
+      "discountValue": "قيمة الخصم",
+      "discountPercentage": "نسبة الخصم",
+      "pendingUsage": "الاستخدامات المعلقة",
+      "usedCount": "عدد مرات الاستخدام",
+      "usageLimit": "الحد الأقصى للاستخدام",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "usage": "استخدام",
+      "currency": "ر.س",
+      "percentage": "%"
+    },
+    "createModal": {
+      "step1Title": "تفاصيل الكوبون",
+      "step2Title": "اختيار المراكز والحضانات",
+      "couponName": "اسم الكوبون",
+      "couponNamePlaceholder": "مثال: Night10",
+      "couponDescription": "وصف الكوبون",
+      "couponDescriptionPlaceholder": "مثال: خصم 50 % على كل الحجوزات بمناسبة اليوم الوطني السعودي",
+      "startDate": "تاريخ بداية الكوبون",
+      "endDate": "تاريخ نهاية الكوبون",
+      "percentage": "نسبة الخصم %",
+      "amount": "قيمة الخصم ر.س",
+      "maxUsage": "الحد الأقصى للمستفيدين",
+      "childrenOnly": "متاح للأطفال الجدد فقط",
+      "couponDesign": "تصميم الكوبون",
+      "centersAndNurseries": "المراكز والحضانات",
+      "allCentersAndBranches": "كل الحضانات والمراكز بكل الفروع",
+      "mainCenterBranches": "فروع مركز الأمل",
+      "allBranches": "كل الفروع",
+      "returnPlaceholder": "الرجوع",
+      "close": "إغلاق",
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "continue": "متابعة",
+      "back": "الرجوع",
+      "createCoupon": "إنشاء كوبون الخصم",
+      "creating": "جاري الإنشاء...",
+      "success": "تم إنشاء كوبون الخصم بنجاح",
+      "error": "حدث خطأ أثناء إنشاء كوبون الخصم",
+      "editTitle": "تعديل كوبون الخصم",
+      "viewTitle": "عرض كوبون الخصم",
+      "couponStatus": "حالة الكوبون",
+      "successUpdate": "تم تحديث كوبون الخصم بنجاح",
+      "statusUpdated": "تم تحديث الحالة بنجاح",
+      "updating": "جاري التحديث...",
+      "updateCoupon": "تحديث كوبون الخصم",
+      "searchBranches": "بحث عن الفروع",
+      "searchCenters": "بحث عن المراكز",
+      "noBranches": "لا توجد فروع",
+      "noCenters": "لا توجد مراكز"
+    },
+    "loading": "جاري تحميل كوبونات الخصم...",
+    "error": "خطأ في تحميل كوبونات الخصم"
   }
 }

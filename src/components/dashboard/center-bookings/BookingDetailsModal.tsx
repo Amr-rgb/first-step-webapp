@@ -101,6 +101,27 @@ export const BookingDetailsModal = ({
     }
   }, [enrollmentType]);
 
+  // Set first child as selected when modal opens
+  useEffect(() => {
+    if (open && booking && booking.childs && booking.childs.length > 0) {
+      // Get unique children
+      const uniqueChildIds = Array.from(
+        new Set(booking.childs.map((child) => child.id))
+      );
+      // Set first child as selected if none is selected
+      if (!selectedChildId && uniqueChildIds.length > 0) {
+        setSelectedChildId(uniqueChildIds[0]);
+      }
+    }
+  }, [open, booking]);
+
+  // Reset selected child when modal closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedChildId("");
+    }
+  }, [open]);
+
   const frequencies: {
     value: FrequencyType;
     label: string;
@@ -204,9 +225,24 @@ export const BookingDetailsModal = ({
         <div className="space-y-6 py-4">
           {/* Child Info */}
           <div className="text-center text-primary font-medium space-y-1">
-            <p>
-              {tBookings("child")}: <span>{currentChild?.name}</span>
-            </p>
+            <div className="flex items-center justify-center gap-2">
+              <span>{tBookings("child")}:</span>
+              {uniqueChildren.length > 1 ? (
+                <select
+                  value={currentChildId}
+                  onChange={(e) => setSelectedChildId(e.target.value)}
+                  className="px-3 py-1 rounded-lg border border-primary bg-white text-primary font-medium"
+                >
+                  {uniqueChildren.map((child) => (
+                    <option key={child.childId} value={child.childId}>
+                      {child.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span>{currentChild?.name}</span>
+              )}
+            </div>
             <p>
               {tBookings("parent")}: {booking.parentName}
             </p>
@@ -217,7 +253,9 @@ export const BookingDetailsModal = ({
             {/* Child Age */}
             <div className="relative">
               <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-right">
-                {currentEnrollment?.age} {tBookings("fields.years")}
+                {currentEnrollment?.age
+                  ? `${currentEnrollment.age} ${tBookings("fields.years")}`
+                  : "-"}
               </div>
               <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
             </div>
@@ -225,7 +263,7 @@ export const BookingDetailsModal = ({
             {/* Branch */}
             <div className="relative">
               <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-right">
-                {currentEnrollment?.branch}
+                {currentEnrollment?.branch || "-"}
               </div>
               <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
             </div>
@@ -294,7 +332,9 @@ export const BookingDetailsModal = ({
             </p>
             <div className="relative max-w-md mx-auto">
               <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-center">
-                {formatArabicDate(currentEnrollment?.startDate || "")}
+                {currentEnrollment?.startDate
+                  ? formatArabicDate(currentEnrollment.startDate)
+                  : "-"}
               </div>
               <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +37,7 @@ export function CitySelector({
   className,
 }: CitySelectorProps) {
   const [open, setOpen] = useState(false);
-  const { cities, isLoading, error } = useCities();
+  const { cities, isLoading, error, refetch } = useCities();
   const t = useTranslations("auth.center-signup.1.form");
   const locale = useLocale();
 
@@ -80,17 +80,33 @@ export function CitySelector({
           />
           <CommandList>
             <CommandEmpty>
-              {isLoading
-                ? locale === "ar"
-                  ? "جاري التحميل..."
-                  : "Loading..."
-                : error
-                ? locale === "ar"
-                  ? "حدث خطأ في تحميل المدن"
-                  : "Error loading cities"
-                : locale === "ar"
-                ? "لم يتم العثور على نتائج."
-                : "No results found."}
+              {isLoading ? (
+                <div className="py-6 text-center text-sm">
+                  {locale === "ar" ? "جاري التحميل..." : "Loading..."}
+                </div>
+              ) : error ? (
+                <div className="py-6 text-center">
+                  <p className="text-sm text-destructive mb-3">
+                    {locale === "ar"
+                      ? "حدث خطأ في تحميل المدن"
+                      : "Error loading cities"}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => refetch()}
+                    className="mx-auto"
+                  >
+                    <RotateCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="py-6 text-center text-sm">
+                  {locale === "ar"
+                    ? "لم يتم العثور على نتائج."
+                    : "No results found."}
+                </div>
+              )}
             </CommandEmpty>
             <CommandGroup>
               {cities.map((city) => (

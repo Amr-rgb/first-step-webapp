@@ -69,14 +69,14 @@ export default async function NurseriesPage({
   // ];
 
   let nurseries: any[] = [];
+  let error = null;
+
   try {
     nurseries = await nurseryService.getNurseries(locale);
-  } catch (error: any) {
+  } catch (err: any) {
     // Log error for debugging
-    console.error("Error fetching nurseries:", error);
-    // Re-throw the error so the error boundary can handle it
-    // The error is already formatted by ApiErrorHandler with user-friendly messages
-    throw error;
+    console.error("Error fetching nurseries:", err);
+    error = err;
   }
 
   return (
@@ -87,6 +87,7 @@ export default async function NurseriesPage({
         query={query}
         filter={filter}
         locale={locale}
+        error={error}
       />
       <BlogsWrapper number={4} locale={locale} />
       <Contact />

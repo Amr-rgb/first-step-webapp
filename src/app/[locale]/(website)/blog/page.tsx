@@ -31,7 +31,15 @@ export default async function BlogPage({
 }) {
   const { locale } = await params;
 
-  const blogs = await blogService.getBlogs(locale);
+  let blogs = [] as any[];
+  let error = null;
+
+  try {
+    blogs = await blogService.getBlogs(locale);
+  } catch (err: any) {
+    console.error("Error fetching blogs:", err);
+    error = err;
+  }
 
   return (
     <div>
@@ -42,7 +50,7 @@ export default async function BlogPage({
         height={750}
         className="w-full h-full max-h-[750px] object-cover"
       />
-      <AllBlogs blogs={blogs} />
+      <AllBlogs blogs={blogs} error={error} locale={locale} />
       <Contact />
     </div>
   );

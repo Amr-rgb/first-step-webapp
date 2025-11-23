@@ -1143,9 +1143,21 @@ export const authService = {
         password,
       });
 
-      if (!response.data.token) {
+      // Check if the response indicates an error (some APIs return 200 with error inside)
+      if (response.data.status === "401" || response.data.status === 401) {
         throw {
-          message: "Login failed: No authentication token received",
+          message: response.data.message || "Login failed",
+          errors: {},
+          status: 401,
+        };
+      }
+
+      // Validate that we have the required data
+      if (!response.data.token || !response.data.user) {
+        throw {
+          message:
+            response.data.message ||
+            "Login failed: Invalid response from server",
           errors: {},
           status: 401,
         };

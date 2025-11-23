@@ -479,6 +479,42 @@ export const parentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getChildrenCount: async () => {
+    try {
+      const response = await apiClient.get("/parent/children/count");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getEnrollmentsCount: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/count");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getUpcomingEnrollments: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/pending");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCurrentEnrollments: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/accepted");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const centerService = {
@@ -998,6 +1034,8 @@ export const centerService = {
 };
 
 export const adminService = {
+
+
   getCenters: async () => {
     try {
       const response = await apiClient.get("/dashboard/centers");
