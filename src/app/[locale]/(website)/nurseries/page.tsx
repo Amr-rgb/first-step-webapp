@@ -48,14 +48,14 @@ export default async function NurseriesPage({
   let error = null;
 
   try {
-    const [nurseriesData, couponsResponse] = await Promise.all([
+    const [nurseriesData] = await Promise.all([
       nurseryService.getNurseries(locale),
-      promocodeWebsiteService.getPromocodes(),
+      // promocodeWebsiteService.getPromocodes(),
     ]);
     nurseries = nurseriesData;
-    if (couponsResponse.success) {
-      coupons = couponsResponse.data;
-    }
+    // if (couponsResponse.success) {
+    //   coupons = couponsResponse.data;
+    // }
   } catch (err: any) {
     // Log error for debugging
     console.error("Error fetching data:", err);
