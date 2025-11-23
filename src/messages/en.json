@@ -196,7 +196,8 @@
       "0-3": "Nurseries for Ages 0-3",
       "3-6": "Nurseries for Ages 3-6",
       "disabled": "Special Needs Nurseries"
-    }
+    },
+    "viewAllCoupons": "View All Coupons"
   },
   "auth": {
     "sign-up": {
