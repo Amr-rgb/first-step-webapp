@@ -86,7 +86,7 @@ export default function CouponCodesPage() {
       try {
         const response = await websiteService.getPromocodes();
         if (response.success) {
-          setCoupons([]);
+          setCoupons(response.data);
         }
       } catch (error) {
         console.error("Failed to fetch coupons:", error);
