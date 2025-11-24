@@ -48,14 +48,14 @@ export default async function NurseriesPage({
   let error = null;
 
   try {
-    const [nurseriesData] = await Promise.all([
+    const [nurseriesData, couponsResponse] = await Promise.all([
       nurseryService.getNurseries(locale),
-      // promocodeWebsiteService.getPromocodes(),
+      promocodeWebsiteService.getPromocodes(),
     ]);
     nurseries = nurseriesData;
-    // if (couponsResponse.success) {
-    //   coupons = couponsResponse.data;
-    // }
+    if (couponsResponse.success) {
+      coupons = couponsResponse.data;
+    }
   } catch (err: any) {
     // Log error for debugging
     console.error("Error fetching data:", err);
@@ -64,7 +64,7 @@ export default async function NurseriesPage({
 
   return (
     <div>
-      <CouponSlider coupons={coupons} />
+      {coupons.length > 0 && <CouponSlider coupons={coupons} />}
       <Nurseries
         nurseries={nurseries}
         query={query}
