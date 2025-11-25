@@ -590,8 +590,8 @@ const ReservationForm = ({
                   if (authStorage) {
                     const authData = JSON.parse(authStorage);
                     if (authData?.state?.token) {
-                      // Token exists, use full page reload to restore session
-                      window.location.href = dashboardReservationsUrl;
+                      // Token exists, navigate using router
+                      router.push(dashboardReservationsUrl);
                       return;
                     }
                   }
@@ -603,11 +603,10 @@ const ReservationForm = ({
                 const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(
                   dashboardReservationsUrl
                 )}`;
-                window.location.href = loginUrl;
+                router.push(loginUrl);
               } else {
-                // User is authenticated, navigate normally
-                // Use window.location.href for full page reload to ensure session is preserved
-                window.location.href = dashboardReservationsUrl;
+                // User is authenticated, navigate normally using router
+                router.push(dashboardReservationsUrl);
               }
             }}
             className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto

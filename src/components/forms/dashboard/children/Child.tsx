@@ -206,42 +206,45 @@ const Child = ({
           readOnly={readOnly}
         />
         {/* --- Chronic Diseases Section --- */}
-        <div className="w-full flex flex-col gap-y-4">
-          <h2 className="heading-4 font-medium text-primary">
-            الأمراض المزمنة
-          </h2>
-          <FormField
-            control={control}
-            name="chronicDiseases.hasDiseases"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <RadioGroup
-                    className="gap-14.5"
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      // Automatically add one empty disease when "yes" is selected
-                      if (value === "yes" && diseases.length === 0) {
-                        appendDisease({
-                          name: "",
-                          medication: "",
-                          procedures: "",
-                        });
-                      }
-                    }}
-                    options={[
-                      { value: "yes", label: "نعم" },
-                      { value: "no", label: "لا" },
-                    ]}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+        {(!readOnly || hasDiseases === "yes") && (
+          <div className="w-full flex flex-col gap-y-4">
+            <h2 className="heading-4 font-medium text-primary">
+              الأمراض المزمنة
+            </h2>
+            {!readOnly && (
+              <FormField
+                control={control}
+                name="chronicDiseases.hasDiseases"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        className="gap-14.5"
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          // Automatically add one empty disease when "yes" is selected
+                          if (value === "yes" && diseases.length === 0) {
+                            appendDisease({
+                              name: "",
+                              medication: "",
+                              procedures: "",
+                            });
+                          }
+                        }}
+                        options={[
+                          { value: "yes", label: "نعم" },
+                          { value: "no", label: "لا" },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
-          {hasDiseases === "yes" &&
-            diseases.map((_, index) => (
+            {hasDiseases === "yes" &&
+              diseases.map((_, index) => (
               <div
                 key={index}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
@@ -319,62 +322,66 @@ const Child = ({
                 </div>
               </div>
             ))}
-          {hasDiseases === "yes" && (
-            <div className="flex justify-center lg:p-6">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  appendDisease({
-                    name: "",
-                    medication: "",
-                    procedures: "",
-                  })
-                }
-                className="font-bold"
-                disabled={readOnly}
-              >
-                <Plus className="size-6" size={24} /> إضافة مرض آخر
-              </Button>
-            </div>
-          )}
-        </div>
-        {/* --- Allergies Section --- */}
-        <div className="w-full flex flex-col gap-y-4">
-          <h2 className="heading-4 font-medium text-primary">الحساسية</h2>
-          <FormField
-            control={control}
-            name="allergies.hasAllergies"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <RadioGroup
-                    className="gap-14.5"
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      // Automatically add one empty allergy when "yes" is selected
-                      if (value === "yes" && allergies.length === 0) {
-                        appendAllergy({
-                          allergyTypes: "",
-                          allergyFoods: "",
-                          allergyProcedures: "",
-                        });
-                      }
-                    }}
-                    options={[
-                      { value: "yes", label: "نعم" },
-                      { value: "no", label: "لا" },
-                    ]}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            {hasDiseases === "yes" && !readOnly && (
+              <div className="flex justify-center lg:p-6">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    appendDisease({
+                      name: "",
+                      medication: "",
+                      procedures: "",
+                    })
+                  }
+                  className="font-bold"
+                  disabled={readOnly}
+                >
+                  <Plus className="size-6" size={24} /> إضافة مرض آخر
+                </Button>
+              </div>
             )}
-          />
-          {hasAllergies === "yes" &&
-            allergies.map((_, index) => (
+          </div>
+        )}
+        {/* --- Allergies Section --- */}
+        {(!readOnly || hasAllergies === "yes") && (
+          <div className="w-full flex flex-col gap-y-4">
+            <h2 className="heading-4 font-medium text-primary">الحساسية</h2>
+            {!readOnly && (
+              <FormField
+                control={control}
+                name="allergies.hasAllergies"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        className="gap-14.5"
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          // Automatically add one empty allergy when "yes" is selected
+                          if (value === "yes" && allergies.length === 0) {
+                            appendAllergy({
+                              allergyTypes: "",
+                              allergyFoods: "",
+                              allergyProcedures: "",
+                            });
+                          }
+                        }}
+                        options={[
+                          { value: "yes", label: "نعم" },
+                          { value: "no", label: "لا" },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {hasAllergies === "yes" &&
+              allergies.map((_, index) => (
               <div
                 key={index}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
@@ -440,27 +447,28 @@ const Child = ({
                 </div>
               </div>
             ))}
-          {hasAllergies === "yes" && (
-            <div className="flex justify-center lg:p-6">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  appendAllergy({
-                    allergyTypes: "",
-                    allergyFoods: "",
-                    allergyProcedures: "",
-                  })
-                }
-                className="font-bold"
-                disabled={readOnly}
-              >
-                <Plus className="size-6" size={24} /> إضافة حساسية أخرى
-              </Button>
-            </div>
-          )}
-        </div>
+            {hasAllergies === "yes" && !readOnly && (
+              <div className="flex justify-center lg:p-6">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    appendAllergy({
+                      allergyTypes: "",
+                      allergyFoods: "",
+                      allergyProcedures: "",
+                    })
+                  }
+                  className="font-bold"
+                  disabled={readOnly}
+                >
+                  <Plus className="size-6" size={24} /> إضافة حساسية أخرى
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
 
         <Recommendations
           control={methods.control}
@@ -598,6 +606,16 @@ export default Child;
 //   );
 // };
 
+// Helper function to check if a value exists and is not empty
+const hasValue = (value: any): boolean => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim() !== "";
+  if (typeof value === "number") return true;
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "object") return Object.keys(value).length > 0;
+  return Boolean(value);
+};
+
 const ChildPart = ({
   control,
   locale,
@@ -608,6 +626,10 @@ const ChildPart = ({
   readOnly: boolean;
 }) => {
   const t = useTranslations("auth.add-child.1.form");
+  const { watch } = useFormContext<AddChildFormData>();
+  const kinship = watch("kinship");
+  const childNationalNumber = watch("childNationalNumber");
+  const childImage = watch("childImage");
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -701,179 +723,187 @@ const ChildPart = ({
           )}
         />
 
-        {/* Kinship Field */}
-        <FormField
-          control={control}
-          name="kinship"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">صلة القرابة</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder="مثال: الأم، الأب، الأخ، الأخت..."
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Kinship Field - Only show if has value in readOnly mode, or always show in edit/add mode */}
+        {(!readOnly || hasValue(kinship)) && (
+          <FormField
+            control={control}
+            name="kinship"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">صلة القرابة</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder="مثال: الأم، الأب، الأخ، الأخت..."
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="childNationalNumber"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">الرقم الوطني للطفل</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder="الرقم الوطني للطفل"
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Child National Number - Only show if has value in readOnly mode, or always show in edit/add mode */}
+        {(!readOnly || hasValue(childNationalNumber)) && (
+          <FormField
+            control={control}
+            name="childNationalNumber"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">الرقم الوطني للطفل</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder="الرقم الوطني للطفل"
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="childImage"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">صورة الطفل</span>
-              </Label>
-              <FormControl>
-                <div className="relative">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors duration-200">
-                    {field.value ? (
-                      <div className="space-y-4">
-                        <div className="relative inline-block">
-                          <img
-                            src={
-                              field.value instanceof File
-                                ? URL.createObjectURL(field.value)
-                                : field.value
-                            }
-                            alt="Child preview"
-                            className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
-                          />
+        {/* Child Image - Only show if has value in readOnly mode, or always show in edit/add mode */}
+        {(!readOnly || hasValue(childImage)) && (
+          <FormField
+            control={control}
+            name="childImage"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">صورة الطفل</span>
+                </Label>
+                <FormControl>
+                  <div className="relative">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors duration-200">
+                      {field.value ? (
+                        <div className="space-y-4">
+                          <div className="relative inline-block">
+                            <img
+                              src={
+                                field.value instanceof File
+                                  ? URL.createObjectURL(field.value)
+                                  : field.value
+                              }
+                              alt="Child preview"
+                              className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
+                            />
+                            {!readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(null)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                              >
+                                ×
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {field.value instanceof File
+                              ? field.value.name
+                              : "صورة الطفل"}
+                          </p>
                           {!readOnly && (
                             <button
                               type="button"
-                              onClick={() => field.onChange(null)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                              onClick={() =>
+                                document
+                                  .getElementById("child-image-upload")
+                                  ?.click()
+                              }
+                              className="text-primary hover:text-primary-dark text-sm font-medium transition-colors"
                             >
-                              ×
+                              تغيير الصورة
                             </button>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">
-                          {field.value instanceof File
-                            ? field.value.name
-                            : "صورة الطفل"}
-                        </p>
-                        {!readOnly && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              document
-                                .getElementById("child-image-upload")
-                                ?.click()
-                            }
-                            className="text-primary hover:text-primary-dark text-sm font-medium transition-colors"
-                          >
-                            تغيير الصورة
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-8 h-8 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg
+                              className="w-8 h-8 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2">
+                              اضغط لرفع صورة الطفل
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              PNG, JPG, JPEG حتى 5MB
+                            </p>
+                          </div>
+                          {!readOnly && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                document
+                                  .getElementById("child-image-upload")
+                                  ?.click()
+                              }
+                              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
+                            >
+                              اختيار صورة
+                            </button>
+                          )}
                         </div>
-                        <div>
-                          <p className="text-sm text-gray-600 mb-2">
-                            اضغط لرفع صورة الطفل
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            PNG, JPG, JPEG حتى 5MB
-                          </p>
-                        </div>
-                        {!readOnly && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              document
-                                .getElementById("child-image-upload")
-                                ?.click()
-                            }
-                            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
-                          >
-                            اختيار صورة
-                          </button>
-                        )}
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <input
+                      id="child-image-upload"
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          // Validate file size (5MB limit)
+                          if (file.size > 5 * 1024 * 1024) {
+                            toastError(
+                              "خطأ في حجم الملف",
+                              "حجم الملف يجب أن يكون أقل من 5MB"
+                            );
+                            return;
+                          }
+                          // Validate file type
+                          if (
+                            !["image/png", "image/jpeg", "image/jpg"].includes(
+                              file.type
+                            )
+                          ) {
+                            toastError(
+                              "نوع الملف غير مدعوم",
+                              "يرجى اختيار صورة PNG أو JPG"
+                            );
+                            return;
+                          }
+                          field.onChange(file);
+                        }
+                      }}
+                      className="hidden"
+                      disabled={readOnly}
+                    />
                   </div>
-                  <input
-                    id="child-image-upload"
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        // Validate file size (5MB limit)
-                        if (file.size > 5 * 1024 * 1024) {
-                          toastError(
-                            "خطأ في حجم الملف",
-                            "حجم الملف يجب أن يكون أقل من 5MB"
-                          );
-                          return;
-                        }
-                        // Validate file type
-                        if (
-                          !["image/png", "image/jpeg", "image/jpg"].includes(
-                            file.type
-                          )
-                        ) {
-                          toastError(
-                            "نوع الملف غير مدعوم",
-                            "يرجى اختيار صورة PNG أو JPG"
-                          );
-                          return;
-                        }
-                        field.onChange(file);
-                      }
-                    }}
-                    className="hidden"
-                    disabled={readOnly}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div>
           <p className="form-label-sm mb-4 text-left rtl:text-right">
@@ -1165,6 +1195,15 @@ const Recommendations = ({
   readOnly: boolean;
 }) => {
   const t = useTranslations("auth.add-child.3.form");
+  const { watch } = useFormContext<AddChildFormData>();
+  const childDescription = watch("childDescription");
+  const favoriteThings = watch("favoriteThings");
+  const recommendations = watch("recommendations");
+
+  // In readOnly mode, only show section if at least one field has value
+  if (readOnly && !hasValue(childDescription) && !hasValue(favoriteThings) && !hasValue(recommendations)) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -1173,64 +1212,70 @@ const Recommendations = ({
       </h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
-        <FormField
-          control={control}
-          name="childDescription"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("description.label")}</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("description.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(childDescription)) && (
+          <FormField
+            control={control}
+            name="childDescription"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("description.label")}</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("description.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="favoriteThings"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("likes.label")}</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("likes.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(favoriteThings)) && (
+          <FormField
+            control={control}
+            name="favoriteThings"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("likes.label")}</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("likes.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="recommendations"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <span className="text-base">{t("recommendations.label")}</span>
-              <FormControl>
-                <Textarea
-                  placeholder={t("recommendations.placeholder")}
-                  {...field}
-                  className="min-h-[150px]"
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(recommendations)) && (
+          <FormField
+            control={control}
+            name="recommendations"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <span className="text-base">{t("recommendations.label")}</span>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("recommendations.placeholder")}
+                    {...field}
+                    className="min-h-[150px]"
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </div>
   );
@@ -1248,84 +1293,102 @@ const AuthorizationPart = ({
   readOnly: boolean;
 }) => {
   const t = useTranslations("auth.add-child.4.form");
+  const { watch } = useFormContext<AddChildFormData>();
+  const comments = watch("comments");
+
+  // Filter authorized persons to only show those with data in readOnly mode
+  const validAuthorizedPersons = readOnly
+    ? authorizedPersons.filter(
+        (person) => hasValue(person.name) || hasValue(person.idNumber)
+      )
+    : authorizedPersons;
+
+  // In readOnly mode, only show section if there are valid authorized persons or comments
+  if (readOnly && validAuthorizedPersons.length === 0 && !hasValue(comments)) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col gap-y-4">
       <h2 className="heading-4 font-medium text-primary">الأشخاص المفوضة</h2>
-      <div className="space-y-6 lg:p-6 lg:pb-0">
-        {authorizedPersons.map((_, index) => (
-          <div key={index} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={control}
-                name={`authorizedPersons.${index}.name`}
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>
-                      <span className="text-base">{t("authorize.label")}</span>
-                      {index > 0 ? ` ${index + 1}` : ""}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <FormControl>
-                      <Input
-                        placeholder={t("authorize.placeholder")}
-                        {...field}
-                        disabled={readOnly}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name={`authorizedPersons.${index}.idNumber`}
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>
-                      <span className="text-base">{t("identity.label")}</span>
-                      {index > 0 ? ` ${index + 1}` : ""}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <FormControl>
-                      <Input
-                        placeholder={t("identity.placeholder")}
-                        {...field}
-                        disabled={readOnly}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="lg:px-6">
-        <FormField
-          control={control}
-          name="comments"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("comment.label")}</span>
-              </Label>
-              <FormControl>
-                <Textarea
-                  placeholder={t("comment.placeholder")}
-                  {...field}
-                  className="min-h-[100px]"
-                  disabled={readOnly}
+      {validAuthorizedPersons.length > 0 && (
+        <div className="space-y-6 lg:p-6 lg:pb-0">
+          {validAuthorizedPersons.map((_, index) => (
+            <div key={index} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={control}
+                  name={`authorizedPersons.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">{t("authorize.label")}</span>
+                        {index > 0 ? ` ${index + 1}` : ""}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder={t("authorize.placeholder")}
+                          {...field}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+
+                <FormField
+                  control={control}
+                  name={`authorizedPersons.${index}.idNumber`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">{t("identity.label")}</span>
+                        {index > 0 ? ` ${index + 1}` : ""}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder={t("identity.placeholder")}
+                          {...field}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {(!readOnly || hasValue(comments)) && (
+        <div className="lg:px-6">
+          <FormField
+            control={control}
+            name="comments"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("comment.label")}</span>
+                </Label>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("comment.placeholder")}
+                    {...field}
+                    className="min-h-[100px]"
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
     </div>
   );
 };
