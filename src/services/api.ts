@@ -414,6 +414,38 @@ export const websiteService = {
     }
   },
 
+  checkEmail: async (email: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/check-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (!res.ok) {
+        const responseData = await res.json();
+        throw {
+          message: responseData?.message || "Failed to check email",
+          errors: responseData?.errors || {},
+          status: res.status,
+        };
+      }
+
+      return await res.json();
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getPlans: async () => {
     try {
       const res = await fetch(

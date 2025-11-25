@@ -5,6 +5,7 @@ import TopBar from "@/components/layout/TopBar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/shared/WhatsAppButton";
 import SignInModalHandler from "@/components/modals/SignInModalHandler";
+import NewsletterPopup from "@/components/modals/NewsletterPopup";
 
 export const metadata: Metadata = {
   title: "First Step",
@@ -24,6 +25,7 @@ export default async function WebsiteLayout({
       <WhatsAppButton />
       <Footer />
       <SignInModalHandler />
+      <NewsletterPopup />
     </React.Fragment>
   );
 }
