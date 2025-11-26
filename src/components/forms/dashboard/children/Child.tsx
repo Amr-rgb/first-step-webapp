@@ -245,83 +245,83 @@ const Child = ({
             )}
             {hasDiseases === "yes" &&
               diseases.map((_, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
-              >
-                <FormField
-                  control={control}
-                  name={`chronicDiseases.diseases.${index}.name`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>
-                        <span className="text-base">اسم المرض</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input
-                          placeholder="اسم المرض"
-                          {...field}
-                          value={field.value?.toString() || ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name={`chronicDiseases.diseases.${index}.medication`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>
-                        <span className="text-base">الدواء</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input
-                          placeholder="الدواء"
-                          {...field}
-                          value={field.value?.toString() || ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name={`chronicDiseases.diseases.${index}.procedures`}
-                  render={({ field }) => (
-                    <FormItem className="col-span-1 md:col-span-2">
-                      <Label>
-                        <span className="text-base">إجراءات الطوارئ</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input
-                          placeholder="إجراءات الطوارئ"
-                          {...field}
-                          value={field.value?.toString() || ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex gap-2 col-span-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeDisease(index)}
-                    className="font-bold aspect-square"
-                  >
-                    <Minus className="size-6" size={24} />
-                  </Button>
+                <div
+                  key={index}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
+                >
+                  <FormField
+                    control={control}
+                    name={`chronicDiseases.diseases.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>
+                          <span className="text-base">اسم المرض</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input
+                            placeholder="اسم المرض"
+                            {...field}
+                            value={field.value?.toString() || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`chronicDiseases.diseases.${index}.medication`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>
+                          <span className="text-base">الدواء</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input
+                            placeholder="الدواء"
+                            {...field}
+                            value={field.value?.toString() || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`chronicDiseases.diseases.${index}.procedures`}
+                    render={({ field }) => (
+                      <FormItem className="col-span-1 md:col-span-2">
+                        <Label>
+                          <span className="text-base">إجراءات الطوارئ</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input
+                            placeholder="إجراءات الطوارئ"
+                            {...field}
+                            value={field.value?.toString() || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-2 col-span-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeDisease(index)}
+                      className="font-bold aspect-square"
+                    >
+                      <Minus className="size-6" size={24} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {hasDiseases === "yes" && !readOnly && (
               <div className="flex justify-center lg:p-6">
                 <Button
@@ -382,71 +382,71 @@ const Child = ({
             )}
             {hasAllergies === "yes" &&
               allergies.map((_, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
-              >
-                <FormField
-                  control={control}
-                  name={`allergies.allergies.${index}.allergyTypes`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>
-                        <span className="text-base">نوع الحساسية</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input placeholder="نوع الحساسية" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name={`allergies.allergies.${index}.allergyFoods`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>
-                        <span className="text-base">مسببات الحساسية</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input placeholder="مسببات الحساسية" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name={`allergies.allergies.${index}.allergyProcedures`}
-                  render={({ field }) => (
-                    <FormItem className="col-span-1 md:col-span-2">
-                      <Label>
-                        <span className="text-base">إجراءات الطوارئ</span>
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <FormControl>
-                        <Input placeholder="إجراءات الطوارئ" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex gap-2 col-span-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeAllergy(index)}
-                    className="font-bold aspect-square"
-                  >
-                    <Minus className="size-6" size={24} />
-                  </Button>
+                <div
+                  key={index}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:p-6"
+                >
+                  <FormField
+                    control={control}
+                    name={`allergies.allergies.${index}.allergyTypes`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>
+                          <span className="text-base">نوع الحساسية</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input placeholder="نوع الحساسية" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`allergies.allergies.${index}.allergyFoods`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>
+                          <span className="text-base">مسببات الحساسية</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input placeholder="مسببات الحساسية" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`allergies.allergies.${index}.allergyProcedures`}
+                    render={({ field }) => (
+                      <FormItem className="col-span-1 md:col-span-2">
+                        <Label>
+                          <span className="text-base">إجراءات الطوارئ</span>
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <FormControl>
+                          <Input placeholder="إجراءات الطوارئ" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-2 col-span-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeAllergy(index)}
+                      className="font-bold aspect-square"
+                    >
+                      <Minus className="size-6" size={24} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {hasAllergies === "yes" && !readOnly && (
               <div className="flex justify-center lg:p-6">
                 <Button
@@ -1201,7 +1201,12 @@ const Recommendations = ({
   const recommendations = watch("recommendations");
 
   // In readOnly mode, only show section if at least one field has value
-  if (readOnly && !hasValue(childDescription) && !hasValue(favoriteThings) && !hasValue(recommendations)) {
+  if (
+    readOnly &&
+    !hasValue(childDescription) &&
+    !hasValue(favoriteThings) &&
+    !hasValue(recommendations)
+  ) {
     return null;
   }
 
@@ -1322,7 +1327,9 @@ const AuthorizationPart = ({
                   render={({ field }) => (
                     <FormItem>
                       <Label>
-                        <span className="text-base">{t("authorize.label")}</span>
+                        <span className="text-base">
+                          {t("authorize.label")}
+                        </span>
                         {index > 0 ? ` ${index + 1}` : ""}
                         <span className="text-red-500">*</span>
                       </Label>
