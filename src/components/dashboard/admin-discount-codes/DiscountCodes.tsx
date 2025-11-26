@@ -25,7 +25,7 @@ const mapApiStatus = (status: string): DiscountCodeStatus => {
     active: "active",
     inactive: "paused",
     expired: "expired",
-    pending: "notStarted",
+    not_started: "notStarted",
   };
   return statusMap[status] || "active";
 };
