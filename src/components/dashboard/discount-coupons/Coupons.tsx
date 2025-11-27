@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { FilterButtons } from "@/components/common/FilterButtons";
 import CouponCard from "./CouponCard";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Search } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "@/components/common/EmptyState";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 type FilterType = "all" | "active" | "not-started" | "paused" | "expired";
 
@@ -65,6 +66,26 @@ export default function Coupons() {
   } = useQuery({
     queryKey: ["center-payment-history"],
     queryFn: () => centerService.getSubscriptionsLog(),
+  });
+
+  // Request new promocode mutation
+  const requestPromocodeMutation = useMutation({
+    mutationFn: () => centerService.requestNewPromocode(),
+    onSuccess: () => {
+      toastSuccess(
+        t("requestSuccess") || "Request submitted successfully",
+        t("requestSuccessDescription") ||
+          "Your request for a new promocode has been submitted. We will review it shortly."
+      );
+    },
+    onError: (error: any) => {
+      toastError(
+        t("requestError") || "Request failed",
+        error?.message ||
+          t("requestErrorDescription") ||
+          "Failed to submit your request. Please try again later."
+      );
+    },
   });
 
   // Transform payment history data to coupon format
@@ -162,7 +183,7 @@ export default function Coupons() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {/* Top Section: Button and Search */}
+        {/* Top Section: Button and Search on Same Row */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Skeleton className="h-10 w-48" />
           <Skeleton className="h-10 w-full sm:w-[300px]" />
@@ -202,9 +223,17 @@ export default function Coupons() {
 
   return (
     <div className="space-y-6">
-      {/* Top Section: Button and Search */}
+      {/* Top Section: Button and Search on Same Row */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button className="w-full sm:w-auto">{t("requestAddCoupon")}</Button>
+        <Button
+          className="w-full sm:w-auto"
+          onClick={() => requestPromocodeMutation.mutate()}
+          disabled={requestPromocodeMutation.isPending}
+        >
+          {requestPromocodeMutation.isPending
+            ? t("requesting") || "Requesting..."
+            : t("requestAddCoupon")}
+        </Button>
         <div className="relative w-full sm:w-auto sm:min-w-[300px]">
           <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input

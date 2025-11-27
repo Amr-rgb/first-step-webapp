@@ -882,6 +882,11 @@
       "times": "مرات",
       "activatedBranches": "الفروع المفعل فيها",
       "requestAddCoupon": "طلب إضافة كوبون خصم",
+      "requesting": "جاري الطلب...",
+      "requestSuccess": "تم إرسال الطلب",
+      "requestSuccessDescription": "تم إرسال طلبك لإضافة كوبون خصم جديد. سنقوم بمراجعته قريباً.",
+      "requestError": "فشل الطلب",
+      "requestErrorDescription": "فشل إرسال طلبك. يرجى المحاولة مرة أخرى لاحقاً.",
       "searchPlaceholder": "ابحث عن كوبون خصم",
       "noCouponsFound": {
         "title": "لا توجد كوبونات",

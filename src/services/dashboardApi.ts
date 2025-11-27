@@ -978,6 +978,15 @@ export const centerService = {
     }
   },
 
+  requestNewPromocode: async () => {
+    try {
+      const response = await apiClient.post("/request-new-promocode");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   // Portfolio endpoints
   savePortfolio: async (payload: PortfolioFormData) => {
     try {

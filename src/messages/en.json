@@ -886,6 +886,11 @@
       "times": "times",
       "activatedBranches": "Branches where it's activated",
       "requestAddCoupon": "Request to Add Discount Coupon",
+      "requesting": "Requesting...",
+      "requestSuccess": "Request Submitted",
+      "requestSuccessDescription": "Your request for a new promocode has been submitted. We will review it shortly.",
+      "requestError": "Request Failed",
+      "requestErrorDescription": "Failed to submit your request. Please try again later.",
       "searchPlaceholder": "Search for discount coupon",
       "noCouponsFound": {
         "title": "No coupons found",
