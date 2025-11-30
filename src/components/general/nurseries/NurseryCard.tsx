@@ -57,12 +57,16 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
 
   // Get services for display (including additional service)
   const allServices = [
-    ...nursery.services.map((service: string) =>
-      getTranslationById(service, serviceOptions)
-    ),
-    ...nursery.communication_methods.map((method: string) =>
-      getTranslationById(method, communicationOptions)
-    ),
+    ...(nursery.services && Array.isArray(nursery.services)
+      ? nursery.services.map((service: string) =>
+          getTranslationById(service, serviceOptions)
+        )
+      : []),
+    ...(nursery.communication_methods && Array.isArray(nursery.communication_methods)
+      ? nursery.communication_methods.map((method: string) =>
+          getTranslationById(method, communicationOptions)
+        )
+      : []),
     nursery.emergency_contact
       ? getTranslationById("emergency-contact", additionalFeaturesOptions)
       : null,
@@ -78,9 +82,12 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
   ].filter(Boolean);
 
   // Get accepted ages for separate display
-  const acceptedAges = nursery.accepted_ages
-    .map((age: string) => getTranslationById(age, ageOptions))
-    .join("، ");
+  const acceptedAges =
+    nursery.accepted_ages && Array.isArray(nursery.accepted_ages)
+      ? nursery.accepted_ages
+          .map((age: string) => getTranslationById(age, ageOptions))
+          .join("، ")
+      : "";
 
   return (
     <Link href={`/nurseries/${slug}`} className="block">
