@@ -57,10 +57,10 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
 
   // Get services for display (including additional service)
   const allServices = [
-    ...nursery.services.map((service: string) =>
+    ...(nursery.services || []).map((service: string) =>
       getTranslationById(service, serviceOptions)
     ),
-    ...nursery.communication_methods.map((method: string) =>
+    ...(nursery.communication_methods || []).map((method: string) =>
       getTranslationById(method, communicationOptions)
     ),
     nursery.emergency_contact
@@ -78,7 +78,7 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
   ].filter(Boolean);
 
   // Get accepted ages for separate display
-  const acceptedAges = nursery.accepted_ages
+  const acceptedAges = (nursery.accepted_ages || [])
     .map((age: string) => getTranslationById(age, ageOptions))
     .join("، ");
 
