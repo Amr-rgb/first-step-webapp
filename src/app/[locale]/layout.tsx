@@ -23,10 +23,31 @@ const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
 });
 
-// export const metadata: Metadata = {
-//   title: "First Step",
-//   description: "Smart childcare for every family.",
-// };
+import { headers } from "next/headers";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const baseUrl = "https://firststep-app.com";
+
+  // Remove the locale from the start of the pathname to get the route
+  // e.g. /en/about -> /about
+  const route = pathname.replace(`/${locale}`, "") || "";
+
+  return {
+    alternates: {
+      languages: {
+        en: `${baseUrl}/en${route}`,
+        ar: `${baseUrl}/ar${route}`,
+      },
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,
