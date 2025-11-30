@@ -6,8 +6,11 @@ import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { Button } from "@/components/ui/button";
 import { CheckCheck, Loader2, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 export default function NotificationsPage() {
+  usePageMetadata();
+
   const {
     notifications,
     unreadCount,

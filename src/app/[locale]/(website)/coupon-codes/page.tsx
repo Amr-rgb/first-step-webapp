@@ -40,6 +40,7 @@ type SortOption = "newest" | "percentage";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import NewsletterPopup from "@/components/modals/NewsletterPopup";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 function CouponSkeleton() {
   return (
@@ -74,6 +75,8 @@ function CouponSkeleton() {
 }
 
 export default function CouponCodesPage() {
+  usePageMetadata();
+
   const t = useTranslations("couponCodes");
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);

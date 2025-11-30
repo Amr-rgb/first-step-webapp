@@ -215,6 +215,26 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إرسال ومراجعة الإشعارات.",
     },
   },
+  "dashboard/admin/all-notifications": {
+    en: {
+      title: "Admin • All Notifications",
+      description: "View all platform notifications.",
+    },
+    ar: {
+      title: "المسؤول • كل الإشعارات",
+      description: "عرض جميع إشعارات المنصة.",
+    },
+  },
+  "dashboard/admin/discount-codes": {
+    en: {
+      title: "Admin • Discount Codes",
+      description: "Manage discount codes and coupons.",
+    },
+    ar: {
+      title: "المسؤول • أكواد الخصم",
+      description: "إدارة أكواد الخصم والكوبونات.",
+    },
+  },
 
   // Center
   "dashboard/center/bookings": {
@@ -263,6 +283,16 @@ export const dashboardMetadata: DashboardMetaMap = {
     ar: {
       title: "المركز • الإشعارات",
       description: "إدارة الإشعارات الموجهة للأهالي.",
+    },
+  },
+  "dashboard/center/all-notifications": {
+    en: {
+      title: "Center • All Notifications",
+      description: "View all center notifications.",
+    },
+    ar: {
+      title: "المركز • كل الإشعارات",
+      description: "عرض جميع إشعارات المركز.",
     },
   },
   "dashboard/center/account": {
@@ -369,6 +399,16 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "تعديل التدوينة المرسلة.",
     },
   },
+  "dashboard/center/discount-coupons": {
+    en: {
+      title: "Center • Discount Coupons",
+      description: "Manage discount coupons for your center.",
+    },
+    ar: {
+      title: "المركز • كوبونات الخصم",
+      description: "إدارة كوبونات الخصم لمركزك.",
+    },
+  },
   "dashboard/center/billing": {
     en: {
       title: "Center • Billing",
@@ -396,6 +436,16 @@ export const dashboardMetadata: DashboardMetaMap = {
     ar: {
       title: "ولي الأمر • المحادثات",
       description: "التواصل مع المراكز والمسؤولين.",
+    },
+  },
+  "dashboard/parent/all-notifications": {
+    en: {
+      title: "Parent • All Notifications",
+      description: "View all your notifications.",
+    },
+    ar: {
+      title: "ولي الأمر • كل الإشعارات",
+      description: "عرض جميع إشعاراتك.",
     },
   },
   "dashboard/parent/children": {
