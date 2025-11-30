@@ -28,8 +28,11 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Edit, Eye } from "lucide-react";
 import { toastError } from "@/lib/toast";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 const ProfileEditor = () => {
+  usePageMetadata();
+
   const t = useTranslations("dashboard.profileEditor");
   const params = useParams();
   const locale = params.locale as string;

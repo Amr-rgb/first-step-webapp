@@ -27,6 +27,9 @@ export default function middleware(request: NextRequest) {
     maxAge: 60 * 60 * 24 * 365, // 1 year
   });
 
+  // Add pathname to headers for metadata generation
+  response.headers.set("x-pathname", pathname);
+
   // 4. Get auth token
   const token = request.cookies.get("auth-storage")?.value;
 

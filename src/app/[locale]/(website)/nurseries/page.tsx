@@ -64,7 +64,7 @@ export default async function NurseriesPage({
 
   return (
     <div>
-      <CouponSlider coupons={coupons} />
+      {coupons.length > 0 && <CouponSlider coupons={coupons} />}
       <Nurseries
         nurseries={nurseries}
         query={query}

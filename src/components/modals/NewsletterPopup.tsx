@@ -11,8 +11,16 @@ import { X, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-export default function NewsletterPopup() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function NewsletterPopup({
+  isOpen: externalIsOpen,
+  onOpenChange,
+  isManual = false,
+}: {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  isManual?: boolean;
+}) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -20,7 +28,19 @@ export default function NewsletterPopup() {
   const { user } = useAuthStore();
   const t = useTranslations("NewsletterPopup");
 
+  const isControlled = typeof externalIsOpen !== "undefined";
+  const isOpen = isControlled ? externalIsOpen : internalIsOpen;
+  const setIsOpen = (open: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(open);
+    } else {
+      setInternalIsOpen(open);
+    }
+  };
+
   useEffect(() => {
+    if (isManual) return;
+
     const checkSubscription = async () => {
       // Check if manually closed before
       const isClosed = localStorage.getItem("newsletter_popup_closed");
@@ -47,11 +67,13 @@ export default function NewsletterPopup() {
     };
 
     checkSubscription();
-  }, [user]);
+  }, [user, isManual]);
 
   const handleClose = () => {
     setIsOpen(false);
-    localStorage.setItem("newsletter_popup_closed", "true");
+    if (!isManual) {
+      localStorage.setItem("newsletter_popup_closed", "true");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

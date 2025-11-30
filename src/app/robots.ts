@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = "https://firststep-app.com";
+
   return {
     rules: {
       userAgent: "*",
@@ -13,7 +15,8 @@ export default function robots(): MetadataRoute.Robots {
         "/tempTestFile",
         "/testtepfile",
       ],
+      // crawlDelay: 1, // Optional: Add if you want to slow down crawlers
     },
-    sitemap: "https://firststep-app.com/sitemap.xml",
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

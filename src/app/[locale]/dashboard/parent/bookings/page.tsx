@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 export default function ParentBookingsPage() {
+  usePageMetadata();
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();

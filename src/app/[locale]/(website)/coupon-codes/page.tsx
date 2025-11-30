@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Settings2, Check } from "lucide-react";
 import CouponCard from "@/components/coupons/CouponCard";
+import Image from "next/image";
 import { websiteService } from "@/services/promocodeService";
 import { toast } from "sonner";
 import {
@@ -37,12 +38,51 @@ interface Coupon {
 
 type SortOption = "newest" | "percentage";
 
+import { Skeleton } from "@/components/ui/skeleton";
+import NewsletterPopup from "@/components/modals/NewsletterPopup";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+
+function CouponSkeleton() {
+  return (
+    <div>
+      {/* Top Row - Centers */}
+      <div className="mb-4 flex items-center justify-start py-2 px-4">
+        {[1, 2, 3].map((i) => (
+          <Skeleton
+            key={i}
+            className={`w-9 h-9 rounded-full border-2 border-white ${
+              i !== 1 ? "-ml-3" : ""
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="relative flex overflow-hidden h-56">
+        {/* Right Side - Discount & Code */}
+        <div className="w-[35%] relative flex flex-col items-center justify-center rtl:rounded-l-3xl ltr:rounded-r-3xl bg-gray-100">
+          <Skeleton className="h-12 w-20 mb-4 bg-gray-200" />
+          <Skeleton className="h-8 w-24 rounded-lg bg-gray-200" />
+        </div>
+
+        {/* Left Side - Content */}
+        <div className="flex-1 p-6 flex flex-col justify-center items-center relative border border-gray-100 rtl:rounded-r-3xl ltr:rounded-l-3xl bg-white">
+          <Skeleton className="h-8 w-3/4 mb-3 bg-gray-100" />
+          <Skeleton className="h-4 w-1/2 bg-gray-100" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CouponCodesPage() {
+  usePageMetadata();
+
   const t = useTranslations("couponCodes");
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [showNewsletter, setShowNewsletter] = useState(false);
 
   useEffect(() => {
     const fetchCoupons = async () => {
@@ -104,7 +144,11 @@ export default function CouponCodesPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Top Section: Search and Button */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
-          <Button className="bg-[#4F46E5] hover:bg-[#4338ca] text-white px-8 py-6 text-lg rounded-xl shadow-md transition-all">
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => setShowNewsletter(true)}
+          >
             {t("subscribeButton")}
           </Button>
 
@@ -121,7 +165,7 @@ export default function CouponCodesPage() {
             <div className="absolute left-4 rtl:right-4 rtl:left-auto top-1/2 -translate-y-1/2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="text-gray-400 hover:text-[#4F46E5] transition-colors p-1">
+                  <button className="text-gray-400 hover:text-primary-blue transition-colors p-1">
                     <Settings2 className="w-5 h-5" />
                   </button>
                 </DropdownMenuTrigger>
@@ -153,9 +197,7 @@ export default function CouponCodesPage() {
         {/* Coupons Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-20">
           {loading ? (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              {t("loading")}
-            </div>
+            Array.from({ length: 6 }).map((_, i) => <CouponSkeleton key={i} />)
           ) : filteredAndSortedCoupons.length > 0 ? (
             filteredAndSortedCoupons.map((coupon) => (
               <CouponCard
@@ -169,12 +211,39 @@ export default function CouponCodesPage() {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              {t("noResults")}
+            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+              <div className="relative w-64 h-64 mb-8">
+                <Image
+                  src="/assets/illustrations/empty-cloud.png"
+                  alt="No coupons"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="flex flex-col gap-2 mb-8 max-w-xl mx-auto">
+                <span className="text-xl md:text-2xl font-medium text-primary-blue">
+                  {t("emptyState.title1")}
+                </span>
+                <span className="text-2xl md:text-4xl font-bold text-primary-blue">
+                  {t("emptyState.title2")}
+                </span>
+              </div>
+              <Button
+                onClick={() => setShowNewsletter(true)}
+                size="sm"
+                variant="default"
+              >
+                {t("emptyState.button")}
+              </Button>
             </div>
           )}
         </div>
       </div>
+      <NewsletterPopup
+        isOpen={showNewsletter}
+        onOpenChange={setShowNewsletter}
+        isManual
+      />
     </div>
   );
 }

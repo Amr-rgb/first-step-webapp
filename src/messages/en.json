@@ -2637,6 +2637,11 @@
     "card": {
       "validUntil": "Valid until",
       "copySuccess": "Code copied successfully"
+    },
+    "emptyState": {
+      "title1": "There are currently no coupons,",
+      "title2": "you will be notified when coupons are available",
+      "button": "Subscribe to Coupon Newsletter"
     }
   }
 }
