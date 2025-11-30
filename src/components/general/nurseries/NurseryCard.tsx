@@ -62,7 +62,8 @@ const NurseryCard = ({ nursery, locale }: { nursery: any; locale: string }) => {
           getTranslationById(service, serviceOptions)
         )
       : []),
-    ...(nursery.communication_methods && Array.isArray(nursery.communication_methods)
+    ...(nursery.communication_methods &&
+    Array.isArray(nursery.communication_methods)
       ? nursery.communication_methods.map((method: string) =>
           getTranslationById(method, communicationOptions)
         )
