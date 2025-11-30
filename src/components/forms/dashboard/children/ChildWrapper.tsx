@@ -324,6 +324,7 @@ const ChildWrapper = ({
       kinship: childData?.kinship || "",
       childNationalNumber: childData?.national_number || "",
       childImage: childData?.image || null,
+      qrCode: childData?.qr_code || null,
       // Chronic diseases
       chronicDiseases: {
         hasDiseases:

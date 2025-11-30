@@ -86,6 +86,7 @@ export default function EditChild({
     kinship: childData?.kinship || "",
     childNationalNumber: childData?.national_number || "",
     childImage: childData?.image || null,
+    qrCode: childData?.qr_code || null,
 
     // Chronic diseases
     chronicDiseases: {

@@ -83,15 +83,17 @@ export default async function NurseryPage({
       <Programs programs={[]} nurseryName={readableName} locale={locale} />
 
       {/* 6. Services Section */}
-      {portfolio.services && portfolio.services.length > 0 && (
-        <Services
-          services={portfolio.services.map((service) => ({
-            title: service.title,
-            description: service.description,
-            image: service.image_service || "",
-          }))}
-        />
-      )}
+      {portfolio.services &&
+        Array.isArray(portfolio.services) &&
+        portfolio.services.length > 0 && (
+          <Services
+            services={portfolio.services.map((service) => ({
+              title: service.title,
+              description: service.description,
+              image: service.image_service || "",
+            }))}
+          />
+        )}
 
       {/* 7. Statistics Section */}
       {portfolio.nursery_state && (
