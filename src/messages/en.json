@@ -822,6 +822,7 @@
         "bookings": "Bookings",
         "daily-reports": "Daily Reports",
         "center-data": "Center Data",
+        "gate": "First Step Gate",
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team",
@@ -1123,6 +1124,44 @@
           "description": "Are you sure you want to delete this team member? This action cannot be undone.",
           "confirm": "Delete",
           "cancel": "Cancel"
+        }
+      },
+      "gate": {
+        "title": "First Step Gate Application",
+        "subtitle": "Register children's attendance and departure easily",
+        "codeLabel": "Click the button below to activate",
+        "downloadApp": "Share the app with parents",
+        "attendanceTitle": "Attendance Records",
+        "buttons": {
+          "generate": "Generate Code",
+          "generating": "Generating..."
+        },
+        "success": {
+          "codeGenerated": "Code generated successfully",
+          "linkCopied": "Link copied to clipboard"
+        },
+        "errors": {
+          "selectBranch": "Please select a branch first",
+          "generateFailed": "Failed to generate code. Please try again."
+        },
+        "table": {
+          "number": "#",
+          "childName": "Child Name",
+          "date": "Date",
+          "arrivalTime": "Arrival Time",
+          "departureTime": "Departure Time",
+          "program": "Program",
+          "branch": "Branch",
+          "noData": "No attendance records yet"
+        },
+        "modal": {
+          "title": "Generate Gate Code",
+          "selectBranch": "Select Branch",
+          "generate": "Generate Code",
+          "successTitle": "App Access Code",
+          "successSubtitle": "Share the code with the employee responsible for registering children's attendance and departure",
+          "copyButton": "Copy access code for your employees",
+          "copied": "Code copied to clipboard"
         }
       },
       "children": {
