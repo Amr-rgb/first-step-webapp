@@ -17,6 +17,10 @@
         "title": "الحضانات",
         "path": "/nurseries"
       },
+      "coupon-codes": {
+        "title": "كوبونات الخصم",
+        "path": "/coupon-codes"
+      },
       "blog": {
         "title": "المدونة",
         "path": "/blog"

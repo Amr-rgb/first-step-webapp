@@ -118,6 +118,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     "services",
     "nurseries",
     // "centers",
+    "coupon-codes",
     "blog",
     "story",
     "contact",

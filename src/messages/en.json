@@ -17,6 +17,10 @@
         "title": "Nurseries",
         "path": "/nurseries"
       },
+      "coupon-codes": {
+        "title": "Coupon Codes",
+        "path": "/coupon-codes"
+      },
       "blog": {
         "title": "Blog",
         "path": "/blog"
