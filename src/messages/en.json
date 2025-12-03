@@ -1426,6 +1426,7 @@
           "load": "Could not load centers",
           "unexpected": "An unexpected error occurred while loading the data. Check your internet connection, or try again later."
         },
+        "noResults": "No centers found with this status",
         "loading": "Loading Data...",
         "centerAccepted": "Center has been accepted successfully",
         "centerRejected": "Center has been rejected successfully",
@@ -1438,7 +1439,8 @@
         "status": {
           "pending": "Pending",
           "confirmed": "Confirmed",
-          "canceled": "Rejected"
+          "canceled": "Rejected",
+          "all": "All"
         }
       },
       "parents": {
