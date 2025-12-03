@@ -1480,6 +1480,15 @@ export const adminService = {
     }
   },
 
+  deleterCenter: async (centerId: string) => {
+    try {
+      const response = await apiClient.delete(`/dashboard/centers/${centerId}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCentersSubscriptionsLog: async () => {
     try {
       const response = await apiClient.get("/get-history-payment");
