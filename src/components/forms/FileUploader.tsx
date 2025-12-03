@@ -104,13 +104,19 @@ export function FileUploader({
             <PaperclipIcon className="h-5 w-5 text-muted-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <label htmlFor={inputId} className="block cursor-pointer">
+            <a
+              href={previewUrl || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="text-sm font-medium text-primary underline truncate">
                 {typeof value === "string"
                   ? decodeURIComponent(value.split("/").pop() || "file")
                   : value?.name}
               </div>
-            </label>
+            </a>
             <div className="text-xs text-muted-foreground truncate">
               {fileSizeText}
             </div>
