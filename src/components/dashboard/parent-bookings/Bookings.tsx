@@ -27,18 +27,8 @@ import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import ReservationForm from "@/components/general/nurseries/ReservationForm";
-
-const STATUS_STYLES: Record<string, string> = {
-  pending: "text-white",
-  accepted: "text-white",
-  existing: "text-white",
-  paid: "text-white",
-  expired: "text-white",
-  rejected: "text-white",
-  canceled: "text-white",
-  cancelled: "text-white",
-  waiting_confirmation: "text-white",
-};
+import BookingCard from "@/components/bookings/BookingCard";
+import { FilterButtons } from "@/components/common/FilterButtons";
 
 const Bookings = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -89,76 +79,6 @@ const Bookings = () => {
     waiting_confirmation: t("status.waiting_confirmation"),
   };
 
-  const STATUS_COLORS: Record<string, string> = {
-    pending: "#9891FF",
-    accepted: "#FFAD0D",
-    existing: "#3B82F6",
-    paid: "#47B881",
-    expired: "#CACACA",
-    rejected: "#F64C4C",
-    canceled: "#000000",
-    cancelled: "#000000",
-    waiting_confirmation: "#9891FF",
-  };
-
-  const actionsByStatus: Record<
-    string,
-    {
-      label: string;
-      variant?: "destructive" | "default";
-      action: "details" | "cancel" | "renew" | "confirmReservation" | null;
-    }[]
-  > = {
-    [t("status.accepted")]: [
-      { label: t("actions.confirmReservation"), action: "confirmReservation" },
-      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-    [t("status.paid")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.existing")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.expired")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.rejected")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.canceled")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.waiting_confirmation")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      // Note: Cancel action removed for "waiting_confirmation" because backend
-      // only allows canceling "pending" or "accepted" statuses
-      // { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-    [t("status.pending")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-  };
-
-  function StatusBadge({ status }: { status: string }) {
-    const backgroundColor = STATUS_COLORS[status] || "#CACACA";
-    return (
-      <span
-        className={`px-2 py-1 rounded text-xs font-bold ${
-          STATUS_STYLES[status] || "text-white"
-        }`}
-        style={{ backgroundColor }}
-      >
-        {STATUS_MAP[status] || status}
-      </span>
-    );
-  }
-
   function BookingCardSkeleton() {
     return (
       <Card className="w-full">
@@ -184,177 +104,6 @@ const Bookings = () => {
           <div className="flex justify-center gap-2 mt-6">
             <Skeleton className="h-10 w-32" />
             <Skeleton className="h-10 w-32" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  function BookingCard({
-    booking,
-    onShowDetails,
-    onCancel,
-    onRenew,
-    onConfirmReservation,
-    cancellingId,
-    renewingId,
-  }: {
-    booking: any;
-    onShowDetails: () => void;
-    onCancel: () => void;
-    onRenew: () => void;
-    onConfirmReservation: () => void;
-    cancellingId: number | null;
-    renewingId: number | null;
-  }) {
-    return (
-      <Card id={`enrollment-${booking.id}`} className="w-full transition-all">
-        <CardContent className="py-6 px-6">
-          <div className="grid grid-cols-2 gap-x-20 gap-y-4 text-sm mb-4 justify-center">
-            {/* Swap: Render leftFields first, then rightFields */}
-            <div className="flex flex-col gap-2 items-start">
-              {leftFields.map((field, idx) => (
-                <div
-                  key={field.key + "-" + idx}
-                  className="flex flex-row items-center gap-x-2 w-full justify-start"
-                >
-                  <span className="text-primary-blue font-bold whitespace-nowrap">
-                    {field.label}:
-                  </span>
-                  <span className="font-bold text-mid-gray">
-                    {booking[field.key]}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2 items-start">
-              {rightFields.map((field, idx) => (
-                <div
-                  key={field.key + "-" + idx}
-                  className="flex flex-row items-center gap-x-2 w-full justify-start"
-                >
-                  <span className="text-primary-blue font-bold whitespace-nowrap">
-                    {field.label}:
-                  </span>
-                  <span className="font-bold text-mid-gray">
-                    {field.isStatus ? (
-                      <StatusBadge status={booking.status} />
-                    ) : (
-                      booking[field.key]
-                    )}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-center gap-2 mt-6">
-            {(() => {
-              // Filter actions based on backend validation - only "pending" and "accepted" can be canceled
-              const allActions =
-                actionsByStatus[STATUS_MAP[booking.status]] || [];
-              const filteredActions = allActions.filter((action) => {
-                // Backend only allows canceling "pending" or "accepted" statuses
-                // Filter out cancel action for "waiting_confirmation" status
-                if (
-                  action.action === "cancel" &&
-                  booking.status === "waiting_confirmation"
-                ) {
-                  return false;
-                }
-                return true;
-              });
-              const isOnlyButton = filteredActions.length === 1;
-
-              // Check if there are multiple buttons and one of them is "renew" or "cancel"
-              const hasOtherButton = filteredActions?.some(
-                (a) => a.action === "renew" || a.action === "cancel"
-              );
-
-              return filteredActions.map((action, idx) => {
-                // Check statuses that should use primary style for Show Details
-                const shouldBePrimaryForDetails =
-                  action.label === t("actions.showDetails") &&
-                  (isOnlyButton ||
-                    booking.status === "accepted" ||
-                    booking.status === "waiting_confirmation" ||
-                    (booking.status === "pending" && !hasOtherButton) ||
-                    (booking.status === "paid" && !hasOtherButton) ||
-                    (booking.status === "existing" && !hasOtherButton));
-
-                // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
-                let buttonStyle = "";
-
-                // Base styles for all buttons (using secondary button dimensions as reference)
-                const baseStyles =
-                  "py-[10.5px] px-[60px] rounded-lg font-bold text-base leading-[19px] w-full max-w-[258px]";
-
-                if (action.label === t("actions.cancel")) {
-                  buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
-                } else if (action.label === t("actions.renew")) {
-                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                } else if (action.label === t("actions.confirmReservation")) {
-                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                } else if (action.label === t("actions.showDetails")) {
-                  if (shouldBePrimaryForDetails) {
-                    buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                  } else {
-                    // Figma design: transparent/no fill background, gray border, gray text
-                    buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
-                  }
-                }
-
-                return (
-                  <Button
-                    key={action.label}
-                    variant={
-                      action.label === t("actions.showDetails") &&
-                      !isOnlyButton &&
-                      hasOtherButton &&
-                      booking.status !== "pending" &&
-                      booking.status !== "waiting_confirmation" &&
-                      booking.status !== "accepted"
-                        ? "outline"
-                        : action.variant
-                    }
-                    className={
-                      shouldBePrimaryForDetails
-                        ? buttonStyle
-                        : `border ${buttonStyle}`
-                    }
-                    style={
-                      shouldBePrimaryForDetails
-                        ? { color: "#ffffff" }
-                        : undefined
-                    }
-                    onClick={
-                      action.action === "details"
-                        ? onShowDetails
-                        : action.action === "cancel"
-                        ? onCancel
-                        : action.action === "renew"
-                        ? onRenew
-                        : action.action === "confirmReservation"
-                        ? onConfirmReservation
-                        : undefined
-                    }
-                    disabled={
-                      (action.action === "cancel" &&
-                        cancellingId === booking.id) ||
-                      (action.action === "renew" && renewingId === booking.id)
-                    }
-                  >
-                    {(action.action === "cancel" &&
-                      cancellingId === booking.id) ||
-                    (action.action === "renew" && renewingId === booking.id) ? (
-                      <LoadingSpinner size="sm" />
-                    ) : (
-                      action.label
-                    )}
-                  </Button>
-                );
-              });
-            })()}
           </div>
         </CardContent>
       </Card>
@@ -988,27 +737,11 @@ const Bookings = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Status Filter Buttons */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {filterOptions.map((option) => {
-          const isActive = selectedStatusFilter === option.value;
-          return (
-            <button
-              key={option.value}
-              onClick={() => setSelectedStatusFilter(option.value)}
-              className={`
-                px-4 py-2.5 rounded-lg font-bold text-sm transition-all whitespace-nowrap
-                ${
-                  isActive
-                    ? "blue-gradient text-white shadow-sm border-0"
-                    : "bg-[#F7F8FA] text-gray-700 border border-[#D1D5DB] hover:bg-gray-50"
-                }
-              `}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+      <FilterButtons
+        filters={filterOptions}
+        activeFilter={selectedStatusFilter}
+        onFilterChange={setSelectedStatusFilter}
+      />
 
       {/* Filtered Bookings List */}
       {filteredBookings.length === 0 ? (
