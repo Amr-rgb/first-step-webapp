@@ -463,7 +463,7 @@ const Bookings = () => {
 
           {/* Fixed Footer with Pay Now Button - Only for accepted status */}
           {isAcceptedStatus && onConfirm && (
-            <div className="border-t bg-white px-6 py-4 sticky bottom-0 z-10">
+            <div className="border-t bg-white px-6 py-4  bottom-0 z-10">
               <Button
                 onClick={handleConfirm}
                 disabled={isConfirming}
