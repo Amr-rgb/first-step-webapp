@@ -25,7 +25,7 @@ import {
 } from "@/services/api";
 import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { X, RotateCw } from "lucide-react";
 import ReservationForm from "@/components/general/nurseries/ReservationForm";
 import BookingCard from "@/components/bookings/BookingCard";
 import { FilterButtons } from "@/components/common/FilterButtons";
@@ -46,7 +46,7 @@ const Bookings = () => {
   const queryClient = useQueryClient();
   const authUser = useAuthUser();
   const locale = useLocale();
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["enrollments"],
     queryFn: parentService.getParentEnrollments,
   });
@@ -533,75 +533,78 @@ const Bookings = () => {
   }
 
   const bookings =
-    data?.data.map((booking: any) => {
-      // Extract children names from children array
-      const childrenNames =
-        booking.children?.length > 0
-          ? booking.children
-              .map((child: any) => child.child_name || child.name)
-              .filter(Boolean)
-              .join("، ")
-          : "";
+    data?.data
+      ?.slice()
+      .sort((a: any, b: any) => b.id - a.id)
+      .map((booking: any) => {
+        // Extract children names from children array
+        const childrenNames =
+          booking.children?.length > 0
+            ? booking.children
+                .map((child: any) => child.child_name || child.name)
+                .filter(Boolean)
+                .join("، ")
+            : "";
 
-      // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
-      const programName =
-        booking.enrollment_type_name ||
-        booking.price_title ||
-        booking.enrollment_type ||
-        "";
+        // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
+        const programName =
+          booking.enrollment_type_name ||
+          booking.price_title ||
+          booking.enrollment_type ||
+          "";
 
-      // For hourly enrollments, use day_string if available, otherwise use enrollment_date
-      const isHourly = booking.enrollment_type === "hour";
-      const dateToUse =
-        isHourly && booking.day_string
-          ? booking.day_string
-          : booking.enrollment_date || booking.starting_date;
+        // For hourly enrollments, use day_string if available, otherwise use enrollment_date
+        const isHourly = booking.enrollment_type === "hour";
+        const dateToUse =
+          isHourly && booking.day_string
+            ? booking.day_string
+            : booking.enrollment_date || booking.starting_date;
 
-      return {
-        id: booking.id,
-        status: booking.status,
-        childName: childrenNames || booking.parent_name || "",
-        className: booking.center_name,
-        branch: booking.branch_name,
-        program: programName,
-        startDay: dateToUse
-          ? new Date(dateToUse).toLocaleDateString("ar-SA", {
-              weekday: "long",
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            })
-          : "",
-        endDay: dateToUse
-          ? new Date(dateToUse).toLocaleDateString("ar-SA", {
-              weekday: "long",
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            })
-          : "",
-        daysCount: 1,
-        paymentMethod: "ميسر",
-        amount: parseFloat(booking.price_amount),
-        notes: [],
-        // Preserve original enrollment data for renewal
-        center_branch_id:
-          booking.center_branch_id || booking.branch_id || booking.branch_id,
-        branch_price_id: booking.branch_price_id || null,
-        enrollment_date: booking.enrollment_date,
-        enrollment_type: booking.enrollment_type,
-        children: booking.children || [],
-        parent_phone: booking.parent_phone,
-        originalData: booking, // Keep full booking data
-        // Additional fields from API
-        branch_id: booking.branch_id,
-        id_raw: booking.id, // Keep original ID
-        // Additional info from API
-        enrollment_type_name:
-          booking.enrollment_type_name || booking.enrollment_type,
-        price_title: booking.price_title,
-      };
-    }) || [];
+        return {
+          id: booking.id,
+          status: booking.status,
+          childName: childrenNames || booking.parent_name || "",
+          className: booking.center_name,
+          branch: booking.branch_name,
+          program: programName,
+          startDay: dateToUse
+            ? new Date(dateToUse).toLocaleDateString("ar-SA", {
+                weekday: "long",
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+              })
+            : "",
+          endDay: dateToUse
+            ? new Date(dateToUse).toLocaleDateString("ar-SA", {
+                weekday: "long",
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+              })
+            : "",
+          daysCount: 1,
+          paymentMethod: "ميسر",
+          amount: parseFloat(booking.price_amount),
+          notes: [],
+          // Preserve original enrollment data for renewal
+          center_branch_id:
+            booking.center_branch_id || booking.branch_id || booking.branch_id,
+          branch_price_id: booking.branch_price_id || null,
+          enrollment_date: booking.enrollment_date,
+          enrollment_type: booking.enrollment_type,
+          children: booking.children || [],
+          parent_phone: booking.parent_phone,
+          originalData: booking, // Keep full booking data
+          // Additional fields from API
+          branch_id: booking.branch_id,
+          id_raw: booking.id, // Keep original ID
+          // Additional info from API
+          enrollment_type_name:
+            booking.enrollment_type_name || booking.enrollment_type,
+          price_title: booking.price_title,
+        };
+      }) || [];
 
   // Filter bookings based on selected status
   const filteredBookings =
@@ -737,11 +740,26 @@ const Bookings = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Status Filter Buttons */}
-      <FilterButtons
-        filters={filterOptions}
-        activeFilter={selectedStatusFilter}
-        onFilterChange={setSelectedStatusFilter}
-      />
+      {/* Header with Filter and Reload */}
+      <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-y-4 gap-x-8">
+        <FilterButtons
+          filters={filterOptions}
+          activeFilter={selectedStatusFilter}
+          onFilterChange={setSelectedStatusFilter}
+        />
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+          }
+          className="shrink-0"
+          disabled={isFetching}
+        >
+          <RotateCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
 
       {/* Filtered Bookings List */}
       {filteredBookings.length === 0 ? (
