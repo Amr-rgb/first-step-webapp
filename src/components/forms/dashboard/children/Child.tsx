@@ -921,25 +921,23 @@ const ChildPart = ({
                             <div className="space-y-2">
                               <div className="relative inline-block">
                                 <img
-                                  src={(() => {
-                                    const value = field.value as
-                                      | File
-                                      | string
-                                      | null
-                                      | undefined;
-                                    if (value instanceof File) {
-                                      return URL.createObjectURL(value);
-                                    }
-                                    if (typeof value === "string") {
-                                      if (value.startsWith("http")) {
-                                        return value;
-                                      }
-                                      return `${
-                                        process.env.NEXT_PUBLIC_API_BASE_URL
-                                      }/${value.replace(/^\//, "")}`;
-                                    }
-                                    return "";
-                                  })()}
+                                  src={
+                                    field.value instanceof File
+                                      ? URL.createObjectURL(field.value)
+                                      : typeof field.value === "string" &&
+                                        (field.value as string).startsWith(
+                                          "http"
+                                        )
+                                      ? field.value
+                                      : typeof field.value === "string"
+                                      ? `${
+                                          process.env.NEXT_PUBLIC_API_BASE_URL
+                                        }/${(field.value as string).replace(
+                                          /^\//,
+                                          ""
+                                        )}`
+                                      : ""
+                                  }
                                   alt="Child preview"
                                   className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
                                 />

@@ -1,102 +1,282 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-type BookingStatus = "paid" | "pending" | "rejected" | "awaiting";
+import { Card } from "@/components/ui/card";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { useTranslations } from "next-intl";
 
 interface BookingCardProps {
-  status: BookingStatus;
-  startDate: string;
-  endDate: string;
-  days: number;
-  children: string;
-  nursery: string;
-  branch: string;
-  program: string;
-  onViewDetails: () => void;
-  onConfirm?: () => void;
+  booking: any;
+  onShowDetails: () => void;
   onCancel?: () => void;
+  onRenew?: () => void;
+  onConfirmReservation?: () => void;
+  cancellingId?: number | null;
+  renewingId?: number | null;
 }
 
-const statusStyles: { [key in BookingStatus]: string } = {
-  paid: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  awaiting: "bg-blue-100 text-blue-800",
-  rejected: "bg-red-100 text-red-800",
-};
-
-const statusTexts: { [key in BookingStatus]: string } = {
-  paid: "مدفوع",
-  pending: "في انتظار الدفع",
-  awaiting: "في انتظار التأكيد",
-  rejected: "مرفوض",
-};
-
-const BookingCard: React.FC<BookingCardProps> = ({
-  status,
-  startDate,
-  endDate,
-  days,
-  children,
-  nursery,
-  branch,
-  program,
-  onViewDetails,
-  onConfirm,
+export default function BookingCard({
+  booking,
+  onShowDetails,
   onCancel,
-}) => {
+  onRenew,
+  onConfirmReservation,
+  cancellingId,
+  renewingId,
+}: BookingCardProps) {
+  const t = useTranslations("dashboard.parent.bookings");
+
+  const STATUS_STYLES: Record<string, string> = {
+    pending: "text-white",
+    accepted: "text-white",
+    existing: "text-white",
+    paid: "text-white",
+    expired: "text-white",
+    rejected: "text-white",
+    canceled: "text-white",
+    cancelled: "text-white",
+    waiting_confirmation: "text-white",
+  };
+
+  const STATUS_MAP: Record<string, string> = {
+    pending: t("status.pending"),
+    accepted: t("status.accepted"),
+    existing: t("status.existing"),
+    paid: t("status.paid"),
+    expired: t("status.expired"),
+    rejected: t("status.rejected"),
+    canceled: t("status.canceled"),
+    cancelled: t("status.cancelled"),
+    waiting_confirmation: t("status.waiting_confirmation"),
+  };
+
+  const STATUS_COLORS: Record<string, string> = {
+    pending: "#9891FF",
+    accepted: "#FFAD0D",
+    existing: "#3B82F6",
+    paid: "#47B881",
+    expired: "#CACACA",
+    rejected: "#F64C4C",
+    canceled: "#000000",
+    cancelled: "#000000",
+    waiting_confirmation: "#9891FF",
+  };
+
+  const actionsByStatus: Record<
+    string,
+    {
+      label: string;
+      variant?: "destructive" | "default";
+      action: "details" | "cancel" | "renew" | "confirmReservation" | null;
+    }[]
+  > = {
+    [t("status.accepted")]: [
+      { label: t("actions.confirmReservation"), action: "confirmReservation" },
+      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
+    ],
+    [t("status.paid")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.existing")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.expired")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.rejected")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.canceled")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.renew"), action: "renew" },
+    ],
+    [t("status.waiting_confirmation")]: [
+      { label: t("actions.showDetails"), action: "details" },
+    ],
+    [t("status.pending")]: [
+      { label: t("actions.showDetails"), action: "details" },
+      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
+    ],
+  };
+
+  const rightFields = [
+    { key: "status", label: t("fields.status"), isStatus: true },
+    { key: "startDay", label: t("fields.startDay") },
+    { key: "endDay", label: t("fields.endDay") },
+    { key: "daysCount", label: t("fields.daysCount") },
+  ];
+
+  const leftFields = [
+    { key: "childName", label: t("fields.childName") },
+    { key: "className", label: t("fields.className") },
+    { key: "branch", label: t("fields.branch") },
+    { key: "program", label: t("fields.program") },
+    { key: "paymentMethod", label: t("fields.paymentMethod") },
+  ];
+
+  function StatusBadge({ status }: { status: string }) {
+    const backgroundColor = STATUS_COLORS[status] || "#CACACA";
+    return (
+      <span
+        className={`px-3 py-1 rounded-md text-xs font-bold ${
+          STATUS_STYLES[status] || "text-white"
+        }`}
+        style={{ backgroundColor }}
+      >
+        {STATUS_MAP[status] || status}
+      </span>
+    );
+  }
+
+  // Filter actions logic
+  const allActions = actionsByStatus[STATUS_MAP[booking.status]] || [];
+  const filteredActions = allActions.filter((action) => {
+    if (
+      action.action === "cancel" &&
+      (booking.status === "waiting_confirmation" || !onCancel)
+    ) {
+      return false;
+    }
+    if (action.action === "renew" && !onRenew) {
+      return false;
+    }
+    if (action.action === "confirmReservation" && !onConfirmReservation) {
+      return false;
+    }
+    return true;
+  });
+  const isOnlyButton = filteredActions.length === 1;
+  const hasOtherButton = filteredActions?.some(
+    (a) => a.action === "renew" || a.action === "cancel"
+  );
+
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="font-tajawal">
-            {nursery} - {branch}
-          </CardTitle>
-          <span
-            className={`px-3 py-1 text-sm font-bold rounded-full ${statusStyles[status]}`}
-          >
-            {statusTexts[status]}
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-tajawal">
-          <div>
-            <p>
-              <strong>الطفل:</strong> {children}
-            </p>
-            <p>
-              <strong>البرنامج:</strong> {program}
-            </p>
+    <Card
+      id={`enrollment-${booking.id}`}
+      className="p-6 hover:shadow-lg transition-all border border-gray-200"
+    >
+      <div className="space-y-4">
+        {/* Details Grid - 2 columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-3 text-sm">
+          {/* Left Fields Column */}
+          <div className="space-y-3">
+            {leftFields.map((field, idx) => (
+              <div
+                key={field.key + "-" + idx}
+                className="flex justify-between items-center"
+              >
+                <span className="font-semibold text-primary">
+                  {field.label}
+                </span>
+                <span className="text-mid-gray font-bold">
+                  {booking[field.key]}
+                </span>
+              </div>
+            ))}
           </div>
-          <div>
-            <p>
-              <strong>تاريخ البدء:</strong> {startDate}
-            </p>
-            <p>
-              <strong>تاريخ الانتهاء:</strong> {endDate}
-            </p>
-            <p>
-              <strong>عدد الأيام:</strong> {days}
-            </p>
+
+          {/* Right Fields Column */}
+          <div className="space-y-3">
+            {rightFields.map((field, idx) => (
+              <div
+                key={field.key + "-" + idx}
+                className="flex justify-between items-center"
+              >
+                <span className="font-semibold text-primary">
+                  {field.label}
+                </span>
+                <span className="text-mid-gray font-bold">
+                  {field.isStatus ? (
+                    <StatusBadge status={booking.status} />
+                  ) : (
+                    booking[field.key]
+                  )}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onViewDetails}>
-            عرض التفاصيل
-          </Button>
-          {onConfirm && <Button onClick={onConfirm}>تأكيد الحجز</Button>}
-          {onCancel && (
-            <Button variant="destructive" onClick={onCancel}>
-              إلغاء الحجز
-            </Button>
-          )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          {filteredActions.map((action) => {
+            const shouldBePrimaryForDetails =
+              action.label === t("actions.showDetails") &&
+              (isOnlyButton ||
+                booking.status === "accepted" ||
+                booking.status === "waiting_confirmation" ||
+                (booking.status === "pending" && !hasOtherButton) ||
+                (booking.status === "paid" && !hasOtherButton) ||
+                (booking.status === "existing" && !hasOtherButton));
+
+            let variant:
+              | "default"
+              | "destructive"
+              | "outline"
+              | "secondary"
+              | "ghost"
+              | "link" = "default";
+
+            if (action.label === t("actions.cancel")) {
+              variant = "outline";
+            } else if (action.label === t("actions.renew")) {
+              variant = "default";
+            } else if (action.label === t("actions.confirmReservation")) {
+              variant = "default";
+            } else if (action.label === t("actions.showDetails")) {
+              if (shouldBePrimaryForDetails) {
+                variant = "default";
+              } else {
+                variant = "outline";
+              }
+            }
+
+            const isCancel = action.label === t("actions.cancel");
+            const isDetails = action.label === t("actions.showDetails");
+
+            return (
+              <Button
+                key={action.label}
+                variant={variant}
+                size="sm"
+                className={`flex-1 ${
+                  isCancel
+                    ? "border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
+                    : isDetails && !shouldBePrimaryForDetails
+                    ? "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    : ""
+                }`}
+                onClick={
+                  action.action === "details"
+                    ? onShowDetails
+                    : action.action === "cancel"
+                    ? onCancel
+                    : action.action === "renew"
+                    ? onRenew
+                    : action.action === "confirmReservation"
+                    ? onConfirmReservation
+                    : undefined
+                }
+                disabled={
+                  (action.action === "cancel" && cancellingId === booking.id) ||
+                  (action.action === "renew" && renewingId === booking.id)
+                }
+              >
+                {(action.action === "cancel" && cancellingId === booking.id) ||
+                (action.action === "renew" && renewingId === booking.id) ? (
+                  <LoadingSpinner size="sm" />
+                ) : (
+                  action.label
+                )}
+              </Button>
+            );
+          })}
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
-};
-
-export default BookingCard;
+}

@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 interface FilterOption<T extends string> {
   value: T;
   label: string;
+  count?: number;
 }
 
 interface FilterButtonsProps<T extends string> {
@@ -27,8 +28,14 @@ export function FilterButtons<T extends string>({
             size="sm"
             variant={activeFilter === filter.value ? "default" : "outline"}
             onClick={() => onFilterChange(filter.value)}
+            className={filter.count !== undefined ? "h-16" : ""}
           >
-            {filter.label}
+            <div className="flex flex-col items-center gap-0.5">
+              <span>{filter.label}</span>
+              {filter.count !== undefined && (
+                <span className="leading-none">{filter.count}</span>
+              )}
+            </div>
           </Button>
         ))}
       </div>

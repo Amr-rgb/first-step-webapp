@@ -60,7 +60,7 @@ const AdminBlogs = () => {
           translationKey="dashboard.emptyStates.blogs"
         />
       ) : (
-        <div className="grid md:grid-cols-3 items-start gap-10">
+        <div className="grid lg:grid-cols-3 items-start gap-10">
           {mappedBlogs.map((blog: any) => (
             <DashboardBlogCard
               key={blog.id}

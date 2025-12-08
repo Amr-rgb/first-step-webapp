@@ -17,6 +17,10 @@
         "title": "الحضانات",
         "path": "/nurseries"
       },
+      "coupon-codes": {
+        "title": "كوبونات الخصم",
+        "path": "/coupon-codes"
+      },
       "blog": {
         "title": "المدونة",
         "path": "/blog"
@@ -814,6 +818,7 @@
         "bookings": "الحجوزات",
         "daily-reports": "التقارير اليومية",
         "center-data": "بيانات مركزك",
+        "gate": "تطبيق First Step Gate",
         "ad-or-blog-request": "طلب إعلان أو مقال",
         "notifications": "الإشعارات",
         "team": "الفريق",
@@ -1116,6 +1121,44 @@
           "cancel": "إلغاء"
         }
       },
+      "gate": {
+        "title": "تطبيق First Step Gate",
+        "subtitle": "سجل حضور وانصراف الأطفال بسهولة",
+        "codeLabel": "اضغط زر التفعيل لتوليدك",
+        "downloadApp": "شارك التطبيق مع موظفيك",
+        "attendanceTitle": "سجل الحضور",
+        "buttons": {
+          "generate": "توليد الكود",
+          "generating": "جاري التوليد..."
+        },
+        "success": {
+          "codeGenerated": "تم توليد الكود بنجاح",
+          "linkCopied": "تم نسخ الرابط"
+        },
+        "errors": {
+          "selectBranch": "الرجاء اختيار الفرع أولاً",
+          "generateFailed": "فشل في توليد الكود. يرجى المحاولة مرة أخرى."
+        },
+        "table": {
+          "number": "م",
+          "childName": "اسم الطفل",
+          "date": "التاريخ",
+          "arrivalTime": "وقت الحضور",
+          "departureTime": "وقت الانصراف",
+          "program": "البرنامج",
+          "branch": "الفرع",
+          "noData": "لا توجد سجلات حضور بعد"
+        },
+        "modal": {
+          "title": "توليد كود البوابة",
+          "selectBranch": "اختر الفرع",
+          "generate": "توليد الكود",
+          "successTitle": "رمز دخول التطبيق",
+          "successSubtitle": "شارك الرمز مع الموظف المسئول عن تسجيل حضور وانصراف الأطفال",
+          "copyButton": "انسخ رمز الدخول لموظفيك",
+          "copied": "تم نسخ الرمز بنجاح"
+        }
+      },
       "children": {
         "title": "الأطفال",
         "form": {
@@ -1378,6 +1421,7 @@
           "load": "تعذر تحميل المراكز",
           "unexpected": "حدث خطأ غير متوقع أثناء تحميل البيانات. تحقق من اتصالك بالإنترنت، أو حاول مرة أخرى لاحقًا."
         },
+        "noResults": "لا توجد مراكز بهذه الحالة",
         "loading": "جارى تحميل البيانا...",
         "centerAccepted": "تم قبول المركز بنجاح",
         "centerRejected": "تم رفض المركز بنجاح",
@@ -1390,7 +1434,15 @@
         "status": {
           "pending": "قيد الانتظار",
           "confirmed": "تم التأكيد",
-          "canceled": "مرفوض"
+          "canceled": "مرفوض",
+          "all": "الكل"
+        },
+        "delete_dialog": {
+          "title": "حذف المركز",
+          "description": "هل أنت متأكد أنك تريد حذف هذا المركز؟ لا يمكن التراجع عن هذا الإجراء.",
+          "confirm": "حذف",
+          "success": "تم حذف المركز بنجاح",
+          "error": "فشل في حذف المركز"
         }
       },
       "parents": {
