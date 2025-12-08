@@ -8,11 +8,11 @@ import { useTranslations } from "next-intl";
 interface BookingCardProps {
   booking: any;
   onShowDetails: () => void;
-  onCancel: () => void;
-  onRenew: () => void;
-  onConfirmReservation: () => void;
-  cancellingId: number | null;
-  renewingId: number | null;
+  onCancel?: () => void;
+  onRenew?: () => void;
+  onConfirmReservation?: () => void;
+  cancellingId?: number | null;
+  renewingId?: number | null;
 }
 
 export default function BookingCard({
@@ -137,8 +137,14 @@ export default function BookingCard({
   const filteredActions = allActions.filter((action) => {
     if (
       action.action === "cancel" &&
-      booking.status === "waiting_confirmation"
+      (booking.status === "waiting_confirmation" || !onCancel)
     ) {
+      return false;
+    }
+    if (action.action === "renew" && !onRenew) {
+      return false;
+    }
+    if (action.action === "confirmReservation" && !onConfirmReservation) {
       return false;
     }
     return true;
