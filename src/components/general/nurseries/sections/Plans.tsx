@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, DollarSign, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { nurseryService } from "@/services/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Plan {
   id: number;
@@ -227,8 +228,15 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
 
         {/* Plans Grid */}
         {loadingPlans ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-12">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="border rounded-lg p-4 space-y-3">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            ))}
           </div>
         ) : plans.length > 0 ? (
           <div className="max-h-[500px] overflow-y-auto pr-2">

@@ -328,12 +328,12 @@ const SubscriptionSection = () => {
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 bg-white/20 rounded animate-pulse"></div>
                     Loading...
                   </div>
                 ) : isSubmitting !== null ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 bg-white/20 rounded animate-pulse"></div>
                     {t("plans.processing") || "Processing..."}
                   </div>
                 ) : (
@@ -405,7 +405,7 @@ const SubscriptionSection = () => {
                       >
                         {isSubmitting === plan.planId ? (
                           <div className="flex items-center justify-center gap-2">
-                            <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 bg-primary-blue/20 rounded animate-pulse"></div>
                             {t("plans.processing")}
                           </div>
                         ) : (
@@ -438,7 +438,7 @@ const SubscriptionSection = () => {
                     >
                       {isSubmitting === plan.planId ? (
                         <div className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-4 h-4 bg-primary-blue/20 rounded animate-pulse"></div>
                           {t("plans.processing")}
                         </div>
                       ) : (

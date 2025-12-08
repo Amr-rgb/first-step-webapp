@@ -253,9 +253,7 @@ export default function ParentSignUp({
             disabled={loading.addChild || loading.createAccount}
           >
             {loading.addChild && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             Add Child
           </Button>
@@ -269,9 +267,7 @@ export default function ParentSignUp({
             onClick={handleSubmit(onCreateAccount)}
           >
             {loading.createAccount && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             Create Account
           </Button>

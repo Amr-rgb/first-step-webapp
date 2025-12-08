@@ -222,7 +222,7 @@ export function EnrollmentNotificationToast({
             >
               {isProcessing ? (
                 <div className="flex items-center gap-2">
-                  <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="size-3 bg-white/20 rounded animate-pulse" />
                   Processing...
                 </div>
               ) : (
@@ -242,7 +242,7 @@ export function EnrollmentNotificationToast({
             >
               {isProcessing ? (
                 <div className="flex items-center gap-2">
-                  <div className="size-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="size-3 bg-white/20 rounded animate-pulse" />
                   Processing...
                 </div>
               ) : (

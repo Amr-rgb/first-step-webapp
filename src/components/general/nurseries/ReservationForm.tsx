@@ -21,7 +21,7 @@ import { promoCodeService } from "@/services/dashboardApi";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/lib/toast";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ReservationFormProps {
   nurseryName: string;
@@ -1162,7 +1162,7 @@ const ReservationForm = ({
               className="px-4 h-9"
             >
               {isApplyingCoupon ? (
-                <LoadingSpinner size="sm" />
+                <Skeleton className="h-4 w-16" />
               ) : locale === "ar" ? (
                 "جرب الكوبون"
               ) : (

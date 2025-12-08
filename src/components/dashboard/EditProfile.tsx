@@ -183,7 +183,7 @@ export default function EditProfile({
                 disabled={!password || confirmLoading}
               >
                 {confirmLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2" />
                 ) : null}
                 {t("buttons.confirm") || "تأكيد"}
               </Button>
@@ -284,7 +284,7 @@ export default function EditProfile({
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-5 h-5 ml-2 animate-spin" />
+                  <div className="h-4 w-4 bg-white/20 rounded animate-pulse ml-2" />
                   {t("buttons.saving")}
                 </>
               ) : (
