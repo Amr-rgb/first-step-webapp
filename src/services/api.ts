@@ -76,8 +76,8 @@ export const apiClient = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION,
-    "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET,
+    "X-Authorization": process.env.X_AUTHORIZATION,
+    "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET,
   },
 });
 
@@ -227,9 +227,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -260,9 +259,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -293,9 +291,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -326,9 +323,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -359,9 +355,8 @@ export const websiteService = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify(payload),
         }
@@ -391,9 +386,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
         }
@@ -423,9 +417,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
         }
@@ -453,9 +446,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -482,9 +474,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -514,9 +505,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -547,9 +537,8 @@ export const blogService = {
         headers: {
           "Content-Type": "application/json",
           lang: locale,
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         next: {
           revalidate: 86400,
@@ -577,9 +566,8 @@ export const blogService = {
         headers: {
           "Content-Type": "application/json",
           lang: locale,
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         next: {
           revalidate: 1,
@@ -609,9 +597,8 @@ export const blogService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 1,
@@ -659,9 +646,9 @@ export const nurseryService = {
             headers: {
               "Content-Type": "application/json",
               lang: locale,
-              "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+              "X-Authorization": process.env.X_AUTHORIZATION || "",
               "X-Authorization-Secret":
-                process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+                process.env.X_AUTHORIZATION_SECRET || "",
             },
             next: {
               revalidate: 1,
@@ -785,9 +772,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -828,9 +814,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -876,9 +861,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -989,9 +973,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -1292,10 +1275,8 @@ export const paymentService = {
       );
       console.log("Payment service - Request headers:", {
         "Content-Type": "application/json",
-        "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION
-          ? "***"
-          : "NOT_SET",
-        "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET
+        "X-Authorization": process.env.X_AUTHORIZATION ? "***" : "NOT_SET",
+        "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET
           ? "***"
           : "NOT_SET",
       });

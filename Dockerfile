@@ -30,8 +30,6 @@
   
   # Set environment variables used at build time
   ENV NEXT_PUBLIC_API_BASE_URL=https://back.firststep-app.com/api
-  ENV NEXT_PUBLIC_X_AUTHORIZATION=bJPJemOddVQ2nmRP9EdKeoumMXgpq9Zlzd3cbCH6obeGKI1m7vxE2q0vAYQvtH8J
-  ENV NEXT_PUBLIC_X_AUTHORIZATION_SECRET=zTEr5qWx4QeeHrH1DSN8WoAkIlCdFzhULX7Eqm4VCXX9KgObn1oHgPPvDTTpkMMd
   
   ENV NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCEvfzLs71gr1SNqVBl6y_1j7e20znB068
   ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=first-step-60186.firebaseapp.com
