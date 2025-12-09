@@ -102,8 +102,7 @@ const Bookings: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               disabled={isLoading}
             />
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            </div>
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2"></div>
           </div>
         </div>
 
@@ -134,22 +133,9 @@ const Bookings: React.FC = () => {
               filteredBookings.map((booking) => (
                 <BookingCard
                   key={booking.id}
-                  status={
-                    booking.status as
-                      | "paid"
-                      | "pending"
-                      | "rejected"
-                      | "awaiting"
-                  }
-                  startDate={formatToArabicDate(booking.startDate)}
-                  endDate={formatToArabicDate(booking.endDate)}
-                  days={getDaysDifference(booking.startDate, booking.endDate)}
-                  children={booking.children}
-                  nursery={booking.nursery}
-                  branch={booking.branch}
-                  program={booking.program}
-                  onViewDetails={() => handleViewDetails(booking.id)}
-                  onConfirm={
+                  booking={booking}
+                  onShowDetails={() => handleViewDetails(booking.id)}
+                  onConfirmReservation={
                     booking.status === "pending"
                       ? () => handleConfirmBooking(booking.id)
                       : undefined

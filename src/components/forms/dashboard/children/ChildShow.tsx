@@ -515,11 +515,16 @@ const ChildPart = ({
                                   src={
                                     field.value instanceof File
                                       ? URL.createObjectURL(field.value)
-                                      : field.value.startsWith("http")
+                                      : (field.value as string).startsWith(
+                                          "http"
+                                        )
                                       ? field.value
                                       : `${
                                           process.env.NEXT_PUBLIC_API_BASE_URL
-                                        }/${field.value.replace(/^\//, "")}`
+                                        }/${(field.value as string).replace(
+                                          /^\//,
+                                          ""
+                                        )}`
                                   }
                                   alt="Child preview"
                                   className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"

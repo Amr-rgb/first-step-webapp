@@ -1040,11 +1040,20 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  generateGateCode: async (branchId: string) => {
+    try {
+      const response = await apiClient.post(`/generate-code`, {
+        branch_id: branchId,
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {
-
-
   getCenters: async () => {
     try {
       const response = await apiClient.get("/dashboard/centers");
@@ -1465,6 +1474,15 @@ export const adminService = {
       const response = await apiClient.put(
         `/dashboard/centers/${centerId}/reject`
       );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  deleterCenter: async (centerId: string) => {
+    try {
+      const response = await apiClient.delete(`/dashboard/centers/${centerId}`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

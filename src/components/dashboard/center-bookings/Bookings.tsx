@@ -15,13 +15,18 @@ import { BookingCard } from "./BookingCard";
 import { BookingDetailsModal } from "./BookingDetailsModal";
 import { AcceptEnrollmentModal } from "./AcceptEnrollmentModal";
 import { Button } from "@/components/ui/button";
-import { Table, LayoutGrid } from "lucide-react";
+import { Table, LayoutGrid, RotateCw } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { FilterButtons } from "@/components/common/FilterButtons";
+import { cn } from "@/lib/utils";
 
 const transformEnrollmentsData = (data: any): Booking[] => {
   // Handle both direct array and wrapped response
-  const enrollments = Array.isArray(data) ? data : data?.data || [];
+  const enrollments = (Array.isArray(data) ? data : data?.data || []).slice();
+
+  if (Array.isArray(enrollments)) {
+    enrollments.sort((a: any, b: any) => b.enrollment_id - a.enrollment_id);
+  }
 
   if (!Array.isArray(enrollments) || enrollments.length === 0) {
     return [];
@@ -234,7 +239,12 @@ const Bookings = () => {
     { value: "expired", label: t("filters.expired") },
   ];
 
-  const { data: enrollmentsData, isLoading } = useQuery({
+  const {
+    data: enrollmentsData,
+    isLoading,
+    isRefetching,
+    isFetching,
+  } = useQuery({
     queryKey: ["enrollments"],
     queryFn: centerService.getEnrollments,
   });
@@ -353,8 +363,8 @@ const Bookings = () => {
     <div>
       <div className="mt-6 space-y-4">
         {/* Header with View Toggle and Search */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-full sm:w-auto flex items-center gap-3">
             <Button
               variant={viewMode === "table" ? "default" : "ghost"}
               size="icon"
@@ -371,9 +381,28 @@ const Bookings = () => {
             >
               <LayoutGrid className="size-5" />
             </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+              }
+              className="sm:hidden ltr:ml-auto rtl:mr-auto shrink-0"
+              disabled={isFetching}
+            >
+              <RotateCw
+                className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+              />
+            </Button>
           </div>
 
-          <div className="w-full sm:flex-1 sm:max-w-md">
+          <div
+            className={cn(
+              "w-full sm:flex-1 sm:max-w-md",
+              "ltr:ml-auto rtl:mr-auto"
+            )}
+          >
             <input
               type="search"
               placeholder="بحث"
@@ -382,6 +411,20 @@ const Bookings = () => {
               className="w-full px-4 py-2 rounded-lg border border-gray-300 text-right"
             />
           </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+            }
+            className="hidden sm:flex shrink-0"
+            disabled={isFetching}
+          >
+            <RotateCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
+          </Button>
         </div>
 
         {/* Filter Buttons */}
