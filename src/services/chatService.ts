@@ -169,9 +169,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -194,9 +193,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -229,9 +227,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -295,9 +292,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -354,9 +350,8 @@ export const chatService = {
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify(requestBody),
         });
@@ -456,9 +451,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         body: JSON.stringify(requestBody),
       });
@@ -520,9 +514,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         body: JSON.stringify({ message_id: messageId }),
       });
@@ -554,9 +547,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -607,9 +599,8 @@ export const chatService = {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
       });
 
@@ -700,9 +691,8 @@ export const chatService = {
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -747,9 +737,9 @@ export const chatService = {
             headers: {
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "application/json",
-              "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+              "X-Authorization": process.env.X_AUTHORIZATION || "",
               "X-Authorization-Secret":
-                process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+                process.env.X_AUTHORIZATION_SECRET || "",
             },
           });
 
