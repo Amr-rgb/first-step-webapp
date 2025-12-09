@@ -567,22 +567,8 @@ const Bookings = () => {
           className: booking.center_name,
           branch: booking.branch_name,
           program: programName,
-          startDay: dateToUse
-            ? new Date(dateToUse).toLocaleDateString("ar-SA", {
-                weekday: "long",
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-              })
-            : "",
-          endDay: dateToUse
-            ? new Date(dateToUse).toLocaleDateString("ar-SA", {
-                weekday: "long",
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-              })
-            : "",
+          startDay: dateToUse,
+          endDay: dateToUse,
           daysCount: 1,
           paymentMethod: "ميسر",
           amount: parseFloat(booking.price_amount),
