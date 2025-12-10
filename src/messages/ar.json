@@ -2711,5 +2711,75 @@
       "title2": "سيتم إبلاغك عند وجود كوبونات",
       "button": "اشترك في نشرة الكوبونات"
     }
+  },
+  "reservationForm": {
+    "plans": {
+      "monthly": "شهري",
+      "weekly": "أسبوعي",
+      "daily": "يومي",
+      "hourly": "بالساعة"
+    },
+    "units": {
+      "month": "شهر",
+      "week": "أسبوع",
+      "day": "يوم"
+    },
+    "labels": {
+      "numberOfHours": "عدد الساعات",
+      "numberOfDays": "عدد الأيام",
+      "numberOfWeeks": "عدد الأسابيع",
+      "numberOfMonths": "عدد الأشهر",
+      "duration": "المدة",
+      "bookingDate": "تاريخ الحجز",
+      "selectChildren": "اختر طفل أو أكثر",
+      "noChildren": "لا يوجد أطفال مسجلون",
+      "noChildrenDesc": "يجب تسجيل طفل واحد على الأقل قبل إجراء الحجز. يرجى الذهاب إلى صفحة الأطفال لإضافة طفل جديد.",
+      "addNewChild": "إضافة طفل جديد",
+      "bookingSummary": "تفاصيل الحجز",
+      "couponCode": "كود الكوبون",
+      "discountCoupon": "كوبون الخصم",
+      "tryCoupon": "جرب الكوبون",
+      "paymentNotice": "لا يعمل الكوبون في هذه الخطوة ويفعل عند الدفع بعد الموافقة على طلب الحجز",
+      "termsNotice": "تأكيد الحجز يعني الموافقة على الشروط والأحكام وسياسة الخصوصية الخاصة بنا.",
+      "confirmBooking": "قم بتأكيد الحجز الآن",
+      "submitting": "جاري الإرسال...",
+      "successTitle": "تم إرسال طلب الحجز بنجاح!",
+      "successDesc": "سنتواصل معك قريباً لتأكيد تفاصيل الحجز.",
+      "submitAnother": "إرسال طلب آخر",
+      "goToReservations": "حجوزاتي في لوحة التحكم",
+      "timeRange": "من {start} إلى {end}",
+      "autoDuration": "المدة المحددة تلقائياً حسب الخطة",
+      "youHaveNoChildren": "لا يوجد لديك أطفال"
+    },
+    "summary": {
+      "plan": "الخطة",
+      "time": "الوقت",
+      "childrenCount": "عدد الأطفال",
+      "date": "التاريخ",
+      "calculation": "سعر الخطة × عدد الأطفال",
+      "total": "السعر الإجمالي",
+      "saved": "وفرت",
+      "discount": "خصم"
+    },
+    "errors": {
+      "enterCoupon": "يرجى إدخال كود الكوبون",
+      "selectBranch": "يرجى اختيار الفرع أولاً",
+      "selectPlan": "يرجى اختيار الخطة أولاً",
+      "selectChild": "يرجى اختيار طفل واحد على الأقل لتطبيق الكوبون",
+      "childCountRequired": "يرجى اختيار عدد الأطفال أولاً",
+      "invalidData": "بيانات غير صحيحة. يرجى التحقق من المعلومات المدخلة",
+      "usageLimit": "تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون",
+      "invalidCoupon": "كود الكوبون غير صحيح أو غير موجود",
+      "expiredCoupon": "انتهت صلاحية هذا الكوبون",
+      "failedToApply": "فشل في تطبيق الكوبون",
+      "noPlanSelected": "لم يتم اختيار خطة",
+      "noBranchSelected": "لم يتم اختيار فرع",
+      "bookingError": "خطأ في الحجز",
+      "submissionFailed": "فشل إرسال طلب الحجز. يرجى المحاولة مرة أخرى."
+    },
+    "success": {
+      "couponApplied": "تم تطبيق الكوبون بنجاح",
+      "bookingSent": "تم إرسال طلب الحجز بنجاح!"
+    }
   }
 }
