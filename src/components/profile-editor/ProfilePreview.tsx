@@ -162,7 +162,14 @@ const PlansPreview = ({ locale }: { locale: string }) => {
         {/* Plans Grid */}
         {isPricingLoading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="space-y-4 w-full">
+              <Skeleton className="h-64 w-full rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+            </div>
           </div>
         ) : branchPlans.length > 0 ? (
           <div className="max-h-[500px] overflow-y-auto pr-2">

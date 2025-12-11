@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, CheckCheck, Loader2 } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationItem } from "./NotificationItem";
 import { Badge } from "@/components/ui/badge";
@@ -67,9 +68,16 @@ export function NotificationDropdown() {
         {/* Content */}
         <ScrollArea className="h-96">
           {isLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <Loader2 className="size-6 animate-spin text-gray-400" />
-              <span className="ml-2 text-sm text-gray-500">{t("loading")}</span>
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : error ? (
             <div className="p-4 text-center text-red-500 text-sm">{error}</div>

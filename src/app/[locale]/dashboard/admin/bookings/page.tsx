@@ -10,6 +10,7 @@ import MonthlyAreaComparison from "@/components/charts/MonthlyAreaComparison";
 import TopBookings from "@/components/dashboard/admin-bookings/TopBooking";
 import Bookings from "@/components/dashboard/admin-bookings/Bookings";
 import { useTranslations } from "next-intl";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BookingsPage() {
   const meta = usePageMetadata();
@@ -47,7 +48,33 @@ export default function BookingsPage() {
   });
 
   if (isLoading) {
-    return <div>{t("loading")}</div>;
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
+          <div className="w-full flex-1">
+            <Skeleton className="h-[300px] w-full rounded-xl" />
+          </div>
+          <div className="w-full flex-1">
+            <Skeleton className="h-[300px] w-full rounded-xl" />
+          </div>
+        </div>
+        <div className="mt-6">
+          <Skeleton className="h-[200px] w-full rounded-xl" />
+        </div>
+        <div className="mt-6 space-y-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="border rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const getMonthData = (value: number, isUp: boolean) => {
