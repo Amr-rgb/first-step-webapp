@@ -25,10 +25,12 @@ import {
 } from "@/services/api";
 import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
-import { X, RotateCw } from "lucide-react";
+import { X, RotateCw, Ticket, CheckCircle2, AlertCircle } from "lucide-react";
 import ReservationForm from "@/components/general/nurseries/ReservationForm";
 import BookingCard from "@/components/bookings/BookingCard";
 import { FilterButtons } from "@/components/common/FilterButtons";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Bookings = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -128,34 +130,72 @@ const Bookings = () => {
     const [couponDiscount, setCouponDiscount] = useState<number>(0);
     const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
+    const [couponError, setCouponError] = useState<string | null>(null);
+
+    const [originalCoupon, setOriginalCoupon] = useState<string | null>(null);
+    const [currentBookingCoupon, setCurrentBookingCoupon] = useState<
+      string | null
+    >(null);
+    const [isCouponExpired, setIsCouponExpired] = useState(false);
 
     // Initialize coupon from booking if it exists
     useEffect(() => {
       if (booking && open) {
+        // Check reservation object first, then direct booking fields
+        const reservation =
+          booking.reservation || booking.originalData?.reservation;
+        const pricing = booking.pricing || booking.originalData?.pricing;
+
         const existingCoupon =
-          booking.coupon_code || booking.originalData?.coupon_code;
+          reservation?.promocode_title ||
+          booking.coupon_code ||
+          booking.originalData?.coupon_code;
+
         const existingDiscount =
-          booking.discount_amount || booking.originalData?.discount_amount || 0;
+          pricing?.discount ||
+          booking.discount_amount ||
+          booking.originalData?.discount_amount ||
+          0;
 
         if (existingCoupon) {
           setAppliedCoupon(existingCoupon);
           setCouponCode(existingCoupon);
           setCouponDiscount(existingDiscount);
+          setOriginalCoupon(existingCoupon);
+          setCurrentBookingCoupon(existingCoupon);
+
+          // Check expiry
+          if (reservation?.expire_at) {
+            const expireDate = new Date(reservation.expire_at);
+            const now = new Date();
+            if (expireDate < now) {
+              setIsCouponExpired(true);
+            } else {
+              setIsCouponExpired(false);
+            }
+          } else {
+            setIsCouponExpired(false);
+          }
         } else {
           setAppliedCoupon(null);
           setCouponCode("");
           setCouponDiscount(0);
+          setOriginalCoupon(null);
+          setCurrentBookingCoupon(null);
+          setIsCouponExpired(false);
         }
       }
     }, [booking, open]);
 
-    const originalPrice = booking?.amount || 0;
+    const pricing = booking?.pricing || booking?.originalData?.pricing;
+    const originalPrice = pricing?.original_amount || booking?.amount || 0;
     const discountAmount = couponDiscount;
     const finalPrice = originalPrice - discountAmount;
 
     const handleApplyCoupon = async () => {
+      setCouponError(null);
       if (!couponCode.trim()) {
-        toastError(t("coupon.emptyError") || "Please enter a coupon code");
+        setCouponError(t("coupon.emptyError") || "Please enter a coupon code");
         return;
       }
 
@@ -185,6 +225,7 @@ const Bookings = () => {
           branch_price_id: Number(branchPriceId),
           branch_id: Number(branchId),
           promo_code: couponCode.trim().toUpperCase(),
+          child_count: booking.children.length,
         });
 
         // Use the discount from the API response
@@ -194,9 +235,24 @@ const Bookings = () => {
           t("coupon.appliedSuccess") || "Coupon applied successfully"
         );
       } catch (error: any) {
-        toastError(
-          error?.message || t("coupon.applyError") || "Failed to apply coupon"
-        );
+        let errorMessage = t("coupon.applyError") || "Failed to apply coupon";
+
+        if (error?.message?.toLowerCase().includes("usage limit")) {
+          errorMessage = t("coupon.usageLimit");
+        } else if (error?.message?.toLowerCase().includes("expired")) {
+          errorMessage = t("coupon.expired");
+        } else if (
+          error?.status === 404 ||
+          error?.message?.toLowerCase().includes("invalid") ||
+          error?.message?.toLowerCase().includes("not found")
+        ) {
+          errorMessage = t("coupon.invalid");
+        } else if (error?.message) {
+          errorMessage = error.message;
+        }
+
+        setCouponError(errorMessage);
+        // toastError(errorMessage); // Removed toastError to match ReservationForm style
       } finally {
         setIsApplyingCoupon(false);
       }
@@ -206,6 +262,7 @@ const Bookings = () => {
       setAppliedCoupon(null);
       setCouponCode("");
       setCouponDiscount(0);
+      setCouponError(null);
     };
 
     const handleConfirm = async () => {
@@ -333,39 +390,112 @@ const Bookings = () => {
                 ))}
               </div>
 
-              {/* Coupon Section - Only show for accepted status */}
-              {isAcceptedStatus && (
-                <div className="border-t pt-4 mt-4 space-y-3">
-                  <div>
-                    <label className="text-primary-blue font-bold text-sm block mb-2">
-                      {t("coupon.label") || "كوبون الخصم"}:
-                    </label>
-                    {appliedCoupon ? (
-                      <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
-                        <span className="text-purple-700 font-bold flex-1">
-                          {appliedCoupon}
-                        </span>
-                        <button
-                          onClick={handleRemoveCoupon}
-                          className="text-purple-700 hover:text-purple-900"
-                        >
-                          <X size={16} />
-                        </button>
+              {/* Coupon Section - Matching ReservationForm style */}
+              {(isAcceptedStatus || appliedCoupon) && (
+                <div className="border-t pt-4 mt-4 mb-4">
+                  <label className="text-[#22336C] font-bold text-sm mb-3 flex items-center gap-2">
+                    <Ticket size={16} />
+                    {t("coupon.label") || "كوبون الخصم"}:
+                  </label>
+
+                  {appliedCoupon ? (
+                    isAcceptedStatus ? (
+                      // Full Editable Coupon Card
+                      <div>
+                        <div className="bg-purple-50 rounded-lg border border-purple-200 p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="bg-purple-100 p-1.5 rounded-full">
+                                <CheckCircle2
+                                  size={16}
+                                  className="text-purple-600"
+                                />
+                              </div>
+                              <div>
+                                <span className="text-purple-700 font-bold block leading-none">
+                                  {appliedCoupon}
+                                </span>
+                                {isCouponExpired ? (
+                                  <span className="text-red-500 text-xs mt-0.5 block font-bold">
+                                    {t("status.expired") || "Expired"}
+                                  </span>
+                                ) : (
+                                  <span className="text-purple-600 text-xs mt-0.5 block">
+                                    {t("coupon.appliedSuccess") ||
+                                      "Coupon applied successfully"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {(isCouponExpired ||
+                              appliedCoupon !== originalCoupon) && (
+                              <button
+                                onClick={handleRemoveCoupon}
+                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                              >
+                                <X size={18} />
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
+                            <span className="text-purple-800">
+                              {t("coupon.saved") || "وفرت"}
+                            </span>
+                            <span className="font-bold text-purple-800">
+                              {discountAmount} {locale === "ar" ? "ر.س" : "SAR"}
+                            </span>
+                          </div>
+                        </div>
+                        {isCouponExpired && (
+                          <div className="flex items-center gap-1.5 text-red-500 text-xs mt-2 px-1">
+                            <AlertCircle size={12} />
+                            <span>
+                              {t("coupon.expiredMessage") ||
+                                "This coupon has expired. Please remove it to add a new one."}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="flex gap-2 items-center">
+                      // Minimal Readonly Coupon Card
+                      <div className="bg-gray-50/50 rounded-md border border-gray-200 p-2.5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Ticket size={16} className="text-gray-400" />
+                          <span className="text-gray-700 font-medium text-sm font-mono">
+                            {appliedCoupon}
+                          </span>
+                        </div>
+                        <span className="text-gray-600 font-medium text-sm">
+                          -{discountAmount} {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2 relative">
                         <Input
                           value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value);
+                            if (couponError) setCouponError(null);
+                          }}
                           placeholder={
                             t("coupon.placeholder") || "أدخل كود الكوبون"
                           }
-                          className="flex-1 h-9"
+                          className={cn(
+                            "flex-1 h-10 transition-all",
+                            couponError
+                              ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
+                              : ""
+                          )}
                         />
                         <Button
                           onClick={handleApplyCoupon}
                           disabled={isApplyingCoupon || !couponCode.trim()}
-                          className="px-4 h-9"
+                          className={cn(
+                            "px-4 h-10 min-w-[80px]",
+                            isApplyingCoupon ? "bg-opacity-80" : ""
+                          )}
                         >
                           {isApplyingCoupon ? (
                             <LoadingSpinner size="sm" />
@@ -374,15 +504,27 @@ const Bookings = () => {
                           )}
                         </Button>
                       </div>
-                    )}
-                    <p className="text-xs text-blue-400 flex items-center gap-1 mt-1">
-                      {t("coupon.info") ||
-                        "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
-                      <span className="w-4 h-4 rounded-full border border-blue-400 flex items-center justify-center text-[10px]">
-                        ?
-                      </span>
-                    </p>
-                  </div>
+
+                      <AnimatePresence>
+                        {couponError && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex items-center gap-1.5 text-red-500 text-xs mt-1 px-1"
+                          >
+                            <AlertCircle size={12} />
+                            <span>{couponError}</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <p className="text-xs text-blue-400 flex items-center gap-1">
+                        {t("coupon.info") ||
+                          "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -399,10 +541,18 @@ const Bookings = () => {
                       {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
                     </span>
                   </div>
-                  {isAcceptedStatus && appliedCoupon && discountAmount > 0 && (
+                  {appliedCoupon && discountAmount > 0 && (
                     <>
                       <div className="flex justify-between text-red-500">
-                        <span className="font-bold">-10%</span>
+                        {/* Calculate percentage if possible, otherwise hide or show discount */}
+                        <span className="font-bold">
+                          {originalPrice > 0
+                            ? `-${(
+                                (discountAmount / originalPrice) *
+                                100
+                              ).toFixed(0)}%`
+                            : ""}
+                        </span>
                         <span className="font-bold">
                           -{discountAmount.toFixed(2)}{" "}
                           {locale === "ar" ? "ر.س" : "SAR"}
@@ -429,8 +579,7 @@ const Bookings = () => {
                       :
                     </span>
                     <span className="font-extrabold text-2xl text-[#4D5EDB]">
-                      {isAcceptedStatus ? finalPrice.toFixed(2) : originalPrice}{" "}
-                      {locale === "ar" ? "ر.س" : "SAR"}
+                      {finalPrice.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
                     </span>
                   </div>
                 </div>
@@ -589,6 +738,8 @@ const Bookings = () => {
           enrollment_type_name:
             booking.enrollment_type_name || booking.enrollment_type,
           price_title: booking.price_title,
+          reservation: booking.reservation,
+          pricing: booking.pricing,
         };
       }) || [];
 
@@ -670,7 +821,7 @@ const Bookings = () => {
   // Confirm reservation handler
   const confirmReservation = async (booking: any, couponCode?: string) => {
     try {
-      // Prepare payment payload - only send enrollment_id and coupon_code if exists
+      // Prepare payment payload
       const paymentPayload: {
         enrollment_id: number;
         coupon_code?: string;
@@ -678,9 +829,25 @@ const Bookings = () => {
         enrollment_id: booking.id,
       };
 
-      // Add coupon code if provided - ensure it's trimmed and uppercased
+      // Add coupon code if provided and different from original
+      const reservation =
+        booking.reservation || booking.originalData?.reservation;
+
+      let originalCoupon =
+        reservation?.promocode_title ||
+        booking.coupon_code ||
+        booking.originalData?.coupon_code;
+
+      if (originalCoupon) {
+        originalCoupon = originalCoupon.trim().toUpperCase();
+      }
+
       if (couponCode && couponCode.trim()) {
-        paymentPayload.coupon_code = couponCode.trim().toUpperCase();
+        const newCode = couponCode.trim().toUpperCase();
+        // Only send coupon code if it's different from the original one
+        if (newCode !== originalCoupon) {
+          paymentPayload.coupon_code = newCode;
+        }
       }
 
       console.log("Confirm reservation - Payment payload:", paymentPayload);

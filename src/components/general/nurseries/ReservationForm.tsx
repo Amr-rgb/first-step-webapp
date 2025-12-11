@@ -1071,7 +1071,7 @@ const ReservationForm = ({
       };
 
       if (promoDetails && promoDetails.promo_code) {
-        enrollmentPayload.coupon_code = promoDetails.promo_code;
+        enrollmentPayload.title = promoDetails.promo_code;
       }
 
       if (selectedApiPlan?.enrollment_type === "hour") {

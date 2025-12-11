@@ -1289,7 +1289,10 @@
           "saved": "Saved",
           "appliedSuccess": "Coupon applied successfully",
           "applyError": "Failed to apply coupon",
-          "emptyError": "Please enter a coupon code"
+          "emptyError": "Please enter a coupon code",
+          "usageLimit": "Coupon usage limit reached",
+          "expired": "Coupon has expired",
+          "invalid": "Invalid coupon code"
         }
       },
       "reports": {
