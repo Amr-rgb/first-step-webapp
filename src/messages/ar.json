@@ -2251,7 +2251,12 @@
         "month": "شهر",
         "months": "أشهر"
       },
-      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع"
+      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع",
+      "paymentDetails": "تفاصيل الدفع",
+      "originalAmount": "المبلغ الأصلي",
+      "couponCode": "كود الكوبون",
+      "discount": "الخصم",
+      "finalAmount": "المبلغ النهائي"
     },
     "center-reports": {
       "title": "التقارير اليومية",

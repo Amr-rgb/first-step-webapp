@@ -2250,7 +2250,12 @@
         "month": "month",
         "months": "months"
       },
-      "noPricingPlans": "No pricing plans available for this branch"
+      "noPricingPlans": "No pricing plans available for this branch",
+      "paymentDetails": "Payment Details",
+      "originalAmount": "Original Amount",
+      "couponCode": "Coupon Code",
+      "discount": "Discount",
+      "finalAmount": "Final Amount"
     },
     "center-reports": {
       "title": "Daily Reports",
