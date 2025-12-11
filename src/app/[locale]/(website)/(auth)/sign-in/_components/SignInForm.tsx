@@ -161,9 +161,7 @@ const SignInForm = ({
             disabled={isLoading || form.formState.isSubmitting}
           >
             {(isLoading || form.formState.isSubmitting) && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             {tBtns("sign-in")}
           </Button>
@@ -178,9 +176,7 @@ const SignInForm = ({
             onClick={handleGoogleSignIn}
           >
             {isGoogleLoading && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             <span>{tBtns("sign-in-google")}</span>
             <Image

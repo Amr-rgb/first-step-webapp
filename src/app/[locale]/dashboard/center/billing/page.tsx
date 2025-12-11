@@ -223,7 +223,7 @@ export default function CenterBillingPage() {
           >
             {isSubmitting === activePlan?.id ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 bg-white/20 rounded animate-pulse"></div>
                 {tBase("plans.processing")}
               </div>
             ) : (
@@ -256,7 +256,7 @@ export default function CenterBillingPage() {
               >
                 {isSubmitting === plan.id ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 bg-white/20 rounded animate-pulse"></div>
                     {tBase("plans.processing")}
                   </div>
                 ) : (

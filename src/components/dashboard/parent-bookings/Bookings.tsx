@@ -12,7 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toastSuccess, toastError } from "@/lib/toast";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations, useLocale } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
@@ -498,7 +497,7 @@ const Bookings = () => {
                           )}
                         >
                           {isApplyingCoupon ? (
-                            <LoadingSpinner size="sm" />
+                            <Skeleton className="h-4 w-16" />
                           ) : (
                             t("coupon.apply") || "تطبيق"
                           )}
@@ -619,7 +618,7 @@ const Bookings = () => {
                 className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
               >
                 {isConfirming ? (
-                  <LoadingSpinner size="sm" />
+                  <Skeleton className="h-4 w-20" />
                 ) : (
                   t("confirmReservation.payNow") || "ادفع الآن"
                 )}

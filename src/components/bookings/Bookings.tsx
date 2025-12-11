@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import BookingCard from "./BookingCard";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { formatToArabicDate, getDaysDifference } from "@/utils/dateUtils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -110,8 +110,12 @@ const Bookings: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-6">
           <ErrorBoundary>
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <LoadingSpinner size="lg" />
+              <div className="flex flex-col items-center justify-center h-64 space-y-4 p-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="w-full max-w-md space-y-2">
+                    <Skeleton className="h-20 w-full rounded-lg" />
+                  </div>
+                ))}
               </div>
             ) : error ? (
               <div className="text-center p-6 bg-red-50 rounded-lg">

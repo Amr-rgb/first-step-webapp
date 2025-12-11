@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { LoaderCircle } from "lucide-react";
 
 interface FormNavigationProps {
   currentStep: number;
@@ -45,9 +44,7 @@ export default function FormNavigation({
           disabled={isLoading}
         >
           {isLoading && (
-            <span className="animate-spin mr-2.5">
-              <LoaderCircle />
-            </span>
+            <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
           )}
           {t("next")}
         </Button>
@@ -59,9 +56,7 @@ export default function FormNavigation({
           disabled={isLoading}
         >
           {isLoading && (
-            <span className="animate-spin mr-2.5">
-              <LoaderCircle />
-            </span>
+            <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
           )}
           {t("sign-up")}
         </Button>

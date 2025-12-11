@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Tajawal, Noto_Sans } from "next/font/google";
+import { Tajawal } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "../providers";
 import { Suspense } from "react";
@@ -15,12 +15,6 @@ import CookieSync from "@/components/auth/CookieSync";
 const tajawal = Tajawal({
   weight: ["400", "500", "700", "800"],
   subsets: ["latin"],
-});
-
-const notoSans = Noto_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-noto-sans",
 });
 
 import { headers } from "next/headers";
