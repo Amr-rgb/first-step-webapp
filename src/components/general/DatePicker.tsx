@@ -28,7 +28,7 @@ const DatePicker = ({
   disabled,
   inputDisabled,
   standalone = false,
-  allowFuture = false,
+  allowFuture = true,
   fromYear,
   toYear,
 }: DatePickerProps) => {
