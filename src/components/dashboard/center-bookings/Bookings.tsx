@@ -78,6 +78,8 @@ const transformEnrollmentsData = (data: any): Booking[] => {
         count: enrollment.count,
         startingTime: enrollment.starting_time,
         endingTime: enrollment.ending_time,
+        reservation: enrollment.reservation,
+        pricing: enrollment.pricing,
       };
     });
 

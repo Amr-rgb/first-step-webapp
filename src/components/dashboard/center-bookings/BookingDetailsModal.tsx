@@ -340,6 +340,30 @@ export const BookingDetailsModal = ({
             </div>
           </div>
 
+          {/* Minimal Coupon & Pricing Summary */}
+          {booking.pricing && booking.reservation && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-muted-foreground mt-4">
+              <div className="flex items-center gap-1">
+                <span>{tBookings("couponCode")}:</span>
+                <span className="font-semibold text-primary">
+                  {booking.reservation.promocode_title}
+                </span>
+                <span className="text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                  -{booking.pricing.discount} <span className="sar">$</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span>{tBookings("finalAmount")}:</span>
+                <span className="line-through text-gray-400 text-xs">
+                  {booking.pricing.original_amount}
+                </span>
+                <span className="font-bold text-gray-900 text-base">
+                  {booking.pricing.final_amount} <span className="sar">$</span>
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Pricing Plans */}
           {isPricingLoading ? (
             <div className="text-center py-8">

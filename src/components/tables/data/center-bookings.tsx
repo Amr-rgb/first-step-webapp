@@ -43,6 +43,25 @@ export type Booking = {
   dayString?: string;
   startingTime?: string;
   endingTime?: string;
+  reservation?: CouponReservation;
+  pricing?: PricingDetails;
+};
+
+export type CouponReservation = {
+  id: number;
+  enrollment_id: number;
+  user_id: number;
+  promocode_title: string;
+  expire_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PricingDetails = {
+  original_amount: number;
+  discount: number;
+  final_amount: number;
+  discount_type: string;
 };
 
 export interface SelectedChild {
