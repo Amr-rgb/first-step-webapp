@@ -40,6 +40,9 @@ export type Booking = {
   detailEnrollmentId?: string;
   detailStatus?: string;
   count: number;
+  dayString?: string;
+  startingTime?: string;
+  endingTime?: string;
 };
 
 export interface SelectedChild {

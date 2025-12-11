@@ -53,7 +53,7 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           startDate:
             enrollment.enrollment_type === "hour" && enrollment.day_string
               ? enrollment.day_string
-              : enrollment.starting_date || enrollment.enrollment_date || "",
+              : enrollment.starting_date || "",
           type: enrollment.enrollment_type || "",
           amount: enrollment.price_amount
             ? parseFloat(enrollment.price_amount)
@@ -64,13 +64,20 @@ const transformEnrollmentsData = (data: any): Booking[] => {
         startDate:
           enrollment.enrollment_type === "hour" && enrollment.day_string
             ? enrollment.day_string
-            : enrollment.starting_date || enrollment.enrollment_date || "",
-        endDate: enrollment.ending_date || "",
+            : enrollment.starting_date || "",
+        endDate:
+          enrollment.enrollment_type === "hour" &&
+          enrollment.starting_time &&
+          enrollment.ending_time
+            ? `${enrollment.starting_time} - ${enrollment.ending_time}`
+            : enrollment.ending_date || "",
         type: enrollment.enrollment_type || "",
         amount: enrollment.price_amount
           ? parseFloat(enrollment.price_amount)
           : 0,
         count: enrollment.count,
+        startingTime: enrollment.starting_time,
+        endingTime: enrollment.ending_time,
       };
     });
 

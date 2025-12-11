@@ -124,6 +124,21 @@ const Bookings = () => {
     onConfirm?: (booking: any, couponCode?: string) => Promise<void>;
   }) {
     const locale = useLocale();
+    const tLabels = useTranslations("reservationForm.labels");
+    const tSummary = useTranslations("reservationForm.summary");
+
+    const getCountLabel = (type: string) => {
+      switch (type) {
+        case "hour":
+          return tLabels("numberOfHours");
+        case "week":
+          return tLabels("numberOfWeeks");
+        case "month":
+          return tLabels("numberOfMonths");
+        default:
+          return tLabels("numberOfDays");
+      }
+    };
     const branchId = booking?.center_branch_id || booking?.branch_id;
     const [couponCode, setCouponCode] = useState<string>("");
     const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
@@ -375,19 +390,31 @@ const Bookings = () => {
                     <span className="font-bold">{booking[field.key]}</span>
                   </div>
                 ))}
-                {rightFields.map((field, idx) => (
-                  <div
-                    key={field.key + "-inv-r-" + idx}
-                    className="flex justify-between"
-                  >
-                    <span>{field.label}</span>
-                    <span className="font-bold">
-                      {field.isStatus
-                        ? STATUS_MAP[booking.status]
-                        : booking[field.key]}
-                    </span>
-                  </div>
-                ))}
+                {rightFields.map((field, idx) => {
+                  let label = field.label;
+                  const isHourly = booking.enrollment_type === "hour";
+                  if (field.key === "startDay" && isHourly) {
+                    label = tSummary("date");
+                  } else if (field.key === "endDay" && isHourly) {
+                    label = tSummary("time");
+                  } else if (field.key === "daysCount") {
+                    label = getCountLabel(booking.enrollment_type);
+                  }
+
+                  return (
+                    <div
+                      key={field.key + "-inv-r-" + idx}
+                      className="flex justify-between"
+                    >
+                      <span>{label}</span>
+                      <span className="font-bold">
+                        {field.isStatus
+                          ? STATUS_MAP[booking.status]
+                          : booking[field.key]}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Coupon Section - Matching ReservationForm style */}
@@ -704,10 +731,15 @@ const Bookings = () => {
 
         // For hourly enrollments, use day_string if available, otherwise use enrollment_date
         const isHourly = booking.enrollment_type === "hour";
-        const dateToUse =
+        const startDayValue =
           isHourly && booking.day_string
             ? booking.day_string
-            : booking.enrollment_date || booking.starting_date;
+            : booking.starting_date || "";
+
+        const endDayValue =
+          isHourly && booking.starting_time && booking.ending_time
+            ? `${booking.starting_time} - ${booking.ending_time}`
+            : booking.ending_date || "";
 
         return {
           id: booking.id,
@@ -716,9 +748,9 @@ const Bookings = () => {
           className: booking.center_name,
           branch: booking.branch_name,
           program: programName,
-          startDay: dateToUse,
-          endDay: dateToUse,
-          daysCount: 1,
+          startDay: startDayValue,
+          endDay: endDayValue,
+          daysCount: booking.count,
           paymentMethod: "ميسر",
           amount: parseFloat(booking.price_amount),
           notes: [],
