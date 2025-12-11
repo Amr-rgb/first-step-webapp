@@ -303,14 +303,8 @@ export default function CreatePromocodeModal({
       return;
     }
 
-    // Calculate branches to send: only those whose parent center is NOT selected
-    const branchesToSend = selectedBranches.filter((branchId) => {
-      const center = centers.find((c) =>
-        c.branches.some((b) => b.id === branchId)
-      );
-      if (!center) return true;
-      return !selectedCenters.includes(center.id);
-    });
+    // Calculate branches to send: send all selected branches
+    const branchesToSend = selectedBranches; // Send all selected branches
 
     const payload = {
       title: data.title,
@@ -323,7 +317,7 @@ export default function CreatePromocodeModal({
       status: status, // Use current status state
       color: selectedColor,
       amount: data.amount,
-      center_ids: selectedCenters,
+      center_ids: [],
       branch_ids: branchesToSend,
     };
 

@@ -1289,7 +1289,10 @@
           "saved": "Saved",
           "appliedSuccess": "Coupon applied successfully",
           "applyError": "Failed to apply coupon",
-          "emptyError": "Please enter a coupon code"
+          "emptyError": "Please enter a coupon code",
+          "usageLimit": "Coupon usage limit reached",
+          "expired": "Coupon has expired",
+          "invalid": "Invalid coupon code"
         }
       },
       "reports": {
@@ -2694,6 +2697,76 @@
       "title1": "There are currently no coupons,",
       "title2": "you will be notified when coupons are available",
       "button": "Subscribe to Coupon Newsletter"
+    }
+  },
+  "reservationForm": {
+    "plans": {
+      "monthly": "Monthly",
+      "weekly": "Weekly",
+      "daily": "Daily",
+      "hourly": "Hourly"
+    },
+    "units": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day"
+    },
+    "labels": {
+      "numberOfHours": "Number of Hours",
+      "numberOfDays": "Number of Days",
+      "numberOfWeeks": "Number of Weeks",
+      "numberOfMonths": "Number of Months",
+      "duration": "Duration",
+      "bookingDate": "Booking Date",
+      "selectChildren": "Select One or More Children",
+      "noChildren": "No Children Found",
+      "noChildrenDesc": "You need to register at least one child before making a reservation. Please go to the children page to add a new child.",
+      "addNewChild": "Add New Child",
+      "bookingSummary": "Booking Summary",
+      "couponCode": "Coupon Code",
+      "discountCoupon": "Discount Coupon",
+      "tryCoupon": "Try Coupon",
+      "paymentNotice": "The coupon does not work at this step and is activated upon payment after approval of the booking request",
+      "termsNotice": "Confirming the booking means you accept the terms and conditions and our privacy policy.",
+      "confirmBooking": "Confirm Booking Now",
+      "submitting": "Submitting...",
+      "successTitle": "Reservation Request Sent Successfully!",
+      "successDesc": "We will contact you soon to confirm the reservation details.",
+      "submitAnother": "Submit Another Request",
+      "goToReservations": "Go to My Reservations",
+      "timeRange": "From {start} to {end}",
+      "autoDuration": "Duration automatically set based on plan",
+      "youHaveNoChildren": "You have no children"
+    },
+    "summary": {
+      "plan": "Plan",
+      "time": "Time",
+      "childrenCount": "Number of children",
+      "date": "Date",
+      "calculation": "Plan price × Children",
+      "total": "Total",
+      "saved": "Saved",
+      "discount": "Discount"
+    },
+    "errors": {
+      "enterCoupon": "Please enter a coupon code",
+      "selectBranch": "Please select a branch first",
+      "selectPlan": "Please select a plan first",
+      "selectChild": "Please select at least one child to apply the coupon",
+      "childCountRequired": "Please select the number of children first",
+      "invalidData": "Invalid data. Please check the entered information",
+      "usageLimit": "This coupon has reached its usage limit",
+      "invalidCoupon": "Invalid or non-existent coupon code",
+      "expiredCoupon": "This coupon has expired",
+      "failedToApply": "Failed to apply coupon",
+      "noPlanSelected": "No plan selected",
+      "noBranchSelected": "No branch selected",
+      "bookingError": "Booking Error",
+      "submissionFailed": "Failed to submit reservation request. Please try again."
+    },
+    "success": {
+      "couponApplied": "Coupon applied successfully",
+      "bookingSent": "Reservation Request Sent Successfully!"
     }
   }
 }

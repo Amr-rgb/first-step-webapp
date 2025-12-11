@@ -1326,6 +1326,7 @@ export const paymentService = {
       // Only send enrollment_id and title (coupon code) if it exists
       const payload: { enrollment_id: number; title?: string } = {
         enrollment_id: params.enrollment_id,
+        title: params.coupon_code,
       };
 
       // Ensure coupon code is trimmed and uppercased if provided, send as 'title'

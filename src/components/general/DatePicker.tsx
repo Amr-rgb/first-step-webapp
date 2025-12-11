@@ -16,6 +16,10 @@ interface DatePickerProps {
   onChange: (date: Date | undefined) => void;
   disabled?: any;
   inputDisabled?: boolean;
+  standalone?: boolean;
+  allowFuture?: boolean;
+  fromYear?: number;
+  toYear?: number;
 }
 
 const DatePicker = ({
@@ -23,6 +27,10 @@ const DatePicker = ({
   onChange,
   disabled,
   inputDisabled,
+  standalone = false,
+  allowFuture = false,
+  fromYear,
+  toYear,
 }: DatePickerProps) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(
@@ -58,25 +66,30 @@ const DatePicker = ({
     setOpen(false);
   };
 
+  const currentYear = new Date().getFullYear();
+  const defaultToYear = allowFuture ? currentYear + 20 : currentYear;
+
+  const inputContent = (
+    <div className="relative">
+      <Input
+        className={cn(!value && "text-mid-gray")}
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder="YYYY-MM-DD"
+        disabled={inputDisabled}
+      />
+      <CalendarIcon
+        className={`cursor-pointer absolute left-3 ltr:left-auto ltr:right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 ${
+          inputDisabled ? "hidden" : ""
+        }`}
+      />
+    </div>
+  );
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
-        <FormControl>
-          <div className="relative">
-            <Input
-              className={cn(!value && "text-mid-gray")}
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder="YYYY-MM-DD"
-              disabled={inputDisabled}
-            />
-            <CalendarIcon
-              className={`cursor-pointer absolute left-3 ltr:left-auto ltr:right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 ${
-                inputDisabled ? "hidden" : ""
-              }`}
-            />
-          </div>
-        </FormControl>
+        {standalone ? inputContent : <FormControl>{inputContent}</FormControl>}
       </PopoverTrigger>
       <PopoverContent
         className={`w-auto p-0 ${inputDisabled ? "hidden" : ""}`}
@@ -88,9 +101,13 @@ const DatePicker = ({
           onSelect={handleCalendarSelect}
           disabled={
             disabled ||
-            ((date) => date > new Date() || date < new Date("1900-01-01"))
+            (allowFuture
+              ? undefined
+              : (date) => date > new Date() || date < new Date("1900-01-01"))
           }
           captionLayout="dropdown"
+          fromYear={fromYear || 1900}
+          toYear={toYear || defaultToYear}
         />
       </PopoverContent>
     </Popover>

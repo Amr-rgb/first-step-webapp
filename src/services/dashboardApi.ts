@@ -1768,6 +1768,7 @@ export interface ApplyPromoCodeRequest {
   branch_price_id: number;
   branch_id: number;
   promo_code: string;
+  child_count: number;
 }
 
 export interface ApplyPromoCodeResponse {
