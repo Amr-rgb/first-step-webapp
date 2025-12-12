@@ -18,8 +18,8 @@
         "path": "/nurseries"
       },
       "coupon-codes": {
-        "title": "كوبونات الخصم",
-        "path": "/coupon-codes"
+        "title": "العروض والخصومات",
+        "path": "/offers-and-coupons"
       },
       "blog": {
         "title": "المدونة",
