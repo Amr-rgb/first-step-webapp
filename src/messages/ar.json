@@ -2789,5 +2789,86 @@
       "couponApplied": "تم تطبيق الكوبون بنجاح",
       "bookingSent": "تم إرسال طلب الحجز بنجاح!"
     }
+  },
+  "externalOffers": {
+    "tabs": {
+      "coupons": "First Step كوبونات",
+      "externalOffers": "الترويج لعروض خارجية"
+    },
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "archived": "محذوف"
+    },
+    "buttons": {
+      "add": "إضافة عرض خارجي",
+      "cancel": "إلغاء",
+      "submit": "رفع العرض على الموقع",
+      "archive": "أرشفة",
+      "permanentDelete": "حذف نهائي",
+      "processing": "جاري المعالجة...",
+      "saving": "جاري الحفظ..."
+    },
+    "search": {
+      "placeholder": "ابحث عن كوبون خصم..."
+    },
+    "empty": {
+      "noMatches": "لا توجد عروض مطابقة"
+    },
+    "form": {
+      "title": "تفاصيل العرض الخارجي",
+      "fields": {
+        "centerName": {
+          "label": "اسم جهة العرض أو الخصم",
+          "placeholder": "مثال: حضانة ووش 🥳"
+        },
+        "address": {
+          "label": "العنوان",
+          "placeholder": "مثال: حي النفل"
+        },
+        "descriptions": {
+          "label": "شرح العرض",
+          "placeholder": "مثال: أي طفل بده يدخل الألعاب بده تذكرة، الوقت مفتوح اللعب حتى تتعب"
+        },
+        "moneyDetails": {
+          "label": "تفاصيل الأموال ( ر.س )",
+          "placeholder": "مثال: 89 ريال فقط 👍👋 بدل 197 ريال 🤗"
+        },
+        "timeDetails": {
+          "label": "تفاصيل الوقت",
+          "placeholder": "مثال: من الساعة 4 إلى الساعة 11 مساءً أيام الاسبوع"
+        },
+        "additionalDetails": {
+          "label": "تفاصيل إضافية",
+          "placeholder": "مثال: تحولوا المبلغ وتبعثولي صورة التحويل..."
+        },
+        "url": {
+          "label": "الموقع",
+          "placeholder": "https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb :مثال"
+        },
+        "photos": {
+          "label": "صور العرض",
+          "limit": "(الحد الأقصى 10)"
+        }
+      }
+    },
+    "dialog": {
+      "confirmDelete": {
+        "title": "تأكيد الحذف",
+        "message": "هل أنت متأكد من أنك تريد حذف هذا العرض؟",
+        "archiveOption": "أرشفة العرض (يمكن استرجاعه لاحقاً)",
+        "deleteOption": "حذف نهائي (لا يمكن استرجاعه)"
+      }
+    },
+    "toast": {
+      "archiveSuccess": "تم أرشفة العرض بنجاح",
+      "archiveError": "حدث خطأ أثناء الأرشفة",
+      "deleteSuccess": "تم حذف العرض نهائياً",
+      "deleteError": "حدث خطأ أثناء الحذف",
+      "createSuccess": "تم إضافة العرض بنجاح",
+      "updateSuccess": "تم تحديث العرض بنجاح",
+      "genericError": "حدث خطأ",
+      "imageLimit": "يمكنك رفع 10 صور كحد أقصى"
+    }
   }
 }

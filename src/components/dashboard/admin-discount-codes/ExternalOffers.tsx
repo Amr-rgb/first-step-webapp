@@ -11,6 +11,7 @@ import ExternalOfferForm from "./ExternalOfferForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { FilterButtons } from "@/components/common/FilterButtons";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ import {
 // If not, I will use divs.
 
 export default function ExternalOffers() {
+  const t = useTranslations("externalOffers");
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "deleted">("all");
@@ -48,13 +50,13 @@ export default function ExternalOffers() {
   const archiveMutation = useMutation({
     mutationFn: adminService.archiveExternalOffer,
     onSuccess: () => {
-      toast.success("تم أرشفة العرض بنجاح");
+      toast.success(t("toast.archiveSuccess"));
       queryClient.invalidateQueries({ queryKey: ["external-offers"] });
       setDeleteId(null);
       setIsPermanentDelete(false);
     },
     onError: (error: any) => {
-      toast.error(error.message || "حدث خطأ أثناء الأرشفة");
+      toast.error(error.message || t("toast.archiveError"));
       setDeleteId(null);
       setIsPermanentDelete(false);
     },
@@ -63,13 +65,13 @@ export default function ExternalOffers() {
   const deleteMutation = useMutation({
     mutationFn: adminService.deleteExternalOffer,
     onSuccess: () => {
-      toast.success("تم حذف العرض نهائياً");
+      toast.success(t("toast.deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: ["external-offers"] });
       setDeleteId(null);
       setIsPermanentDelete(false);
     },
     onError: (error: any) => {
-      toast.error(error.message || "حدث خطأ أثناء الحذف");
+      toast.error(error.message || t("toast.deleteError"));
       setDeleteId(null);
       setIsPermanentDelete(false);
     },
@@ -111,9 +113,9 @@ export default function ExternalOffers() {
   };
 
   const filters = [
-    { value: "all" as const, label: "الكل" },
-    { value: "active" as const, label: "نشط" },
-    { value: "deleted" as const, label: "محذوف" },
+    { value: "all" as const, label: t("filters.all") },
+    { value: "active" as const, label: t("filters.active") },
+    { value: "deleted" as const, label: t("filters.archived") },
   ];
 
   if (isLoading) {
@@ -148,12 +150,12 @@ export default function ExternalOffers() {
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <Button size="sm" variant="default" onClick={() => setIsFormOpen(true)}>
           <Plus className="w-5 h-5" />
-          <span>إضافة عرض خارجي</span>
+          <span>{t("buttons.add")}</span>
         </Button>
 
         <div className="relative w-full sm:w-96">
           <Input
-            placeholder="ابحث عن كوبون خصم..."
+            placeholder={t("search.placeholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pr-10 text-right"
@@ -176,7 +178,7 @@ export default function ExternalOffers() {
           ))
         ) : (
           <div className="text-center py-10 text-gray-500 col-span-full">
-            لا توجد عروض مطابقة
+            {t("empty.noMatches")}
           </div>
         )}
       </div>
@@ -200,9 +202,11 @@ export default function ExternalOffers() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-right">تأكيد الحذف</DialogTitle>
+            <DialogTitle className="text-right">
+              {t("dialog.confirmDelete.title")}
+            </DialogTitle>
             <div className="text-right text-gray-500 mt-2">
-              هل أنت متأكد من أنك تريد حذف هذا العرض؟
+              {t("dialog.confirmDelete.message")}
             </div>
           </DialogHeader>
 
@@ -242,7 +246,7 @@ export default function ExternalOffers() {
                 setIsPermanentDelete(false);
               }}
             >
-              إلغاء
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -250,10 +254,10 @@ export default function ExternalOffers() {
               disabled={archiveMutation.isPending || deleteMutation.isPending}
             >
               {archiveMutation.isPending || deleteMutation.isPending
-                ? "جاري المعالجة..."
+                ? t("buttons.processing")
                 : isPermanentDelete
-                ? "حذف نهائي"
-                : "أرشفة"}
+                ? t("buttons.permanentDelete")
+                : t("buttons.archive")}
             </Button>
           </div>
         </DialogContent>

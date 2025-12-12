@@ -2773,5 +2773,86 @@
       "couponApplied": "Coupon applied successfully",
       "bookingSent": "Reservation Request Sent Successfully!"
     }
+  },
+  "externalOffers": {
+    "tabs": {
+      "coupons": "First Step Coupons",
+      "externalOffers": "External Offers Promotion"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "buttons": {
+      "add": "Add External Offer",
+      "cancel": "Cancel",
+      "submit": "Submit Offer to Website",
+      "archive": "Archive",
+      "permanentDelete": "Permanent Delete",
+      "processing": "Processing...",
+      "saving": "Saving..."
+    },
+    "search": {
+      "placeholder": "Search for discount coupon..."
+    },
+    "empty": {
+      "noMatches": "No matching offers found"
+    },
+    "form": {
+      "title": "External Offer Details",
+      "fields": {
+        "centerName": {
+          "label": "Offer Center or Discount Name",
+          "placeholder": "Example: Wosh Nursery 🥳"
+        },
+        "address": {
+          "label": "Address",
+          "placeholder": "Example: Al Nafl District"
+        },
+        "descriptions": {
+          "label": "Offer Description",
+          "placeholder": "Example: Any child who wants to enter the games needs a ticket, unlimited playtime"
+        },
+        "moneyDetails": {
+          "label": "Money Details (SAR)",
+          "placeholder": "Example: Only 89 SAR 👍👋 instead of 197 SAR 🤗"
+        },
+        "timeDetails": {
+          "label": "Time Details",
+          "placeholder": "Example: From 4 PM to 11 PM on weekdays"
+        },
+        "additionalDetails": {
+          "label": "Additional Details",
+          "placeholder": "Example: Transfer the amount and send me a picture of the transfer..."
+        },
+        "url": {
+          "label": "Location URL",
+          "placeholder": "Example: https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb"
+        },
+        "photos": {
+          "label": "Offer Photos",
+          "limit": "(Maximum 10)"
+        }
+      }
+    },
+    "dialog": {
+      "confirmDelete": {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to delete this offer?",
+        "archiveOption": "Archive offer (can be restored later)",
+        "deleteOption": "Permanent delete (cannot be restored)"
+      }
+    },
+    "toast": {
+      "archiveSuccess": "Offer archived successfully",
+      "archiveError": "Error occurred during archiving",
+      "deleteSuccess": "Offer permanently deleted",
+      "deleteError": "Error occurred during deletion",
+      "createSuccess": "Offer added successfully",
+      "updateSuccess": "Offer updated successfully",
+      "genericError": "An error occurred",
+      "imageLimit": "You can upload a maximum of 10 images"
+    }
   }
 }

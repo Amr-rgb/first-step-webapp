@@ -53,6 +53,7 @@ export default function ExternalOfferForm({
   offer,
   isViewMode = false,
 }: ExternalOfferFormProps) {
+  const t = useTranslations("externalOffers");
   const queryClient = useQueryClient();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -107,7 +108,7 @@ export default function ExternalOfferForm({
   const createMutation = useMutation({
     mutationFn: (data: any) => adminService.createExternalOffer(data),
     onSuccess: () => {
-      toast.success("تم إضافة العرض بنجاح");
+      toast.success(t("toast.createSuccess"));
       queryClient.invalidateQueries({ queryKey: ["external-offers"] });
       onClose();
     },
@@ -119,7 +120,7 @@ export default function ExternalOfferForm({
   const updateMutation = useMutation({
     mutationFn: (data: any) => adminService.updateExternalOffer(offer.id, data),
     onSuccess: () => {
-      toast.success("تم تحديث العرض بنجاح");
+      toast.success(t("toast.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["external-offers"] });
       onClose();
     },
@@ -147,7 +148,7 @@ export default function ExternalOfferForm({
       const totalImages = previewUrls.length + files.length;
 
       if (totalImages > 10) {
-        toast.error("يمكنك رفع 10 صور كحد أقصى");
+        toast.error(t("toast.imageLimit"));
         return;
       }
 
@@ -178,7 +179,7 @@ export default function ExternalOfferForm({
       <DialogContent className="lg:max-w-2xl sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center text-primary">
-            تفاصيل العرض الخارجي
+            {t("form.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -190,12 +191,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    اسم جهة العرض أو الخصم{" "}
+                    {t("form.fields.centerName.label")}{" "}
                     <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: حضانة ووش 🥳"
+                      placeholder={t("form.fields.centerName.placeholder")}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -211,11 +212,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    العنوان <span className="text-red-500">*</span>
+                    {t("form.fields.address.label")}{" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: حي النفل"
+                      placeholder={t("form.fields.address.placeholder")}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -231,11 +233,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    شرح العرض <span className="text-red-500">*</span>
+                    {t("form.fields.descriptions.label")}{" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: أي طفل بده يدخل الألعاب بده تذكرة، الوقت مفتوح اللعب حتى تتعب"
+                      placeholder={t("form.fields.descriptions.placeholder")}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -251,12 +254,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    تفاصيل الأموال ( ر.س ){" "}
+                    {t("form.fields.moneyDetails.label")}{" "}
                     <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: 89 ريال فقط 👍👋 بدل 197 ريال 🤗"
+                      placeholder={t("form.fields.moneyDetails.placeholder")}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -272,11 +275,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    تفاصيل الوقت <span className="text-red-500">*</span>
+                    {t("form.fields.timeDetails.label")}{" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: من الساعة 4 إلى الساعة 11 مساءً أيام الاسبوع"
+                      placeholder={t("form.fields.timeDetails.placeholder")}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -292,11 +296,14 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    تفاصيل إضافية <span className="text-red-500">*</span>
+                    {t("form.fields.additionalDetails.label")}{" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="مثال: تحولوا المبلغ وتبعثولي صورة التحويل..."
+                      placeholder={t(
+                        "form.fields.additionalDetails.placeholder"
+                      )}
                       {...field}
                       disabled={isViewMode}
                     />
@@ -312,11 +319,12 @@ export default function ExternalOfferForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    الموقع <span className="text-red-500">*</span>
+                    {t("form.fields.url.label")}{" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb :مثال"
+                      placeholder={t("form.fields.url.placeholder")}
                       dir="ltr"
                       className="text-right placeholder:text-right"
                       {...field}
@@ -330,8 +338,9 @@ export default function ExternalOfferForm({
 
             <div className="space-y-2">
               <FormLabel>
-                صور العرض <span className="text-red-500">*</span> (الحد الأقصى
-                10)
+                {t("form.fields.photos.label")}{" "}
+                <span className="text-red-500">*</span>{" "}
+                {t("form.fields.photos.limit")}
               </FormLabel>
               <div className="border rounded-md p-3 flex items-center gap-2">
                 <Input
@@ -388,7 +397,7 @@ export default function ExternalOfferForm({
                 className="flex-1"
                 onClick={onClose}
               >
-                إلغاء
+                {t("buttons.cancel")}
               </Button>
               {!isViewMode && (
                 <Button
@@ -400,8 +409,8 @@ export default function ExternalOfferForm({
                   }
                 >
                   {createMutation.isPending || updateMutation.isPending
-                    ? "جاري الحفظ..."
-                    : "رفع العرض على الموقع"}
+                    ? t("buttons.saving")
+                    : t("buttons.submit")}
                 </Button>
               )}
             </div>
