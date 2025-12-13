@@ -15,6 +15,7 @@ import { Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { nurseryService } from "@/services/api";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PlanCard } from "@/components/common/PlanCard";
 
 interface Plan {
   id: number;
@@ -300,100 +301,90 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
         </div>
 
         {/* Filters */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Branch Selector */}
-            <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
-              <Select
-                value={selectedBranch?.id}
-                onValueChange={(value) => {
-                  const branch = branches.find((b) => b.id === value);
-                  if (branch) {
-                    setSelectedBranch({ id: branch.id, name: branch.name });
-                    setSelectedEnrollmentType("all");
-                    setSelectedAge("all");
+        <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Branch Selector */}
+          <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
+            <Select
+              value={selectedBranch?.id}
+              onValueChange={(value) => {
+                const branch = branches.find((b) => b.id === value);
+                if (branch) {
+                  setSelectedBranch({ id: branch.id, name: branch.name });
+                  setSelectedEnrollmentType("all");
+                  setSelectedAge("all");
+                }
+              }}
+              disabled={loadingBranches || branches.length === 0}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    loadingBranches ? "Loading..." : t("plans.selectBranch")
                   }
-                }}
-                disabled={loadingBranches || branches.length === 0}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      loadingBranches ? "Loading..." : t("plans.selectBranch")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {branches.map((branch, index: number) => (
-                    <SelectItem key={branch.id} value={branch.id}>
-                      {branch.name}
-                      {index === 0 && (
-                        <span className="ml-2 text-xs text-primary">
-                          {locale === "ar"
-                            ? "(الفرع الرئيسي)"
-                            : "(Main Branch)"}
-                        </span>
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Enrollment Type Selector (Buttons) */}
-            <div className="flex flex-wrap justify-center gap-2">
-              {availableEnrollmentTypes.map((type) => (
-                <Button
-                  key={type}
-                  variant={
-                    selectedEnrollmentType === type ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() =>
-                    setSelectedEnrollmentType(
-                      selectedEnrollmentType === type ? "all" : type
-                    )
-                  }
-                  className={
-                    selectedEnrollmentType === type
-                      ? ""
-                      : "!border-mid-gray !text-mid-gray"
-                  }
-                >
-                  {getEnrollmentTypeLabel(type)}
-                </Button>
-              ))}
-            </div>
-
-            {/* Age Selector */}
-            <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
-              <Select
-                value={selectedAge}
-                onValueChange={setSelectedAge}
-                disabled={loadingPlans || plans.length === 0}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("plans.selectAge")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {locale === "ar" ? "الكل" : "All"}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {branches.map((branch, index: number) => (
+                  <SelectItem key={branch.id} value={branch.id}>
+                    {branch.name}
+                    {index === 0 && (
+                      <span className="ml-2 text-xs text-primary">
+                        {locale === "ar" ? "(الفرع الرئيسي)" : "(Main Branch)"}
+                      </span>
+                    )}
                   </SelectItem>
-                  {ageOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {selectedBranchData && (
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-600">{selectedBranchData.name}</p>
-            </div>
-          )}
+          {/* Enrollment Type Selector (Buttons) */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {availableEnrollmentTypes.map((type) => (
+              <Button
+                key={type}
+                variant={
+                  selectedEnrollmentType === type ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() =>
+                  setSelectedEnrollmentType(
+                    selectedEnrollmentType === type ? "all" : type
+                  )
+                }
+                className={
+                  selectedEnrollmentType === type
+                    ? ""
+                    : "!border-mid-gray !text-mid-gray"
+                }
+              >
+                {getEnrollmentTypeLabel(type)}
+              </Button>
+            ))}
+          </div>
+
+          {/* Age Selector */}
+          <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
+            <Select
+              value={selectedAge}
+              onValueChange={setSelectedAge}
+              disabled={loadingPlans || plans.length === 0}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("plans.selectAge")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {locale === "ar" ? "الكل" : "All"}
+                </SelectItem>
+                {ageOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Plans Grid */}
@@ -410,51 +401,30 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
           </div>
         ) : filteredPlans.length > 0 ? (
           <div className="max-h-[500px] overflow-y-auto pr-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {filteredPlans.map((plan: Plan) => (
-                <Card
+                <PlanCard
                   key={plan.id}
-                  className="hover:shadow-lg transition-shadow duration-300"
+                  title={plan.title}
+                  durationLabel={getDurationLabel(
+                    plan.count,
+                    plan.enrollment_type
+                  )}
+                  price={plan.price_amount}
+                  className="hover:shadow-lg transition-shadow duration-300 hover:bg-[linear-gradient(to_bottom,rgba(255,255,255,0.16),rgba(131,203,170,0.12),rgba(131,203,170,0.24))]"
                 >
-                  <CardContent className="p-6">
-                    {/* Program Title */}
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      {plan.title}
-                    </h3>
-
-                    {/* Program Details */}
-                    <div className="space-y-3 mb-6">
-                      {/* Age Range */}
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <Users className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-gray-600">
-                          {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
-                          {locale === "ar" ? "سنة" : "years"}
-                        </span>
-                      </div>
-
-                      {/* Duration */}
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <Clock className="w-4 h-4 text-green-600" />
-                        <span className="text-sm text-gray-600">
-                          {t("plans.duration")}:{" "}
-                          {getDurationLabel(plan.count, plan.enrollment_type)}
-                        </span>
-                      </div>
-
-                      {/* Price */}
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <DollarSign className="w-4 h-4 text-yellow-600" />
-                        <span className="text-sm text-gray-600">
-                          {t("plans.price")}: {plan.price_amount}{" "}
-                          {locale === "ar" ? "ريال" : "SAR"}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="space-y-4 pt-2">
+                    {/* Age Range */}
+                    <p className="text-sm text-gray-600">
+                      {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
+                      {locale === "ar" ? "سنة" : "years"}
+                    </p>
 
                     {/* Booking Button */}
                     <Button
-                      className="w-full bg-primary hover:bg-blue-700 text-white"
+                      size="sm"
+                      variant="default"
+                      className="w-full"
                       onClick={() => {
                         if (!preview) {
                           // Navigate to booking page with plan details
@@ -464,8 +434,8 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                     >
                       {t("plans.bookNow")}
                     </Button>
-                  </CardContent>
-                </Card>
+                  </div>
+                </PlanCard>
               ))}
             </div>
           </div>
