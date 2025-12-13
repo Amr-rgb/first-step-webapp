@@ -1,16 +1,17 @@
 "use client";
 
 import React from "react";
-import { Copy } from "lucide-react";
+import { Copy, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 
 interface CouponCardProps {
@@ -50,41 +51,6 @@ export default function CouponCard({
 
   return (
     <div className="group hover:-translate-y-1 transition-transform duration-300">
-      <div className="overflow-x-auto w-full px-4 no-scrollbar" dir="ltr">
-        <div className="mb-4 flex items-center justify-start py-2 group/stack">
-          <TooltipProvider>
-            {centers.map((center, index) => (
-              <Tooltip key={center.id}>
-                <TooltipTrigger asChild>
-                  <div
-                    className={cn(
-                      "w-9 h-9 bg-white rounded-full flex-shrink-0 overflow-hidden border-2 border-white cursor-pointer transition-all duration-300 ease-out relative",
-                      // Default overlap
-                      index !== 0 && "-ml-3",
-                      // Expand on hover
-                      "group-hover/stack:ml-1",
-                      // Hover effect on individual item
-                      "hover:scale-125 hover:z-30"
-                    )}
-                  >
-                    <Image
-                      src={center.logo}
-                      alt={center.name}
-                      width={36}
-                      height={36}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{center.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </TooltipProvider>
-        </div>
-      </div>
-
       <div className="relative flex overflow-hidden h-56 group">
         {/* Right Side (Colored) - Discount & Code */}
         <div
@@ -176,6 +142,42 @@ export default function CouponCard({
           <p className="text-sm text-gray-500 font-medium">
             {t("validUntil")} {endDate}
           </p>
+
+          {centers.length > 0 && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="flex items-center gap-2 mt-4 text-xs font-semibold text-[#2B3990] hover:underline z-20 relative">
+                  <MapPin className="w-4 h-4" />
+                  {t("viewCenters")}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{t("viewCenters")}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-4 mt-4">
+                  {centers.map((center) => (
+                    <div
+                      key={center.id}
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden border bg-white flex-shrink-0">
+                        <Image
+                          src={center.logo}
+                          alt={center.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <span className="font-medium text-gray-900">
+                        {center.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
     </div>

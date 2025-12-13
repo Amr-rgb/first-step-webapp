@@ -2696,7 +2696,8 @@
     },
     "card": {
       "validUntil": "Valid until",
-      "copySuccess": "Code copied successfully"
+      "copySuccess": "Code copied successfully",
+      "viewCenters": "View Participating Centers"
     },
     "share": "Share offers and coupons with friends",
     "emptyState": {
