@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Settings2, Check, Share2 } from "lucide-react";
+import { Search, Settings2, Check, Share2, SearchX } from "lucide-react";
 import CouponCard from "@/components/coupons/CouponCard";
 import PublicExternalOfferCard from "@/components/coupons/PublicExternalOfferCard";
 import Image from "next/image";
@@ -77,6 +77,17 @@ function EmptyState({
       <Button onClick={onSubscribeClick} size="sm" variant="default">
         {t("emptyState.button")}
       </Button>
+    </div>
+  );
+}
+
+function SearchResultsEmptyState({ t }: { t: any }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+      <div className="mb-6 text-gray-300">
+        <SearchX className="w-24 h-24" />
+      </div>
+      <span className="text-xl font-bold text-gray-500">{t("noResults")}</span>
     </div>
   );
 }
@@ -304,6 +315,8 @@ export default function OffersAndCouponsClient({
                   centers={[...coupon.centers, ...(coupon.branches || [])]}
                 />
               ))
+            ) : searchQuery ? (
+              <SearchResultsEmptyState t={t} />
             ) : (
               <EmptyState
                 onSubscribeClick={() => setShowNewsletter(true)}
@@ -314,6 +327,8 @@ export default function OffersAndCouponsClient({
             filteredOffers.map((offer) => (
               <PublicExternalOfferCard key={offer.id} offer={offer} />
             ))
+          ) : searchQuery ? (
+            <SearchResultsEmptyState t={t} />
           ) : (
             <EmptyState
               onSubscribeClick={() => setShowNewsletter(true)}
