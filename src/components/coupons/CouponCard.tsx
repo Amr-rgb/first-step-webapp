@@ -3,8 +3,9 @@
 import React from "react";
 import { Copy, MapPin } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, createSlug } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +21,13 @@ interface CouponCardProps {
   percentage: number;
   code: string;
   color: string;
-  centers: { id: number; logo: string; name: string }[];
+  centers: {
+    id: number;
+    logo: string;
+    name: string;
+    nursery_name_for_center?: string;
+  }[];
+  locale: string;
 }
 
 const COLORS = [
@@ -30,10 +37,6 @@ const COLORS = [
   "#B12F53", // Rose
 ];
 
-// ... existing imports
-
-// ... existing interface and constants
-
 export default function CouponCard({
   title,
   endDate,
@@ -41,6 +44,7 @@ export default function CouponCard({
   code,
   color,
   centers,
+  locale,
 }: CouponCardProps) {
   const t = useTranslations("couponCodes.card");
 
@@ -156,24 +160,31 @@ export default function CouponCard({
                   <DialogTitle>{t("viewCenters")}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 mt-4">
-                  {centers.map((center) => (
-                    <div
-                      key={center.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="relative w-12 h-12 rounded-full overflow-hidden border bg-white flex-shrink-0">
-                        <Image
-                          src={center.logo}
-                          alt={center.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <span className="font-medium text-gray-900">
-                        {center.name}
-                      </span>
-                    </div>
-                  ))}
+                  {centers.map((center) => {
+                    const centerName =
+                      center.nursery_name_for_center || center.name;
+                    return (
+                      <Link
+                        key={center.id}
+                        href={`/${locale}/nurseries/${createSlug(
+                          centerName
+                        )}?branch=${center.id}`}
+                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden border bg-white flex-shrink-0">
+                          <Image
+                            src={center.logo}
+                            alt={center.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="font-medium text-gray-900">
+                          {center.name}
+                        </span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </DialogContent>
             </Dialog>

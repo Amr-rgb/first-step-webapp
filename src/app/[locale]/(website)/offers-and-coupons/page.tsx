@@ -3,9 +3,10 @@ import { websiteService } from "@/services/promocodeService";
 import OffersAndCouponsClient from "./OffersAndCouponsClient";
 
 interface PageProps {
-  searchParams: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{
     view?: string;
-  };
+  }>;
 }
 
 async function getCoupons() {
@@ -33,9 +34,12 @@ async function getExternalOffers() {
 }
 
 export default async function OffersAndCouponsPage({
+  params,
   searchParams,
 }: PageProps) {
-  const view = searchParams.view === "external" ? "external" : "coupons";
+  const { locale } = await params;
+  const { view } = await searchParams;
+  const activeView = view === "offers" ? "offers" : "coupons";
 
   // Fetch both datasets (you can optimize this to only fetch what's needed)
   const [coupons, externalOffers] = await Promise.all([
@@ -45,9 +49,10 @@ export default async function OffersAndCouponsPage({
 
   return (
     <OffersAndCouponsClient
-      initialView={view}
+      initialView={activeView}
       initialCoupons={coupons}
       initialOffers={externalOffers}
+      locale={locale}
     />
   );
 }

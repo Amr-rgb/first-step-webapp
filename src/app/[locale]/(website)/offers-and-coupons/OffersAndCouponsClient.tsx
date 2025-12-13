@@ -47,6 +47,7 @@ interface OffersAndCouponsClientProps {
   initialView: ViewType;
   initialCoupons: Coupon[];
   initialOffers: any[];
+  locale: string;
 }
 
 function EmptyState({
@@ -96,6 +97,7 @@ export default function OffersAndCouponsClient({
   initialView,
   initialCoupons,
   initialOffers,
+  locale,
 }: OffersAndCouponsClientProps) {
   usePageMetadata();
 
@@ -313,6 +315,7 @@ export default function OffersAndCouponsClient({
                   code={coupon.title}
                   color={coupon.color}
                   centers={[...coupon.centers, ...(coupon.branches || [])]}
+                  locale={locale}
                 />
               ))
             ) : searchQuery ? (
