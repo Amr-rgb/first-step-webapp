@@ -2698,6 +2698,7 @@
       "validUntil": "Valid until",
       "copySuccess": "Code copied successfully"
     },
+    "share": "Share offers and coupons with friends",
     "emptyState": {
       "title1": "There are currently no coupons,",
       "title2": "you will be notified when coupons are available",

@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Settings2, Check } from "lucide-react";
+import { Search, Settings2, Check, Share2 } from "lucide-react";
 import CouponCard from "@/components/coupons/CouponCard";
 import PublicExternalOfferCard from "@/components/coupons/PublicExternalOfferCard";
 import Image from "next/image";
@@ -16,8 +16,9 @@ import {
 import { useTranslations } from "next-intl";
 import NewsletterPopup from "@/components/modals/NewsletterPopup";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
-import { Tabs } from "@/components/general/Tabs";
 import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Coupon {
   id: number;
@@ -40,7 +41,7 @@ interface Coupon {
 }
 
 type SortOption = "newest" | "percentage";
-type ViewType = "coupons" | "external";
+type ViewType = "coupons" | "offers";
 
 interface OffersAndCouponsClientProps {
   initialView: ViewType;
@@ -101,8 +102,8 @@ export default function OffersAndCouponsClient({
     setActiveView(newView);
     const params = new URLSearchParams(searchParams.toString());
 
-    if (newView === "external") {
-      params.set("view", "external");
+    if (newView === "offers") {
+      params.set("view", "offers");
     } else {
       params.delete("view");
     }
@@ -110,10 +111,21 @@ export default function OffersAndCouponsClient({
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const tabOptions = [
-    { value: "coupons" as const, label: tTabs("coupons") },
-    { value: "external" as const, label: tTabs("externalOffers") },
-  ];
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: t("share"),
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success(t("card.copySuccess"));
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
 
   const filteredAndSortedCoupons = useMemo(() => {
     let result = [...initialCoupons];
@@ -166,17 +178,8 @@ export default function OffersAndCouponsClient({
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        {/* Tabs */}
-        <div className="mb-8">
-          <Tabs
-            options={tabOptions}
-            activeTab={activeView}
-            setActiveTab={handleTabChange}
-          />
-        </div>
-
         {/* Top Section: Search and Button */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
           <Button
             size="sm"
             variant="default"
@@ -189,7 +192,7 @@ export default function OffersAndCouponsClient({
             <Input
               type="text"
               placeholder={t("searchPlaceholder")}
-              className="w-full px-12 py-6 rounded-xl border-gray-200 focus:ring-[#4F46E5] text-start shadow-sm bg-white"
+              className="w-full px-12 py-6 rounded-xl border-gray-200 focus:ring-primary text-start shadow-sm bg-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -210,7 +213,7 @@ export default function OffersAndCouponsClient({
                     >
                       <span>{t("sort.newest")}</span>
                       {sortBy === "newest" && (
-                        <Check className="w-4 h-4 text-[#4F46E5]" />
+                        <Check className="w-4 h-4 text-primary" />
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -219,13 +222,70 @@ export default function OffersAndCouponsClient({
                     >
                       <span>{t("sort.percentage")}</span>
                       {sortBy === "percentage" && (
-                        <Check className="w-4 h-4 text-[#4F46E5]" />
+                        <Check className="w-4 h-4 text-primary" />
                       )}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Tabs and Share Button Row */}
+        <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-4 mb-8">
+          {/* Share Button */}
+          <Button
+            variant="outline"
+            onClick={handleShare}
+            size="sm"
+            className="w-full md:w-auto"
+          >
+            <span>{t("share")}</span>
+            <Share2 className="w-5 h-5" />
+          </Button>
+
+          {/* Custom Tabs */}
+          <div className="flex items-center border border-primary rounded-xl overflow-hidden bg-white w-full md:w-auto">
+            <button
+              onClick={() => handleTabChange("offers")}
+              className={cn(
+                "flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-2 transition-all duration-300 font-medium min-w-[200px]",
+                activeView === "offers"
+                  ? "blue-gradient text-white"
+                  : "text-primary hover:bg-gray-50"
+              )}
+            >
+              <span>{tTabs("externalOffers")}</span>
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/assets/illustrations/offer-icon.png"
+                  alt="icon"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </button>
+            <div className="w-[1px] h-full bg-primary" />
+            <button
+              onClick={() => handleTabChange("coupons")}
+              className={cn(
+                "flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-2 transition-all duration-300 font-medium min-w-[200px]",
+                activeView === "coupons"
+                  ? "blue-gradient text-white"
+                  : "text-primary hover:bg-gray-50 bg-white"
+              )}
+            >
+              <span>{tTabs("coupons")}</span>
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/assets/illustrations/floating-coupons.png"
+                  alt="icon"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </button>
           </div>
         </div>
 
