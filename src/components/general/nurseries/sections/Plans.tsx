@@ -1,7 +1,7 @@
 "use client";
-
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -11,11 +11,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Users, DollarSign, MapPin } from "lucide-react";
+import { Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { nurseryService } from "@/services/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 interface Plan {
   id: number;
@@ -35,13 +34,23 @@ interface PlansProps {
 
 const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   const t = useTranslations("nurseryDetails");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const hasInitialized = useRef(false);
+
   const [selectedBranch, setSelectedBranch] = useState<null | {
     id: string;
     name: string;
   }>(null);
-  const [selectedEnrollmentType, setSelectedEnrollmentType] =
-    useState<string>("all");
-  const [selectedAge, setSelectedAge] = useState<string>("all");
+
+  // Initialize state from URL or default to 'all'
+  const [selectedEnrollmentType, setSelectedEnrollmentType] = useState<string>(
+    searchParams.get("type") || "all"
+  );
+  const [selectedAge, setSelectedAge] = useState<string>(
+    searchParams.get("age") || "all"
+  );
 
   // Resolve center ID by nursery name
   const { data: nurseries = [] } = useQuery({
@@ -103,12 +112,60 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
+  // Handle Initial Branch Selection (from URL or Default) - only once
   useEffect(() => {
-    !selectedBranch &&
-      branches.length > 0 &&
+    if (branches.length > 0 && !hasInitialized.current) {
+      const paramBranchId = searchParams.get("branch");
+      if (paramBranchId) {
+        const foundBranch = branches.find((b) => b.id === paramBranchId);
+        if (foundBranch) {
+          setSelectedBranch({ id: foundBranch.id, name: foundBranch.name });
+          hasInitialized.current = true;
+          return;
+        }
+      }
+      // Fallback: default to first branch
       setSelectedBranch({ id: branches[0].id, name: branches[0].name });
-  }, [branches]);
+      hasInitialized.current = true;
+    }
+  }, [branches, searchParams]);
 
+  // Sync URL when filters change
+  useEffect(() => {
+    if (preview || !hasInitialized.current) return;
+
+    const params = new URLSearchParams();
+
+    // Sync Branch
+    if (selectedBranch?.id) {
+      params.set("branch", selectedBranch.id);
+    }
+
+    // Sync Enrollment Type
+    if (selectedEnrollmentType && selectedEnrollmentType !== "all") {
+      params.set("type", selectedEnrollmentType);
+    }
+
+    // Sync Age
+    if (selectedAge && selectedAge !== "all") {
+      params.set("age", selectedAge);
+    }
+
+    const newQueryString = params.toString();
+    const currentQueryString = searchParams.toString();
+
+    if (newQueryString !== currentQueryString) {
+      router.replace(`${pathname}?${newQueryString}`, { scroll: false });
+    }
+  }, [
+    selectedBranch,
+    selectedEnrollmentType,
+    selectedAge,
+    pathname,
+    router,
+    searchParams,
+    preview,
+  ]);
   const getEnrollmentTypeLabel = (type: string) => {
     switch (type) {
       case "hour":
@@ -253,6 +310,8 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                   const branch = branches.find((b) => b.id === value);
                   if (branch) {
                     setSelectedBranch({ id: branch.id, name: branch.name });
+                    setSelectedEnrollmentType("all");
+                    setSelectedAge("all");
                   }
                 }}
                 disabled={loadingBranches || branches.length === 0}
