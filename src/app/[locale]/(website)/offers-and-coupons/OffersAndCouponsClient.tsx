@@ -191,14 +191,6 @@ export default function OffersAndCouponsClient({
       <div className="container mx-auto px-4 py-8">
         {/* Top Section: Search and Button */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          <Button
-            size="sm"
-            variant="default"
-            onClick={() => setShowNewsletter(true)}
-          >
-            {t("subscribeButton")}
-          </Button>
-
           <div className="relative w-full md:w-1/2 lg:w-1/3">
             <Input
               type="text"
@@ -241,21 +233,18 @@ export default function OffersAndCouponsClient({
               </div>
             )}
           </div>
+
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => setShowNewsletter(true)}
+          >
+            {t("subscribeButton")}
+          </Button>
         </div>
 
         {/* Tabs and Share Button Row */}
         <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-4 mb-8">
-          {/* Share Button */}
-          <Button
-            variant="outline"
-            onClick={handleShare}
-            size="sm"
-            className="w-full md:w-auto"
-          >
-            <span>{t("share")}</span>
-            <Share2 className="w-5 h-5" />
-          </Button>
-
           {/* Custom Tabs */}
           <div className="flex items-center border border-primary rounded-xl overflow-hidden bg-white w-full md:w-auto">
             <button
@@ -298,6 +287,17 @@ export default function OffersAndCouponsClient({
               </div>
             </button>
           </div>
+
+          {/* Share Button */}
+          <Button
+            variant="outline"
+            onClick={handleShare}
+            size="sm"
+            className="w-full md:w-auto"
+          >
+            <span>{t("share")}</span>
+            <Share2 className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Content Grid */}
