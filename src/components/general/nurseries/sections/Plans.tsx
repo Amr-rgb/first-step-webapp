@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,6 +15,7 @@ import { Calendar, Clock, Users, DollarSign, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { nurseryService } from "@/services/api";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface Plan {
   id: number;
@@ -38,6 +39,9 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     id: string;
     name: string;
   }>(null);
+  const [selectedEnrollmentType, setSelectedEnrollmentType] =
+    useState<string>("all");
+  const [selectedAge, setSelectedAge] = useState<string>("all");
 
   // Resolve center ID by nursery name
   const { data: nurseries = [] } = useQuery({
@@ -135,41 +139,98 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   );
 
   // Show placeholder in preview mode if no branches found
-  if (!branches || branches.length === 0) {
-    if (preview) {
-      return (
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            {/* Section Header */}
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {t("plans.title")}
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {t("plans.subtitle")}
+  if (preview && (!branches || branches.length === 0)) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {t("plans.title")}
+            </h2>
+          </div>
+
+          {/* Preview Placeholder */}
+          <div className="text-center py-12">
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {locale === "ar" ? "معاينة البرامج" : "Programs Preview"}
+              </h3>
+              <p className="text-gray-600">
+                {locale === "ar"
+                  ? "ستظهر البرامج هنا عند إضافة الفروع والخطط"
+                  : "Programs will appear here when branches and plans are added"}
               </p>
             </div>
-
-            {/* Preview Placeholder */}
-            <div className="text-center py-12">
-              <div className="bg-white rounded-lg p-8 shadow-sm">
-                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {locale === "ar" ? "معاينة البرامج" : "Programs Preview"}
-                </h3>
-                <p className="text-gray-600">
-                  {locale === "ar"
-                    ? "ستظهر البرامج هنا عند إضافة الفروع والخطط"
-                    : "Programs will appear here when branches and plans are added"}
-                </p>
-              </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
+    );
+  }
+
+  // Filter Logic
+  const filteredPlans = useMemo(() => {
+    let result = plans;
+
+    if (selectedEnrollmentType && selectedEnrollmentType !== "all") {
+      result = result.filter(
+        (p) => p.enrollment_type === selectedEnrollmentType
       );
     }
-    return null;
-  }
+
+    if (selectedAge && selectedAge !== "all") {
+      const [minStr, maxStr] = selectedAge.split("_");
+      const minAge = parseInt(minStr);
+      const maxAge = parseInt(maxStr);
+
+      // Match plans that overlap with the selected range
+      result = result.filter((p) => {
+        // Check for overlap: plan starts before selection ends AND plan ends after selection starts
+        return p.start_age <= maxAge && p.end_age >= minAge;
+        // Or simpler exact match if that is the intent?
+        // The user said "ages to be taken from the plans itself", so likely exact ranges.
+        // Let's assume we want to show plans that match these specific start/end ages.
+        // return p.start_age === minAge && p.end_age === maxAge;
+      });
+      // Actually strictly filtering by equality of the range is usually what "taken from plan" implies for filters
+      result = result.filter(
+        (p) => p.start_age === minAge && p.end_age === maxAge
+      );
+    }
+
+    return result;
+  }, [plans, selectedEnrollmentType, selectedAge]);
+
+  const availableEnrollmentTypes = useMemo(() => {
+    return Array.from(new Set(plans.map((p) => p.enrollment_type)));
+  }, [plans]);
+
+  // Generate unique age options from plans
+  const ageOptions = useMemo(() => {
+    // group by start_age and end_age
+    const ranges = new Set<string>();
+    plans.forEach((p) => {
+      ranges.add(`${p.start_age}_${p.end_age}`);
+    });
+
+    return Array.from(ranges)
+      .map((range) => {
+        const [start, end] = range.split("_");
+        return {
+          value: range,
+          label:
+            locale === "ar"
+              ? `من ${start} سنوات ل ${end} سنوات`
+              : `From ${start} to ${end} years`, // Adjusted English label
+        };
+      })
+      .sort((a, b) => {
+        const startA = parseInt(a.value.split("_")[0]);
+        const startB = parseInt(b.value.split("_")[0]);
+        return startA - startB;
+      });
+  }, [plans, locale]);
 
   return (
     <section id="plans-section" className="py-16 bg-gray-50">
@@ -179,16 +240,13 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             {t("plans.title")}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t("plans.subtitle")}
-          </p>
         </div>
 
-        {/* Branch Selector */}
+        {/* Filters */}
         <div className="mb-8">
-          <div className="flex items-center justify-center">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <MapPin className="w-5 h-5 text-blue-600" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Branch Selector */}
+            <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
               <Select
                 value={selectedBranch?.id}
                 onValueChange={(value) => {
@@ -197,16 +255,21 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                     setSelectedBranch({ id: branch.id, name: branch.name });
                   }
                 }}
+                disabled={loadingBranches || branches.length === 0}
               >
-                <SelectTrigger className="w-64">
-                  <SelectValue placeholder={t("plans.selectBranch")} />
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      loadingBranches ? "Loading..." : t("plans.selectBranch")
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch, index: number) => (
                     <SelectItem key={branch.id} value={branch.id}>
                       {branch.name}
                       {index === 0 && (
-                        <span className="ml-2 text-xs text-blue-600">
+                        <span className="ml-2 text-xs text-primary">
                           {locale === "ar"
                             ? "(الفرع الرئيسي)"
                             : "(Main Branch)"}
@@ -217,10 +280,58 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Enrollment Type Selector (Buttons) */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {availableEnrollmentTypes.map((type) => (
+                <Button
+                  key={type}
+                  variant={
+                    selectedEnrollmentType === type ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() =>
+                    setSelectedEnrollmentType(
+                      selectedEnrollmentType === type ? "all" : type
+                    )
+                  }
+                  className={
+                    selectedEnrollmentType === type
+                      ? ""
+                      : "!border-mid-gray !text-mid-gray"
+                  }
+                >
+                  {getEnrollmentTypeLabel(type)}
+                </Button>
+              ))}
+            </div>
+
+            {/* Age Selector */}
+            <div className="flex items-center space-x-3 rtl:space-x-reverse min-w-[200px]">
+              <Select
+                value={selectedAge}
+                onValueChange={setSelectedAge}
+                disabled={loadingPlans || plans.length === 0}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("plans.selectAge")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {locale === "ar" ? "الكل" : "All"}
+                  </SelectItem>
+                  {ageOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {selectedBranchData && (
-            <div className="text-center mt-2">
+            <div className="text-center mt-4">
               <p className="text-sm text-gray-600">{selectedBranchData.name}</p>
             </div>
           )}
@@ -238,10 +349,10 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
               </div>
             ))}
           </div>
-        ) : plans.length > 0 ? (
+        ) : filteredPlans.length > 0 ? (
           <div className="max-h-[500px] overflow-y-auto pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {plans.map((plan: Plan) => (
+              {filteredPlans.map((plan: Plan) => (
                 <Card
                   key={plan.id}
                   className="hover:shadow-lg transition-shadow duration-300"
@@ -256,7 +367,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                     <div className="space-y-3 mb-6">
                       {/* Age Range */}
                       <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <Users className="w-4 h-4 text-blue-600" />
+                        <Users className="w-4 h-4 text-primary" />
                         <span className="text-sm text-gray-600">
                           {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
                           {locale === "ar" ? "سنة" : "years"}
@@ -284,7 +395,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
 
                     {/* Booking Button */}
                     <Button
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      className="w-full bg-primary hover:bg-blue-700 text-white"
                       onClick={() => {
                         if (!preview) {
                           // Navigate to booking page with plan details
@@ -310,8 +421,8 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
               </h3>
               <p className="text-gray-600">
                 {locale === "ar"
-                  ? "سيتم إضافة البرامج قريباً. تحقق من الفرع لاحقاً."
-                  : "Programs will be added soon. Please check back later."}
+                  ? "يرجى تغيير خيارات التصفية أو التحقق من الفرع لاحقاً."
+                  : "Please change filter options or check back later."}
               </p>
             </div>
           </div>

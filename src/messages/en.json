@@ -2518,9 +2518,11 @@
       }
     },
     "plans": {
-      "title": "Our Educational Programs",
-      "subtitle": "Discover our diverse educational programs designed specifically to develop your child's skills",
+      "title": "Programs",
+      "subtitle": "",
       "selectBranch": "Select Branch",
+      "selectAge": "Child Age",
+      "selectEnrollmentType": "Program Type",
       "noPrograms": "No Programs Available",
       "noProgramsMessage": "Programs will be added soon. Please check back later.",
       "bookNow": "Book Now",
