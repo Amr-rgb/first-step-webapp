@@ -1292,7 +1292,8 @@
           "emptyError": "Please enter a coupon code",
           "usageLimit": "Coupon usage limit reached",
           "expired": "Coupon has expired",
-          "invalid": "Invalid coupon code"
+          "invalid": "Invalid coupon code",
+          "expiredMessage": "This coupon has expired. Please remove it to add a new one."
         }
       },
       "reports": {
@@ -1727,6 +1728,10 @@
       "bookings": {
         "title": "No bookings yet",
         "description": "Your booking history will appear here once you make your first reservation."
+      },
+      "centerBookings": {
+        "title": "No bookings",
+        "description": "There are no bookings to display currently"
       },
       "children": {
         "title": "No children added",
@@ -2194,6 +2199,7 @@
     },
     "center-bookings": {
       "title": "Bookings",
+      "searchPlaceholder": "Search",
       "viewTable": "Table",
       "viewCards": "Cards",
       "viewDetails": "View Details",

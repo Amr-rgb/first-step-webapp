@@ -363,7 +363,7 @@ const Bookings = () => {
       <EmptyState
         icon="📅"
         size="lg"
-        translationKey="dashboard.emptyStates.bookings"
+        translationKey="dashboard.emptyStates.centerBookings"
       />
     );
   }
@@ -414,7 +414,7 @@ const Bookings = () => {
           >
             <input
               type="search"
-              placeholder="بحث"
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 text-right"
