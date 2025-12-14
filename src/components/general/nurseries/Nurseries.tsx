@@ -11,6 +11,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { RotateCw, AlertCircle } from "lucide-react";
 
+type LocaleKey = 'ar' | 'en';
+
 const Nurseries = ({
   nurseries,
   query,
@@ -21,9 +23,19 @@ const Nurseries = ({
   nurseries: NurseryResponse[];
   query: string;
   filter: string;
-  locale: string;
+  locale: LocaleKey;
   error?: any;
 }) => {
+  // Log the response data
+  console.log("=== NURSERIES PAGE DATA ===");
+  console.log("Nurseries data:", nurseries);
+  console.log("Nurseries count:", nurseries?.length || 0);
+  console.log("Query:", query);
+  console.log("Filter:", filter);
+  console.log("Locale:", locale);
+  console.log("Error:", error);
+  console.log("=== END NURSERIES DATA ===");
+
   const t = useTranslations("nurseries");
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(query);
@@ -53,6 +65,14 @@ const Nurseries = ({
       : true;
     return matchesQuery && matchesFilter;
   });
+
+  // Log filtered results
+  console.log("=== FILTERING RESULTS ===");
+  console.log("Search query:", debouncedQuery);
+  console.log("Selected filter:", selectedFilter);
+  console.log("Filtered nurseries count:", filteredNurseries.length);
+  console.log("Filtered nurseries:", filteredNurseries);
+  console.log("=== END FILTERING ===");
 
   return (
     <section className="container mx-auto px-4">
@@ -106,7 +126,7 @@ const Nurseries = ({
 
       {/* Nurseries Grid */}
       {!error && filteredNurseries.length > 0 && (
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-10 xl:px-24">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:px-24">
           {filteredNurseries.map((nursery, index) => (
             <NurseryCard nursery={nursery} locale={locale} key={index} />
           ))}
