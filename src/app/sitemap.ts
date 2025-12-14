@@ -1,7 +1,9 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
+import { blogService, nurseryService } from "@/services/api";
+import { createSlug } from "@/lib/utils";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://firststep-app.com";
 
   // Static routes
@@ -9,18 +11,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/services",
     "/nurseries",
-    "/about",
+    "/our-story",
     "/contact",
     "/blog",
+    "/sign-up",
     "/sign-up/center",
     "/sign-up/parent",
+    "/sign-in",
+    "/forgot-password",
     "/privacy-policy",
-    "/terms-of-service",
+    "/terms-conditions",
+    "/coupon-codes",
+    "/faqs",
   ];
 
   // Generate sitemap entries for each locale
   const sitemap: MetadataRoute.Sitemap = [];
 
+  // 1. Add static routes
   routing.locales.forEach((locale) => {
     staticRoutes.forEach((route) => {
       const url = route === "" ? `/${locale}` : `/${locale}${route}`;
@@ -40,31 +48,60 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   });
 
-  // Add specific nursery pages (if you have dynamic nursery routes)
-  // This would need to be updated based on your actual nursery data
-  const nurseryNames = [
-    "world-of-learning",
-    "kids-time",
-    "rekaz",
-    
-  ];
+  // 2. Add dynamic nursery routes
+  try {
+    // Fetch nurseries (using 'en' to generate consistent slugs)
+    const nurseries = await nurseryService.getNurseries("en");
 
-  routing.locales.forEach((locale) => {
-    nurseryNames.forEach((nurseryName) => {
-      sitemap.push({
-        url: `${baseUrl}/${locale}/nurseries/${nurseryName}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-        alternates: {
-          languages: {
-            en: `${baseUrl}/en/nurseries/${nurseryName}`,
-            ar: `${baseUrl}/ar/nurseries/${nurseryName}`,
+    nurseries.forEach((nursery) => {
+      // Use createSlug to generate the slug from the nursery name
+      const slug = createSlug(nursery.nursery_name);
+
+      routing.locales.forEach((locale) => {
+        sitemap.push({
+          url: `${baseUrl}/${locale}/nurseries/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+          alternates: {
+            languages: {
+              en: `${baseUrl}/en/nurseries/${slug}`,
+              ar: `${baseUrl}/ar/nurseries/${slug}`,
+            },
           },
-        },
+        });
       });
     });
-  });
+  } catch (error) {
+    console.error("Failed to fetch nurseries for sitemap:", error);
+  }
+
+  // 3. Add dynamic blog routes
+  try {
+    // Fetch blogs
+    const blogs = await blogService.getBlogs("en");
+
+    blogs.forEach((blog) => {
+      routing.locales.forEach((locale) => {
+        sitemap.push({
+          url: `${baseUrl}/${locale}/blog/${blog.id}`,
+          lastModified: new Date(
+            blog.published_at || blog.created_at || new Date()
+          ),
+          changeFrequency: "weekly",
+          priority: 0.6,
+          alternates: {
+            languages: {
+              en: `${baseUrl}/en/blog/${blog.id}`,
+              ar: `${baseUrl}/ar/blog/${blog.id}`,
+            },
+          },
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Failed to fetch blogs for sitemap:", error);
+  }
 
   return sitemap;
 }

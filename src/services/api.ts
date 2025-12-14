@@ -76,8 +76,8 @@ export const apiClient = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION,
-    "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET,
+    "X-Authorization": process.env.X_AUTHORIZATION,
+    "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET,
   },
 });
 
@@ -227,9 +227,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -260,9 +259,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -293,9 +291,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -326,9 +323,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -359,9 +355,8 @@ export const websiteService = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify(payload),
         }
@@ -391,9 +386,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
         }
@@ -414,6 +408,37 @@ export const websiteService = {
     }
   },
 
+  checkEmail: async (email: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/check-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (!res.ok) {
+        const responseData = await res.json();
+        throw {
+          message: responseData?.message || "Failed to check email",
+          errors: responseData?.errors || {},
+          status: res.status,
+        };
+      }
+
+      return await res.json();
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getPlans: async () => {
     try {
       const res = await fetch(
@@ -421,9 +446,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -450,9 +474,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -482,9 +505,8 @@ export const websiteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -515,9 +537,8 @@ export const blogService = {
         headers: {
           "Content-Type": "application/json",
           lang: locale,
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         next: {
           revalidate: 86400,
@@ -545,9 +566,8 @@ export const blogService = {
         headers: {
           "Content-Type": "application/json",
           lang: locale,
-          "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-          "X-Authorization-Secret":
-            process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+          "X-Authorization": process.env.X_AUTHORIZATION || "",
+          "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
         next: {
           revalidate: 1,
@@ -577,9 +597,8 @@ export const blogService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 1,
@@ -619,23 +638,88 @@ export const nurseryService = {
             .join("&")
         : "";
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
-          },
-          next: {
-            revalidate: 1,
-          },
+      let res: Response;
+      try {
+        res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              lang: locale,
+              "X-Authorization": process.env.X_AUTHORIZATION || "",
+              "X-Authorization-Secret":
+                process.env.X_AUTHORIZATION_SECRET || "",
+            },
+            next: {
+              revalidate: 1,
+            },
+          }
+        );
+      } catch (fetchError: any) {
+        // Handle network errors (fetch failed, connection refused, timeout, etc.)
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("fetch failed")
+        ) {
+          throw {
+            message:
+              locale === "ar"
+                ? "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+                : "Network connection failed. Please check your internet connection and try again.",
+            errors: {},
+            status: 0,
+            isNetworkError: true,
+          };
         }
-      );
+        // Re-throw other fetch errors
+        throw {
+          message:
+            locale === "ar"
+              ? "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+              : "An error occurred while connecting to the server. Please try again.",
+          errors: {},
+          status: 0,
+          originalError: fetchError.message,
+        };
+      }
 
-      const data = await res.json();
+      // Check response status before trying to parse JSON
+      if (!res.ok) {
+        let errorData: any = {};
+        try {
+          errorData = await res.json();
+        } catch {
+          // If JSON parsing fails, use default error
+          errorData = {};
+        }
+        throw {
+          message:
+            errorData?.message ||
+            (locale === "ar"
+              ? "فشل في جلب بيانات الحضانات"
+              : "Failed to fetch nurseries"),
+          errors: errorData?.errors || {},
+          status: res.status,
+          data: errorData,
+        };
+      }
+
+      // Parse JSON response
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (jsonError: any) {
+        throw {
+          message:
+            locale === "ar"
+              ? "فشل في قراءة البيانات من الخادم. يرجى المحاولة مرة أخرى."
+              : "Failed to parse server response. Please try again.",
+          errors: {},
+          status: res.status,
+          isParseError: true,
+        };
+      }
+
       if (Array.isArray(data.data)) {
         console.log(
           "nurseries (nursery_name, user_id): ",
@@ -646,16 +730,13 @@ export const nurseryService = {
         );
       }
 
-      if (!res.ok) {
-        throw {
-          message: "Failed to fetch nurseries",
-          errors: {},
-          status: res.status,
-        };
-      }
-
       return data.data as NurseryResponse[];
-    } catch (error) {
+    } catch (error: any) {
+      // If error is already formatted, pass it through
+      if (error.message && error.status !== undefined) {
+        throw ApiErrorHandler.handle(error);
+      }
+      // Otherwise, let ApiErrorHandler format it
       throw ApiErrorHandler.handle(error);
     }
   },
@@ -691,9 +772,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -734,9 +814,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -782,9 +861,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
         }
       );
@@ -895,9 +973,8 @@ export const nurseryService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret":
-              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -1081,9 +1158,21 @@ export const authService = {
         password,
       });
 
-      if (!response.data.token) {
+      // Check if the response indicates an error (some APIs return 200 with error inside)
+      if (response.data.status === "401" || response.data.status === 401) {
         throw {
-          message: "Login failed: No authentication token received",
+          message: response.data.message || "Login failed",
+          errors: {},
+          status: 401,
+        };
+      }
+
+      // Validate that we have the required data
+      if (!response.data.token || !response.data.user) {
+        throw {
+          message:
+            response.data.message ||
+            "Login failed: Invalid response from server",
           errors: {},
           status: 401,
         };
@@ -1186,10 +1275,8 @@ export const paymentService = {
       );
       console.log("Payment service - Request headers:", {
         "Content-Type": "application/json",
-        "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION
-          ? "***"
-          : "NOT_SET",
-        "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET
+        "X-Authorization": process.env.X_AUTHORIZATION ? "***" : "NOT_SET",
+        "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET
           ? "***"
           : "NOT_SET",
       });
@@ -1234,17 +1321,25 @@ export const paymentService = {
     }
   },
 
-  payOrder: async (params: {
-    enrollment_id: number;
-    child_ids: Array<string | number>;
-    booking_date?: string;
-    from_time?: string;
-    to_time?: string;
-  }) => {
+  payOrder: async (params: { enrollment_id: number; coupon_code?: string }) => {
     try {
-      const response = await apiClient.post("/payment/pay-order", params);
+      // Only send enrollment_id and title (coupon code) if it exists
+      const payload: { enrollment_id: number; title?: string } = {
+        enrollment_id: params.enrollment_id,
+        title: params.coupon_code,
+      };
+
+      // Ensure coupon code is trimmed and uppercased if provided, send as 'title'
+      if (params.coupon_code && params.coupon_code.trim()) {
+        payload.title = params.coupon_code.trim().toUpperCase();
+      }
+
+      console.log("Payment service - payOrder request:", payload);
+      const response = await apiClient.post("/payment/pay-order", payload);
+      console.log("Payment service - payOrder response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("Payment service - payOrder error:", error);
       throw ApiErrorHandler.handle(error);
     }
   },

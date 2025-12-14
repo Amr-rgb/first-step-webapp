@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { PlusCircle } from "lucide-react";
 import {
@@ -21,6 +22,12 @@ const SecondarySidebar = () => {
   const locale = useLocale();
   const t = useTranslations("dashboard.secondary-sidebar");
   const subscriptionRequired = useSubscriptionRequired();
+
+  // Map locale to proper locale string for date formatting
+  const dateLocale = locale === "ar" ? "ar-SA" : "en-US";
+  const [newItemId, setNewItemId] = React.useState<string | null>(null);
+  const [isAddingTask, setIsAddingTask] = React.useState(false);
+  const [isAddingOccasion, setIsAddingOccasion] = React.useState(false);
 
   const {
     occasions,
@@ -56,12 +63,13 @@ const SecondarySidebar = () => {
                   {t("upcoming-occasions")}
                 </p>
                 <PlusCircle
-                  onClick={() =>
+                  onClick={() => {
+                    setIsAddingOccasion(true);
                     addOccasion.mutate({
                       title: t("add.occasion"),
                       date: new Date(),
-                    })
-                  }
+                    });
+                  }}
                   className="size-4 text-light-gray hover:text-primary cursor-pointer"
                 />
               </div>
@@ -74,31 +82,34 @@ const SecondarySidebar = () => {
                 <div className="mt-4 text-center text-error">
                   {occasionsError instanceof Error
                     ? occasionsError.message
-                    : "An error occurred"}
+                    : t("error")}
                 </div>
               ) : occasions.length === 0 ? (
                 <EmptyState
-                  onAdd={() =>
+                  onAdd={() => {
+                    setIsAddingOccasion(true);
                     addOccasion.mutate({
                       title: t("add.occasion"),
                       date: new Date(),
-                    })
-                  }
+                    });
+                  }}
                 />
               ) : (
                 <div className="mt-2 flex flex-col items-center gap-y-2">
-                  {occasions.map((item: Occasion) => (
+                  {occasions.map((item: Occasion, index: number) => (
                     <Card
                       key={item.id}
                       id={item.id}
                       type="occasion"
                       title={item.title}
                       rawDate={item.date}
-                      date={item.date.toLocaleDateString(locale, {
+                      date={item.date.toLocaleDateString(dateLocale, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
                       })}
+                      isNew={isAddingOccasion && index === occasions.length - 1}
+                      onEditComplete={() => setIsAddingOccasion(false)}
                     />
                   ))}
                   <div className="w-4/5 h-px bg-light-gray rounded-full" />
@@ -121,7 +132,7 @@ const SecondarySidebar = () => {
                 <div className="mt-4 text-center text-error">
                   {birthdaysError instanceof Error
                     ? birthdaysError.message
-                    : "An error occurred"}
+                    : t("error")}
                 </div>
               ) : birthdays.length === 0 ? (
                 <EmptyState />
@@ -134,7 +145,7 @@ const SecondarySidebar = () => {
                       type="birthday"
                       title={item.title}
                       rawDate={item.date}
-                      date={item.date.toLocaleDateString(locale, {
+                      date={item.date.toLocaleDateString(dateLocale, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
@@ -158,13 +169,14 @@ const SecondarySidebar = () => {
                     })}
                   </p>
                   <PlusCircle
-                    onClick={() =>
+                    onClick={() => {
+                      setIsAddingTask(true);
                       addTask.mutate({
                         title: t("add.task"),
                         date: new Date(),
                         done: false,
-                      })
-                    }
+                      });
+                    }}
                     className="size-4 text-light-gray hover:text-primary cursor-pointer"
                   />
                 </div>
@@ -176,34 +188,37 @@ const SecondarySidebar = () => {
                 </div>
               ) : error ? (
                 <div className="mt-4 text-center text-error">
-                  {error instanceof Error ? error.message : "An error occurred"}
+                  {error instanceof Error ? error.message : t("error")}
                 </div>
               ) : tasks.length === 0 ? (
                 <EmptyState
-                  onAdd={() =>
+                  onAdd={() => {
+                    setIsAddingTask(true);
                     addTask.mutate({
                       title: t("add.task"),
                       date: new Date(),
                       done: false,
-                    })
-                  }
+                    });
+                  }}
                 />
               ) : (
                 <div className="mt-2 flex flex-col gap-y-2">
                   {/* Tasks list */}
                   <div className="flex flex-col items-center gap-y-2">
-                    {tasks.map((item: Task) => (
+                    {tasks.map((item: Task, index: number) => (
                       <TaskCard
                         key={item.id}
                         id={item.id}
                         title={item.title}
                         rawDate={item.date}
-                        date={item.date.toLocaleDateString(locale, {
+                        date={item.date.toLocaleDateString(dateLocale, {
                           day: "numeric",
                           month: "numeric",
                           year: "numeric",
                         })}
                         done={item.done}
+                        isNew={isAddingTask && index === tasks.length - 1}
+                        onEditComplete={() => setIsAddingTask(false)}
                       />
                     ))}
                     <div className="w-4/5 h-px bg-light-gray rounded-full mt-1" />

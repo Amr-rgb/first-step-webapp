@@ -5,12 +5,34 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" }
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "coupon-codes": {
+        "title": "العروض والخصومات",
+        "path": "/offers-and-coupons"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "إنشاء حساب",
@@ -49,15 +71,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "الرئيسية", "path": "/" },
-      "services": { "title": "خدماتنا", "path": "/services" },
-      "nurseries": { "title": "الحضانات", "path": "/nurseries" },
-      "centers": { "title": "المراكز", "path": "/centers" },
-      "blog": { "title": "المدونة", "path": "/blog" },
-      "story": { "title": "قصتنا", "path": "/our-story" },
-      "contact": { "title": "تواصل معنا", "path": "/contact" },
-      "help": { "title": "المساعدة", "path": "/help" },
-      "privacy-policy": { "title": "الخصوصية", "path": "/privacy-policy" },
+      "home": {
+        "title": "الرئيسية",
+        "path": "/"
+      },
+      "services": {
+        "title": "خدماتنا",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "الحضانات",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "المراكز",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "المدونة",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "قصتنا",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "المساعدة",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "الخصوصية",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "الشروط والأحكام",
         "path": "/terms-conditions"
@@ -148,7 +197,8 @@
       "0-3": "حضانات من 0 إلى 3 سنوات",
       "3-6": "حضانات من 3 إلى 6 سنوات",
       "disabled": "حضانات الاحتياجات الخاصة"
-    }
+    },
+    "viewAllCoupons": "عرض كل الكوبونات"
   },
   "auth": {
     "sign-up": {
@@ -752,6 +802,7 @@
       "admin": {
         "home": "الرئيسية",
         "centers": "الحضانات والمراكز",
+        "discount-codes": "أكواد الخصم",
         "centers-subscriptions": "سجل اشتراكات المراكز",
         "parents": "أولياء الأمور",
         "bookings": "الحجوزات",
@@ -767,10 +818,12 @@
         "bookings": "الحجوزات",
         "daily-reports": "التقارير اليومية",
         "center-data": "بيانات مركزك",
+        "gate": "تطبيق First Step Gate",
         "ad-or-blog-request": "طلب إعلان أو مقال",
         "notifications": "الإشعارات",
         "team": "الفريق",
-        "chat": "المحادثات"
+        "chat": "المحادثات",
+        "discount-coupons": "كوبونات الخصم"
       }
     },
     "account": {
@@ -821,6 +874,35 @@
         "title": "تأكيد كلمة المرور",
         "passwordLabel": "أدخل كلمة المرور للتأكيد",
         "passwordPlaceholder": "••••••••"
+      }
+    },
+    "coupons": {
+      "couponName": "اسم الكوبون",
+      "discountPercentage": "نسبة الخصم",
+      "discountValue": "قيمة الخصم (ر.س)",
+      "startDate": "بداية يوم",
+      "endDate": "نهاية يوم",
+      "usageCount": "عدد مرات الاستخدام من خلالك",
+      "currency": "ر.س",
+      "times": "مرات",
+      "activatedBranches": "الفروع المفعل فيها",
+      "requestAddCoupon": "طلب إضافة كوبون خصم",
+      "requesting": "جاري الطلب...",
+      "requestSuccess": "تم إرسال الطلب",
+      "requestSuccessDescription": "تم إرسال طلبك لإضافة كوبون خصم جديد. سنقوم بمراجعته قريباً.",
+      "requestError": "فشل الطلب",
+      "requestErrorDescription": "فشل إرسال طلبك. يرجى المحاولة مرة أخرى لاحقاً.",
+      "searchPlaceholder": "ابحث عن كوبون خصم",
+      "noCouponsFound": {
+        "title": "لا توجد كوبونات",
+        "description": "ليس لديك أي كوبونات خصم بعد. اطلب إضافة كوبون خصم للبدء."
+      },
+      "filters": {
+        "all": "الكل",
+        "active": "نشط",
+        "notStarted": "لم يبدأ بعد",
+        "paused": "موقوف",
+        "expired": "منتهي"
       }
     },
     "center": {
@@ -1039,6 +1121,44 @@
           "cancel": "إلغاء"
         }
       },
+      "gate": {
+        "title": "تطبيق First Step Gate",
+        "subtitle": "سجل حضور وانصراف الأطفال بسهولة",
+        "codeLabel": "اضغط زر التفعيل لتوليدك",
+        "downloadApp": "شارك التطبيق مع موظفيك",
+        "attendanceTitle": "سجل الحضور",
+        "buttons": {
+          "generate": "توليد الكود",
+          "generating": "جاري التوليد..."
+        },
+        "success": {
+          "codeGenerated": "تم توليد الكود بنجاح",
+          "linkCopied": "تم نسخ الرابط"
+        },
+        "errors": {
+          "selectBranch": "الرجاء اختيار الفرع أولاً",
+          "generateFailed": "فشل في توليد الكود. يرجى المحاولة مرة أخرى."
+        },
+        "table": {
+          "number": "م",
+          "childName": "اسم الطفل",
+          "date": "التاريخ",
+          "arrivalTime": "وقت الحضور",
+          "departureTime": "وقت الانصراف",
+          "program": "البرنامج",
+          "branch": "الفرع",
+          "noData": "لا توجد سجلات حضور بعد"
+        },
+        "modal": {
+          "title": "توليد كود البوابة",
+          "selectBranch": "اختر الفرع",
+          "generate": "توليد الكود",
+          "successTitle": "رمز دخول التطبيق",
+          "successSubtitle": "شارك الرمز مع الموظف المسئول عن تسجيل حضور وانصراف الأطفال",
+          "copyButton": "انسخ رمز الدخول لموظفيك",
+          "copied": "تم نسخ الرمز بنجاح"
+        }
+      },
       "children": {
         "title": "الأطفال",
         "form": {
@@ -1058,6 +1178,26 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "عدد الأطفال",
+        "enrollmentsCount": "عدد الاشتراكات",
+        "upcomingEnrollments": "الاشتراكات القادمة",
+        "currentEnrollments": "الاشتراكات الحالية",
+        "enrollmentStartsOn": "يبدأ حجز الطفل {number} يوم {date}",
+        "enrollmentEndsOn": "ينتهي حجز الطفل {number} يوم {date}",
+        "noUpcomingEnrollments": "لا توجد اشتراكات قادمة.",
+        "noCurrentEnrollments": "لا توجد اشتراكات حالية.",
+        "viewAll": "عرض الكل",
+        "bookNow": "احجز لطفلك الآن",
+        "upcomingEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات قادمة",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "لا توجد اشتراكات حالية",
+          "description": "تصفح الحضانات واحجز لطفلك الآن"
+        }
+      },
       "children": {
         "title": "الأطفال",
         "add": "إضافة طفل",
@@ -1093,7 +1233,8 @@
         "actions": {
           "showDetails": "عرض تفاصيل الحجز",
           "cancel": "الغاء الحجز",
-          "renew": "جدد نفس الحجز الآن"
+          "renew": "جدد نفس الحجز الآن",
+          "confirmReservation": "تأكيد الحجز الآن"
         },
         "status": {
           "accepted": "في انتظار الدفع",
@@ -1120,7 +1261,35 @@
         "total": "المبلغ",
         "filterByStatus": "فلترة حسب الحالة",
         "filterAll": "جميع الحالات",
-        "noBookingsForStatus": "لا توجد حجوزات للحالة المحددة"
+        "noBookingsForStatus": "لا توجد حجوزات للحالة المحددة",
+        "confirmReservation": {
+          "title": "تفاصيل الحجز",
+          "originalPrice": "السعر الأصلي",
+          "required": "المطلوب",
+          "finalAmount": "المبلغ المطلوب",
+          "notes": "ملاحظات",
+          "note1": "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني.",
+          "note2": "لا يمكن استرداد المبلغ المدفوع لأي سبب.",
+          "note3": "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع.",
+          "payNow": "ادفع الآن",
+          "success": "تم تأكيد الحجز بنجاح"
+        },
+        "coupon": {
+          "label": "كوبون الخصم",
+          "placeholder": "أدخل كود الكوبون",
+          "apply": "تطبيق",
+          "changeCoupon": "تغيير الكوبون",
+          "info": "يمكنك تغيير الكوبون وإضافة كوبون آخر",
+          "code": "كود الكوبون",
+          "saved": "وفرت",
+          "appliedSuccess": "تم تطبيق الكوبون بنجاح",
+          "applyError": "فشل في تطبيق الكوبون",
+          "emptyError": "يرجى إدخال كود الكوبون",
+          "usageLimit": "تم الوصول للحد الأقصى لاستخدام الكوبون",
+          "expired": "انتهت صلاحية الكوبون",
+          "invalid": "كود الكوبون غير صالح",
+          "expiredMessage": "انتهت صلاحية هذا الكوبون. يرجى إزالته لإضافة كوبون جديد."
+        }
       },
       "reports": {
         "title": "التقارير اليومية",
@@ -1256,6 +1425,7 @@
           "load": "تعذر تحميل المراكز",
           "unexpected": "حدث خطأ غير متوقع أثناء تحميل البيانات. تحقق من اتصالك بالإنترنت، أو حاول مرة أخرى لاحقًا."
         },
+        "noResults": "لا توجد مراكز بهذه الحالة",
         "loading": "جارى تحميل البيانا...",
         "centerAccepted": "تم قبول المركز بنجاح",
         "centerRejected": "تم رفض المركز بنجاح",
@@ -1268,7 +1438,15 @@
         "status": {
           "pending": "قيد الانتظار",
           "confirmed": "تم التأكيد",
-          "canceled": "مرفوض"
+          "canceled": "مرفوض",
+          "all": "الكل"
+        },
+        "delete_dialog": {
+          "title": "حذف المركز",
+          "description": "هل أنت متأكد أنك تريد حذف هذا المركز؟ لا يمكن التراجع عن هذا الإجراء.",
+          "confirm": "حذف",
+          "success": "تم حذف المركز بنجاح",
+          "error": "فشل في حذف المركز"
         }
       },
       "parents": {
@@ -1367,6 +1545,16 @@
       "dashboard": "لوحة التحكم",
       "home": "الرئيسية",
       "search": "بحث",
+      "menu": {
+        "notifications": "الإشعارات",
+        "billing": "سجل الدفع",
+        "accountData": "تعديل بيانات الحساب",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsConditions": "الشروط والأحكام",
+        "faqs": "الاسئلة الشائعة",
+        "contactUs": "تواصل معنا",
+        "logout": "تسجيل الخروج"
+      },
       "routes": {
         "center": "المركز",
         "branches": "الفروع",
@@ -1386,6 +1574,7 @@
         "team": "الفريق",
         "addTeamMember": "إضافة عضو",
         "teamMemberDetails": "تفاصيل العضو",
+        "discountCoupons": "كوبونات الخصم",
         "parent": "ولي الأمر",
         "myChildren": "أطفالي",
         "addChild": "إضافة طفل",
@@ -1406,6 +1595,16 @@
         "allChildren": "جميع الأطفال",
         "parents": "أولياء الأمور",
         "parentDetails": "تفاصيل ولي الأمر"
+      },
+      "settings": {
+        "notifications": "الإشعارات",
+        "billingHistory": "سجل الدفع",
+        "editAccountData": "تعديل بيانات الحساب",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsConditions": "الشروط والأحكام",
+        "faqs": "الاسئلة الشائعة",
+        "contactUs": "تواصل معنا",
+        "logout": "تسجيل الخروج"
       }
     },
     "search": {
@@ -1517,12 +1716,17 @@
       "empty": {
         "add-now": "أضف الآن"
       },
-      "loading": "جارى تحميل البيانا..."
+      "loading": "جارى تحميل البيانا...",
+      "error": "حدث خطأ"
     },
     "emptyStates": {
       "bookings": {
         "title": "لا توجد حجوزات بعد",
         "description": "ستظهر سجل حجوزاتك هنا بمجرد إجراء أول حجز لك."
+      },
+      "centerBookings": {
+        "title": "لا توجد حجوزات",
+        "description": "لا توجد حجوزات لعرضها حالياً"
       },
       "children": {
         "title": "لم يتم إضافة أطفال بعد",
@@ -1624,6 +1828,34 @@
             "title": "بدء الحجوزات",
             "description": "ابدأ في استقبال حجوزات الأطفال وتنظيم جدول المركز"
           }
+        }
+      }
+    },
+    "portfolioProgress": {
+      "welcome": "مرحبا {centerName}",
+      "question": "هل أنت جاهز لإكمال ملفك الخاص على موقعنا؟",
+      "expand": "توسيع",
+      "collapse": "طي",
+      "tasks": {
+        "branches": {
+          "title": "اضف فروعك",
+          "description": "اضف فروعك وتابعها من خلال لوحة التحكم"
+        },
+        "children": {
+          "title": "سجل أطفال مركزك",
+          "description": "اضف حسابات أولياء الأمور مباشرة"
+        },
+        "profile": {
+          "title": "اكمل ملفك الخاص",
+          "description": "اضف خدماتك وأنشطة مركزك على موقعنا الإلكتروني"
+        },
+        "advertisement": {
+          "title": "إعلانك المجاني",
+          "description": "اعلن من خلال فريست ستيب بشكل مجاني لأول مرة"
+        },
+        "blog": {
+          "title": "اكتب مدونة",
+          "description": "اعلن من خلال فريست ستيب بشكل مجاني لأول مرة"
         }
       }
     },
@@ -1801,12 +2033,14 @@
     "tables": {
       "shared": {
         "status": {
-          "confirmed": "تم الدفع",
+          "confirmed": "في انتظار الدفع",
           "waitingForPayment": "في انتظار الدفع",
           "waitingForConfirmation": "في انتظار التأكيد",
           "rejected": "مرفوض",
           "cancelled": "ملغي",
           "paid": "تم الدفع",
+          "existing": "من خلال المركز",
+          "expired": "منتهي",
           "selectChild": "اختر الطفل"
         }
       },
@@ -1966,6 +2200,7 @@
     },
     "center-bookings": {
       "title": "الحجوزات",
+      "searchPlaceholder": "بحث",
       "viewTable": "جدول",
       "viewCards": "بطاقات",
       "viewDetails": "عرض التفاصيل",
@@ -1981,6 +2216,7 @@
       "sendNotification": "إرسال إشعار لولي الأمر",
       "sendingNotification": "جاري الإرسال...",
       "children": "أطفال",
+      "andOthers": "و {count} آخرين",
       "filters": {
         "all": "الكل",
         "completed": "تم الدفع",
@@ -2021,7 +2257,12 @@
         "month": "شهر",
         "months": "أشهر"
       },
-      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع"
+      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع",
+      "paymentDetails": "تفاصيل الدفع",
+      "originalAmount": "المبلغ الأصلي",
+      "couponCode": "كود الكوبون",
+      "discount": "الخصم",
+      "finalAmount": "المبلغ النهائي"
     },
     "center-reports": {
       "title": "التقارير اليومية",
@@ -2072,6 +2313,14 @@
       "description": "لا يوجد شيء لعرضه هنا بعد. ابدأ بإضافة بعض المحتوى."
     }
   },
+  "NewsletterPopup": {
+    "title": "نرسلك كل عروضنا وكوبوناتنا",
+    "subtitle": "اشترك عبر البريد الإلكتروني",
+    "placeholder": "ادخل بريدك الإلكتروني",
+    "button": "اشترك الآن",
+    "success": "تم الاشتراك بنجاح!",
+    "loading": "جاري الاشتراك..."
+  },
   "HomePage": {
     "Features": {
       "title": "مميزات First Step",
@@ -2080,7 +2329,6 @@
         "title": "إدارة ملفات الأطفال والتواصل مع أولياء الأمور",
         "description": "قاعدة بيانات متكاملة لملفات الأطفال وأولياء الأمور مع إمكانية إرسال تقارير يومية بحالة الطفل داخل الحضانة."
       },
-
       "taskOrganization": {
         "title": "تنظيم المهام وإرسال الإشعارات الفورية",
         "description": "تقويم رقمي لإدارة المناسبات والمهام اليومية، مع إشعارات فورية للتنبيه بالمستجدات والأحداث الهامة."
@@ -2277,9 +2525,11 @@
       }
     },
     "plans": {
-      "title": "برامجنا التعليمية",
-      "subtitle": "اكتشف برامجنا التعليمية المتنوعة المصممة خصيصاً لتنمية مهارات طفلك",
+      "title": "البرامج",
+      "subtitle": "",
       "selectBranch": "اختر الفرع",
+      "selectAge": "عمر الطفل",
+      "selectEnrollmentType": "نوع البرنامج",
       "noPrograms": "لا توجد برامج متاحة",
       "noProgramsMessage": "سيتم إضافة البرامج قريباً. يرجى التحقق لاحقاً.",
       "bookNow": "احجز الآن",
@@ -2388,5 +2638,249 @@
     "accountsCreatedSuccessfully": "تم إنشاء حسابات أولياء الأمور بنجاح",
     "errorCreatingAccounts": "خطأ في إنشاء حسابات أولياء الأمور",
     "creatingAccounts": "جاري إنشاء الحسابات..."
+  },
+  "discountCodes": {
+    "title": "كوبونات الخصم",
+    "addButton": "إضافة كوبون خصم",
+    "searchPlaceholder": "ابحث عن كوبون خصم",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "notStarted": "لم يبدأ بعد",
+      "paused": "موقوف",
+      "expired": "منتهي"
+    },
+    "table": {
+      "code": "اسم كوبون الخصم",
+      "actions": "الإجراء",
+      "status": "حالة الكوبون",
+      "discountValue": "قيمة الخصم",
+      "discountPercentage": "نسبة الخصم",
+      "pendingUsage": "الاستخدامات المعلقة",
+      "usedCount": "عدد مرات الاستخدام",
+      "usageLimit": "الحد الأقصى للاستخدام",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "usage": "استخدام",
+      "currency": "ر.س",
+      "percentage": "%"
+    },
+    "createModal": {
+      "step1Title": "تفاصيل الكوبون",
+      "step2Title": "اختيار المراكز والحضانات",
+      "couponName": "اسم الكوبون",
+      "couponNamePlaceholder": "مثال: Night10",
+      "couponDescription": "وصف الكوبون",
+      "couponDescriptionPlaceholder": "مثال: خصم 50 % على كل الحجوزات بمناسبة اليوم الوطني السعودي",
+      "startDate": "تاريخ بداية الكوبون",
+      "endDate": "تاريخ نهاية الكوبون",
+      "percentage": "نسبة الخصم %",
+      "amount": "قيمة الخصم ر.س",
+      "maxUsage": "الحد الأقصى للمستفيدين",
+      "childrenOnly": "متاح للأطفال الجدد فقط",
+      "couponDesign": "تصميم الكوبون",
+      "centersAndNurseries": "المراكز والحضانات",
+      "allCentersAndBranches": "كل الحضانات والمراكز بكل الفروع",
+      "mainCenterBranches": "فروع مركز الأمل",
+      "allBranches": "كل الفروع",
+      "returnPlaceholder": "الرجوع",
+      "close": "إغلاق",
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "continue": "متابعة",
+      "back": "الرجوع",
+      "createCoupon": "إنشاء كوبون الخصم",
+      "creating": "جاري الإنشاء...",
+      "success": "تم إنشاء كوبون الخصم بنجاح",
+      "error": "حدث خطأ أثناء إنشاء كوبون الخصم",
+      "editTitle": "تعديل كوبون الخصم",
+      "viewTitle": "عرض كوبون الخصم",
+      "couponStatus": "حالة الكوبون",
+      "successUpdate": "تم تحديث كوبون الخصم بنجاح",
+      "statusUpdated": "تم تحديث الحالة بنجاح",
+      "updating": "جاري التحديث...",
+      "updateCoupon": "تحديث كوبون الخصم",
+      "searchBranches": "بحث عن الفروع",
+      "searchCenters": "بحث عن المراكز",
+      "noBranches": "لا توجد فروع",
+      "noCenters": "لا توجد مراكز"
+    },
+    "loading": "جاري تحميل كوبونات الخصم...",
+    "error": "خطأ في تحميل كوبونات الخصم"
+  },
+  "couponCodes": {
+    "subscribeButton": "اشترك في نشرة الكوبونات",
+    "searchPlaceholder": "ابحث عن كوبون أو حضانة أو مركز",
+    "loading": "جاري التحميل...",
+    "noCoupons": "لا توجد كوبونات متاحة حالياً",
+    "noResults": "لا توجد كوبونات تطابق بحثك",
+    "sort": {
+      "newest": "الأحدث",
+      "percentage": "الأعلى خصماً"
+    },
+    "card": {
+      "validUntil": "متاح حتى يوم",
+      "copySuccess": "تم نسخ الكود بنجاح",
+      "viewCenters": "عرض المراكز المشاركة"
+    },
+    "share": "شارك العروض والكوبونات مع أصدقاءك",
+    "emptyState": {
+      "title1": "لا يوجد كوبونات حاليًا،",
+      "title2": "سيتم إبلاغك عند وجود كوبونات",
+      "button": "اشترك في نشرة الكوبونات"
+    }
+  },
+  "reservationForm": {
+    "plans": {
+      "monthly": "شهري",
+      "weekly": "أسبوعي",
+      "daily": "يومي",
+      "hourly": "بالساعة"
+    },
+    "units": {
+      "month": "شهر",
+      "week": "أسبوع",
+      "day": "يوم"
+    },
+    "labels": {
+      "numberOfHours": "عدد الساعات",
+      "numberOfDays": "عدد الأيام",
+      "numberOfWeeks": "عدد الأسابيع",
+      "numberOfMonths": "عدد الأشهر",
+      "duration": "المدة",
+      "bookingDate": "تاريخ الحجز",
+      "selectChildren": "اختر طفل أو أكثر",
+      "noChildren": "لا يوجد أطفال مسجلون",
+      "noChildrenDesc": "يجب تسجيل طفل واحد على الأقل قبل إجراء الحجز. يرجى الذهاب إلى صفحة الأطفال لإضافة طفل جديد.",
+      "addNewChild": "إضافة طفل جديد",
+      "bookingSummary": "تفاصيل الحجز",
+      "couponCode": "كود الكوبون",
+      "discountCoupon": "كوبون الخصم",
+      "tryCoupon": "جرب الكوبون",
+      "paymentNotice": "لا يعمل الكوبون في هذه الخطوة ويفعل عند الدفع بعد الموافقة على طلب الحجز",
+      "termsNotice": "تأكيد الحجز يعني الموافقة على الشروط والأحكام وسياسة الخصوصية الخاصة بنا.",
+      "confirmBooking": "قم بتأكيد الحجز الآن",
+      "submitting": "جاري الإرسال...",
+      "successTitle": "تم إرسال طلب الحجز بنجاح!",
+      "successDesc": "سنتواصل معك قريباً لتأكيد تفاصيل الحجز.",
+      "submitAnother": "إرسال طلب آخر",
+      "goToReservations": "حجوزاتي في لوحة التحكم",
+      "timeRange": "من {start} إلى {end}",
+      "autoDuration": "المدة المحددة تلقائياً حسب الخطة",
+      "youHaveNoChildren": "لا يوجد لديك أطفال"
+    },
+    "summary": {
+      "plan": "الخطة",
+      "time": "الوقت",
+      "childrenCount": "عدد الأطفال",
+      "date": "التاريخ",
+      "calculation": "سعر الخطة × عدد الأطفال",
+      "total": "السعر الإجمالي",
+      "saved": "وفرت",
+      "discount": "خصم"
+    },
+    "errors": {
+      "enterCoupon": "يرجى إدخال كود الكوبون",
+      "selectBranch": "يرجى اختيار الفرع أولاً",
+      "selectPlan": "يرجى اختيار الخطة أولاً",
+      "selectChild": "يرجى اختيار طفل واحد على الأقل لتطبيق الكوبون",
+      "childCountRequired": "يرجى اختيار عدد الأطفال أولاً",
+      "invalidData": "بيانات غير صحيحة. يرجى التحقق من المعلومات المدخلة",
+      "usageLimit": "تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون",
+      "invalidCoupon": "كود الكوبون غير صحيح أو غير موجود",
+      "expiredCoupon": "انتهت صلاحية هذا الكوبون",
+      "failedToApply": "فشل في تطبيق الكوبون",
+      "noPlanSelected": "لم يتم اختيار خطة",
+      "noBranchSelected": "لم يتم اختيار فرع",
+      "bookingError": "خطأ في الحجز",
+      "submissionFailed": "فشل إرسال طلب الحجز. يرجى المحاولة مرة أخرى."
+    },
+    "success": {
+      "couponApplied": "تم تطبيق الكوبون بنجاح",
+      "bookingSent": "تم إرسال طلب الحجز بنجاح!"
+    }
+  },
+  "externalOffers": {
+    "tabs": {
+      "coupons": "First Step كوبونات",
+      "externalOffers": "الترويج لعروض خارجية"
+    },
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "archived": "محذوف"
+    },
+    "buttons": {
+      "add": "إضافة عرض خارجي",
+      "cancel": "إلغاء",
+      "submit": "رفع العرض على الموقع",
+      "archive": "أرشفة",
+      "permanentDelete": "حذف نهائي",
+      "processing": "جاري المعالجة...",
+      "saving": "جاري الحفظ..."
+    },
+    "search": {
+      "placeholder": "ابحث عن كوبون خصم..."
+    },
+    "empty": {
+      "noMatches": "لا توجد عروض مطابقة"
+    },
+    "form": {
+      "title": "تفاصيل العرض الخارجي",
+      "fields": {
+        "centerName": {
+          "label": "اسم جهة العرض أو الخصم",
+          "placeholder": "مثال: حضانة ووش 🥳"
+        },
+        "address": {
+          "label": "العنوان",
+          "placeholder": "مثال: حي النفل"
+        },
+        "descriptions": {
+          "label": "شرح العرض",
+          "placeholder": "مثال: أي طفل بده يدخل الألعاب بده تذكرة، الوقت مفتوح اللعب حتى تتعب"
+        },
+        "moneyDetails": {
+          "label": "تفاصيل الأموال ( ر.س )",
+          "placeholder": "مثال: 89 ريال فقط 👍👋 بدل 197 ريال 🤗"
+        },
+        "timeDetails": {
+          "label": "تفاصيل الوقت",
+          "placeholder": "مثال: من الساعة 4 إلى الساعة 11 مساءً أيام الاسبوع"
+        },
+        "additionalDetails": {
+          "label": "تفاصيل إضافية",
+          "placeholder": "مثال: تحولوا المبلغ وتبعثولي صورة التحويل..."
+        },
+        "url": {
+          "label": "الموقع",
+          "placeholder": "https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb :مثال"
+        },
+        "photos": {
+          "label": "صور العرض",
+          "limit": "(الحد الأقصى 10)"
+        }
+      }
+    },
+    "dialog": {
+      "confirmDelete": {
+        "title": "تأكيد الحذف",
+        "message": "هل أنت متأكد من أنك تريد حذف هذا العرض؟",
+        "archiveOption": "أرشفة العرض (يمكن استرجاعه لاحقاً)",
+        "deleteOption": "حذف نهائي (لا يمكن استرجاعه)"
+      }
+    },
+    "toast": {
+      "archiveSuccess": "تم أرشفة العرض بنجاح",
+      "archiveError": "حدث خطأ أثناء الأرشفة",
+      "deleteSuccess": "تم حذف العرض نهائياً",
+      "deleteError": "حدث خطأ أثناء الحذف",
+      "createSuccess": "تم إضافة العرض بنجاح",
+      "updateSuccess": "تم تحديث العرض بنجاح",
+      "genericError": "حدث خطأ",
+      "imageLimit": "يمكنك رفع 10 صور كحد أقصى"
+    },
+    "forLimitedTime": "لفترة محدودة",
+    "noImage": "لا توجد صورة"
   }
 }

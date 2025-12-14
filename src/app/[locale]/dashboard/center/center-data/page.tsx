@@ -28,8 +28,12 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Edit, Eye } from "lucide-react";
 import { toastError } from "@/lib/toast";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProfileEditor = () => {
+  usePageMetadata();
+
   const t = useTranslations("dashboard.profileEditor");
   const params = useParams();
   const locale = params.locale as string;
@@ -156,16 +160,20 @@ const ProfileEditor = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl sm:text-2xl">{t("title")}</CardTitle>
+            <Skeleton className="h-8 w-48" />
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center justify-center py-16 sm:py-20">
-              <div className="text-center space-y-4">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
-                <p className="text-muted-foreground text-sm sm:text-base">
-                  {loadError ? t("loadError") : t("loading")}
-                </p>
-              </div>
+          <CardContent className="pt-0 space-y-6">
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <Skeleton className="h-6 w-32" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

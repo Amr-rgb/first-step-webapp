@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toastSuccess, toastError } from "@/lib/toast";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useTranslations, useLocale } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
@@ -23,18 +22,14 @@ import {
   paymentService,
   nurseryService,
 } from "@/services/api";
-
-const STATUS_STYLES: Record<string, string> = {
-  pending: "text-white",
-  accepted: "text-white",
-  existing: "text-white",
-  paid: "text-white",
-  expired: "text-white",
-  rejected: "text-white",
-  canceled: "text-white",
-  cancelled: "text-white",
-  waiting_confirmation: "text-white",
-};
+import { promoCodeService } from "@/services/dashboardApi";
+import { Input } from "@/components/ui/input";
+import { X, RotateCw, Ticket, CheckCircle2, AlertCircle } from "lucide-react";
+import ReservationForm from "@/components/general/nurseries/ReservationForm";
+import BookingCard from "@/components/bookings/BookingCard";
+import { FilterButtons } from "@/components/common/FilterButtons";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Bookings = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -47,9 +42,12 @@ const Bookings = () => {
     open: boolean;
     booking: any | null;
   }>({ open: false, booking: null });
+  const [showRenewDialog, setShowRenewDialog] = useState(false);
+  const [renewBooking, setRenewBooking] = useState<any>(null);
   const queryClient = useQueryClient();
   const authUser = useAuthUser();
-  const { data, isLoading, error } = useQuery({
+  const locale = useLocale();
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["enrollments"],
     queryFn: parentService.getParentEnrollments,
   });
@@ -82,76 +80,6 @@ const Bookings = () => {
     waiting_confirmation: t("status.waiting_confirmation"),
   };
 
-  const STATUS_COLORS: Record<string, string> = {
-    pending: "#9891FF",
-    accepted: "#FFAD0D",
-    existing: "#3B82F6",
-    paid: "#47B881",
-    expired: "#CACACA",
-    rejected: "#F64C4C",
-    canceled: "#000000",
-    cancelled: "#000000",
-    waiting_confirmation: "#9891FF",
-  };
-
-  const actionsByStatus: Record<
-    string,
-    {
-      label: string;
-      variant?: "destructive" | "default";
-      action: "details" | "cancel" | "renew" | null;
-    }[]
-  > = {
-    [t("status.accepted")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-    [t("status.paid")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.existing")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.expired")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.rejected")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.canceled")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.renew"), action: "renew" },
-    ],
-    [t("status.waiting_confirmation")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      // Note: Cancel action removed for "waiting_confirmation" because backend
-      // only allows canceling "pending" or "accepted" statuses
-      // { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-    [t("status.pending")]: [
-      { label: t("actions.showDetails"), action: "details" },
-      { label: t("actions.cancel"), variant: "destructive", action: "cancel" },
-    ],
-  };
-
-  function StatusBadge({ status }: { status: string }) {
-    const backgroundColor = STATUS_COLORS[status] || "#CACACA";
-    return (
-      <span
-        className={`px-2 py-1 rounded text-xs font-bold ${
-          STATUS_STYLES[status] || "text-white"
-        }`}
-        style={{ backgroundColor }}
-      >
-        {STATUS_MAP[status] || status}
-      </span>
-    );
-  }
-
   function BookingCardSkeleton() {
     return (
       <Card className="w-full">
@@ -183,182 +111,188 @@ const Bookings = () => {
     );
   }
 
-  function BookingCard({
-    booking,
-    onShowDetails,
-    onCancel,
-    onRenew,
-    cancellingId,
-    renewingId,
-  }: {
-    booking: any;
-    onShowDetails: () => void;
-    onCancel: () => void;
-    onRenew: () => void;
-    cancellingId: number | null;
-    renewingId: number | null;
-  }) {
-    return (
-      <Card id={`enrollment-${booking.id}`} className="w-full transition-all">
-        <CardContent className="py-6 px-6">
-          <div className="grid grid-cols-2 gap-x-20 gap-y-4 text-sm mb-4 justify-center">
-            {/* Swap: Render leftFields first, then rightFields */}
-            <div className="flex flex-col gap-2 items-start">
-              {leftFields.map((field, idx) => (
-                <div
-                  key={field.key + "-" + idx}
-                  className="flex flex-row items-center gap-x-2 w-full justify-start"
-                >
-                  <span className="text-primary-blue font-bold whitespace-nowrap">
-                    {field.label}:
-                  </span>
-                  <span className="font-bold text-mid-gray">
-                    {booking[field.key]}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2 items-start">
-              {rightFields.map((field, idx) => (
-                <div
-                  key={field.key + "-" + idx}
-                  className="flex flex-row items-center gap-x-2 w-full justify-start"
-                >
-                  <span className="text-primary-blue font-bold whitespace-nowrap">
-                    {field.label}:
-                  </span>
-                  <span className="font-bold text-mid-gray">
-                    {field.isStatus ? (
-                      <StatusBadge status={booking.status} />
-                    ) : (
-                      booking[field.key]
-                    )}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-center gap-2 mt-6">
-            {(() => {
-              // Filter actions based on backend validation - only "pending" and "accepted" can be canceled
-              const allActions =
-                actionsByStatus[STATUS_MAP[booking.status]] || [];
-              const filteredActions = allActions.filter((action) => {
-                // Backend only allows canceling "pending" or "accepted" statuses
-                // Filter out cancel action for "waiting_confirmation" status
-                if (
-                  action.action === "cancel" &&
-                  booking.status === "waiting_confirmation"
-                ) {
-                  return false;
-                }
-                return true;
-              });
-              const isOnlyButton = filteredActions.length === 1;
-
-              // Check if there are multiple buttons and one of them is "renew" or "cancel"
-              const hasOtherButton = filteredActions?.some(
-                (a) => a.action === "renew" || a.action === "cancel"
-              );
-
-              return filteredActions.map((action, idx) => {
-                // Check statuses that should use primary style for Show Details
-                const shouldBePrimaryForDetails =
-                  action.label === t("actions.showDetails") &&
-                  (isOnlyButton ||
-                    booking.status === "accepted" ||
-                    booking.status === "waiting_confirmation" ||
-                    (booking.status === "pending" && !hasOtherButton) ||
-                    (booking.status === "paid" && !hasOtherButton) ||
-                    (booking.status === "existing" && !hasOtherButton));
-
-                // Style mapping: Renew = Primary, Details = Secondary (or Primary if alone), Cancel = Destructive
-                let buttonStyle = "";
-
-                // Base styles for all buttons (using secondary button dimensions as reference)
-                const baseStyles =
-                  "py-[10.5px] px-[60px] rounded-lg font-bold text-base leading-[19px] w-full max-w-[258px]";
-
-                if (action.label === t("actions.cancel")) {
-                  buttonStyle = `bg-transparent text-red-500 border-red-500 hover:bg-red-50 ${baseStyles}`;
-                } else if (action.label === t("actions.renew")) {
-                  buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                } else if (action.label === t("actions.showDetails")) {
-                  if (shouldBePrimaryForDetails) {
-                    buttonStyle = `bg-primary text-white hover:bg-primary/90 shadow-md ${baseStyles}`;
-                  } else {
-                    // Figma design: transparent/no fill background, gray border, gray text
-                    buttonStyle = `bg-transparent text-[#8E8E8E] border-[#CACACA] hover:bg-transparent ${baseStyles}`;
-                  }
-                }
-
-                return (
-                  <Button
-                    key={action.label}
-                    variant={
-                      action.label === t("actions.showDetails") &&
-                      !isOnlyButton &&
-                      hasOtherButton &&
-                      booking.status !== "pending" &&
-                      booking.status !== "waiting_confirmation" &&
-                      booking.status !== "accepted"
-                        ? "outline"
-                        : action.variant
-                    }
-                    className={
-                      shouldBePrimaryForDetails
-                        ? buttonStyle
-                        : `border ${buttonStyle}`
-                    }
-                    style={
-                      shouldBePrimaryForDetails
-                        ? { color: "#ffffff" }
-                        : undefined
-                    }
-                    onClick={
-                      action.action === "details"
-                        ? onShowDetails
-                        : action.action === "cancel"
-                        ? onCancel
-                        : action.action === "renew"
-                        ? onRenew
-                        : undefined
-                    }
-                    disabled={
-                      (action.action === "cancel" &&
-                        cancellingId === booking.id) ||
-                      (action.action === "renew" && renewingId === booking.id)
-                    }
-                  >
-                    {(action.action === "cancel" &&
-                      cancellingId === booking.id) ||
-                    (action.action === "renew" && renewingId === booking.id) ? (
-                      <LoadingSpinner size="sm" />
-                    ) : (
-                      action.label
-                    )}
-                  </Button>
-                );
-              });
-            })()}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   function InvoiceDialog({
     open,
     onOpenChange,
     booking,
+    onConfirm,
   }: {
     open: boolean;
     onOpenChange: (v: boolean) => void;
     booking: any;
+    onConfirm?: (booking: any, couponCode?: string) => Promise<void>;
   }) {
     const locale = useLocale();
+    const tLabels = useTranslations("reservationForm.labels");
+    const tSummary = useTranslations("reservationForm.summary");
+
+    const getCountLabel = (type: string) => {
+      switch (type) {
+        case "hour":
+          return tLabels("numberOfHours");
+        case "week":
+          return tLabels("numberOfWeeks");
+        case "month":
+          return tLabels("numberOfMonths");
+        default:
+          return tLabels("numberOfDays");
+      }
+    };
     const branchId = booking?.center_branch_id || booking?.branch_id;
+    const [couponCode, setCouponCode] = useState<string>("");
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+    const [couponDiscount, setCouponDiscount] = useState<number>(0);
+    const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [couponError, setCouponError] = useState<string | null>(null);
+
+    const [originalCoupon, setOriginalCoupon] = useState<string | null>(null);
+    const [currentBookingCoupon, setCurrentBookingCoupon] = useState<
+      string | null
+    >(null);
+    const [isCouponExpired, setIsCouponExpired] = useState(false);
+
+    // Initialize coupon from booking if it exists
+    useEffect(() => {
+      if (booking && open) {
+        // Check reservation object first, then direct booking fields
+        const reservation =
+          booking.reservation || booking.originalData?.reservation;
+        const pricing = booking.pricing || booking.originalData?.pricing;
+
+        const existingCoupon =
+          reservation?.promocode_title ||
+          booking.coupon_code ||
+          booking.originalData?.coupon_code;
+
+        const existingDiscount =
+          pricing?.discount ||
+          booking.discount_amount ||
+          booking.originalData?.discount_amount ||
+          0;
+
+        if (existingCoupon) {
+          setAppliedCoupon(existingCoupon);
+          setCouponCode(existingCoupon);
+          setCouponDiscount(existingDiscount);
+          setOriginalCoupon(existingCoupon);
+          setCurrentBookingCoupon(existingCoupon);
+
+          // Check expiry
+          if (reservation?.expire_at) {
+            const expireDate = new Date(reservation.expire_at);
+            const now = new Date();
+            if (expireDate < now) {
+              setIsCouponExpired(true);
+            } else {
+              setIsCouponExpired(false);
+            }
+          } else {
+            setIsCouponExpired(false);
+          }
+        } else {
+          setAppliedCoupon(null);
+          setCouponCode("");
+          setCouponDiscount(0);
+          setOriginalCoupon(null);
+          setCurrentBookingCoupon(null);
+          setIsCouponExpired(false);
+        }
+      }
+    }, [booking, open]);
+
+    const pricing = booking?.pricing || booking?.originalData?.pricing;
+    const originalPrice = pricing?.original_amount || booking?.amount || 0;
+    const discountAmount = couponDiscount;
+    const finalPrice = originalPrice - discountAmount;
+
+    const handleApplyCoupon = async () => {
+      setCouponError(null);
+      if (!couponCode.trim()) {
+        setCouponError(t("coupon.emptyError") || "Please enter a coupon code");
+        return;
+      }
+
+      // Validate required fields
+      if (!branchId) {
+        toastError(
+          locale === "ar"
+            ? "معلومات الفرع غير متوفرة"
+            : "Branch information not available"
+        );
+        return;
+      }
+
+      const branchPriceId = booking?.branch_price_id;
+      if (!branchPriceId) {
+        toastError(
+          locale === "ar"
+            ? "معلومات الخطة غير متوفرة"
+            : "Plan information not available"
+        );
+        return;
+      }
+
+      setIsApplyingCoupon(true);
+      try {
+        const response = await promoCodeService.applyPromoCode({
+          branch_price_id: Number(branchPriceId),
+          branch_id: Number(branchId),
+          promo_code: couponCode.trim().toUpperCase(),
+          child_count: booking.children.length,
+        });
+
+        // Use the discount from the API response
+        setCouponDiscount(response.discount);
+        setAppliedCoupon(response.promo_code);
+        toastSuccess(
+          t("coupon.appliedSuccess") || "Coupon applied successfully"
+        );
+      } catch (error: any) {
+        let errorMessage = t("coupon.applyError") || "Failed to apply coupon";
+
+        if (error?.message?.toLowerCase().includes("usage limit")) {
+          errorMessage = t("coupon.usageLimit");
+        } else if (error?.message?.toLowerCase().includes("expired")) {
+          errorMessage = t("coupon.expired");
+        } else if (
+          error?.status === 404 ||
+          error?.message?.toLowerCase().includes("invalid") ||
+          error?.message?.toLowerCase().includes("not found")
+        ) {
+          errorMessage = t("coupon.invalid");
+        } else if (error?.message) {
+          errorMessage = error.message;
+        }
+
+        setCouponError(errorMessage);
+        // toastError(errorMessage); // Removed toastError to match ReservationForm style
+      } finally {
+        setIsApplyingCoupon(false);
+      }
+    };
+
+    const handleRemoveCoupon = () => {
+      setAppliedCoupon(null);
+      setCouponCode("");
+      setCouponDiscount(0);
+      setCouponError(null);
+    };
+
+    const handleConfirm = async () => {
+      if (!onConfirm) return;
+      setIsConfirming(true);
+      try {
+        await onConfirm(booking, appliedCoupon || undefined);
+        onOpenChange(false);
+      } catch (error) {
+        // Error handling is done in the parent component
+      } finally {
+        setIsConfirming(false);
+      }
+    };
+
+    const isAcceptedStatus = booking?.status === "accepted";
 
     // Fetch pricing plans for the branch
     const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
@@ -388,124 +322,336 @@ const Bookings = () => {
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-4">
             <DialogTitle className="text-center w-full">
               {t("actions.showDetails")}
             </DialogTitle>
           </DialogHeader>
 
-          {/* Plan Selection - Same style as ReservationForm */}
-          {loadingPlans ? (
-            <div className="flex justify-center gap-4 mb-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center py-3 px-4 rounded-xl border-2 border-gray-300 bg-gray-100 min-w-[120px]"
-                >
-                  <div className="h-5 w-16 bg-gray-300 rounded mb-2 animate-pulse" />
-                  <div className="w-full h-px bg-gray-300 mb-2" />
-                  <div className="h-4 w-20 bg-gray-300 rounded animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : planList.length > 0 ? (
-            <div
-              className={`flex items-center gap-4 mb-6 ${
-                planList.length > 4
-                  ? "overflow-x-auto pb-2 custom-scrollbar"
-                  : "flex-row justify-center"
-              }`}
-              style={{
-                maxWidth: planList.length > 4 ? "100%" : "32rem",
-                paddingLeft: planList.length > 4 ? 8 : 0,
-                paddingRight: planList.length > 4 ? 8 : 0,
-                paddingTop: 8,
-                paddingBottom: 8,
-                margin: "0 auto",
-              }}
-            >
-              {planList.map((p: any) => {
-                const selected =
-                  selectedPlanId === p.id || selectedPlanId === p.planId;
-                return (
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
+            {/* Plan Selection - Same style as ReservationForm */}
+            {loadingPlans ? (
+              <div className="flex justify-center gap-4 mb-6">
+                {[1, 2, 3, 4].map((i) => (
                   <div
-                    key={p.id}
-                    className={`flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base ${
-                      planList.length > 4
-                        ? "min-w-[120px] flex-shrink-0"
-                        : "flex-1"
-                    }
-                      ${
-                        selected
-                          ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
-                          : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid"
-                      }
-                    `}
+                    key={i}
+                    className="flex flex-col items-center py-3 px-4 rounded-xl border-2 border-gray-300 bg-gray-100 min-w-[120px]"
                   >
-                    <span
-                      className={`text-lg font-extrabold mb-1 ${
-                        selected ? "text-white" : "text-[#4D5EDB]"
-                      }`}
+                    <div className="h-5 w-16 bg-gray-300 rounded mb-2 animate-pulse" />
+                    <div className="w-full h-px bg-gray-300 mb-2" />
+                    <div className="h-4 w-20 bg-gray-300 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : planList.length > 0 ? (
+              <div className="flex justify-center gap-4 mb-6">
+                {planList
+                  .filter((p: any) => {
+                    // Only show the selected plan (current booking's plan)
+                    return (
+                      selectedPlanId === p.id || selectedPlanId === p.planId
+                    );
+                  })
+                  .map((p: any) => {
+                    return (
+                      <div
+                        key={p.id}
+                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                      >
+                        <span className="text-lg font-extrabold mb-1 text-white">
+                          {p.price}
+                        </span>
+                        <span className="w-full h-px bg-white/30 mb-1" />
+                        <span className="text-base font-bold text-white">
+                          {p.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : null}
+
+            {/* Details Section - Matching ReservationForm style */}
+            <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
+              <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+                {t("actions.showDetails")}
+              </h3>
+              <div className="space-y-2 text-sm text-gray-700 mb-4">
+                {/* Match the order of the main booking page: leftFields first, then rightFields */}
+                {leftFields.map((field, idx) => (
+                  <div
+                    key={field.key + "-inv-l-" + idx}
+                    className="flex justify-between"
+                  >
+                    <span>{field.label}</span>
+                    <span className="font-bold">{booking[field.key]}</span>
+                  </div>
+                ))}
+                {rightFields.map((field, idx) => {
+                  let label = field.label;
+                  const isHourly = booking.enrollment_type === "hour";
+                  if (field.key === "startDay" && isHourly) {
+                    label = tSummary("date");
+                  } else if (field.key === "endDay" && isHourly) {
+                    label = tSummary("time");
+                  } else if (field.key === "daysCount") {
+                    label = getCountLabel(booking.enrollment_type);
+                  }
+
+                  return (
+                    <div
+                      key={field.key + "-inv-r-" + idx}
+                      className="flex justify-between"
                     >
-                      {p.price}
+                      <span>{label}</span>
+                      <span className="font-bold">
+                        {field.isStatus
+                          ? STATUS_MAP[booking.status]
+                          : booking[field.key]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Coupon Section - Matching ReservationForm style */}
+              {(isAcceptedStatus || appliedCoupon) && (
+                <div className="border-t pt-4 mt-4 mb-4">
+                  <label className="text-[#22336C] font-bold text-sm mb-3 flex items-center gap-2">
+                    <Ticket size={16} />
+                    {t("coupon.label") || "كوبون الخصم"}:
+                  </label>
+
+                  {appliedCoupon ? (
+                    isAcceptedStatus ? (
+                      // Full Editable Coupon Card
+                      <div>
+                        <div className="bg-purple-50 rounded-lg border border-purple-200 p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="bg-purple-100 p-1.5 rounded-full">
+                                <CheckCircle2
+                                  size={16}
+                                  className="text-purple-600"
+                                />
+                              </div>
+                              <div>
+                                <span className="text-purple-700 font-bold block leading-none">
+                                  {appliedCoupon}
+                                </span>
+                                {isCouponExpired ? (
+                                  <span className="text-red-500 text-xs mt-0.5 block font-bold">
+                                    {t("status.expired") || "Expired"}
+                                  </span>
+                                ) : (
+                                  <span className="text-purple-600 text-xs mt-0.5 block">
+                                    {t("coupon.appliedSuccess") ||
+                                      "Coupon applied successfully"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {(isCouponExpired ||
+                              appliedCoupon !== originalCoupon) && (
+                              <button
+                                onClick={handleRemoveCoupon}
+                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                              >
+                                <X size={18} />
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
+                            <span className="text-purple-800">
+                              {t("coupon.saved") || "وفرت"}
+                            </span>
+                            <span className="font-bold text-purple-800">
+                              {discountAmount} {locale === "ar" ? "ر.س" : "SAR"}
+                            </span>
+                          </div>
+                        </div>
+                        {isCouponExpired && (
+                          <div className="flex items-center gap-1.5 text-red-500 text-xs mt-2 px-1">
+                            <AlertCircle size={12} />
+                            <span>
+                              {t("coupon.expiredMessage") ||
+                                "This coupon has expired. Please remove it to add a new one."}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Minimal Readonly Coupon Card
+                      <div className="bg-gray-50/50 rounded-md border border-gray-200 p-2.5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Ticket size={16} className="text-gray-400" />
+                          <span className="text-gray-700 font-medium text-sm font-mono">
+                            {appliedCoupon}
+                          </span>
+                        </div>
+                        <span className="text-gray-600 font-medium text-sm">
+                          -{discountAmount} {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2 relative">
+                        <Input
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value);
+                            if (couponError) setCouponError(null);
+                          }}
+                          placeholder={
+                            t("coupon.placeholder") || "أدخل كود الكوبون"
+                          }
+                          className={cn(
+                            "flex-1 h-10 transition-all",
+                            couponError
+                              ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
+                              : ""
+                          )}
+                        />
+                        <Button
+                          onClick={handleApplyCoupon}
+                          disabled={isApplyingCoupon || !couponCode.trim()}
+                          className={cn(
+                            "px-4 h-10 min-w-[80px]",
+                            isApplyingCoupon ? "bg-opacity-80" : ""
+                          )}
+                        >
+                          {isApplyingCoupon ? (
+                            <Skeleton className="h-4 w-16" />
+                          ) : (
+                            t("coupon.apply") || "تطبيق"
+                          )}
+                        </Button>
+                      </div>
+
+                      <AnimatePresence>
+                        {couponError && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex items-center gap-1.5 text-red-500 text-xs mt-1 px-1"
+                          >
+                            <AlertCircle size={12} />
+                            <span>{couponError}</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <p className="text-xs text-blue-400 flex items-center gap-1">
+                        {t("coupon.info") ||
+                          "يمكنك تغيير الكوبون وإضافة كوبون آخر"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="border-t pt-4 mt-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-[#22336C] text-base">
+                      {isAcceptedStatus
+                        ? t("confirmReservation.required") || "المطلوب"
+                        : t("total")}
+                      :
                     </span>
-                    <span className="w-full h-px bg-[#DADADA] mb-1" />
-                    <span
-                      className={`text-base font-bold ${
-                        selected ? "text-white" : "text-[#22336C]"
-                      }`}
-                    >
-                      {p.name}
+                    <span className="font-bold">
+                      {originalPrice} {locale === "ar" ? "ر.س" : "SAR"}
                     </span>
                   </div>
-                );
-              })}
-            </div>
-          ) : null}
-
-          {/* Details Section - Matching ReservationForm style */}
-          <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
-            <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
-              {t("actions.showDetails")}
-            </h3>
-            <div className="space-y-2 text-sm text-gray-700 mb-4">
-              {/* Match the order of the main booking page: leftFields first, then rightFields */}
-              {leftFields.map((field, idx) => (
-                <div
-                  key={field.key + "-inv-l-" + idx}
-                  className="flex justify-between"
-                >
-                  <span>{field.label}</span>
-                  <span className="font-bold">{booking[field.key]}</span>
+                  {appliedCoupon && discountAmount > 0 && (
+                    <>
+                      <div className="flex justify-between text-red-500">
+                        {/* Calculate percentage if possible, otherwise hide or show discount */}
+                        <span className="font-bold">
+                          {originalPrice > 0
+                            ? `-${(
+                                (discountAmount / originalPrice) *
+                                100
+                              ).toFixed(0)}%`
+                            : ""}
+                        </span>
+                        <span className="font-bold">
+                          -{discountAmount.toFixed(2)}{" "}
+                          {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>
+                          {t("coupon.code") || "كود الكوبون"}: {appliedCoupon}
+                        </span>
+                        <span>
+                          {t("coupon.saved") || "وفرت"}:{" "}
+                          {discountAmount.toFixed(2)}{" "}
+                          {locale === "ar" ? "ر.س" : "SAR"}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="font-bold text-lg text-[#22336C]">
+                      {isAcceptedStatus
+                        ? t("confirmReservation.finalAmount") ||
+                          "المبلغ المطلوب"
+                        : t("total")}
+                      :
+                    </span>
+                    <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                      {finalPrice.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
+                    </span>
+                  </div>
                 </div>
-              ))}
-              {rightFields.map((field, idx) => (
-                <div
-                  key={field.key + "-inv-r-" + idx}
-                  className="flex justify-between"
-                >
-                  <span>{field.label}</span>
-                  <span className="font-bold">
-                    {field.isStatus
-                      ? STATUS_MAP[booking.status]
-                      : booking[field.key]}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t pt-4 mt-4">
-              <div className="flex justify-between items-center">
-                <span className="font-bold text-[#22336C] text-base">
-                  {t("total")}
-                </span>
-                <span className="font-extrabold text-2xl text-[#4D5EDB]">
-                  {booking.amount} {locale === "ar" ? "ر.س" : "SAR"}
-                </span>
               </div>
             </div>
+
+            {/* Notes - Only for accepted status */}
+            {isAcceptedStatus && onConfirm && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-bold text-[#22336C] mb-2">
+                  {t("confirmReservation.notes") || "ملاحظات"}:
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                  <li>
+                    {t("confirmReservation.note1") ||
+                      "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note2") ||
+                      "لا يمكن استرداد المبلغ المدفوع لأي سبب."}
+                  </li>
+                  <li>
+                    {t("confirmReservation.note3") ||
+                      "نرجو التأكد من صحة المعلومات قبل متابعة عملية الدفع."}
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
+
+          {/* Fixed Footer with Pay Now Button - Only for accepted status */}
+          {isAcceptedStatus && onConfirm && (
+            <div className="border-t bg-white px-6 py-4  bottom-0 z-10">
+              <Button
+                onClick={handleConfirm}
+                disabled={isConfirming}
+                className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
+              >
+                {isConfirming ? (
+                  <Skeleton className="h-4 w-20" />
+                ) : (
+                  t("confirmReservation.payNow") || "ادفع الآن"
+                )}
+              </Button>
+            </div>
+          )}
 
           {/* Custom Scrollbar Styles */}
           <style jsx global>{`
@@ -514,14 +660,14 @@ const Bookings = () => {
               scrollbar-color: #4d5edb #f7f8fa;
             }
             .custom-scrollbar::-webkit-scrollbar {
-              height: 6px;
+              width: 6px;
               background: #f7f8fa;
               border-radius: 6px;
             }
             .custom-scrollbar::-webkit-scrollbar-thumb {
               background: #4d5edb;
               border-radius: 6px;
-              min-width: 40px;
+              min-height: 40px;
               transition: background 0.2s;
             }
             .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -562,67 +708,71 @@ const Bookings = () => {
   }
 
   const bookings =
-    data?.data.map((booking: any) => {
-      // Extract children names from children array
-      const childrenNames =
-        booking.children?.length > 0
-          ? booking.children
-              .map((child: any) => child.child_name || child.name)
-              .filter(Boolean)
-              .join("، ")
-          : "";
+    data?.data
+      ?.slice()
+      .sort((a: any, b: any) => b.id - a.id)
+      .map((booking: any) => {
+        // Extract children names from children array
+        const childrenNames =
+          booking.children?.length > 0
+            ? booking.children
+                .map((child: any) => child.child_name || child.name)
+                .filter(Boolean)
+                .join("، ")
+            : "";
 
-      // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
-      const programName =
-        booking.enrollment_type_name ||
-        booking.price_title ||
-        booking.enrollment_type ||
-        "";
+        // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
+        const programName =
+          booking.enrollment_type_name ||
+          booking.price_title ||
+          booking.enrollment_type ||
+          "";
 
-      return {
-        id: booking.id,
-        status: booking.status,
-        childName: childrenNames || booking.parent_name || "",
-        className: booking.center_name,
-        branch: booking.branch_name,
-        program: programName,
-        startDay: new Date(booking.enrollment_date).toLocaleDateString(
-          "ar-SA",
-          {
-            weekday: "long",
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }
-        ),
-        endDay: new Date(booking.enrollment_date).toLocaleDateString("ar-SA", {
-          weekday: "long",
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        }),
-        daysCount: 1,
-        paymentMethod: "ميسر",
-        amount: parseFloat(booking.price_amount),
-        notes: [],
-        // Preserve original enrollment data for renewal
-        center_branch_id:
-          booking.center_branch_id || booking.branch_id || booking.branch_id,
-        branch_price_id: booking.branch_price_id || null,
-        enrollment_date: booking.enrollment_date,
-        enrollment_type: booking.enrollment_type,
-        children: booking.children || [],
-        parent_phone: booking.parent_phone,
-        originalData: booking, // Keep full booking data
-        // Additional fields from API
-        branch_id: booking.branch_id,
-        id_raw: booking.id, // Keep original ID
-        // Additional info from API
-        enrollment_type_name:
-          booking.enrollment_type_name || booking.enrollment_type,
-        price_title: booking.price_title,
-      };
-    }) || [];
+        // For hourly enrollments, use day_string if available, otherwise use enrollment_date
+        const isHourly = booking.enrollment_type === "hour";
+        const startDayValue =
+          isHourly && booking.day_string
+            ? booking.day_string
+            : booking.starting_date || "";
+
+        const endDayValue =
+          isHourly && booking.starting_time && booking.ending_time
+            ? `${booking.starting_time} - ${booking.ending_time}`
+            : booking.ending_date || "";
+
+        return {
+          id: booking.id,
+          status: booking.status,
+          childName: childrenNames || booking.parent_name || "",
+          className: booking.center_name,
+          branch: booking.branch_name,
+          program: programName,
+          startDay: startDayValue,
+          endDay: endDayValue,
+          daysCount: booking.count,
+          paymentMethod: "ميسر",
+          amount: parseFloat(booking.price_amount),
+          notes: [],
+          // Preserve original enrollment data for renewal
+          center_branch_id:
+            booking.center_branch_id || booking.branch_id || booking.branch_id,
+          branch_price_id: booking.branch_price_id || null,
+          enrollment_date: booking.enrollment_date,
+          enrollment_type: booking.enrollment_type,
+          children: booking.children || [],
+          parent_phone: booking.parent_phone,
+          originalData: booking, // Keep full booking data
+          // Additional fields from API
+          branch_id: booking.branch_id,
+          id_raw: booking.id, // Keep original ID
+          // Additional info from API
+          enrollment_type_name:
+            booking.enrollment_type_name || booking.enrollment_type,
+          price_title: booking.price_title,
+          reservation: booking.reservation,
+          pricing: booking.pricing,
+        };
+      }) || [];
 
   // Filter bookings based on selected status
   const filteredBookings =
@@ -683,148 +833,82 @@ const Bookings = () => {
     }
   };
 
-  // Renew booking handler - uses same flow as reservation form
-  const handleRenew = async (booking: any) => {
-    console.log("Renew booking data:", booking);
-    console.log("Original booking data:", booking.originalData);
-    console.log("Enrollment type from booking:", booking.enrollment_type);
-    console.log(
-      "Enrollment type from originalData:",
-      booking.originalData?.enrollment_type
-    );
+  // Renew booking handler - opens ReservationForm in dialog
+  const handleRenew = (booking: any) => {
+    setRenewBooking(booking);
+    setShowRenewDialog(true);
+  };
 
-    // Use branch_id if center_branch_id is not available
-    const branchId = booking.center_branch_id || booking.branch_id;
+  // Handle renew dialog close
+  const handleRenewDialogClose = () => {
+    setShowRenewDialog(false);
+    setRenewBooking(null);
+    // Refetch enrollments after dialog closes (in case a new booking was created)
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+    }, 500);
+  };
 
-    // Get parent phone from booking or fallback to auth user (can be null)
-    const parentPhone =
-      booking.parent_phone ||
-      (authUser as any)?.phone ||
-      (authUser as any)?.user?.phone ||
-      null;
-
-    if (!branchId) {
-      console.error("Missing required data:", {
-        branchId,
-      });
-      toastError("Missing information to renew booking");
-      return;
-    }
-
-    setRenewingId(booking.id);
+  // Confirm reservation handler
+  const confirmReservation = async (booking: any, couponCode?: string) => {
     try {
-      // Fetch children if not already available
-      let childrenIds = booking.children?.map((child: any) => Number(child.id));
+      // Prepare payment payload
+      const paymentPayload: {
+        enrollment_id: number;
+        coupon_code?: string;
+      } = {
+        enrollment_id: booking.id,
+      };
 
-      if (!childrenIds || childrenIds.length === 0) {
-        const childrenData = await apiParentService.getChildren();
-        childrenIds = childrenData.map((child: any) => Number(child.id));
+      // Add coupon code if provided and different from original
+      const reservation =
+        booking.reservation || booking.originalData?.reservation;
+
+      let originalCoupon =
+        reservation?.promocode_title ||
+        booking.coupon_code ||
+        booking.originalData?.coupon_code;
+
+      if (originalCoupon) {
+        originalCoupon = originalCoupon.trim().toUpperCase();
       }
 
-      if (!childrenIds || childrenIds.length === 0) {
-        toastError("No children found to renew booking");
-        return;
-      }
-
-      const branchIdRenew = booking.center_branch_id || booking.branch_id;
-
-      // Get enrollment type from original data or booking
-      const enrollmentType =
-        booking.originalData?.enrollment_type || booking.enrollment_type;
-      console.log("Using enrollment type:", enrollmentType);
-
-      // Check if it's hourly by looking at original data fields
-      const hasDayString =
-        booking.originalData?.day_string !== null &&
-        booking.originalData?.day_string !== undefined;
-      const hasStartingTime =
-        booking.originalData?.starting_time !== null &&
-        booking.originalData?.starting_time !== undefined;
-
-      // Also check by looking at the pricing plan type if we have branch_price_id
-      let isHourlyType =
-        enrollmentType === "hour" || hasDayString || hasStartingTime;
-
-      // If still not sure, check the pricing plan
-      if (!isHourlyType && booking.branch_price_id) {
-        try {
-          const pricingData = await nurseryService.getBranchPricing(
-            branchIdRenew
-          );
-          const selectedPlan = pricingData.find(
-            (plan: any) => plan.id === booking.branch_price_id
-          );
-          if (selectedPlan?.enrollment_type === "hour") {
-            isHourlyType = true;
-            console.log("Detected hourly from pricing plan:", selectedPlan);
-          }
-        } catch (err) {
-          console.error("Could not fetch pricing data:", err);
+      if (couponCode && couponCode.trim()) {
+        const newCode = couponCode.trim().toUpperCase();
+        // Only send coupon code if it's different from the original one
+        if (newCode !== originalCoupon) {
+          paymentPayload.coupon_code = newCode;
         }
       }
 
-      console.log("Is hourly enrollment?", isHourlyType, {
-        enrollmentType,
-        hasDayString,
-        hasStartingTime,
-        branch_price_id: booking.branch_price_id,
-      });
+      console.log("Confirm reservation - Payment payload:", paymentPayload);
 
-      // Prepare enrollment payload same as reservation form
-      const enrollmentPayload: any = {
-        center_branch_id: Number(branchIdRenew),
-        branch_price_id: booking.branch_price_id
-          ? Number(booking.branch_price_id)
-          : 1, // Fallback if not available
-        parent_phone: parentPhone,
-        children: childrenIds,
-      };
+      // Call payment service
+      const response = await paymentService.payOrder(paymentPayload);
 
-      // Add date/time fields based on enrollment type - use today's date
-      const today = new Date();
-      const todayISO = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      // Log the response
+      console.log("Confirm reservation - Payment response:", response);
 
-      // Check if it's hourly enrollment
-      if (isHourlyType) {
-        // For hourly enrollment, send date in YYYY-MM-DD format
-        enrollmentPayload.day_string = todayISO;
-        enrollmentPayload.starting_time = "09:00"; // Default time
-        console.log("Adding hourly fields:", {
-          day_string: todayISO,
-          starting_time: "09:00",
-        });
+      // Redirect to Moyasar payment page if payment URL is available
+      const paymentUrl =
+        response?.payment_url || response?.url || response?.redirect_url;
+
+      if (paymentUrl) {
+        console.log("Redirecting to Moyasar payment URL:", paymentUrl);
+        // Redirect to Moyasar for payment
+        window.location.href = paymentUrl;
       } else {
-        // For day/week/month/year types - use today's date
-        enrollmentPayload.starting_date = todayISO;
-        console.log("Adding date field:", { starting_date: todayISO });
+        console.error("No payment URL in response:", response);
+        toastError(
+          "Payment URL not received. Please contact support or try again."
+        );
       }
-
-      console.log("Final enrollment payload:", enrollmentPayload);
-
-      // Create enrollment (creates with pending status)
-      const enrollmentResponse = await enrollmentService.createEnrollment(
-        enrollmentPayload
-      );
-      console.log("Enrollment created successfully:", enrollmentResponse);
-
-      // Show success message
-      toastSuccess(t("renewSuccess"));
-
-      // Wait a bit before refetching to ensure backend has updated
-      setTimeout(async () => {
-        queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-        await queryClient.refetchQueries({ queryKey: ["enrollments"] });
-      }, 1500);
     } catch (e: any) {
-      console.error("Renew enrollment error:", e);
+      console.error("Confirm reservation error:", e);
       const errorMessage =
-        e?.response?.data?.message || e?.message || t("renewError");
-      const errorDetails = e?.response?.data?.errors
-        ? JSON.stringify(e.response.data.errors)
-        : "";
-      toastError(`${errorMessage} ${errorDetails}`);
-    } finally {
-      setRenewingId(null);
+        e?.response?.data?.message || e?.message || "Failed to process payment";
+      toastError(errorMessage);
+      throw e;
     }
   };
 
@@ -840,26 +924,25 @@ const Bookings = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Status Filter Buttons */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {filterOptions.map((option) => {
-          const isActive = selectedStatusFilter === option.value;
-          return (
-            <button
-              key={option.value}
-              onClick={() => setSelectedStatusFilter(option.value)}
-              className={`
-                px-4 py-2.5 rounded-lg font-bold text-sm transition-all whitespace-nowrap
-                ${
-                  isActive
-                    ? "blue-gradient text-white shadow-sm border-0"
-                    : "bg-[#F7F8FA] text-gray-700 border border-[#D1D5DB] hover:bg-gray-50"
-                }
-              `}
-            >
-              {option.label}
-            </button>
-          );
-        })}
+      {/* Header with Filter and Reload */}
+      <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-y-4 gap-x-8">
+        <FilterButtons
+          filters={filterOptions}
+          activeFilter={selectedStatusFilter}
+          onFilterChange={setSelectedStatusFilter}
+        />
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+          }
+          className="shrink-0"
+          disabled={isFetching}
+        >
+          <RotateCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+        </Button>
       </div>
 
       {/* Filtered Bookings List */}
@@ -878,6 +961,10 @@ const Bookings = () => {
             }}
             onCancel={() => handleCancel(booking)}
             onRenew={() => handleRenew(booking)}
+            onConfirmReservation={() => {
+              setSelectedBooking(booking);
+              setShowDetails(true);
+            }}
             cancellingId={cancellingId}
             renewingId={renewingId}
           />
@@ -887,6 +974,11 @@ const Bookings = () => {
         open={showDetails}
         onOpenChange={setShowDetails}
         booking={selectedBooking}
+        onConfirm={
+          selectedBooking?.status === "accepted"
+            ? confirmReservation
+            : undefined
+        }
       />
       <ConfirmationDialog
         isOpen={confirmDialog.open}
@@ -898,6 +990,61 @@ const Bookings = () => {
         cancelText={t("dialogs.cancelCancel")}
         variant="destructive"
       />
+      {/* Renew Booking Dialog */}
+      {renewBooking && (
+        <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
+          <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="px-6 pt-6 pb-4">
+              <DialogTitle className="text-center w-full">
+                {t("actions.renew")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
+              <ReservationForm
+                nurseryName={
+                  renewBooking.originalData?.center_name ||
+                  renewBooking.className ||
+                  "nursery"
+                }
+                selectedProgram={renewBooking.program || ""}
+                locale={locale as "ar" | "en"}
+                selectedBranch={
+                  renewBooking.center_branch_id || renewBooking.branch_id
+                }
+                isDialogMode={true}
+                onClose={handleRenewDialogClose}
+                preSelectedPlanId={renewBooking.branch_price_id}
+                showOnlySelectedPlan={true}
+              />
+            </div>
+            {/* Custom Scrollbar Styles */}
+            <style jsx global>{`
+              .custom-scrollbar {
+                scrollbar-width: thin;
+                scrollbar-color: #4d5edb #f7f8fa;
+              }
+              .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+                background: #f7f8fa;
+                border-radius: 6px;
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #4d5edb;
+                border-radius: 6px;
+                min-height: 40px;
+                transition: background 0.2s;
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #22336c;
+              }
+              .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f7f8fa;
+                border-radius: 6px;
+              }
+            `}</style>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

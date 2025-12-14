@@ -40,7 +40,16 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
 
-  let commonQuestions = await websiteService.getCommonQuestions(locale);
+  let commonQuestions: any[];
+  let error = null;
+
+  try {
+    commonQuestions = await websiteService.getCommonQuestions(locale);
+  } catch (err: any) {
+    console.error("Error fetching common questions:", err);
+    error = err;
+    commonQuestions = [];
+  }
 
   if (!commonQuestions || commonQuestions.length === 0) {
     // notFound();
@@ -244,9 +253,9 @@ export default async function HomePage({
       <FeaturesSection />
       <SubscriptionSection />
       {/* <VisionMission /> */}
-      <Values locale={locale} />
+      <Values locale={locale} error={error} />
       <BlogsWrapper locale={locale} number={4} />
-      <FAQs commonQuestions={commonQuestions} />
+      <FAQs commonQuestions={commonQuestions} error={error} locale={locale} />
       <Contact />
     </main>
   );

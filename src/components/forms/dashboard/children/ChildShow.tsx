@@ -19,6 +19,17 @@ import PhoneInput from "../../PhoneInput";
 import DatePicker from "@/components/general/DatePicker";
 import { Allergy, ChronicDisease } from "@/types";
 import { createSignUpParentSchema, SignUpParentFormData } from "@/lib/schemas";
+import { useFormContext } from "react-hook-form";
+
+// Helper function to check if a value exists and is not empty
+const hasValue = (value: any): boolean => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim() !== "";
+  if (typeof value === "number") return true;
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "object") return Object.keys(value).length > 0;
+  return Boolean(value);
+};
 
 const ChildShow = ({
   initialValues,
@@ -250,6 +261,9 @@ const ChildPart = ({
 }) => {
   const t = useTranslations("auth.add-child.1.form");
   const sectionT = useTranslations("dashboard.center.children.form.sections");
+  const { watch, getValues } = useFormContext<SignUpParentFormData>();
+  const childImage = watch("childImage");
+  const qrCode = (getValues() as any)?.qrCode || null;
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -345,81 +359,205 @@ const ChildPart = ({
           )}
         />
 
-        <div>
-          <p className="form-label-sm mb-4 text-left rtl:text-right">
-            {t("gender.label")}
-          </p>
-          <div className="flex justify-start gap-8">
-            <FormField
-              control={control}
-              name="gender"
-              render={({ field }) => (
-                <>
-                  <div className="group flex flex-col items-center">
-                    <label
-                      className={`cursor-pointer p-4 px-5.5 border rounded-2xl hover:border-secondary-mint-green duration-300 ${
-                        field.value === "male"
-                          ? "border-secondary-mint-green"
-                          : "border-light-gray"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        className="sr-only peer"
-                        value="male"
-                        checked={field.value === "male"}
-                        onChange={() => field.onChange("male")}
-                        disabled={readOnly}
-                      />
-                      <div className="group relative transition-all duration-300 peer-checked:saturate-100 group-hover:saturate-100 saturate-0">
-                        <Image
-                          src="/assets/illustrations/boy.png"
-                          alt="Boy"
-                          width={91.32}
-                          height={120}
-                          className="group-hover:scale-110 duration-300"
-                        />
+        {/* Three Cards Section: Gender, QR Code, Child Photo */}
+        <div className="col-span-1 md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+            {/* Gender Selection Card */}
+            <div className="flex flex-col">
+              <p className="form-label-sm mb-4 text-center">
+                {t("gender.label")}
+              </p>
+              <FormField
+                control={control}
+                name="gender"
+                render={({ field }) => (
+                  <>
+                    <div className="flex justify-center gap-4">
+                      <div className="group flex flex-col items-center">
+                        <label
+                          className={`cursor-pointer p-4 px-5.5 border rounded-2xl hover:border-secondary-mint-green duration-300 ${
+                            field.value === "male"
+                              ? "border-secondary-mint-green"
+                              : "border-light-gray"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            className="sr-only peer"
+                            value="male"
+                            checked={field.value === "male"}
+                            onChange={() => field.onChange("male")}
+                            disabled={readOnly}
+                          />
+                          <div className="group relative transition-all duration-300 peer-checked:saturate-100 group-hover:saturate-100 saturate-0">
+                            <Image
+                              src="/assets/illustrations/boy.png"
+                              alt="Boy"
+                              width={91.32}
+                              height={120}
+                              className="group-hover:scale-110 duration-300"
+                            />
+                          </div>
+                          <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
+                            {t("gender.male")}
+                          </p>
+                        </label>
                       </div>
-                      <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
-                        {t("gender.male")}
-                      </p>
-                    </label>
-                  </div>
 
-                  <div className="group flex flex-col items-center">
-                    <label
-                      className={`cursor-pointer p-4 px-6.5 border rounded-2xl hover:border-secondary-burgundy duration-300 ${
-                        field.value === "female"
-                          ? "border-secondary-burgundy"
-                          : "border-light-gray"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        className="sr-only peer"
-                        value="female"
-                        checked={field.value === "female"}
-                        onChange={() => field.onChange("female")}
-                        disabled={readOnly}
-                      />
-                      <div className="group relative transition-all duration-300 peer-checked:saturate-100 group-hover:saturate-100 saturate-0">
-                        <Image
-                          src="/assets/illustrations/girl.png"
-                          alt="Girl"
-                          width={84.74}
-                          height={120}
-                          className="group-hover:scale-110 duration-300"
-                        />
+                      <div className="group flex flex-col items-center">
+                        <label
+                          className={`cursor-pointer p-4 px-6.5 border rounded-2xl hover:border-secondary-burgundy duration-300 ${
+                            field.value === "female"
+                              ? "border-secondary-burgundy"
+                              : "border-light-gray"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            className="sr-only peer"
+                            value="female"
+                            checked={field.value === "female"}
+                            onChange={() => field.onChange("female")}
+                            disabled={readOnly}
+                          />
+                          <div className="group relative transition-all duration-300 peer-checked:saturate-100 group-hover:saturate-100 saturate-0">
+                            <Image
+                              src="/assets/illustrations/girl.png"
+                              alt="Girl"
+                              width={84.74}
+                              height={120}
+                              className="group-hover:scale-110 duration-300"
+                            />
+                          </div>
+                          <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
+                            {t("gender.female")}
+                          </p>
+                        </label>
                       </div>
-                      <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
-                        {t("gender.female")}
-                      </p>
-                    </label>
+                    </div>
+                    <FormMessage />
+                  </>
+                )}
+              />
+            </div>
+
+            {/* QR Code Card */}
+            {(!readOnly || hasValue(qrCode)) && (
+              <div className="flex flex-col">
+                <Label className="mb-4 text-center">
+                  <span className="text-base">QR code</span>
+                </Label>
+                <div className="relative flex-1">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors duration-200 min-h-[200px] flex items-center justify-center bg-gray-50">
+                    {qrCode && typeof qrCode === "string" ? (
+                      <div className="space-y-2">
+                        <div className="relative inline-block">
+                          <img
+                            src={
+                              qrCode.startsWith("http") ||
+                              qrCode.startsWith("//")
+                                ? qrCode
+                                : `${
+                                    process.env.NEXT_PUBLIC_API_BASE_URL
+                                  }/${qrCode.replace(/^\//, "")}`
+                            }
+                            alt="QR Code"
+                            className="w-40 h-40 object-contain mx-auto border-2 border-orange-300 rounded-lg shadow-lg bg-white p-2"
+                            onError={(e) => {
+                              // Hide image on error
+                              (e.target as HTMLImageElement).style.display =
+                                "none";
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-8 h-8 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <FormMessage />
-                </>
-              )}
-            />
+                </div>
+              </div>
+            )}
+
+            {/* Child Image Card */}
+            {(!readOnly || hasValue(childImage)) && (
+              <FormField
+                control={control}
+                name="childImage"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <Label className="mb-4 text-center">
+                      <span className="text-base">صورة الطفل</span>
+                    </Label>
+                    <FormControl>
+                      <div className="relative flex-1">
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors duration-200 min-h-[200px] flex items-center justify-center bg-gray-50">
+                          {field.value ? (
+                            <div className="space-y-2">
+                              <div className="relative inline-block">
+                                <img
+                                  src={
+                                    field.value instanceof File
+                                      ? URL.createObjectURL(field.value)
+                                      : (field.value as string).startsWith(
+                                          "http"
+                                        )
+                                      ? field.value
+                                      : `${
+                                          process.env.NEXT_PUBLIC_API_BASE_URL
+                                        }/${(field.value as string).replace(
+                                          /^\//,
+                                          ""
+                                        )}`
+                                  }
+                                  alt="Child preview"
+                                  className="w-24 h-24 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg
+                                  className="w-8 h-8 text-gray-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
         </div>
       </div>

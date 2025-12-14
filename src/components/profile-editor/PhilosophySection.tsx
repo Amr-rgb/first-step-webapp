@@ -61,15 +61,21 @@ export const PhilosophySection = ({
       {sections.map(({ key, title, label, placeholder }) => (
         <div key={key} className="space-y-2">
           {/* <h3 className="text-lg font-semibold">{title}</h3> */}
-          <Label htmlFor={key} className="mb-1 block">
-            {label}
-          </Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor={key} className="mb-1 block">
+              {label}
+            </Label>
+            <span className="text-xs text-muted-foreground">
+              {data.Philosophy_Methodology_Goal[key].content.length}/120
+            </span>
+          </div>
           <Textarea
             id={key}
             value={data.Philosophy_Methodology_Goal[key].content}
             onChange={(e) => handleChange(key, e.target.value)}
             placeholder={placeholder}
             rows={4}
+            maxLength={120}
           />
         </div>
       ))}

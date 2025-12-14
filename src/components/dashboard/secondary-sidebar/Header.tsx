@@ -7,10 +7,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuthUser } from "@/store/authStore";
+import { useLocale } from "next-intl";
 
 export default function SidebarHeader() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const user = useAuthUser();
+  const locale = useLocale();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -20,15 +22,18 @@ export default function SidebarHeader() {
     return () => clearInterval(timer);
   }, []);
 
-  // Format the date like "Tue, 15 Apr"
-  const formattedDate = currentDateTime.toLocaleDateString("en-US", {
+  // Map locale to proper locale string for date formatting
+  const dateLocale = locale === "ar" ? "ar-SA" : "en-US";
+
+  // Format the date like "Tue, 15 Apr" or Arabic equivalent
+  const formattedDate = currentDateTime.toLocaleDateString(dateLocale, {
     weekday: "short",
     day: "numeric",
     month: "short",
   });
 
-  // Format the time like "01:36 PM"
-  const formattedTime = currentDateTime.toLocaleTimeString("en-US", {
+  // Format the time like "01:36 PM" or Arabic equivalent
+  const formattedTime = currentDateTime.toLocaleTimeString(dateLocale, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,

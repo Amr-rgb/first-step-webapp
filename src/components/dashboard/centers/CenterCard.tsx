@@ -9,12 +9,14 @@ import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import { toastSuccess, toastError } from "@/lib/toast";
-import { Loader2, Check, X } from "lucide-react";
+import { Loader2, Check, X, Trash2 } from "lucide-react";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 const CenterCard = ({ center }: { center: CenterCardType }) => {
   const t = useTranslations("dashboard.admin.center");
   const queryClient = useQueryClient();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Accept center mutation
   const acceptMutation = useMutation({
@@ -46,6 +48,19 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
     },
   });
 
+  // Delete center mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => adminService.deleterCenter(center.id.toString()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["centers"] });
+      toastSuccess(t("delete_dialog.success"));
+      setIsDeleteModalOpen(false);
+    },
+    onError: (err) => {
+      toastError(t("delete_dialog.error"), err.message);
+    },
+  });
+
   const handleAccept = () => {
     if (isProcessing) return;
     setIsProcessing(true);
@@ -62,7 +77,11 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
   const isRejected = center.status === "canceled";
 
   return (
-    <div className="relative bg-sidebar border-b border-light-gray p-6 flex flex-col lg:flex-row gap-8">
+    <div
+      className={`relative bg-sidebar border-b border-light-gray p-6 flex flex-col lg:flex-row gap-8 ${
+        deleteMutation.isPending ? "opacity-50 pointer-events-none" : ""
+      }`}
+    >
       <div className="absolute top-4 right-4 rtl:right-auto rtl:left-4 flex flex-col items-end gap-2">
         <div className="flex items-center gap-2">
           <span
@@ -171,13 +190,27 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
         </div>
       </div>
 
-      {/* <Button
-        variant={"ghost"}
-        size={"icon"}
-        className="absolute p-5 top-4 right-4 rtl:right-auto rtl:left-4"
-      >
-        <Trash2 className="size-5 text-destructive" />
-      </Button> */}
+      {/* {(isPending || isRejected) && (
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          className="absolute p-5 top-4 right-4 rtl:right-auto rtl:left-4 mt-12"
+          onClick={() => setIsDeleteModalOpen(true)}
+        >
+          <Trash2 className="size-5 text-destructive" />
+        </Button>
+      )} */}
+
+      <ConfirmationDialog
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => deleteMutation.mutate()}
+        title={t("delete_dialog.title")}
+        description={t("delete_dialog.description")}
+        confirmText={t("delete_dialog.confirm")}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };

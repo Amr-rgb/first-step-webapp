@@ -479,6 +479,42 @@ export const parentService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getChildrenCount: async () => {
+    try {
+      const response = await apiClient.get("/parent/children/count");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getEnrollmentsCount: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/count");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getUpcomingEnrollments: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/pending");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCurrentEnrollments: async () => {
+    try {
+      const response = await apiClient.get("/parent/enrollments/accepted");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const centerService = {
@@ -942,6 +978,15 @@ export const centerService = {
     }
   },
 
+  requestNewPromocode: async () => {
+    try {
+      const response = await apiClient.post("/request-new-promocode");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   // Portfolio endpoints
   savePortfolio: async (payload: PortfolioFormData) => {
     try {
@@ -990,6 +1035,17 @@ export const centerService = {
   getBranchPricing: async (branchId: string) => {
     try {
       const response = await apiClient.get(`/branches-pricies/${branchId}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  generateGateCode: async (branchId: string) => {
+    try {
+      const response = await apiClient.post(`/generate-code`, {
+        branch_id: branchId,
+      });
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -1424,6 +1480,15 @@ export const adminService = {
     }
   },
 
+  deleterCenter: async (centerId: string) => {
+    try {
+      const response = await apiClient.delete(`/dashboard/centers/${centerId}`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCentersSubscriptionsLog: async () => {
     try {
       const response = await apiClient.get("/get-history-payment");
@@ -1692,6 +1757,37 @@ export const notificationService = {
   readAllNotifications: async () => {
     try {
       const response = await apiClient.patch(`/notifications/read-all`);
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
+export interface ApplyPromoCodeRequest {
+  branch_price_id: number;
+  branch_id: number;
+  promo_code: string;
+  child_count: number;
+}
+
+export interface ApplyPromoCodeResponse {
+  promo_code: string;
+  branch: string;
+  center: string;
+  original_amount: number;
+  discount: number;
+  final_amount: number;
+  discount_type: string;
+  paid_enrollments_count: number;
+}
+
+export const promoCodeService = {
+  applyPromoCode: async (
+    payload: ApplyPromoCodeRequest
+  ): Promise<ApplyPromoCodeResponse> => {
+    try {
+      const response = await apiClient.post(`/promo-codes/apply`, payload);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

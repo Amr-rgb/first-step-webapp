@@ -153,16 +153,15 @@ const SignInForm = ({
           <p className="text-action">{form.formState.errors.root.message}</p>
         )}
 
-        <div className="mt-12 flex flex-col items-center gap-y-4">
+        <div className="mt-12 flex flex-col gap-y-4">
           <Button
             size={"long"}
             type="submit"
+            className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs !w-full !max-w-full"
             disabled={isLoading || form.formState.isSubmitting}
           >
             {(isLoading || form.formState.isSubmitting) && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             {tBtns("sign-in")}
           </Button>
@@ -170,23 +169,21 @@ const SignInForm = ({
             variant={"outline"}
             size={"long"}
             type="button"
-            className="text-mid-gray !border-light-gray w-full"
+            className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs text-mid-gray !border-light-gray !w-full !max-w-full"
             disabled={
               isLoading || form.formState.isSubmitting || isGoogleLoading
             }
             onClick={handleGoogleSignIn}
           >
             {isGoogleLoading && (
-              <span className="animate-spin mr-2.5">
-                <LoaderCircle />
-              </span>
+              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
             )}
             <span>{tBtns("sign-in-google")}</span>
             <Image
               src="/assets/icons/google_icon.svg"
               alt="Google Logo"
-              width={36}
-              height={36}
+              width={20}
+              height={20}
             />
           </Button>
         </div>

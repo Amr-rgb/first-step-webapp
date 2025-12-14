@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +18,8 @@ interface ServicesSectionProps {
 
 export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
   const t = useTranslations("dashboard.profileEditor.services");
+  const [scrollToIndex, setScrollToIndex] = useState<number | null>(null);
+  const serviceRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleSectionTitleChange = (value: string) => {
     onChange({
@@ -26,6 +29,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
   };
 
   const addService = () => {
+    const newIndex = data.services.length;
     onChange({
       ...data,
       services: [
@@ -33,7 +37,20 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
         { title: "", description: "", image_service: "" },
       ],
     });
+    setScrollToIndex(newIndex);
   };
+
+  useEffect(() => {
+    if (scrollToIndex !== null && serviceRefs.current[scrollToIndex]) {
+      setTimeout(() => {
+        serviceRefs.current[scrollToIndex]?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+        setScrollToIndex(null);
+      }, 100);
+    }
+  }, [scrollToIndex, data.services.length]);
 
   const updateService = (
     index: number,
@@ -85,7 +102,13 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
           </p>
         ) : (
           data.services.map((service, index) => (
-            <Card key={index} className="p-4">
+            <Card
+              key={index}
+              ref={(el) => {
+                serviceRefs.current[index] = el;
+              }}
+              className="p-4"
+            >
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h4 className="font-semibold">
@@ -113,7 +136,12 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                 </div>
 
                 <div>
-                  <Label>{t("serviceDescription")}</Label>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label>{t("serviceDescription")}</Label>
+                    <span className="text-xs text-muted-foreground">
+                      {service.description.length}/200
+                    </span>
+                  </div>
                   <Textarea
                     value={service.description}
                     onChange={(e) =>
@@ -121,6 +149,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                     }
                     placeholder={t("serviceDescriptionPlaceholder")}
                     rows={3}
+                    maxLength={200}
                   />
                 </div>
 

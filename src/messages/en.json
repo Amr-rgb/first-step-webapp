@@ -5,12 +5,34 @@
   },
   "navbar": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our story", "path": "/our-story" },
-      "contact": { "title": "Contact us", "path": "/contact" }
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "coupon-codes": {
+        "title": "Offers & Coupons",
+        "path": "/offers-and-coupons"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact us",
+        "path": "/contact"
+      }
     },
     "buttons": {
       "sign-up": "Sign Up",
@@ -52,15 +74,42 @@
   },
   "footer": {
     "links": {
-      "home": { "title": "Home", "path": "/" },
-      "services": { "title": "Our Services", "path": "/services" },
-      "nurseries": { "title": "Nurseries", "path": "/nurseries" },
-      "centers": { "title": "Centers", "path": "/centers" },
-      "blog": { "title": "Blog", "path": "/blog" },
-      "story": { "title": "Our Story", "path": "/our-story" },
-      "contact": { "title": "Contact Us", "path": "/contact" },
-      "help": { "title": "Help", "path": "/help" },
-      "privacy-policy": { "title": "Privacy", "path": "/privacy-policy" },
+      "home": {
+        "title": "Home",
+        "path": "/"
+      },
+      "services": {
+        "title": "Our Services",
+        "path": "/services"
+      },
+      "nurseries": {
+        "title": "Nurseries",
+        "path": "/nurseries"
+      },
+      "centers": {
+        "title": "Centers",
+        "path": "/centers"
+      },
+      "blog": {
+        "title": "Blog",
+        "path": "/blog"
+      },
+      "story": {
+        "title": "Our Story",
+        "path": "/our-story"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "path": "/contact"
+      },
+      "help": {
+        "title": "Help",
+        "path": "/help"
+      },
+      "privacy-policy": {
+        "title": "Privacy",
+        "path": "/privacy-policy"
+      },
       "terms-conditions": {
         "title": "Terms and Conditions",
         "path": "/terms-conditions"
@@ -151,7 +200,8 @@
       "0-3": "Nurseries for Ages 0-3",
       "3-6": "Nurseries for Ages 3-6",
       "disabled": "Special Needs Nurseries"
-    }
+    },
+    "viewAllCoupons": "View All Coupons"
   },
   "auth": {
     "sign-up": {
@@ -756,13 +806,13 @@
       "admin": {
         "home": "Home",
         "centers": "Nurseries & Centers",
+        "discount-codes": "Discount Codes",
         "centers-subscriptions": "Centers Subscriptions Log",
         "parents": "Parents",
         "bookings": "Bookings",
         "advertisement": "Advertisement",
         "blog": "Blog",
         "notifications": "Notifications",
-
         "chat": "Chat"
       },
       "center": {
@@ -772,10 +822,12 @@
         "bookings": "Bookings",
         "daily-reports": "Daily Reports",
         "center-data": "Center Data",
+        "gate": "First Step Gate",
         "ad-or-blog-request": "Ad or Blog Request",
         "notifications": "Notifications",
         "team": "Team",
-        "chat": "Chat"
+        "chat": "Chat",
+        "discount-coupons": "Discount Coupons"
       }
     },
     "account": {
@@ -826,6 +878,35 @@
         "title": "Confirm Password",
         "passwordLabel": "Enter your password to confirm",
         "passwordPlaceholder": "••••••••"
+      }
+    },
+    "coupons": {
+      "couponName": "Coupon Name",
+      "discountPercentage": "Discount Percentage",
+      "discountValue": "Discount Value (SAR)",
+      "startDate": "Start Day",
+      "endDate": "End Day",
+      "usageCount": "Number of times used by you",
+      "currency": "SAR",
+      "times": "times",
+      "activatedBranches": "Branches where it's activated",
+      "requestAddCoupon": "Request to Add Discount Coupon",
+      "requesting": "Requesting...",
+      "requestSuccess": "Request Submitted",
+      "requestSuccessDescription": "Your request for a new promocode has been submitted. We will review it shortly.",
+      "requestError": "Request Failed",
+      "requestErrorDescription": "Failed to submit your request. Please try again later.",
+      "searchPlaceholder": "Search for discount coupon",
+      "noCouponsFound": {
+        "title": "No coupons found",
+        "description": "You don't have any discount coupons yet. Request to add a discount coupon to get started."
+      },
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "notStarted": "Not Started Yet",
+        "paused": "Paused",
+        "expired": "Expired"
       }
     },
     "center": {
@@ -1045,6 +1126,44 @@
           "cancel": "Cancel"
         }
       },
+      "gate": {
+        "title": "First Step Gate Application",
+        "subtitle": "Register children's attendance and departure easily",
+        "codeLabel": "Click the button below to activate",
+        "downloadApp": "Share the app with parents",
+        "attendanceTitle": "Attendance Records",
+        "buttons": {
+          "generate": "Generate Code",
+          "generating": "Generating..."
+        },
+        "success": {
+          "codeGenerated": "Code generated successfully",
+          "linkCopied": "Link copied to clipboard"
+        },
+        "errors": {
+          "selectBranch": "Please select a branch first",
+          "generateFailed": "Failed to generate code. Please try again."
+        },
+        "table": {
+          "number": "#",
+          "childName": "Child Name",
+          "date": "Date",
+          "arrivalTime": "Arrival Time",
+          "departureTime": "Departure Time",
+          "program": "Program",
+          "branch": "Branch",
+          "noData": "No attendance records yet"
+        },
+        "modal": {
+          "title": "Generate Gate Code",
+          "selectBranch": "Select Branch",
+          "generate": "Generate Code",
+          "successTitle": "App Access Code",
+          "successSubtitle": "Share the code with the employee responsible for registering children's attendance and departure",
+          "copyButton": "Copy access code for your employees",
+          "copied": "Code copied to clipboard"
+        }
+      },
       "children": {
         "title": "Children",
         "form": {
@@ -1064,6 +1183,26 @@
       }
     },
     "parent": {
+      "homePage": {
+        "childrenCount": "Children Count",
+        "enrollmentsCount": "Enrollments Count",
+        "upcomingEnrollments": "Upcoming Enrollments",
+        "currentEnrollments": "Current Enrollments",
+        "enrollmentStartsOn": "Enrollment {number} starts on {date}",
+        "enrollmentEndsOn": "Enrollment {number} ends on {date}",
+        "noUpcomingEnrollments": "No upcoming enrollments found.",
+        "noCurrentEnrollments": "No current enrollments found.",
+        "viewAll": "View All",
+        "bookNow": "Book for your child now",
+        "upcomingEnrollmentsEmpty": {
+          "title": "No upcoming enrollments",
+          "description": "Browse nurseries and book for your child now"
+        },
+        "currentEnrollmentsEmpty": {
+          "title": "No current enrollments",
+          "description": "Browse nurseries and book for your child now"
+        }
+      },
       "children": {
         "title": "Children",
         "add": "Add Child",
@@ -1099,7 +1238,8 @@
         "actions": {
           "showDetails": "Show Booking Details",
           "cancel": "Cancel Booking",
-          "renew": "Renew Same Booking Now"
+          "renew": "Renew Same Booking Now",
+          "confirmReservation": "Confirm the reservation now"
         },
         "status": {
           "accepted": "Pending Payment",
@@ -1126,7 +1266,35 @@
         "total": "Total",
         "filterByStatus": "Filter by status",
         "filterAll": "All statuses",
-        "noBookingsForStatus": "No bookings found for the selected status"
+        "noBookingsForStatus": "No bookings found for the selected status",
+        "confirmReservation": {
+          "title": "Booking Details",
+          "originalPrice": "Original Price",
+          "required": "Required",
+          "finalAmount": "Amount Required",
+          "notes": "Notes",
+          "note1": "A payment notification will be sent via email.",
+          "note2": "The paid amount cannot be refunded for any reason.",
+          "note3": "Please ensure the correctness of the information before proceeding with the payment.",
+          "payNow": "Pay Now",
+          "success": "Reservation confirmed successfully"
+        },
+        "coupon": {
+          "label": "Discount Coupon",
+          "placeholder": "Enter coupon code",
+          "apply": "Apply",
+          "changeCoupon": "Change Coupon",
+          "info": "You can change the coupon and add another coupon",
+          "code": "Coupon Code",
+          "saved": "Saved",
+          "appliedSuccess": "Coupon applied successfully",
+          "applyError": "Failed to apply coupon",
+          "emptyError": "Please enter a coupon code",
+          "usageLimit": "Coupon usage limit reached",
+          "expired": "Coupon has expired",
+          "invalid": "Invalid coupon code",
+          "expiredMessage": "This coupon has expired. Please remove it to add a new one."
+        }
       },
       "reports": {
         "title": "Daily Reports",
@@ -1262,6 +1430,7 @@
           "load": "Could not load centers",
           "unexpected": "An unexpected error occurred while loading the data. Check your internet connection, or try again later."
         },
+        "noResults": "No centers found with this status",
         "loading": "Loading Data...",
         "centerAccepted": "Center has been accepted successfully",
         "centerRejected": "Center has been rejected successfully",
@@ -1274,7 +1443,15 @@
         "status": {
           "pending": "Pending",
           "confirmed": "Confirmed",
-          "canceled": "Rejected"
+          "canceled": "Rejected",
+          "all": "All"
+        },
+        "delete_dialog": {
+          "title": "Delete Center",
+          "description": "Are you sure you want to delete this center? This action cannot be undone.",
+          "confirm": "Delete",
+          "success": "Center deleted successfully",
+          "error": "Failed to delete center"
         }
       },
       "parents": {
@@ -1373,6 +1550,16 @@
       "dashboard": "Dashboard",
       "home": "Home",
       "search": "Search...",
+      "menu": {
+        "notifications": "Notifications",
+        "billing": "Billing History",
+        "accountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
+      },
       "routes": {
         "center": "Center",
         "branches": "Branches",
@@ -1392,6 +1579,7 @@
         "team": "Team",
         "addTeamMember": "Add Team Member",
         "teamMemberDetails": "Team Member Details",
+        "discountCoupons": "Discount Coupons",
         "parent": "Parent",
         "myChildren": "My Children",
         "addChild": "Add Child",
@@ -1412,6 +1600,16 @@
         "allChildren": "All Children",
         "parents": "Parents",
         "parentDetails": "Parent Details"
+      },
+      "settings": {
+        "notifications": "Notifications",
+        "billingHistory": "Billing History",
+        "editAccountData": "Edit Account Data",
+        "privacyPolicy": "Privacy Policy",
+        "termsConditions": "Terms and Conditions",
+        "faqs": "FAQs",
+        "contactUs": "Contact Us",
+        "logout": "Logout"
       }
     },
     "search": {
@@ -1523,12 +1721,17 @@
       "empty": {
         "add-now": "Add Now"
       },
-      "loading": "Loading Data..."
+      "loading": "Loading Data...",
+      "error": "An error occurred"
     },
     "emptyStates": {
       "bookings": {
         "title": "No bookings yet",
         "description": "Your booking history will appear here once you make your first reservation."
+      },
+      "centerBookings": {
+        "title": "No bookings",
+        "description": "There are no bookings to display currently"
       },
       "children": {
         "title": "No children added",
@@ -1633,6 +1836,34 @@
         }
       }
     },
+    "portfolioProgress": {
+      "welcome": "Welcome {centerName}",
+      "question": "Are you ready to complete your profile on our site?",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "tasks": {
+        "branches": {
+          "title": "Add your branches",
+          "description": "Add your branches and follow them through the control panel"
+        },
+        "children": {
+          "title": "Register your center's children",
+          "description": "Add parent accounts directly"
+        },
+        "profile": {
+          "title": "Complete your profile",
+          "description": "Add your services and center activities on our website"
+        },
+        "advertisement": {
+          "title": "Your free advertisement",
+          "description": "Advertise through First Step for free for the first time"
+        },
+        "blog": {
+          "title": "Write a blog post",
+          "description": "Advertise through First Step for free for the first time"
+        }
+      }
+    },
     "profileEditor": {
       "title": "Center Data",
       "modes": {
@@ -1665,7 +1896,6 @@
         "subtitlePlaceholder": "Enter hero subtitle",
         "description": "Description",
         "descriptionPlaceholder": "Enter hero description",
-
         "ctaTextPlaceholder": "Enter CTA text",
         "ctaLink": "Call to Action Link",
         "ctaLinkPlaceholder": "Enter CTA link",
@@ -1690,7 +1920,6 @@
         "methodologyContent": "Methodology Content",
         "methodologyContentPlaceholder": "Enter methodology content",
         "goals": "Goals",
-
         "goalTitle": "Goal Title",
         "goalTitlePlaceholder": "Enter goal title",
         "goalContent": "Goal Content",
@@ -1808,12 +2037,14 @@
     "tables": {
       "shared": {
         "status": {
-          "confirmed": "Payment Confirmed",
+          "confirmed": "Waiting for Payment",
           "waitingForPayment": "Waiting for Payment",
           "waitingForConfirmation": "Waiting for Confirmation",
           "rejected": "Rejected",
           "cancelled": "Cancelled",
           "paid": "Paid",
+          "existing": "Through Center",
+          "expired": "Expired",
           "selectChild": "Select Child"
         }
       },
@@ -1968,6 +2199,7 @@
     },
     "center-bookings": {
       "title": "Bookings",
+      "searchPlaceholder": "Search",
       "viewTable": "Table",
       "viewCards": "Cards",
       "viewDetails": "View Details",
@@ -1983,6 +2215,7 @@
       "sendNotification": "Send Notification to Parent",
       "sendingNotification": "Sending...",
       "children": "children",
+      "andOthers": "and {count} others",
       "filters": {
         "all": "All",
         "completed": "Completed",
@@ -2023,7 +2256,12 @@
         "month": "month",
         "months": "months"
       },
-      "noPricingPlans": "No pricing plans available for this branch"
+      "noPricingPlans": "No pricing plans available for this branch",
+      "paymentDetails": "Payment Details",
+      "originalAmount": "Original Amount",
+      "couponCode": "Coupon Code",
+      "discount": "Discount",
+      "finalAmount": "Final Amount"
     },
     "center-reports": {
       "title": "Daily Reports",
@@ -2066,7 +2304,6 @@
       }
     }
   },
-
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -2074,6 +2311,14 @@
       "title": "No data available",
       "description": "There's nothing to show here yet. Get started by adding some content."
     }
+  },
+  "NewsletterPopup": {
+    "title": "We send you all our offers and coupons",
+    "subtitle": "Subscribe via email",
+    "placeholder": "Enter your email",
+    "button": "Subscribe Now",
+    "success": "Subscribed successfully!",
+    "loading": "Subscribing..."
   },
   "HomePage": {
     "Features": {
@@ -2083,7 +2328,6 @@
         "title": "Child File Management and Communication with Parents",
         "description": "Integrated database for child and parent files with the ability to send daily reports on the child's status within the nursery."
       },
-
       "taskOrganization": {
         "title": "Task Organization and Instant Notifications",
         "description": "A digital calendar for managing daily events and tasks, with instant notifications to alert about updates and important events."
@@ -2280,9 +2524,11 @@
       }
     },
     "plans": {
-      "title": "Our Educational Programs",
-      "subtitle": "Discover our diverse educational programs designed specifically to develop your child's skills",
+      "title": "Programs",
+      "subtitle": "",
       "selectBranch": "Select Branch",
+      "selectAge": "Child Age",
+      "selectEnrollmentType": "Program Type",
       "noPrograms": "No Programs Available",
       "noProgramsMessage": "Programs will be added soon. Please check back later.",
       "bookNow": "Book Now",
@@ -2376,5 +2622,249 @@
     "accountsCreatedSuccessfully": "Parent accounts created successfully",
     "errorCreatingAccounts": "Error creating parent accounts",
     "creatingAccounts": "Creating accounts..."
+  },
+  "discountCodes": {
+    "title": "Discount Codes",
+    "addButton": "Add Discount Code",
+    "searchPlaceholder": "Search for discount code",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "notStarted": "Not Started",
+      "paused": "Paused",
+      "expired": "Expired"
+    },
+    "table": {
+      "code": "Discount Code Name",
+      "actions": "Actions",
+      "status": "Coupon Status",
+      "discountValue": "Discount Value",
+      "discountPercentage": "Discount Percentage",
+      "pendingUsage": "Pending Usage",
+      "usedCount": "Usage Count",
+      "usageLimit": "Usage Limit",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "usage": "usage",
+      "currency": "SAR",
+      "percentage": "%"
+    },
+    "createModal": {
+      "step1Title": "Coupon Details",
+      "step2Title": "Select Centers and Nurseries",
+      "couponName": "Coupon Name",
+      "couponNamePlaceholder": "Example: Night10",
+      "couponDescription": "Coupon Description",
+      "couponDescriptionPlaceholder": "Example: 50% discount on all bookings for Saudi National Day",
+      "startDate": "Coupon Start Date",
+      "endDate": "Coupon End Date",
+      "percentage": "Discount Percentage %",
+      "amount": "Discount Amount SAR",
+      "maxUsage": "Maximum Beneficiaries",
+      "childrenOnly": "Available for new children only",
+      "couponDesign": "Coupon Design",
+      "centersAndNurseries": "Centers and Nurseries",
+      "allCentersAndBranches": "All nurseries and centers with all branches",
+      "mainCenterBranches": "Main Center Branches",
+      "allBranches": "All Branches",
+      "returnPlaceholder": "Return",
+      "close": "Close",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "back": "Back",
+      "createCoupon": "Create Discount Coupon",
+      "creating": "Creating...",
+      "success": "Discount coupon created successfully",
+      "error": "An error occurred while creating the discount coupon",
+      "editTitle": "Edit Coupon Details",
+      "viewTitle": "View Coupon Details",
+      "couponStatus": "Coupon Status",
+      "successUpdate": "Discount coupon updated successfully",
+      "statusUpdated": "Status updated successfully",
+      "updating": "Updating...",
+      "updateCoupon": "Update Coupon",
+      "searchBranches": "Search Branches",
+      "searchCenters": "Search Centers",
+      "noBranches": "No branches found",
+      "noCenters": "No centers found"
+    },
+    "loading": "Loading discount codes...",
+    "error": "Error loading discount codes"
+  },
+  "couponCodes": {
+    "subscribeButton": "Subscribe to Coupon Newsletter",
+    "searchPlaceholder": "Search for coupon, nursery, or center",
+    "loading": "Loading...",
+    "noCoupons": "No coupons available at the moment",
+    "noResults": "No coupons match your search",
+    "sort": {
+      "newest": "Newest",
+      "percentage": "Highest Discount"
+    },
+    "card": {
+      "validUntil": "Valid until",
+      "copySuccess": "Code copied successfully",
+      "viewCenters": "View Participating Centers"
+    },
+    "share": "Share offers and coupons with friends",
+    "emptyState": {
+      "title1": "There are currently no coupons,",
+      "title2": "you will be notified when coupons are available",
+      "button": "Subscribe to Coupon Newsletter"
+    }
+  },
+  "reservationForm": {
+    "plans": {
+      "monthly": "Monthly",
+      "weekly": "Weekly",
+      "daily": "Daily",
+      "hourly": "Hourly"
+    },
+    "units": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day"
+    },
+    "labels": {
+      "numberOfHours": "Number of Hours",
+      "numberOfDays": "Number of Days",
+      "numberOfWeeks": "Number of Weeks",
+      "numberOfMonths": "Number of Months",
+      "duration": "Duration",
+      "bookingDate": "Booking Date",
+      "selectChildren": "Select One or More Children",
+      "noChildren": "No Children Found",
+      "noChildrenDesc": "You need to register at least one child before making a reservation. Please go to the children page to add a new child.",
+      "addNewChild": "Add New Child",
+      "bookingSummary": "Booking Summary",
+      "couponCode": "Coupon Code",
+      "discountCoupon": "Discount Coupon",
+      "tryCoupon": "Try Coupon",
+      "paymentNotice": "The coupon does not work at this step and is activated upon payment after approval of the booking request",
+      "termsNotice": "Confirming the booking means you accept the terms and conditions and our privacy policy.",
+      "confirmBooking": "Confirm Booking Now",
+      "submitting": "Submitting...",
+      "successTitle": "Reservation Request Sent Successfully!",
+      "successDesc": "We will contact you soon to confirm the reservation details.",
+      "submitAnother": "Submit Another Request",
+      "goToReservations": "Go to My Reservations",
+      "timeRange": "From {start} to {end}",
+      "autoDuration": "Duration automatically set based on plan",
+      "youHaveNoChildren": "You have no children"
+    },
+    "summary": {
+      "plan": "Plan",
+      "time": "Time",
+      "childrenCount": "Number of children",
+      "date": "Date",
+      "calculation": "Plan price × Children",
+      "total": "Total",
+      "saved": "Saved",
+      "discount": "Discount"
+    },
+    "errors": {
+      "enterCoupon": "Please enter a coupon code",
+      "selectBranch": "Please select a branch first",
+      "selectPlan": "Please select a plan first",
+      "selectChild": "Please select at least one child to apply the coupon",
+      "childCountRequired": "Please select the number of children first",
+      "invalidData": "Invalid data. Please check the entered information",
+      "usageLimit": "This coupon has reached its usage limit",
+      "invalidCoupon": "Invalid or non-existent coupon code",
+      "expiredCoupon": "This coupon has expired",
+      "failedToApply": "Failed to apply coupon",
+      "noPlanSelected": "No plan selected",
+      "noBranchSelected": "No branch selected",
+      "bookingError": "Booking Error",
+      "submissionFailed": "Failed to submit reservation request. Please try again."
+    },
+    "success": {
+      "couponApplied": "Coupon applied successfully",
+      "bookingSent": "Reservation Request Sent Successfully!"
+    }
+  },
+  "externalOffers": {
+    "tabs": {
+      "coupons": "First Step Coupons",
+      "externalOffers": "External Offers Promotion"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "buttons": {
+      "add": "Add External Offer",
+      "cancel": "Cancel",
+      "submit": "Submit Offer to Website",
+      "archive": "Archive",
+      "permanentDelete": "Permanent Delete",
+      "processing": "Processing...",
+      "saving": "Saving..."
+    },
+    "search": {
+      "placeholder": "Search for discount coupon..."
+    },
+    "empty": {
+      "noMatches": "No matching offers found"
+    },
+    "form": {
+      "title": "External Offer Details",
+      "fields": {
+        "centerName": {
+          "label": "Offer Center or Discount Name",
+          "placeholder": "Example: Wosh Nursery 🥳"
+        },
+        "address": {
+          "label": "Address",
+          "placeholder": "Example: Al Nafl District"
+        },
+        "descriptions": {
+          "label": "Offer Description",
+          "placeholder": "Example: Any child who wants to enter the games needs a ticket, unlimited playtime"
+        },
+        "moneyDetails": {
+          "label": "Money Details (SAR)",
+          "placeholder": "Example: Only 89 SAR 👍👋 instead of 197 SAR 🤗"
+        },
+        "timeDetails": {
+          "label": "Time Details",
+          "placeholder": "Example: From 4 PM to 11 PM on weekdays"
+        },
+        "additionalDetails": {
+          "label": "Additional Details",
+          "placeholder": "Example: Transfer the amount and send me a picture of the transfer..."
+        },
+        "url": {
+          "label": "Location URL",
+          "placeholder": "Example: https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb"
+        },
+        "photos": {
+          "label": "Offer Photos",
+          "limit": "(Maximum 10)"
+        }
+      }
+    },
+    "dialog": {
+      "confirmDelete": {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to delete this offer?",
+        "archiveOption": "Archive offer (can be restored later)",
+        "deleteOption": "Permanent delete (cannot be restored)"
+      }
+    },
+    "toast": {
+      "archiveSuccess": "Offer archived successfully",
+      "archiveError": "Error occurred during archiving",
+      "deleteSuccess": "Offer permanently deleted",
+      "deleteError": "Error occurred during deletion",
+      "createSuccess": "Offer added successfully",
+      "updateSuccess": "Offer updated successfully",
+      "genericError": "An error occurred",
+      "imageLimit": "You can upload a maximum of 10 images"
+    },
+    "forLimitedTime": "For Limited Time",
+    "noImage": "No Image"
   }
 }

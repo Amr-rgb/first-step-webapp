@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { format, parse } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CARDS = [
   {
@@ -160,11 +161,30 @@ export default function AdminDashboardHome() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        <span className="ml-4 text-primary text-lg font-medium">
-          {t("loading")}
-        </span>
+      <div className="grid gap-y-10">
+        {/* Stats Cards */}
+        <div className="flex flex-wrap gap-5 xl:gap-20 text-center">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="w-full flex-1 flex flex-col items-center p-6 rounded-3xl shadow-[0_0_2px_rgba(0,0,0,.08)]"
+            >
+              <Skeleton className="w-[46px] h-[49px]" />
+              <Skeleton className="mt-4 mb-2 h-12 w-24" />
+              <Skeleton className="h-8 w-32" />
+            </div>
+          ))}
+        </div>
+
+        {/* Charts */}
+        <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4">
+          <div className="w-full flex-1">
+            <Skeleton className="h-[300px] w-full rounded-xl" />
+          </div>
+          <div className="w-full flex-1">
+            <Skeleton className="h-[300px] w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }

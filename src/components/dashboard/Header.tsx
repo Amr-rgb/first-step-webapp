@@ -16,9 +16,10 @@ import {
   Mail,
   LogOut,
 } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
 import { useDashboardSearch } from "@/hooks/use-dashboard-search";
 import SearchResults from "./SearchResults";
 import {
@@ -68,8 +69,11 @@ export default function Header({
   secondarySidebarOpen,
 }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("dashboard.header");
   const commonT = useTranslations("common");
+  const languageT = useTranslations("language");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -91,12 +95,13 @@ export default function Header({
   } = useDashboardSearch();
 
   // Menu items configuration
+  const settingsT = useTranslations("dashboard.header.settings");
   const menuItems = {
     // Toggle for enabling/disabling pusher notification toasts
     // This controls whether toast notifications appear when new pusher notifications arrive
     notifications: {
       icon: Bell,
-      label: "الإشعارات",
+      label: t("menu.notifications"),
       type: "toggle" as const,
       value: userPreferencesStore.preferences.notificationToastsEnabled,
       onChange: userPreferencesStore.setNotificationToastsEnabled,
@@ -106,7 +111,7 @@ export default function Header({
       role === "center"
         ? {
             icon: CreditCard,
-            label: "سجل الدفع",
+            label: t("menu.billing"),
             type: "link" as const,
             href: `/dashboard/${role}/billing`,
           }
@@ -115,7 +120,7 @@ export default function Header({
       role !== "admin"
         ? {
             icon: User,
-            label: "تعديل بيانات الحساب",
+            label: t("menu.accountData"),
             type: "link" as const,
             href: `/dashboard/${role}/account`,
           }
@@ -123,32 +128,32 @@ export default function Header({
     separator2: { type: "separator" as const },
     privacyPolicy: {
       icon: Shield,
-      label: "سياسة الخصوصية",
+      label: t("menu.privacyPolicy"),
       type: "link" as const,
       href: "/privacy-policy",
     },
     termsConditions: {
       icon: FileText,
-      label: "الشروط والأحكام",
+      label: t("menu.termsConditions"),
       type: "link" as const,
       href: "/terms-conditions",
     },
     faqs: {
       icon: HelpCircle,
-      label: "الاسئلة الشائعة",
+      label: t("menu.faqs"),
       type: "link" as const,
       href: "/faqs",
     },
     contactUs: {
       icon: Mail,
-      label: "تواصل معنا",
+      label: t("menu.contactUs"),
       type: "link" as const,
       href: "/contact",
     },
     separator3: { type: "separator" as const },
     logout: {
       icon: LogOut,
-      label: "تسجيل الخروج",
+      label: t("menu.logout"),
       type: "action" as const,
       variant: "destructive" as const,
       onClick: () => {
@@ -207,6 +212,7 @@ export default function Header({
         { path: "team", titleKey: "team" },
         { path: "team/add", titleKey: "addTeamMember" },
         { path: "team/[memberId]", titleKey: "teamMemberDetails" },
+        { path: "discount-coupons", titleKey: "discountCoupons" },
       ],
     },
     {
@@ -427,6 +433,81 @@ export default function Header({
 
         <NotificationDropdown />
 
+        {/* Language Switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center justify-center hover:bg-gray-100 rounded-lg p-1 transition-colors">
+              <div className="flex items-center gap-x-1.5">
+                <Image
+                  src={
+                    locale === "en"
+                      ? "/assets/icons/english.svg"
+                      : "/assets/icons/arabic.svg"
+                  }
+                  alt={locale === "en" ? "English" : "Arabic"}
+                  width={20}
+                  height={20}
+                />
+                <span className="text-sm font-medium text-mid-gray">
+                  {locale === "en" ? languageT("en") : languageT("ar")}
+                </span>
+              </div>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem
+              onClick={() => {
+                if (locale !== "ar") {
+                  // pathname from usePathname() already excludes the locale prefix
+                  const newPath = `/ar${pathname}`;
+                  router.push(newPath);
+                }
+              }}
+              className={locale === "ar" ? "opacity-50" : ""}
+            >
+              <div className="flex items-center justify-between w-full gap-x-2">
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src="/assets/icons/arabic.svg"
+                    alt="Arabic"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-sm font-medium">{languageT("ar")}</span>
+                </div>
+                {locale === "ar" && (
+                  <span className="text-xs text-primary">✓</span>
+                )}
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (locale !== "en") {
+                  // pathname from usePathname() already excludes the locale prefix
+                  const newPath = `/en${pathname}`;
+                  router.push(newPath);
+                }
+              }}
+              className={locale === "en" ? "opacity-50" : ""}
+            >
+              <div className="flex items-center justify-between w-full gap-x-2">
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src="/assets/icons/english.svg"
+                    alt="English"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-sm font-medium">{languageT("en")}</span>
+                </div>
+                {locale === "en" && (
+                  <span className="text-xs text-primary">✓</span>
+                )}
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* Settings Dropdown Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -444,7 +525,7 @@ export default function Header({
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between p-2"
+                    className="flex items-center justify-between p-2 cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <item.icon className="size-4" />
@@ -462,7 +543,10 @@ export default function Header({
               if (item?.type === "link") {
                 return (
                   <DropdownMenuItem key={key} asChild>
-                    <Link href={item.href} className="flex items-center gap-2">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <item.icon className="size-4" />
                       <span>{item.label}</span>
                     </Link>
@@ -476,6 +560,7 @@ export default function Header({
                     key={key}
                     variant={item.variant}
                     onClick={item.onClick}
+                    className="cursor-pointer"
                   >
                     <item.icon className="size-4" />
                     <span>{item.label}</span>

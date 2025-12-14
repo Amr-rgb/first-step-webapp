@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Tajawal, Noto_Sans } from "next/font/google";
+import { Tajawal } from "next/font/google";
 import "@/styles/globals.css";
 import { Providers } from "../providers";
 import { Suspense } from "react";
@@ -17,16 +17,31 @@ const tajawal = Tajawal({
   subsets: ["latin"],
 });
 
-const notoSans = Noto_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-noto-sans",
-});
+import { headers } from "next/headers";
 
-// export const metadata: Metadata = {
-//   title: "First Step",
-//   description: "Smart childcare for every family.",
-// };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const baseUrl = "https://firststep-app.com";
+
+  // Remove the locale from the start of the pathname to get the route
+  // e.g. /en/about -> /about
+  const route = pathname.replace(`/${locale}`, "") || "";
+
+  return {
+    alternates: {
+      languages: {
+        en: `${baseUrl}/en${route}`,
+        ar: `${baseUrl}/ar${route}`,
+      },
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,

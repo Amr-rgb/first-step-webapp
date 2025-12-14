@@ -17,6 +17,10 @@ const SignUpWrapper = () => {
   const router = useRouter();
   const locale = useLocale();
   const formRef = useRef<UseFormReturn<SignUpCenterFormData> | null>(null);
+  const currentStepRef = useRef<{
+    currentStep: number;
+    setCurrentStep: (step: number) => void;
+  } | null>(null);
 
   const onError = (error: ApiError) => {
     console.log("Full API Error:", error);
@@ -30,50 +34,85 @@ const SignUpWrapper = () => {
     if (error.errors && Object.keys(error.errors).length > 0) {
       console.log("Field-specific errors:", error.errors);
 
+      // Map backend field names to frontend field names and their steps
+      const fieldMapping: Record<
+        string,
+        { field: keyof SignUpCenterFormData; step: number }
+      > = {
+        name: { field: "name", step: 1 },
+        email: { field: "email", step: 1 },
+        password: { field: "password", step: 1 },
+        phone: { field: "phone", step: 1 },
+        nursery_name: { field: "nursery_name", step: 1 },
+        location: { field: "location", step: 1 },
+        neighborhood: { field: "neighborhood", step: 1 },
+        city: { field: "city", step: 1 },
+        city_id: { field: "city", step: 1 },
+        logo: { field: "logo", step: 1 },
+        nursery_type: { field: "nursery_type", step: 1 },
+        commercial_record_path: {
+          field: "commercial_record_path",
+          step: 2,
+        },
+        license_path: { field: "license_path", step: 2 },
+        notes: { field: "notes", step: 2 },
+      };
+
+      let earliestErrorStep = Infinity;
+
       Object.entries(error.errors).forEach(([field, messages]) => {
         const errorMessage = Array.isArray(messages) ? messages[0] : messages;
+        const mappedField = fieldMapping[field];
 
-        // Map backend field names to frontend field names if needed
-        const fieldMapping: Record<string, keyof SignUpCenterFormData> = {
-          name: "name",
-          email: "email",
-          password: "password",
-          phone: "phone",
-          nursery_name: "nursery_name",
-          location: "location",
-          neighborhood: "neighborhood",
-          city: "city",
-          city_id: "city",
-          logo: "logo",
-          nursery_type: "nursery_type",
-          commercial_record_path: "commercial_record_path",
-          license_path: "license_path",
-          notes: "notes",
-        };
+        if (mappedField) {
+          const { field: frontendField, step } = mappedField;
 
-        const frontendField =
-          fieldMapping[field] || (field as keyof SignUpCenterFormData);
+          // Track the earliest step with an error
+          if (step < earliestErrorStep) {
+            earliestErrorStep = step;
+          }
 
-        // Check if the field exists in our form
-        if (frontendField in formRef.current!.getValues()) {
-          formRef.current?.setError(frontendField, {
-            type: "server",
-            message: errorMessage,
-          });
+          // Check if the field exists in our form
+          if (frontendField in formRef.current!.getValues()) {
+            formRef.current?.setError(frontendField, {
+              type: "server",
+              message: errorMessage,
+            });
+          } else {
+            console.warn(
+              `Field ${field} not found in form, showing as root error`
+            );
+            formRef.current?.setError("root", {
+              type: "server",
+              message: `${field}: ${errorMessage}`,
+            });
+            toastError("Validation Error", `${field}: ${errorMessage}`);
+          }
         } else {
-          // If field doesn't exist in form, show as root error
-          console.warn(
-            `Field ${field} not found in form, showing as root error`
-          );
+          // Unknown field, show as root error
+          console.warn(`Field ${field} not mapped, showing as root error`);
           formRef.current?.setError("root", {
             type: "server",
             message: `${field}: ${errorMessage}`,
           });
-
-          // Also show as toast for better visibility
           toastError("Validation Error", `${field}: ${errorMessage}`);
         }
       });
+
+      // Navigate to the earliest step with errors if we're not already there
+      if (
+        earliestErrorStep !== Infinity &&
+        currentStepRef.current &&
+        currentStepRef.current.currentStep !== earliestErrorStep
+      ) {
+        currentStepRef.current.setCurrentStep(earliestErrorStep);
+        toastError(
+          locale === "ar" ? "خطأ في التحقق" : "Validation Error",
+          locale === "ar"
+            ? "يرجى التحقق من الحقول في الخطوة السابقة"
+            : "Please check the fields in the previous step"
+        );
+      }
     } else {
       // If no specific field errors, show the main error message
       formRef.current?.setError("root", {
@@ -144,6 +183,7 @@ const SignUpWrapper = () => {
 
       <SignUp
         formRef={formRef}
+        currentStepRef={currentStepRef}
         submitHandler={submitHandler}
         isLoading={mutation.isPending}
       />

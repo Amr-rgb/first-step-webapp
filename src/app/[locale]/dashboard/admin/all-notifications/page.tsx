@@ -4,10 +4,14 @@ import React from "react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, Loader2, Bell } from "lucide-react";
+import { CheckCheck, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NotificationsPage() {
+  usePageMetadata();
+
   const {
     notifications,
     unreadCount,
@@ -21,9 +25,24 @@ export default function NotificationsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <Loader2 className="size-8 animate-spin text-gray-400" />
-        <span className="ml-3 text-gray-500">{t("loading")}</span>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-48" />
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="bg-white rounded-lg border p-4">
+                <div className="flex items-start gap-4">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

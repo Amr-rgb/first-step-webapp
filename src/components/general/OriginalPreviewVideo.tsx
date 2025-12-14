@@ -5,10 +5,17 @@ const options = {};
 const muxPlaybackId = "T8It02oFFSo401wcc00tTcn4WCbRW3CjO1qE0202ZyuBexLk";
 
 const OriginalPreviewVideo = async () => {
-  const { blurDataURL, aspectRatio } = await createBlurUp(
-    muxPlaybackId,
-    options
-  );
+  let blurDataURL = "";
+  let aspectRatio = "16/9";
+
+  try {
+    const blurData = await createBlurUp(muxPlaybackId, options);
+    blurDataURL = blurData.blurDataURL;
+    aspectRatio = blurData.aspectRatio.toString();
+  } catch (error) {
+    console.error("Error creating blur placeholder:", error);
+    // Continue with default values
+  }
 
   return (
     <section className="container mx-auto px-4">
@@ -33,4 +40,3 @@ const OriginalPreviewVideo = async () => {
 };
 
 export default OriginalPreviewVideo;
-

@@ -6,7 +6,15 @@ import BlogCard from "./BlogCard";
 import { Blog } from "@/types";
 import { Link } from "@/i18n/navigation";
 
-const Blogs = ({ blogs }: { blogs: Blog[] }) => {
+const Blogs = ({
+  blogs,
+  error,
+  locale,
+}: {
+  blogs: Blog[];
+  error?: any;
+  locale: string;
+}) => {
   const t = useTranslations("blogsection");
 
   return (
@@ -26,15 +34,42 @@ const Blogs = ({ blogs }: { blogs: Blog[] }) => {
             <span className="text-gray">{t("subtitle")}</span>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 items-center gap-10">
-            {blogs.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} />
-            ))}
-          </div>
+          {/* Error State */}
+          {error && (
+            <div className="py-8 text-center">
+              <p className="text-gray-600">
+                {locale === "ar"
+                  ? "لا يمكن تحميل المقالات حالياً"
+                  : "Unable to load blogs at the moment"}
+              </p>
+            </div>
+          )}
 
-          <Button asChild size={"sm"}>
-            <Link href={`/blog`}>{t("button")}</Link>
-          </Button>
+          {/* Empty State */}
+          {!error && blogs.length === 0 && (
+            <div className="py-8 text-center">
+              <p className="text-gray-600">
+                {locale === "ar"
+                  ? "لا توجد مقالات متاحة حالياً"
+                  : "No blogs available at the moment"}
+              </p>
+            </div>
+          )}
+
+          {/* Blogs Grid */}
+          {!error && blogs.length > 0 && (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
+                {blogs.map((blog) => (
+                  <BlogCard key={blog.id} blog={blog} />
+                ))}
+              </div>
+
+              <Button asChild size={"sm"}>
+                <Link href={`/blog`}>{t("button")}</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </section>

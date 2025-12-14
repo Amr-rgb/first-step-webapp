@@ -9,6 +9,7 @@ import EmptyState from "@/components/common/EmptyState";
 
 import { Parent } from "@/hooks/useAdminEnrollments";
 import { ReservationStatus } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const transformEnrollmentsToBookings = (data: Parent[] = []) => {
   const bookings = [];
@@ -75,11 +76,17 @@ const Bookings = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        <span className="ml-4 text-primary text-lg font-medium">
-          {t("loading")}
-        </span>
+      <div className="space-y-4">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="border rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-8 w-24" />
+            </div>
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ))}
       </div>
     );
   }

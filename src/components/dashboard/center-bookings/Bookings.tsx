@@ -15,12 +15,18 @@ import { BookingCard } from "./BookingCard";
 import { BookingDetailsModal } from "./BookingDetailsModal";
 import { AcceptEnrollmentModal } from "./AcceptEnrollmentModal";
 import { Button } from "@/components/ui/button";
-import { Table, LayoutGrid } from "lucide-react";
+import { Table, LayoutGrid, RotateCw } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast";
+import { FilterButtons } from "@/components/common/FilterButtons";
+import { cn } from "@/lib/utils";
 
 const transformEnrollmentsData = (data: any): Booking[] => {
   // Handle both direct array and wrapped response
-  const enrollments = Array.isArray(data) ? data : data?.data || [];
+  const enrollments = (Array.isArray(data) ? data : data?.data || []).slice();
+
+  if (Array.isArray(enrollments)) {
+    enrollments.sort((a: any, b: any) => b.enrollment_id - a.enrollment_id);
+  }
 
   if (!Array.isArray(enrollments) || enrollments.length === 0) {
     return [];
@@ -45,7 +51,9 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           branch: enrollment.branch_name || "",
           branchId: enrollment.branch_id,
           startDate:
-            enrollment.starting_date || enrollment.enrollment_date || "",
+            enrollment.enrollment_type === "hour" && enrollment.day_string
+              ? enrollment.day_string
+              : enrollment.starting_date || "",
           type: enrollment.enrollment_type || "",
           amount: enrollment.price_amount
             ? parseFloat(enrollment.price_amount)
@@ -53,13 +61,25 @@ const transformEnrollmentsData = (data: any): Booking[] => {
           age: child.age,
         })),
         branch: enrollment.branch_name || "",
-        startDate: enrollment.starting_date || enrollment.enrollment_date || "",
-        endDate: enrollment.ending_date || "",
+        startDate:
+          enrollment.enrollment_type === "hour" && enrollment.day_string
+            ? enrollment.day_string
+            : enrollment.starting_date || "",
+        endDate:
+          enrollment.enrollment_type === "hour" &&
+          enrollment.starting_time &&
+          enrollment.ending_time
+            ? `${enrollment.starting_time} - ${enrollment.ending_time}`
+            : enrollment.ending_date || "",
         type: enrollment.enrollment_type || "",
         amount: enrollment.price_amount
           ? parseFloat(enrollment.price_amount)
           : 0,
         count: enrollment.count,
+        startingTime: enrollment.starting_time,
+        endingTime: enrollment.ending_time,
+        reservation: enrollment.reservation,
+        pricing: enrollment.pricing,
       };
     });
 
@@ -91,41 +111,55 @@ const Bookings = () => {
   );
   const [pendingEnrollmentType, setPendingEnrollmentType] =
     useState<string>("");
+  const [pendingEnrollmentStatus, setPendingEnrollmentStatus] =
+    useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const t = useTranslations("dashboard.center-bookings");
   const tTable = useTranslations("dashboard.tables.center-bookings");
   const queryClient = useQueryClient();
-  const columns = useCenterBookingsColumns(
-    selectedChildMap,
-    setSelectedChildMap
-  );
 
   const handleViewDetails = (booking: Booking) => {
     setSelectedBooking(booking);
     setIsModalOpen(true);
   };
 
+  const columns = useCenterBookingsColumns(
+    selectedChildMap,
+    setSelectedChildMap,
+    handleViewDetails
+  );
+
   const enrollmentMutation = useMutation({
     mutationFn: async ({
       enrollmentId,
       status,
+      currentStatus,
       starting_date,
       starting_time,
       day_string,
     }: {
       enrollmentId: string;
       status: string;
+      currentStatus?: string;
       starting_date?: string;
       starting_time?: string;
       day_string?: string;
     }) => {
-      return await centerService.respondExistingEnrollment(
-        parseInt(enrollmentId),
-        status,
-        starting_date,
-        starting_time,
-        day_string
-      );
+      if (currentStatus === "existing") {
+        return await centerService.respondExistingEnrollment(
+          parseInt(enrollmentId),
+          status,
+          starting_date,
+          starting_time,
+          day_string
+        );
+      } else {
+        return await centerService.respondEnrollment(
+          parseInt(enrollmentId),
+          status
+        );
+      }
     },
     onSuccess: () => {
       toastSuccess(
@@ -141,10 +175,23 @@ const Bookings = () => {
     },
   });
 
-  const handleAccept = (enrollmentId: string, enrollmentType: string) => {
-    setPendingEnrollmentId(enrollmentId);
-    setPendingEnrollmentType(enrollmentType);
-    setIsAcceptModalOpen(true);
+  const handleAccept = (
+    enrollmentId: string,
+    enrollmentType: string,
+    currentStatus: string
+  ) => {
+    if (currentStatus === "existing") {
+      setPendingEnrollmentId(enrollmentId);
+      setPendingEnrollmentType(enrollmentType);
+      setPendingEnrollmentStatus(currentStatus);
+      setIsAcceptModalOpen(true);
+    } else {
+      enrollmentMutation.mutate({
+        enrollmentId,
+        status: "accepted",
+        currentStatus,
+      });
+    }
   };
 
   const handleConfirmAccept = (data: {
@@ -155,7 +202,8 @@ const Bookings = () => {
     if (pendingEnrollmentId) {
       enrollmentMutation.mutate({
         enrollmentId: pendingEnrollmentId,
-        status: "paid",
+        status: pendingEnrollmentStatus === "pending" ? "accepted" : "paid",
+        currentStatus: pendingEnrollmentStatus,
         starting_date: data.startingDate,
         starting_time: data.startingTime,
         day_string: data.dayString,
@@ -163,8 +211,12 @@ const Bookings = () => {
     }
   };
 
-  const handleReject = (enrollmentId: string) => {
-    enrollmentMutation.mutate({ enrollmentId, status: "rejected" });
+  const handleReject = (enrollmentId: string, currentStatus: string) => {
+    enrollmentMutation.mutate({
+      enrollmentId,
+      status: "rejected",
+      currentStatus,
+    });
   };
 
   const notificationMutation = useMutation({
@@ -196,7 +248,12 @@ const Bookings = () => {
     { value: "expired", label: t("filters.expired") },
   ];
 
-  const { data: enrollmentsData, isLoading } = useQuery({
+  const {
+    data: enrollmentsData,
+    isLoading,
+    isRefetching,
+    isFetching,
+  } = useQuery({
     queryKey: ["enrollments"],
     queryFn: centerService.getEnrollments,
   });
@@ -207,43 +264,61 @@ const Bookings = () => {
 
   console.log("baseData (first item):", baseData[0]);
 
-  // Filter bookings based on active filter
+  // Filter bookings based on active filter and search query
   const filteredBaseData = baseData.filter((booking) => {
     // Skip bookings with no children
     if (!booking.childs || booking.childs.length === 0) return false;
 
-    if (activeFilter === "all") return true;
+    // Apply status filter
+    if (activeFilter !== "all") {
+      const firstChild = booking.childs[0];
+      const status = firstChild?.status;
 
-    const firstChild = booking.childs[0];
-    const status = firstChild?.status;
+      if (!status) return false;
 
-    if (!status) return false;
+      let statusMatch = false;
+      switch (activeFilter) {
+        case "completed":
+          statusMatch = status === "paid";
+          break;
+        case "pending":
+          statusMatch = status === "pending";
+          break;
+        case "confirmed":
+          statusMatch = status === "accepted";
+          break;
+        case "from-center":
+          statusMatch = status === "existing";
+          break;
+        case "cancelled":
+          statusMatch = status === "cancelled";
+          break;
+        case "rejected":
+          statusMatch = status === "rejected";
+          break;
+        case "expired":
+          statusMatch = status === "expired";
+          break;
+        default:
+          statusMatch = true;
+      }
 
-    switch (activeFilter) {
-      case "completed":
-        // تم الدفع - paid
-        return status === "paid";
-      case "pending":
-        // في انتظار التأكيد - waiting for confirmation
-        return status === "pending";
-      case "confirmed":
-        // في انتظار الدفع - waiting for payment (accepted)
-        return status === "accepted";
-      case "from-center":
-        // من خلال المركز - from center (existing)
-        return status === "existing";
-      case "cancelled":
-        // ملغي - cancelled
-        return status === "cancelled";
-      case "rejected":
-        // مرفوض - rejected
-        return status === "rejected";
-      case "expired":
-        // منتهي - expired
-        return status === "expired";
-      default:
-        return true;
+      if (!statusMatch) return false;
     }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      const parentNameMatch = booking.parentName.toLowerCase().includes(query);
+      const branchMatch = booking.branch.toLowerCase().includes(query);
+      const childMatch = booking.childs.some((child) =>
+        child.name.toLowerCase().includes(query)
+      );
+
+      return parentNameMatch || branchMatch || childMatch;
+    }
+
+    return true;
   });
 
   console.log("filteredBaseData (first item):", filteredBaseData[0]);
@@ -288,7 +363,7 @@ const Bookings = () => {
       <EmptyState
         icon="📅"
         size="lg"
-        translationKey="dashboard.emptyStates.bookings"
+        translationKey="dashboard.emptyStates.centerBookings"
       />
     );
   }
@@ -297,8 +372,8 @@ const Bookings = () => {
     <div>
       <div className="mt-6 space-y-4">
         {/* Header with View Toggle and Search */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-full sm:w-auto flex items-center gap-3">
             <Button
               variant={viewMode === "table" ? "default" : "ghost"}
               size="icon"
@@ -315,35 +390,58 @@ const Bookings = () => {
             >
               <LayoutGrid className="size-5" />
             </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+              }
+              className="sm:hidden ltr:ml-auto rtl:mr-auto shrink-0"
+              disabled={isFetching}
+            >
+              <RotateCw
+                className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+              />
+            </Button>
           </div>
 
-          <div className="w-full sm:flex-1 sm:max-w-md">
+          <div
+            className={cn(
+              "w-full sm:flex-1 sm:max-w-md",
+              "ltr:ml-auto rtl:mr-auto"
+            )}
+          >
             <input
               type="search"
-              placeholder="بحث"
+              placeholder={t("searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 text-right"
             />
           </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["enrollments"] })
+            }
+            className="hidden sm:flex shrink-0"
+            disabled={isFetching}
+          >
+            <RotateCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
+          </Button>
         </div>
 
         {/* Filter Buttons */}
-        <div className="w-full overflow-x-auto">
-          <div className="flex gap-2 pb-2 w-2.5 max-w-full">
-            {filters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setActiveFilter(filter.value)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border whitespace-nowrap transition-all flex-shrink-0 ${
-                  activeFilter === filter.value
-                    ? "bg-primary text-white border-primary"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-primary"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <FilterButtons
+          filters={filters}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
 
         {/* Table View */}
         {viewMode === "table" && (
@@ -351,6 +449,7 @@ const Bookings = () => {
             columns={columns}
             data={bookingsData}
             isLoading={isLoading}
+            pagination
           />
         )}
 

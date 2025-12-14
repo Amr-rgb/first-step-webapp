@@ -22,12 +22,46 @@ interface ValueConstant {
 interface ValuesGridClientProps {
   values: Value[];
   valuesConstants: ValueConstant[];
+  error?: any;
+  locale: string;
 }
 
 const ValuesGridClient = ({
   values,
   valuesConstants,
+  error,
+  locale,
 }: ValuesGridClientProps) => {
+  if (error) {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-destructive mb-2">
+          {locale === "ar" ? "حدث خطأ في تحميل القيم" : "Error loading values"}
+        </p>
+        <p className="text-gray-600 text-sm">
+          {error?.isNetworkError
+            ? locale === "ar"
+              ? "يرجى التحقق من اتصالك بالإنترنت"
+              : "Please check your internet connection"
+            : locale === "ar"
+            ? "يرجى المحاولة مرة أخرى لاحقاً"
+            : "Please try again later"}
+        </p>
+      </div>
+    );
+  }
+
+  if (values.length === 0) {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-gray-600">
+          {locale === "ar"
+            ? "لا توجد قيم متاحة حالياً"
+            : "No values available at the moment"}
+        </p>
+      </div>
+    );
+  }
   const gridRef = useRef<HTMLDivElement>(null);
   const cardRefs = [
     useRef<HTMLDivElement>(null),

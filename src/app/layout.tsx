@@ -9,8 +9,11 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title:
-    "First Step - Smart Childcare Platform | Find Trusted Nurseries in Saudi Arabia",
+  title: {
+    default:
+      "First Step - Smart Childcare Platform | Find Trusted Nurseries in Saudi Arabia",
+    template: "%s | First Step",
+  },
   description:
     "Connect with trusted nurseries and childcare centers in Saudi Arabia. Smart childcare solutions for every family. Browse centers, compare plans, and book easily.",
   keywords: [
@@ -40,10 +43,10 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://firststep-app.com"),
   alternates: {
-    canonical: "https://firststep-app.com",
+    canonical: "./",
     languages: {
-      en: "https://firststep-app.com/en",
-      ar: "https://firststep-app.com/ar",
+      en: "/en",
+      ar: "/ar",
     },
   },
   openGraph: {

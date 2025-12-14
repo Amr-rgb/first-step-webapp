@@ -27,6 +27,7 @@ import { useTranslations } from "next-intl";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { z } from "zod";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Zod schema for plan validation
 const createPlanSchema = (t: any, isEditing: boolean) =>
@@ -257,32 +258,37 @@ export const PlansSection = () => {
               </div>
 
               {isPricingLoading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-muted-foreground text-sm">
-                    {t("loading")}
-                  </p>
+                <div className="space-y-3 py-8">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Skeleton className="h-12 w-12 rounded-md" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : branchPricing.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t("noPlansYet")}
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[400px] overflow-y-auto space-y-3 pr-2">
                   {branchPricing.map((plan) => (
                     <Card key={plan.id} className="p-4 shadow-sm">
                       <div className="flex justify-between items-start">
                         <div>
                           <h4 className="font-semibold">{plan.title}</h4>
                           {/* <p className="text-sm text-muted-foreground">
-                            {t("ageRange", {
-                              start: plan.start_age,
-                              end: plan.end_age,
-                            })}
-                          </p>
-                          <p className="text-sm">
-                            {t("priceAmount", { amount: plan.price_amount })}
-                          </p> */}
+                              {t("ageRange", {
+                                start: plan.start_age,
+                                end: plan.end_age,
+                              })}
+                            </p>
+                            <p className="text-sm">
+                              {t("priceAmount", { amount: plan.price_amount })}
+                            </p> */}
                         </div>
                         <div className="flex gap-2">
                           <Button
@@ -301,7 +307,7 @@ export const PlansSection = () => {
                             disabled={deletePricingMutation.isPending}
                           >
                             {deletePricingMutation.isPending ? (
-                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                              <div className="h-4 w-4 bg-white/20 rounded animate-pulse" />
                             ) : (
                               <Trash2 className="w-5 h-5" />
                             )}
@@ -512,7 +518,7 @@ export const PlansSection = () => {
               >
                 {savePricingMutation.isPending ? (
                   <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <div className="h-4 w-4 bg-white/20 rounded animate-pulse" />
                     {t("saving")}
                   </>
                 ) : (
