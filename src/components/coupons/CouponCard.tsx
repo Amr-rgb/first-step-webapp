@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface CouponCardProps {
   title: string;
@@ -27,7 +27,6 @@ interface CouponCardProps {
     name: string;
     nursery_name_for_center?: string;
   }[];
-  locale: string;
 }
 
 const COLORS = [
@@ -44,9 +43,9 @@ export default function CouponCard({
   code,
   color,
   centers,
-  locale,
 }: CouponCardProps) {
   const t = useTranslations("couponCodes.card");
+  const locale = useLocale();
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);

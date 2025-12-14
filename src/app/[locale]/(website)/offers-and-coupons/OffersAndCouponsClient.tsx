@@ -315,7 +315,6 @@ export default function OffersAndCouponsClient({
                   code={coupon.title}
                   color={coupon.color}
                   centers={[...coupon.centers, ...(coupon.branches || [])]}
-                  locale={locale}
                 />
               ))
             ) : searchQuery ? (
