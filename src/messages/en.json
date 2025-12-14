@@ -2857,6 +2857,8 @@
       "updateSuccess": "Offer updated successfully",
       "genericError": "An error occurred",
       "imageLimit": "You can upload a maximum of 10 images"
-    }
+    },
+    "forLimitedTime": "For Limited Time",
+    "noImage": "No Image"
   }
 }

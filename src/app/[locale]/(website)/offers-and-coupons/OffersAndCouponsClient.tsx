@@ -303,7 +303,7 @@ export default function OffersAndCouponsClient({
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {activeView === "coupons" ? (
             filteredAndSortedCoupons.length > 0 ? (
               filteredAndSortedCoupons.map((coupon) => (

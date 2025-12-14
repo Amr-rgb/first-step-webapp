@@ -166,7 +166,7 @@ export default function ExternalOffers() {
       </div>
 
       {/* List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {filteredOffers.length > 0 ? (
           filteredOffers.map((offer: any) => (
             <ExternalOfferCard

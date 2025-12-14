@@ -2873,6 +2873,8 @@
       "updateSuccess": "تم تحديث العرض بنجاح",
       "genericError": "حدث خطأ",
       "imageLimit": "يمكنك رفع 10 صور كحد أقصى"
-    }
+    },
+    "forLimitedTime": "لفترة محدودة",
+    "noImage": "لا توجد صورة"
   }
 }
