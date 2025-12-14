@@ -103,11 +103,35 @@ export default function BookingCard({
     ],
   };
 
+  const tLabels = useTranslations("reservationForm.labels");
+  const tSummary = useTranslations("reservationForm.summary");
+
+  const getCountLabel = (type: string) => {
+    switch (type) {
+      case "hour":
+        return tLabels("numberOfHours");
+      case "week":
+        return tLabels("numberOfWeeks");
+      case "month":
+        return tLabels("numberOfMonths");
+      default:
+        return tLabels("numberOfDays");
+    }
+  };
+
+  const isHourly = booking.enrollment_type === "hour";
+
   const rightFields = [
     { key: "status", label: t("fields.status"), isStatus: true },
-    { key: "startDay", label: t("fields.startDay") },
-    { key: "endDay", label: t("fields.endDay") },
-    { key: "daysCount", label: t("fields.daysCount") },
+    {
+      key: "startDay",
+      label: isHourly ? tSummary("date") : t("fields.startDay"),
+    },
+    {
+      key: "endDay",
+      label: isHourly ? tSummary("time") : t("fields.endDay"),
+    },
+    { key: "daysCount", label: getCountLabel(booking.enrollment_type) },
   ];
 
   const leftFields = [

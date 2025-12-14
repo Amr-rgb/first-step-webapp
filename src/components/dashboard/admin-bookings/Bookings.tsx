@@ -9,6 +9,7 @@ import EmptyState from "@/components/common/EmptyState";
 
 import { Parent } from "@/hooks/useAdminEnrollments";
 import { ReservationStatus } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const transformEnrollmentsToBookings = (data: Parent[] = []) => {
   const bookings = [];
