@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import BlogCard from "@/components/general/blog/BlogCard";
-import { blogService } from "@/services/api";
+import { getLatestBlogsAction } from "@/actions/blogActions";
 import { Blog } from "@/types";
 import { useTranslations } from "next-intl";
 
@@ -22,7 +22,7 @@ export function RelatedBlogs({ locale, currentBlogId }: RelatedBlogsProps) {
     error,
   } = useQuery<Blog[]>({
     queryKey: ["latest-blogs", locale],
-    queryFn: () => blogService.getLatestBlogs(locale),
+    queryFn: () => getLatestBlogsAction(locale),
   });
 
   // Filter out the current blog from the related blogs

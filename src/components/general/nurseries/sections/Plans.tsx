@@ -13,7 +13,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { nurseryService } from "@/services/api";
+import {
+  getNurseriesAction,
+  getBranchesForCenterAction,
+  getBranchPricingAction,
+} from "@/actions/nurseryActions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlanCard } from "@/components/common/PlanCard";
 
@@ -56,7 +60,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   // Resolve center ID by nursery name
   const { data: nurseries = [] } = useQuery({
     queryKey: ["nurseries-for-center-id", locale],
-    queryFn: () => nurseryService.getNurseries(locale),
+    queryFn: () => getNurseriesAction(locale),
     enabled: !!locale,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -83,7 +87,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     error: branchesError,
   } = useQuery({
     queryKey: ["branches-for-center", centerId],
-    queryFn: () => nurseryService.getBranchesForCenter(centerId as string),
+    queryFn: () => getBranchesForCenterAction(centerId as string),
     enabled: !!centerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -104,10 +108,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   } = useQuery({
     queryKey: ["branch-pricing", selectedBranch?.id, centerId],
     queryFn: () =>
-      nurseryService.getBranchPricing(
-        selectedBranch?.id as string,
-        centerId as string
-      ),
+      getBranchPricingAction(selectedBranch?.id as string, centerId as string),
     enabled: !!selectedBranch && !!centerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
