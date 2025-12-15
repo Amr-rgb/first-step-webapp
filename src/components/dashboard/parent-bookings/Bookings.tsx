@@ -151,6 +151,7 @@ const Bookings = () => {
       string | null
     >(null);
     const [isCouponExpired, setIsCouponExpired] = useState(false);
+    const [isVerifyingCoupon, setIsVerifyingCoupon] = useState(false);
 
     // Initialize coupon from booking if it exists
     useEffect(() => {
@@ -172,23 +173,63 @@ const Bookings = () => {
           0;
 
         if (existingCoupon) {
-          setAppliedCoupon(existingCoupon);
-          setCouponCode(existingCoupon);
-          setCouponDiscount(existingDiscount);
-          setOriginalCoupon(existingCoupon);
-          setCurrentBookingCoupon(existingCoupon);
-
           // Check expiry
+          let isExpiredLocally = false;
           if (reservation?.expire_at) {
             const expireDate = new Date(reservation.expire_at);
             const now = new Date();
             if (expireDate < now) {
-              setIsCouponExpired(true);
+              isExpiredLocally = true;
+            }
+          }
+
+          setAppliedCoupon(existingCoupon);
+          setCouponCode(existingCoupon);
+          setCouponDiscount(isExpiredLocally ? 0 : existingDiscount);
+          setOriginalCoupon(existingCoupon);
+          setCurrentBookingCoupon(existingCoupon);
+
+          if (isExpiredLocally) {
+            // Initially set as expired based on local check
+            setIsCouponExpired(true);
+            setIsVerifyingCoupon(true);
+
+            // Double check validation with backend
+            const branchId = booking?.center_branch_id || booking?.branch_id;
+            const branchPriceId = booking?.branch_price_id;
+
+            if (branchId && branchPriceId) {
+              promoCodeService
+                .applyPromoCode({
+                  branch_price_id: Number(branchPriceId),
+                  branch_id: Number(branchId),
+                  promo_code: existingCoupon,
+                  child_count: booking.children?.length || 0,
+                })
+                .then((response) => {
+                  // If it's expired locally but valid on backend:
+                  // 1. Mark as not expired
+                  setIsCouponExpired(false);
+                  // 2. Update with fresh details from backend
+                  setAppliedCoupon(response.promo_code);
+                  setCouponDiscount(response.discount);
+                  // 3. Show X button by ensuring applied != original (treating it as new entry)
+                  setOriginalCoupon(null);
+                })
+                .catch((_error) => {
+                  // If backend also rejects it (expired or invalid), keep show expired
+                  setIsCouponExpired(true);
+                  setCouponDiscount(0);
+                })
+                .finally(() => {
+                  setIsVerifyingCoupon(false);
+                });
             } else {
-              setIsCouponExpired(false);
+              setIsVerifyingCoupon(false);
             }
           } else {
             setIsCouponExpired(false);
+            setIsVerifyingCoupon(false);
           }
         } else {
           setAppliedCoupon(null);
@@ -426,62 +467,80 @@ const Bookings = () => {
 
                   {appliedCoupon ? (
                     isAcceptedStatus ? (
-                      // Full Editable Coupon Card
-                      <div>
-                        <div className="bg-purple-50 rounded-lg border border-purple-200 p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <div className="bg-purple-100 p-1.5 rounded-full">
-                                <CheckCircle2
-                                  size={16}
-                                  className="text-purple-600"
-                                />
-                              </div>
-                              <div>
-                                <span className="text-purple-700 font-bold block leading-none">
-                                  {appliedCoupon}
-                                </span>
-                                {isCouponExpired ? (
-                                  <span className="text-red-500 text-xs mt-0.5 block font-bold">
-                                    {t("status.expired") || "Expired"}
-                                  </span>
-                                ) : (
-                                  <span className="text-purple-600 text-xs mt-0.5 block">
-                                    {t("coupon.appliedSuccess") ||
-                                      "Coupon applied successfully"}
-                                  </span>
-                                )}
-                              </div>
+                      isVerifyingCoupon ? (
+                        <div className="bg-gray-50 rounded-lg border border-gray-200 p-3 space-y-3">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="h-8 w-8 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                              <Skeleton className="h-4 w-24" />
+                              <Skeleton className="h-3 w-32" />
                             </div>
-                            {(isCouponExpired ||
-                              appliedCoupon !== originalCoupon) && (
-                              <button
-                                onClick={handleRemoveCoupon}
-                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                              >
-                                <X size={18} />
-                              </button>
-                            )}
+                            <Skeleton className="h-6 w-6 rounded" />
                           </div>
-                          <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
-                            <span className="text-purple-800">
-                              {t("coupon.saved") || "وفرت"}
-                            </span>
-                            <span className="font-bold text-purple-800">
-                              {discountAmount} {locale === "ar" ? "ر.س" : "SAR"}
-                            </span>
+                          <div className="border-t border-gray-200 pt-2 flex justify-between items-center">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-4 w-20" />
                           </div>
                         </div>
-                        {isCouponExpired && (
-                          <div className="flex items-center gap-1.5 text-red-500 text-xs mt-2 px-1">
-                            <AlertCircle size={12} />
-                            <span>
-                              {t("coupon.expiredMessage") ||
-                                "This coupon has expired. Please remove it to add a new one."}
-                            </span>
+                      ) : (
+                        // Full Editable Coupon Card
+                        <div>
+                          <div className="bg-purple-50 rounded-lg border border-purple-200 p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className="bg-purple-100 p-1.5 rounded-full">
+                                  <CheckCircle2
+                                    size={16}
+                                    className="text-purple-600"
+                                  />
+                                </div>
+                                <div>
+                                  <span className="text-purple-700 font-bold block leading-none">
+                                    {appliedCoupon}
+                                  </span>
+                                  {isCouponExpired ? (
+                                    <span className="text-red-500 text-xs mt-0.5 block font-bold">
+                                      {t("status.expired") || "Expired"}
+                                    </span>
+                                  ) : (
+                                    <span className="text-purple-600 text-xs mt-0.5 block">
+                                      {t("coupon.appliedSuccess") ||
+                                        "Coupon applied successfully"}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              {(isCouponExpired ||
+                                appliedCoupon !== originalCoupon) && (
+                                <button
+                                  onClick={handleRemoveCoupon}
+                                  className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                >
+                                  <X size={18} />
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
+                              <span className="text-purple-800">
+                                {t("coupon.saved") || "وفرت"}
+                              </span>
+                              <span className="font-bold text-purple-800">
+                                {discountAmount}{" "}
+                                {locale === "ar" ? "ر.س" : "SAR"}
+                              </span>
+                            </div>
                           </div>
-                        )}
-                      </div>
+                          {isCouponExpired && (
+                            <div className="flex items-center gap-1.5 text-red-500 text-xs mt-2 px-1">
+                              <AlertCircle size={12} />
+                              <span>
+                                {t("coupon.expiredMessage") ||
+                                  "This coupon has expired. Please remove it to add a new one."}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )
                     ) : (
                       // Minimal Readonly Coupon Card
                       <div className="bg-gray-50/50 rounded-md border border-gray-200 p-2.5 flex items-center justify-between">
@@ -873,10 +932,20 @@ const Bookings = () => {
         originalCoupon = originalCoupon.trim().toUpperCase();
       }
 
+      // Check if original coupon is expired locally
+      let isOriginalExpired = false;
+      if (reservation?.expire_at) {
+        const expireDate = new Date(reservation.expire_at);
+        const now = new Date();
+        if (expireDate < now) {
+          isOriginalExpired = true;
+        }
+      }
+
       if (couponCode && couponCode.trim()) {
         const newCode = couponCode.trim().toUpperCase();
-        // Only send coupon code if it's different from the original one
-        if (newCode !== originalCoupon) {
+        // Only send coupon code if it's different from the original one OR if the original is expired
+        if (newCode !== originalCoupon || isOriginalExpired) {
           paymentPayload.coupon_code = newCode;
         }
       }
