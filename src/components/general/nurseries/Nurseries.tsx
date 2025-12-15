@@ -126,7 +126,7 @@ const Nurseries = ({
 
       {/* Nurseries Grid */}
       {!error && filteredNurseries.length > 0 && (
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:px-24">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:px-24">
           {filteredNurseries.map((nursery, index) => (
             <NurseryCard nursery={nursery} locale={locale} key={index} />
           ))}
