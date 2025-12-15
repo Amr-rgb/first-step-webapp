@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
 import { getMessages } from "next-intl/server";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import FacebookPixel from "@/components/FacebookPixel";
 import CookieSync from "@/components/auth/CookieSync";
 
 const tajawal = Tajawal({
@@ -61,6 +62,7 @@ export default async function LocaleLayout({
     <>
       <Suspense fallback={null}>
         <GoogleAnalytics />
+        <FacebookPixel />
       </Suspense>
       <NextIntlClientProvider messages={messages}>
         <Suspense fallback={null}>
