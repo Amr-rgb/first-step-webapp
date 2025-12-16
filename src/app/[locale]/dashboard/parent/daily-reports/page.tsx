@@ -190,7 +190,25 @@ export default function DailyReports() {
 
   // If no children found but still loading
   if (isLoading && children.length === 0) {
-    return <DailyReportsSkeleton />;
+    return (
+      <div className="lg:p-4 space-y-6">
+        <div className="flex flex-wrap gap-4 justify-center">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex flex-col items-center p-4 border-2 rounded-2xl border-light-gray">
+              <div className="w-16 h-6 bg-gray-200 animate-pulse rounded mb-2"></div>
+              <div className="w-20 h-24 bg-gray-200 animate-pulse rounded mb-2"></div>
+              <div className="w-16 h-6 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          ))}
+        </div>
+        <div className="h-8 w-48 bg-gray-200 animate-pulse rounded mx-auto"></div>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="h-12 bg-gray-200 animate-pulse rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // Show empty state if no children or no reports

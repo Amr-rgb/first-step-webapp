@@ -937,6 +937,13 @@
         "team": "Team",
         "chat": "Chat",
         "discount-coupons": "Discount Coupons"
+      },
+      "actions": {
+        "createParentAccounts": "Create Parent Accounts",
+        "registerChildrenNow": "Register Children Now",
+        "haveSubscription": "Have a subscription?",
+        "findNursery": "Find your child's nursery or center",
+        "findNurseryShort": "Find a nursery"
       }
     },
     "account": {
