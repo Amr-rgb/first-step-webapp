@@ -42,7 +42,7 @@ const Child = ({
     const baseSchema = createAddChildSchema(locale as "ar" | "en");
 
     if (mode === "edit") {
-      // For edit mode, create a custom image validation
+      // For edit mode, create a custom validation for image and authorized persons
       return baseSchema.extend({
         childImage: z
           .union([
@@ -51,6 +51,18 @@ const Child = ({
             z.null(), // No image
           ])
           .optional(),
+        authorizedPersons: z
+          .array(
+            z.object({
+              name: z.string().min(2, {
+                message: locale === "ar" ? "هذا الحقل مطلوب" : "This field is required",
+              }),
+              idNumber: z.string().min(1, {
+                message: locale === "ar" ? "هذا الحقل مطلوب" : "This field is required",
+              }),
+            })
+          )
+          .optional(), // Make it optional in edit mode
       });
     }
 
@@ -103,6 +115,10 @@ const Child = ({
     resolver: zodResolver(addChildSchema),
     defaultValues: {
       ...initialValues,
+      // Ensure authorized persons always has at least one entry in edit/add mode
+      authorizedPersons: mode !== "show" && (!initialValues.authorizedPersons || initialValues.authorizedPersons.length === 0)
+        ? [{ name: "", idNumber: "" }]
+        : initialValues.authorizedPersons || [],
     },
     mode: "onChange",
   });
@@ -169,6 +185,14 @@ const Child = ({
   } = useFieldArray({
     control,
     name: "allergies.allergies",
+  });
+  const {
+    fields: authorizedPersonsFields,
+    append: appendAuthorizedPerson,
+    remove: removeAuthorizedPerson,
+  } = useFieldArray({
+    control,
+    name: "authorizedPersons",
   });
   // ---
   const hasDiseases = watch("chronicDiseases.hasDiseases");
@@ -480,6 +504,9 @@ const Child = ({
           control={methods.control}
           locale={locale}
           authorizedPersons={authorizedPersons}
+          authorizedPersonsFields={authorizedPersonsFields}
+          appendAuthorizedPerson={appendAuthorizedPerson}
+          removeAuthorizedPerson={removeAuthorizedPerson}
           readOnly={readOnly}
         />
 
@@ -1350,23 +1377,36 @@ const AuthorizationPart = ({
   control,
   locale,
   authorizedPersons,
+  authorizedPersonsFields,
+  appendAuthorizedPerson,
+  removeAuthorizedPerson,
   readOnly,
 }: {
   control: Control<AddChildFormData>;
   locale: string;
   authorizedPersons: { name: string; idNumber: string }[];
+  authorizedPersonsFields: any[];
+  appendAuthorizedPerson: (value: { name: string; idNumber: string }) => void;
+  removeAuthorizedPerson: (index: number) => void;
   readOnly: boolean;
 }) => {
   const t = useTranslations("auth.add-child.4.form");
   const { watch } = useFormContext<AddChildFormData>();
   const comments = watch("comments");
 
+  // In edit/add mode, ensure we have at least one authorized person field
+  React.useEffect(() => {
+    if (!readOnly && authorizedPersonsFields.length === 0) {
+      appendAuthorizedPerson({ name: "", idNumber: "" });
+    }
+  }, [readOnly, authorizedPersonsFields.length, appendAuthorizedPerson]);
+
   // Filter authorized persons to only show those with data in readOnly mode
   const validAuthorizedPersons = readOnly
     ? authorizedPersons.filter(
         (person) => hasValue(person.name) || hasValue(person.idNumber)
       )
-    : authorizedPersons;
+    : authorizedPersonsFields;
 
   // In readOnly mode, only show section if there are valid authorized persons or comments
   if (readOnly && validAuthorizedPersons.length === 0 && !hasValue(comments)) {
@@ -1427,8 +1467,35 @@ const AuthorizationPart = ({
                   )}
                 />
               </div>
+              {!readOnly && (
+                <div className="flex gap-2 col-span-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => removeAuthorizedPerson(index)}
+                    className="font-bold aspect-square"
+                    disabled={validAuthorizedPersons.length <= 1}
+                  >
+                    <Minus className="size-6" size={24} />
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
+          {!readOnly && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => appendAuthorizedPerson({ name: "", idNumber: "" })}
+                className="font-bold"
+              >
+                <Plus className="size-6" size={24} /> إضافة شخص مفوض آخر
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
