@@ -4,7 +4,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { openSignInModal } from "@/components/modals/SignInModalHandler";
 import { handleLogout } from "@/lib/auth-utils";
-import { LogOut, TicketPercent, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 
 const NavbarButton = () => {
   const token = useAuthToken();
@@ -37,19 +37,11 @@ const NavbarButton = () => {
                 className="hidden sm:inline-flex font-semibold"
                 onClick={openSignInModal}
               >
-                <div className="flex items-center gap-1">
-                  <span className="font-normal text-xs">
-                    {t("buttons.already-have-account")}
-                  </span>
-                  <span>{t("buttons.sign-in")}</span>
-                </div>
+                {t("buttons.sign-in")}
               </Button>
               <Button asChild size={"sm"} className="sm:hidden font-semibold">
                 <Link href="/sign-in">
-                  <span className="font-normal text-xs">
-                    {t("buttons.already-have-account")}
-                  </span>
-                  <span>{t("buttons.sign-in")}</span>
+                  {t("buttons.sign-in")}
                 </Link>
               </Button>
             </>
@@ -58,35 +50,24 @@ const NavbarButton = () => {
       ) : (
         <>
           <Button
-            size="icon"
+            size="sm"
             variant="ghost"
             onClick={() => handleLogout()}
             title={t("buttons.logout")}
-            className="text-primary hover:text-primary/80"
           >
-            <LogOut className="size-6" />
-          </Button>
-
-          <Button
-            size="icon"
-            variant="ghost"
-            asChild
-            className="text-primary hover:text-primary/80"
-          >
-            <Link href="/coupon-codes" title={t("links.coupon-codes.title")}>
-              <TicketPercent className="size-6" />
-            </Link>
+            <LogOut className="size-4" />
+            {t("buttons.logout")}
           </Button>
 
           {dashboardPath && (
             <Button
-              size="icon"
-              variant="ghost"
+              size="sm"
+              variant="default"
               asChild
-              className="text-primary hover:text-primary/80"
             >
               <Link href={dashboardPath} title={t("buttons.dashboard")}>
-                <LayoutDashboard className="size-6" />
+                <LayoutDashboard className="size-4" />
+                {t("buttons.dashboard")}
               </Link>
             </Button>
           )}
