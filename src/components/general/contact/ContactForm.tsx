@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ContactFormData, createContactSchema } from "@/lib/schemas";
-import { websiteService } from "@/services/api";
+import { contactUsAction } from "@/actions/websiteActions";
 
 const ContactForm: React.FC = () => {
   const t = useTranslations("contact");
@@ -53,7 +53,7 @@ const ContactForm: React.FC = () => {
     },
     ContactFormData
   >({
-    mutationFn: (data) => websiteService.contactUs(data),
+    mutationFn: (data) => contactUsAction(data),
     onSuccess: () => {
       setSuccessMessage(t("form.success.message"));
       form.reset();
