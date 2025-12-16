@@ -1,9 +1,8 @@
 "use client";
 
 import { Icons } from "../general/icons";
-import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
 import {
@@ -69,6 +68,7 @@ export default TopBar;
 
 function LanguageSwitcher() {
   const router = useRouter();
+  const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations("language");
   const language = locale === "en" ? t("en") : t("ar");
@@ -76,9 +76,8 @@ function LanguageSwitcher() {
     locale === "en" ? "/assets/icons/english.svg" : "/assets/icons/arabic.svg";
 
   const toggleLanguage = (newLocale: "ar" | "en") => {
-    const path = window.location.pathname;
-    const pathWithoutLocale = path.replace(/^\/(en|ar)/, "");
-    router.push(`/${newLocale}${pathWithoutLocale}`);
+    // Use the i18n pathname (without locale) and let the router handle locale switching
+    router.replace(pathname, { locale: newLocale });
   };
 
   return (
