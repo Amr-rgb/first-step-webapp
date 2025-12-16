@@ -933,6 +933,13 @@
         "team": "الفريق",
         "chat": "المحادثات",
         "discount-coupons": "كوبونات الخصم"
+      },
+      "actions": {
+        "createParentAccounts": "إنشاء حسابات أولياء الأمور",
+        "registerChildrenNow": "سجل الأطفال الآن",
+        "haveSubscription": "لديك إشتراك؟",
+        "findNursery": "اعثر على حضانة أو مركز طفلك",
+        "findNurseryShort": "اعثر على حضانة"
       }
     },
     "account": {

@@ -190,11 +190,7 @@ export default function DailyReports() {
 
   // If no children found but still loading
   if (isLoading && children.length === 0) {
-    return (
-      <div className="flex justify-center items-center min-h-[200px]">
-        Loading...
-      </div>
-    );
+    return <DailyReportsSkeleton />;
   }
 
   // Show empty state if no children or no reports

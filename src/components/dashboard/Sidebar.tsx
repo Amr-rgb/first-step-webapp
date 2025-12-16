@@ -426,14 +426,10 @@ const DashboardSideBar = () => {
                       />
                       <div className="flex flex-col items-center">
                         <span className="text-sm font-medium text-primary">
-                          {locale === "ar"
-                            ? "إنشاء حسابات أولياء الأمور"
-                            : "Create Parent Accounts"}
+                          {t("actions.createParentAccounts")}
                         </span>
                         <span className="text-xs text-gray-600">
-                          {locale === "ar"
-                            ? "سجل الأطفال الآن"
-                            : "Register children now"}
+                          {t("actions.registerChildrenNow")}
                         </span>
                       </div>
                     </div>
