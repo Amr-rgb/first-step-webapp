@@ -14,7 +14,12 @@ import {
   Check,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { enrollmentService, nurseryService } from "@/services/api";
+import {
+  getNurseriesAction,
+  getBranchesForCenterAction,
+  getBranchPricingAction,
+  createExistingEnrollmentAction,
+} from "@/actions/nurseryActions";
 import { NurseryResponse } from "@/types";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
@@ -70,7 +75,7 @@ export default function EnrollmentModal({
   // Fetch centers using React Query
   const { data: centers = [], isLoading: centersLoading } = useQuery({
     queryKey: ["centers", locale],
-    queryFn: () => nurseryService.getNurseries(locale),
+    queryFn: () => getNurseriesAction(locale),
     enabled: step === "search" && open,
     staleTime: 5 * 60 * 1000,
   });
@@ -78,8 +83,7 @@ export default function EnrollmentModal({
   // Fetch branches for selected center
   const { data: branchesData, isLoading: branchesLoading } = useQuery({
     queryKey: ["branches", selectedCenter?.id],
-    queryFn: () =>
-      nurseryService.getBranchesForCenter(selectedCenter!.id.toString()),
+    queryFn: () => getBranchesForCenterAction(selectedCenter!.id.toString()),
     enabled: !!selectedCenter && step === "enrollment",
     staleTime: 5 * 60 * 1000,
   });
@@ -90,10 +94,7 @@ export default function EnrollmentModal({
   const { data: plans = [], isLoading: plansLoading } = useQuery({
     queryKey: ["plans", selectedBranch, selectedCenter?.id],
     queryFn: () =>
-      nurseryService.getBranchPricing(
-        selectedBranch,
-        selectedCenter!.id.toString()
-      ),
+      getBranchPricingAction(selectedBranch, selectedCenter!.id.toString()),
     enabled: !!selectedBranch && !!selectedCenter,
     staleTime: 5 * 60 * 1000,
   });
@@ -106,7 +107,7 @@ export default function EnrollmentModal({
       branch: string;
       plan: string;
     }) => {
-      return enrollmentService.createExistingEnrollment({
+      return createExistingEnrollmentAction({
         center_branch_id: data.branch,
         branch_price_id: data.plan,
         children: data.children,
@@ -139,7 +140,7 @@ export default function EnrollmentModal({
   const filteredCenters = useMemo(
     () =>
       centers.filter(
-        (center) =>
+        (center: NurseryResponse) =>
           center.nursery_name
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
@@ -300,7 +301,7 @@ export default function EnrollmentModal({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {filteredCenters.map((center) => (
+                  {filteredCenters.map((center: NurseryResponse) => (
                     <button
                       key={center.id}
                       onClick={() => handleCenterSelect(center)}

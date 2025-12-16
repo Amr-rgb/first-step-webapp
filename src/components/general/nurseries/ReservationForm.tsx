@@ -13,14 +13,12 @@ import { Input } from "@/components/ui/input";
 import DatePicker from "@/components/general/DatePicker";
 import { format } from "date-fns";
 import {
-  nurseryService,
-  parentService,
-  enrollmentService,
-} from "@/services/api";
-import {
-  promoCodeService,
-  ApplyPromoCodeResponse,
-} from "@/services/dashboardApi";
+  getBranchPricingAction,
+  createEnrollmentAction,
+} from "@/actions/nurseryActions";
+import { getChildrenAction } from "@/actions/parentActions";
+import { applyPromoCodeAction } from "@/actions/promoCodeActions";
+import { ApplyPromoCodeResponse } from "@/services/dashboardApi";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -763,7 +761,7 @@ const ReservationForm = ({
   // -- Queries --
   const { data: apiPlans = [] } = useQuery({
     queryKey: ["branch-plans", selectedBranch],
-    queryFn: () => nurseryService.getBranchPricing(selectedBranch!),
+    queryFn: () => getBranchPricingAction(selectedBranch!),
     enabled: !!selectedBranch && selectedBranch !== "",
     staleTime: 5 * 60 * 1000,
   });
@@ -774,7 +772,7 @@ const ReservationForm = ({
     error: childrenError,
   } = useQuery({
     queryKey: ["parent-children"],
-    queryFn: () => parentService.getChildren(),
+    queryFn: () => getChildrenAction(),
     enabled: !submitSuccess && !!authUser,
     staleTime: 5 * 60 * 1000,
   });
@@ -996,7 +994,7 @@ const ReservationForm = ({
 
     setIsApplyingCoupon(true);
     try {
-      const response = await promoCodeService.applyPromoCode({
+      const response = await applyPromoCodeAction({
         branch_price_id: Number(selectedPlanId),
         branch_id: Number(selectedBranch),
         promo_code: couponCode.trim().toUpperCase(),
@@ -1081,7 +1079,7 @@ const ReservationForm = ({
         enrollmentPayload.starting_date = bookingDate;
       }
 
-      await enrollmentService.createEnrollment(enrollmentPayload);
+      await createEnrollmentAction(enrollmentPayload);
       setIsSubmitting(false);
       setSubmitSuccess(true);
       toastSuccess(t("success.bookingSent"));

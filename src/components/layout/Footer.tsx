@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { websiteService } from "@/services/api";
+import { subscribeToNewsletterAction } from "@/actions/websiteActions";
 import { Icons } from "../general/icons";
 import { Loader2 } from "lucide-react";
 
@@ -45,7 +45,7 @@ const TopLeftSection = () => {
   const [email, setEmail] = useState("");
 
   const subscribeMutation = useMutation({
-    mutationFn: (email: string) => websiteService.subscribeToNewsletter(email),
+    mutationFn: (email: string) => subscribeToNewsletterAction(email),
     onSuccess: () => {
       toastSuccess(
         t("newsletter.successTitle"),

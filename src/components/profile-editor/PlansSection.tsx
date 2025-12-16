@@ -27,6 +27,7 @@ import { useTranslations } from "next-intl";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { z } from "zod";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Zod schema for plan validation
 const createPlanSchema = (t: any, isEditing: boolean) =>

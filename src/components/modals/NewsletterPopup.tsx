@@ -5,7 +5,10 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/store/authStore";
-import { websiteService } from "@/services/api";
+import {
+  checkEmailAction,
+  subscribeToNewsletterAction,
+} from "@/actions/websiteActions";
 import Image from "next/image";
 import { X, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -49,7 +52,7 @@ export default function NewsletterPopup({
       // If user is logged in, check if they are already subscribed
       if (user?.email) {
         try {
-          const res = await websiteService.checkEmail(user.email);
+          const res: any = await checkEmailAction(user.email);
           if (res?.data?.exists || res?.exists) {
             return;
           }
@@ -83,7 +86,7 @@ export default function NewsletterPopup({
     setLoading(true);
     setErrorMessage("");
     try {
-      await websiteService.subscribeToNewsletter(email);
+      await subscribeToNewsletterAction(email);
       setSubmitted(true);
       toast.success(t("success"));
       setTimeout(() => {

@@ -18,8 +18,8 @@
         "path": "/nurseries"
       },
       "coupon-codes": {
-        "title": "كوبونات الخصم",
-        "path": "/coupon-codes"
+        "title": "العروض والخصومات",
+        "path": "/offers-and-coupons"
       },
       "blog": {
         "title": "المدونة",
@@ -1287,7 +1287,8 @@
           "emptyError": "يرجى إدخال كود الكوبون",
           "usageLimit": "تم الوصول للحد الأقصى لاستخدام الكوبون",
           "expired": "انتهت صلاحية الكوبون",
-          "invalid": "كود الكوبون غير صالح"
+          "invalid": "كود الكوبون غير صالح",
+          "expiredMessage": "انتهت صلاحية هذا الكوبون. يرجى إزالته لإضافة كوبون جديد."
         }
       },
       "reports": {
@@ -1722,6 +1723,10 @@
       "bookings": {
         "title": "لا توجد حجوزات بعد",
         "description": "ستظهر سجل حجوزاتك هنا بمجرد إجراء أول حجز لك."
+      },
+      "centerBookings": {
+        "title": "لا توجد حجوزات",
+        "description": "لا توجد حجوزات لعرضها حالياً"
       },
       "children": {
         "title": "لم يتم إضافة أطفال بعد",
@@ -2195,6 +2200,7 @@
     },
     "center-bookings": {
       "title": "الحجوزات",
+      "searchPlaceholder": "بحث",
       "viewTable": "جدول",
       "viewCards": "بطاقات",
       "viewDetails": "عرض التفاصيل",
@@ -2251,7 +2257,12 @@
         "month": "شهر",
         "months": "أشهر"
       },
-      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع"
+      "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع",
+      "paymentDetails": "تفاصيل الدفع",
+      "originalAmount": "المبلغ الأصلي",
+      "couponCode": "كود الكوبون",
+      "discount": "الخصم",
+      "finalAmount": "المبلغ النهائي"
     },
     "center-reports": {
       "title": "التقارير اليومية",
@@ -2514,9 +2525,11 @@
       }
     },
     "plans": {
-      "title": "برامجنا التعليمية",
-      "subtitle": "اكتشف برامجنا التعليمية المتنوعة المصممة خصيصاً لتنمية مهارات طفلك",
+      "title": "البرامج",
+      "subtitle": "",
       "selectBranch": "اختر الفرع",
+      "selectAge": "عمر الطفل",
+      "selectEnrollmentType": "نوع البرنامج",
       "noPrograms": "لا توجد برامج متاحة",
       "noProgramsMessage": "سيتم إضافة البرامج قريباً. يرجى التحقق لاحقاً.",
       "bookNow": "احجز الآن",
@@ -2707,8 +2720,10 @@
     },
     "card": {
       "validUntil": "متاح حتى يوم",
-      "copySuccess": "تم نسخ الكود بنجاح"
+      "copySuccess": "تم نسخ الكود بنجاح",
+      "viewCenters": "عرض المراكز المشاركة"
     },
+    "share": "شارك العروض والكوبونات مع أصدقاءك",
     "emptyState": {
       "title1": "لا يوجد كوبونات حاليًا،",
       "title2": "سيتم إبلاغك عند وجود كوبونات",
@@ -2784,5 +2799,88 @@
       "couponApplied": "تم تطبيق الكوبون بنجاح",
       "bookingSent": "تم إرسال طلب الحجز بنجاح!"
     }
+  },
+  "externalOffers": {
+    "tabs": {
+      "coupons": "First Step كوبونات",
+      "externalOffers": "الترويج لعروض خارجية"
+    },
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "archived": "محذوف"
+    },
+    "buttons": {
+      "add": "إضافة عرض خارجي",
+      "cancel": "إلغاء",
+      "submit": "رفع العرض على الموقع",
+      "archive": "أرشفة",
+      "permanentDelete": "حذف نهائي",
+      "processing": "جاري المعالجة...",
+      "saving": "جاري الحفظ..."
+    },
+    "search": {
+      "placeholder": "ابحث عن كوبون خصم..."
+    },
+    "empty": {
+      "noMatches": "لا توجد عروض مطابقة"
+    },
+    "form": {
+      "title": "تفاصيل العرض الخارجي",
+      "fields": {
+        "centerName": {
+          "label": "اسم جهة العرض أو الخصم",
+          "placeholder": "مثال: حضانة ووش 🥳"
+        },
+        "address": {
+          "label": "العنوان",
+          "placeholder": "مثال: حي النفل"
+        },
+        "descriptions": {
+          "label": "شرح العرض",
+          "placeholder": "مثال: أي طفل بده يدخل الألعاب بده تذكرة، الوقت مفتوح اللعب حتى تتعب"
+        },
+        "moneyDetails": {
+          "label": "تفاصيل الأموال ( ر.س )",
+          "placeholder": "مثال: 89 ريال فقط 👍👋 بدل 197 ريال 🤗"
+        },
+        "timeDetails": {
+          "label": "تفاصيل الوقت",
+          "placeholder": "مثال: من الساعة 4 إلى الساعة 11 مساءً أيام الاسبوع"
+        },
+        "additionalDetails": {
+          "label": "تفاصيل إضافية",
+          "placeholder": "مثال: تحولوا المبلغ وتبعثولي صورة التحويل..."
+        },
+        "url": {
+          "label": "الموقع",
+          "placeholder": "https://maps.app.goo.gl/xG5tYGBMPkxJVM7UA?g_st=awb :مثال"
+        },
+        "photos": {
+          "label": "صور العرض",
+          "limit": "(الحد الأقصى 10)"
+        }
+      }
+    },
+    "dialog": {
+      "confirmDelete": {
+        "title": "تأكيد الحذف",
+        "message": "هل أنت متأكد من أنك تريد حذف هذا العرض؟",
+        "archiveOption": "أرشفة العرض (يمكن استرجاعه لاحقاً)",
+        "deleteOption": "حذف نهائي (لا يمكن استرجاعه)"
+      }
+    },
+    "toast": {
+      "archiveSuccess": "تم أرشفة العرض بنجاح",
+      "archiveError": "حدث خطأ أثناء الأرشفة",
+      "deleteSuccess": "تم حذف العرض نهائياً",
+      "deleteError": "حدث خطأ أثناء الحذف",
+      "createSuccess": "تم إضافة العرض بنجاح",
+      "updateSuccess": "تم تحديث العرض بنجاح",
+      "genericError": "حدث خطأ",
+      "imageLimit": "يمكنك رفع 10 صور كحد أقصى"
+    },
+    "forLimitedTime": "لفترة محدودة",
+    "noImage": "لا توجد صورة"
   }
 }

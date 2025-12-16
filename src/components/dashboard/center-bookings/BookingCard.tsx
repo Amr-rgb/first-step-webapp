@@ -69,6 +69,24 @@ export const BookingCard = ({
     )}`;
   };
 
+  const tLabels = useTranslations("reservationForm.labels");
+  const tSummary = useTranslations("reservationForm.summary");
+
+  const getCountLabel = (type: string) => {
+    switch (type) {
+      case "hour":
+        return tLabels("numberOfHours");
+      case "week":
+        return tLabels("numberOfWeeks");
+      case "month":
+        return tLabels("numberOfMonths");
+      default:
+        return tLabels("numberOfDays");
+    }
+  };
+
+  const isHourly = booking.type === "hour";
+
   return (
     <Card
       id={`enrollment-${booking.id}`}
@@ -120,19 +138,19 @@ export const BookingCard = ({
             <div className="flex justify-between items-center">
               <span className="text-mid-gray">{booking.startDate}</span>
               <span className="font-semibold text-primary">
-                {tBookings("fields.startDay")}
+                {isHourly ? tSummary("date") : tBookings("fields.startDay")}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-mid-gray">{booking.endDate || "-"}</span>
               <span className="font-semibold text-primary">
-                {tBookings("fields.endDay")}
+                {isHourly ? tSummary("time") : tBookings("fields.endDay")}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-mid-gray">{booking.count || "-"}</span>
               <span className="font-semibold text-primary">
-                {tBookings("fields.numberOfDays")}
+                {getCountLabel(booking.type)}
               </span>
             </div>
           </div>

@@ -103,7 +103,7 @@ function FormLabel({
       data-error={!!error}
       className={cn(
         // "data-[error=true]:text-destructive",
-        "font-medium text-mid-gray text-xl group-focus-within:text-inherit peer-data-[state=checked]:text-secondary-mint-green peer-data-[state=checked]:cursor-pointer peer-data-[state=unchecked]:cursor-pointer",
+        "font-medium text-mid-gray text-base group-focus-within:text-inherit peer-data-[state=checked]:text-secondary-mint-green peer-data-[state=checked]:cursor-pointer peer-data-[state=unchecked]:cursor-pointer",
         className
       )}
       htmlFor={formItemId}

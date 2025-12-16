@@ -29,6 +29,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { Edit, Eye } from "lucide-react";
 import { toastError } from "@/lib/toast";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProfileEditor = () => {
   usePageMetadata();

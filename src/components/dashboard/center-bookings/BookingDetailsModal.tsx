@@ -11,12 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Booking } from "@/components/tables/data/center-bookings";
 import { useReservationStatus } from "@/components/tables/data/shared/status";
-import { Check, X, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { format, parse } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
+import { PlanCard } from "@/components/common/PlanCard";
 
 interface BookingDetailsModalProps {
   booking: Booking | null;
@@ -340,6 +341,30 @@ export const BookingDetailsModal = ({
             </div>
           </div>
 
+          {/* Minimal Coupon & Pricing Summary */}
+          {booking.pricing && booking.reservation && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-muted-foreground mt-4">
+              <div className="flex items-center gap-1">
+                <span>{tBookings("couponCode")}:</span>
+                <span className="font-semibold text-primary">
+                  {booking.reservation.promocode_title}
+                </span>
+                <span className="text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                  -{booking.pricing.discount} <span className="sar">$</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span>{tBookings("finalAmount")}:</span>
+                <span className="line-through text-gray-400 text-xs">
+                  {booking.pricing.original_amount}
+                </span>
+                <span className="font-bold text-gray-900 text-base">
+                  {booking.pricing.final_amount} <span className="sar">$</span>
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Pricing Plans */}
           {isPricingLoading ? (
             <div className="text-center py-8">
@@ -349,46 +374,32 @@ export const BookingDetailsModal = ({
             <div className="grid grid-cols-4 gap-3">
               {filteredPricingPlans.map((plan: any) => {
                 const isSelected = selectedPricingId === plan.id;
+                const durationLabel = `${plan.count} ${
+                  plan.enrollment_type === "hour"
+                    ? plan.count > 1
+                      ? tBookings("pricingCard.hours")
+                      : tBookings("pricingCard.hour")
+                    : plan.enrollment_type === "day"
+                    ? plan.count > 1
+                      ? tBookings("pricingCard.days")
+                      : tBookings("pricingCard.day")
+                    : plan.enrollment_type === "week"
+                    ? plan.count > 1
+                      ? tBookings("pricingCard.weeks")
+                      : tBookings("pricingCard.week")
+                    : plan.count > 1
+                    ? tBookings("pricingCard.months")
+                    : tBookings("pricingCard.month")
+                }`;
+
                 return (
-                  <div
+                  <PlanCard
                     key={plan.id}
-                    className={`bg-white p-6 rounded-2xl text-center space-y-3 ${
-                      isSelected
-                        ? "bg-[linear-gradient(to_bottom,rgba(255,255,255,0.16),rgba(131,203,170,0.12),rgba(131,203,170,0.24))]"
-                        : "shadow-[0_2px_80px_rgba(34,34,34,0.08)]"
-                    }`}
-                  >
-                    <h4
-                      className="font-bold text-primary text-xl truncate"
-                      title={plan.title}
-                    >
-                      {plan.title}
-                    </h4>
-                    <p className="text-base text-gray">
-                      {plan.count}{" "}
-                      {plan.enrollment_type === "hour"
-                        ? plan.count > 1
-                          ? tBookings("pricingCard.hours")
-                          : tBookings("pricingCard.hour")
-                        : plan.enrollment_type === "day"
-                        ? plan.count > 1
-                          ? tBookings("pricingCard.days")
-                          : tBookings("pricingCard.day")
-                        : plan.enrollment_type === "week"
-                        ? plan.count > 1
-                          ? tBookings("pricingCard.weeks")
-                          : tBookings("pricingCard.week")
-                        : plan.count > 1
-                        ? tBookings("pricingCard.months")
-                        : tBookings("pricingCard.month")}
-                    </p>
-                    <div className="flex items-center justify-center gap-1 overflow-hidden">
-                      <span className="text-3xl font-bold text-primary truncate">
-                        {parseFloat(plan.price_amount)}
-                      </span>
-                      <span className="text-2xl text-primary sar">$</span>
-                    </div>
-                  </div>
+                    title={plan.title}
+                    durationLabel={durationLabel}
+                    price={plan.price_amount}
+                    isSelected={isSelected}
+                  />
                 );
               })}
             </div>
