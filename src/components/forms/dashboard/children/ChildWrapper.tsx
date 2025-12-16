@@ -5,6 +5,7 @@ import Child from "./Child";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { showToast, toastError } from "@/lib/toast";
+import { useTranslations } from "next-intl";
 
 const ChildWrapper = ({
   initialValues,
@@ -17,6 +18,7 @@ const ChildWrapper = ({
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("dashboard.parent.children");
   // formKey state removed - no longer needed since we don't reset form in edit mode
 
   // Fetch child data if in show/edit mode and childId is provided
@@ -76,12 +78,12 @@ const ChildWrapper = ({
       showToast({
         title:
           mode === "edit"
-            ? "تم تحديث بيانات الطفل بنجاح!"
-            : "تم إضافة الطفل بنجاح!",
+            ? t("messages.editSuccess")
+            : t("messages.addSuccess"),
         description:
           mode === "edit"
-            ? "تم تحديث بيانات الطفل بنجاح!"
-            : "تمت إضافة الطفل بنجاح!",
+            ? t("messages.editSuccessDescription")
+            : t("messages.addSuccessDescription"),
         type: "success",
         duration: 1800,
         // className:

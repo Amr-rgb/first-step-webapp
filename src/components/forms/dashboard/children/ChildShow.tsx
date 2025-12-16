@@ -44,7 +44,7 @@ const ChildShow = ({
 }) => {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations("dashboard.center.children.form");
+  const t = useTranslations("dashboard.shared.children.form");
   const signUpParentSchema = createSignUpParentSchema(locale as "ar" | "en");
 
   const isReadOnly = mode === "show";

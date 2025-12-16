@@ -36,6 +36,8 @@ const Child = ({
 }) => {
   const locale = useLocale();
   const router = useRouter();
+  const t = useTranslations("dashboard.parent.children");
+  const tShared = useTranslations("dashboard.shared.children.form");
 
   // Create a custom schema that handles image validation based on mode
   const addChildSchema = React.useMemo(() => {
@@ -55,10 +57,10 @@ const Child = ({
           .array(
             z.object({
               name: z.string().min(2, {
-                message: locale === "ar" ? "هذا الحقل مطلوب" : "This field is required",
+                message: locale === "ar" ? tShared("errors.fieldRequired") : "This field is required",
               }),
               idNumber: z.string().min(1, {
-                message: locale === "ar" ? "هذا الحقل مطلوب" : "This field is required",
+                message: locale === "ar" ? tShared("errors.fieldRequired") : "This field is required",
               }),
             })
           )
@@ -76,10 +78,10 @@ const Child = ({
       return (
         <>
           <Button size={"sm"} type="submit">
-            إضافة الطفل
+            {tShared("buttons.add")}
           </Button>
           <Button size={"sm"} variant={"outline"} onClick={() => router.back()}>
-            إلغاء
+            {tShared("buttons.cancel")}
           </Button>
         </>
       );
@@ -87,10 +89,10 @@ const Child = ({
       return (
         <>
           <Button size={"sm"} type="submit">
-            تعديل ملف الطفل
+            {tShared("buttons.edit")}
           </Button>
           <Button size={"sm"} variant={"outline"} onClick={() => router.back()}>
-            إلغاء
+            {tShared("buttons.cancel")}
           </Button>
         </>
       );
@@ -98,7 +100,7 @@ const Child = ({
       return (
         <>
           <Button asChild size={"sm"}>
-            <Link href={`${childId}/edit`}>تعديل ملف الطفل</Link>
+            <Link href={`${childId}/edit`}>{tShared("buttons.edit")}</Link>
           </Button>
           {/* <Button
               size={"sm"}
@@ -233,7 +235,7 @@ const Child = ({
         {(!readOnly || (readOnly && hasDiseases === "yes")) && (
           <div className="w-full flex flex-col gap-y-4">
             <h2 className="heading-4 font-medium text-primary">
-              الأمراض المزمنة
+              {tShared("sections.chronicDiseases")}
             </h2>
             {!readOnly && (
               <FormField
@@ -257,8 +259,8 @@ const Child = ({
                           }
                         }}
                         options={[
-                          { value: "yes", label: "نعم" },
-                          { value: "no", label: "لا" },
+                          { value: "yes", label: tShared("options.yes") },
+                          { value: "no", label: tShared("options.no") },
                         ]}
                       />
                     </FormControl>
@@ -279,12 +281,12 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem>
                         <Label>
-                          <span className="text-base">اسم المرض</span>
+                          <span className="text-base">{tShared("diseases.name.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
                           <Input
-                            placeholder="اسم المرض"
+                            placeholder={tShared("diseases.name.placeholder")}
                             {...field}
                             value={field.value?.toString() || ""}
                           />
@@ -299,12 +301,12 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem>
                         <Label>
-                          <span className="text-base">الدواء</span>
+                          <span className="text-base">{tShared("diseases.medication.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
                           <Input
-                            placeholder="الدواء"
+                            placeholder={tShared("diseases.medication.placeholder")}
                             {...field}
                             value={field.value?.toString() || ""}
                           />
@@ -319,12 +321,12 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem className="col-span-1 md:col-span-2">
                         <Label>
-                          <span className="text-base">إجراءات الطوارئ</span>
+                          <span className="text-base">{tShared("diseases.procedures.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
                           <Input
-                            placeholder="إجراءات الطوارئ"
+                            placeholder={tShared("diseases.procedures.placeholder")}
                             {...field}
                             value={field.value?.toString() || ""}
                           />
@@ -362,7 +364,7 @@ const Child = ({
                   className="font-bold"
                   disabled={readOnly}
                 >
-                  <Plus className="size-6" size={24} /> إضافة مرض آخر
+                  <Plus className="size-6" size={24} /> {tShared("diseases.add")}
                 </Button>
               </div>
             )}
@@ -371,7 +373,7 @@ const Child = ({
         {/* --- Allergies Section --- */}
         {(!readOnly || (readOnly && hasAllergies === "yes")) && (
           <div className="w-full flex flex-col gap-y-4">
-            <h2 className="heading-4 font-medium text-primary">الحساسية</h2>
+            <h2 className="heading-4 font-medium text-primary">{tShared("sections.allergies")}</h2>
             {!readOnly && (
               <FormField
                 control={control}
@@ -394,8 +396,8 @@ const Child = ({
                           }
                         }}
                         options={[
-                          { value: "yes", label: "نعم" },
-                          { value: "no", label: "لا" },
+                          { value: "yes", label: tShared("options.yes") },
+                          { value: "no", label: tShared("options.no") },
                         ]}
                       />
                     </FormControl>
@@ -416,11 +418,11 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem>
                         <Label>
-                          <span className="text-base">نوع الحساسية</span>
+                          <span className="text-base">{tShared("allergies.type.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
-                          <Input placeholder="نوع الحساسية" {...field} />
+                          <Input placeholder={tShared("allergies.type.placeholder")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -432,11 +434,11 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem>
                         <Label>
-                          <span className="text-base">مسببات الحساسية</span>
+                          <span className="text-base">{tShared("allergies.causes.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
-                          <Input placeholder="مسببات الحساسية" {...field} />
+                          <Input placeholder={tShared("allergies.causes.placeholder")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -448,11 +450,11 @@ const Child = ({
                     render={({ field }) => (
                       <FormItem className="col-span-1 md:col-span-2">
                         <Label>
-                          <span className="text-base">إجراءات الطوارئ</span>
+                          <span className="text-base">{tShared("allergies.procedures.label")}</span>
                           <span className="text-red-500">*</span>
                         </Label>
                         <FormControl>
-                          <Input placeholder="إجراءات الطوارئ" {...field} />
+                          <Input placeholder={tShared("allergies.procedures.placeholder")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -487,7 +489,7 @@ const Child = ({
                   className="font-bold"
                   disabled={readOnly}
                 >
-                  <Plus className="size-6" size={24} /> إضافة حساسية أخرى
+                  <Plus className="size-6" size={24} /> {tShared("allergies.add")}
                 </Button>
               </div>
             )}
@@ -652,7 +654,9 @@ const ChildPart = ({
   locale: string;
   readOnly: boolean;
 }) => {
-  const t = useTranslations("auth.add-child.1.form");
+  const t = useTranslations("dashboard.parent.children");
+  const tAuth = useTranslations("auth.add-child.1.form");
+  const tShared = useTranslations("dashboard.shared.children.form");
   const { watch, getValues } = useFormContext<AddChildFormData>();
   const kinship = watch("kinship");
   const childNationalNumber = watch("childNationalNumber");
@@ -661,7 +665,7 @@ const ChildPart = ({
 
   return (
     <div className="w-full flex flex-col gap-y-4">
-      <h2 className="heading-4 font-medium text-primary">بيانات الطفل</h2>
+      <h2 className="heading-4 font-medium text-primary">{tShared("sections.childInfo")}</h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
         <FormField
@@ -670,12 +674,12 @@ const ChildPart = ({
           render={({ field }) => (
             <FormItem>
               <Label>
-                <span className="text-base">{t("name.label")}</span>
+                <span className="text-base">{tAuth("name.label")}</span>
                 <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
-                  placeholder={t("name.placeholder")}
+                  placeholder={tAuth("name.placeholder")}
                   {...field}
                   disabled={readOnly}
                 />
@@ -691,14 +695,14 @@ const ChildPart = ({
           render={({ field }) => (
             <FormItem>
               <Label>
-                <span className="text-base">{t("date-of-birth.label")}</span>
+                <span className="text-base">{tAuth("date-of-birth.label")}</span>
                 <span className="text-red-500">*</span>
               </Label>
               {!readOnly ? (
                 <DatePicker value={field.value} onChange={field.onChange} />
               ) : (
                 <Input
-                  placeholder={t("name.placeholder")}
+                  placeholder={tAuth("date-of-birth.placeholder")}
                   {...field}
                   value={field.value.toLocaleDateString()}
                   disabled={readOnly}
@@ -715,12 +719,12 @@ const ChildPart = ({
           render={({ field }) => (
             <FormItem>
               <Label>
-                <span className="text-base">{t("father-name.label")}</span>
+                <span className="text-base">{tAuth("father-name.label")}</span>
                 <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
-                  placeholder={t("father-name.placeholder")}
+                  placeholder={tAuth("father-name.placeholder")}
                   {...field}
                   disabled={readOnly}
                 />
@@ -736,12 +740,12 @@ const ChildPart = ({
           render={({ field }) => (
             <FormItem>
               <Label>
-                <span className="text-base">{t("mother-name.label")}</span>
+                <span className="text-base">{tAuth("mother-name.label")}</span>
                 <span className="text-red-500">*</span>
               </Label>
               <FormControl>
                 <Input
-                  placeholder={t("mother-name.placeholder")}
+                  placeholder={tAuth("mother-name.placeholder")}
                   {...field}
                   disabled={readOnly}
                 />
@@ -759,11 +763,11 @@ const ChildPart = ({
             render={({ field }) => (
               <FormItem>
                 <Label>
-                  <span className="text-base">صلة القرابة</span>
+                  <span className="text-base">{tShared("kinship.label")}</span>
                 </Label>
                 <FormControl>
                   <Input
-                    placeholder="مثال: الأم، الأب، الأخ، الأخت..."
+                    placeholder={tShared("kinship.placeholder")}
                     {...field}
                     disabled={readOnly}
                   />
@@ -782,11 +786,11 @@ const ChildPart = ({
             render={({ field }) => (
               <FormItem>
                 <Label>
-                  <span className="text-base">الرقم الوطني للطفل</span>
+                  <span className="text-base">{tShared("childNationalNumber.label")}</span>
                 </Label>
                 <FormControl>
                   <Input
-                    placeholder="الرقم الوطني للطفل"
+                    placeholder={tShared("childNationalNumber.placeholder")}
                     {...field}
                     disabled={readOnly}
                   />
@@ -802,7 +806,7 @@ const ChildPart = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
             {/* Gender Selection Card */}
             <div className="flex flex-col">
-              <p className="form-label-sm mb-4 text-center">جنس الطفل</p>
+              <p className="form-label-sm mb-4 text-center">{tShared("gender.label")}</p>
               <FormField
                 control={control}
                 name="gender"
@@ -835,7 +839,7 @@ const ChildPart = ({
                             />
                           </div>
                           <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
-                            {t("gender.male")}
+                            {tShared("gender.male")}
                           </p>
                         </label>
                       </div>
@@ -866,7 +870,7 @@ const ChildPart = ({
                             />
                           </div>
                           <p className="text-xl font-medium text-center mt-2 text-mid-gray peer-checked:text-primary hover:text-primary duration-300">
-                            {t("gender.female")}
+                            {tShared("gender.female")}
                           </p>
                         </label>
                       </div>
@@ -881,7 +885,7 @@ const ChildPart = ({
             {(!readOnly || hasValue(qrCode)) && (
               <div className="flex flex-col">
                 <Label className="mb-4 text-center">
-                  <span className="text-base">QR code</span>
+                  <span className="text-base">{tShared("qrCode.label")}</span>
                 </Label>
                 <div className="relative flex-1">
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors duration-200 min-h-[200px] flex items-center justify-center bg-gray-50">
@@ -939,7 +943,7 @@ const ChildPart = ({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <Label className="mb-4 text-center">
-                      <span className="text-base">صورة الطفل</span>
+                      <span className="text-base">{tShared("childImage.label")}</span>
                     </Label>
                     <FormControl>
                       <div className="relative flex-1">
@@ -988,7 +992,7 @@ const ChildPart = ({
                                   }
                                   className="text-primary hover:text-primary-dark text-xs font-medium transition-colors"
                                 >
-                                  تغيير الصورة
+                                  {tShared("childImage.changePhoto")}
                                 </button>
                               )}
                             </div>
@@ -1035,8 +1039,8 @@ const ChildPart = ({
                               // Validate file size (5MB limit)
                               if (file.size > 5 * 1024 * 1024) {
                                 toastError(
-                                  "خطأ في حجم الملف",
-                                  "حجم الملف يجب أن يكون أقل من 5MB"
+                                  tShared("errors.fileSizeError"),
+                                  tShared("errors.fileSizeMessage")
                                 );
                                 return;
                               }
@@ -1049,8 +1053,8 @@ const ChildPart = ({
                                 ].includes(file.type)
                               ) {
                                 toastError(
-                                  "نوع الملف غير مدعوم",
-                                  "يرجى اختيار صورة PNG أو JPG"
+                                  tShared("errors.fileTypeError"),
+                                  tShared("errors.fileTypeMessage")
                                 );
                                 return;
                               }
@@ -1281,7 +1285,9 @@ const Recommendations = ({
   locale: string;
   readOnly: boolean;
 }) => {
-  const t = useTranslations("auth.add-child.3.form");
+  const t = useTranslations("dashboard.parent.children");
+  const tAuth = useTranslations("auth.add-child.3.form");
+  const tShared = useTranslations("dashboard.shared.children.form");
   const { watch } = useFormContext<AddChildFormData>();
   const childDescription = watch("childDescription");
   const favoriteThings = watch("favoriteThings");
@@ -1300,7 +1306,7 @@ const Recommendations = ({
   return (
     <div className="w-full flex flex-col gap-y-4">
       <h2 className="heading-4 font-medium text-primary">
-        توصيات تتعلق بالطفل
+{tShared("sections.recommendations")}
       </h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
@@ -1311,11 +1317,11 @@ const Recommendations = ({
             render={({ field }) => (
               <FormItem>
                 <Label>
-                  <span className="text-base">{t("description.label")}</span>
+                  <span className="text-base">{tShared("recommendations.description.label")}</span>
                 </Label>
                 <FormControl>
                   <Input
-                    placeholder={t("description.placeholder")}
+                    placeholder={tShared("recommendations.description.placeholder")}
                     {...field}
                     disabled={readOnly}
                   />
@@ -1333,11 +1339,11 @@ const Recommendations = ({
             render={({ field }) => (
               <FormItem>
                 <Label>
-                  <span className="text-base">{t("likes.label")}</span>
+                  <span className="text-base">{tShared("recommendations.likes.label")}</span>
                 </Label>
                 <FormControl>
                   <Input
-                    placeholder={t("likes.placeholder")}
+                    placeholder={tShared("recommendations.likes.placeholder")}
                     {...field}
                     disabled={readOnly}
                   />
@@ -1354,10 +1360,10 @@ const Recommendations = ({
             name="recommendations"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <span className="text-base">{t("recommendations.label")}</span>
+                <span className="text-base">{tShared("recommendations.recommendations.label")}</span>
                 <FormControl>
                   <Textarea
-                    placeholder={t("recommendations.placeholder")}
+                    placeholder={tShared("recommendations.recommendations.placeholder")}
                     {...field}
                     className="min-h-[150px]"
                     disabled={readOnly}
@@ -1390,7 +1396,9 @@ const AuthorizationPart = ({
   removeAuthorizedPerson: (index: number) => void;
   readOnly: boolean;
 }) => {
-  const t = useTranslations("auth.add-child.4.form");
+  const t = useTranslations("dashboard.parent.children");
+  const tAuth = useTranslations("auth.add-child.4.form");
+  const tShared = useTranslations("dashboard.shared.children.form");
   const { watch } = useFormContext<AddChildFormData>();
   const comments = watch("comments");
 
@@ -1410,7 +1418,7 @@ const AuthorizationPart = ({
 
   return (
     <div className="w-full flex flex-col gap-y-4">
-      <h2 className="heading-4 font-medium text-primary">الأشخاص المفوضة</h2>
+      <h2 className="heading-4 font-medium text-primary">{tShared("sections.authorizedPersons")}</h2>
       {validAuthorizedPersons.length > 0 && (
         <div className="space-y-6 lg:p-6 lg:pb-0">
           {validAuthorizedPersons.map((_, index) => (
@@ -1423,14 +1431,14 @@ const AuthorizationPart = ({
                     <FormItem>
                       <Label>
                         <span className="text-base">
-                          {t("authorize.label")}
+                          {tShared("authorizedPersons.name.label")}
                         </span>
                         {index > 0 ? ` ${index + 1}` : ""}
                         <span className="text-red-500">*</span>
                       </Label>
                       <FormControl>
                         <Input
-                          placeholder={t("authorize.placeholder")}
+                          placeholder={tShared("authorizedPersons.name.placeholder")}
                           {...field}
                           disabled={readOnly}
                         />
@@ -1446,13 +1454,13 @@ const AuthorizationPart = ({
                   render={({ field }) => (
                     <FormItem>
                       <Label>
-                        <span className="text-base">{t("identity.label")}</span>
+                        <span className="text-base">{tShared("authorizedPersons.idNumber.label")}</span>
                         {index > 0 ? ` ${index + 1}` : ""}
                         <span className="text-red-500">*</span>
                       </Label>
                       <FormControl>
                         <Input
-                          placeholder={t("identity.placeholder")}
+                          placeholder={tShared("authorizedPersons.idNumber.placeholder")}
                           {...field}
                           disabled={readOnly}
                         />
@@ -1487,7 +1495,7 @@ const AuthorizationPart = ({
                 onClick={() => appendAuthorizedPerson({ name: "", idNumber: "" })}
                 className="font-bold"
               >
-                <Plus className="size-6" size={24} /> إضافة شخص مفوض آخر
+                <Plus className="size-6" size={24} /> {tShared("authorizedPersons.add")}
               </Button>
             </div>
           )}
@@ -1502,11 +1510,11 @@ const AuthorizationPart = ({
             render={({ field }) => (
               <FormItem>
                 <Label>
-                  <span className="text-base">{t("comment.label")}</span>
+                  <span className="text-base">{tShared("comments.label")}</span>
                 </Label>
                 <FormControl>
                   <Textarea
-                    placeholder={t("comment.placeholder")}
+                    placeholder={tShared("comments.placeholder")}
                     {...field}
                     className="min-h-[100px]"
                     disabled={readOnly}
