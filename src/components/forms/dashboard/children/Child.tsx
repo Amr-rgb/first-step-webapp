@@ -230,7 +230,7 @@ const Child = ({
           readOnly={readOnly}
         />
         {/* --- Chronic Diseases Section --- */}
-        {(!readOnly || hasDiseases === "yes") && (
+        {(!readOnly || (readOnly && hasDiseases === "yes")) && (
           <div className="w-full flex flex-col gap-y-4">
             <h2 className="heading-4 font-medium text-primary">
               الأمراض المزمنة
@@ -369,7 +369,7 @@ const Child = ({
           </div>
         )}
         {/* --- Allergies Section --- */}
-        {(!readOnly || hasAllergies === "yes") && (
+        {(!readOnly || (readOnly && hasAllergies === "yes")) && (
           <div className="w-full flex flex-col gap-y-4">
             <h2 className="heading-4 font-medium text-primary">الحساسية</h2>
             {!readOnly && (
@@ -1394,12 +1394,7 @@ const AuthorizationPart = ({
   const { watch } = useFormContext<AddChildFormData>();
   const comments = watch("comments");
 
-  // In edit/add mode, ensure we have at least one authorized person field
-  React.useEffect(() => {
-    if (!readOnly && authorizedPersonsFields.length === 0) {
-      appendAuthorizedPerson({ name: "", idNumber: "" });
-    }
-  }, [readOnly, authorizedPersonsFields.length, appendAuthorizedPerson]);
+
 
   // Filter authorized persons to only show those with data in readOnly mode
   const validAuthorizedPersons = readOnly

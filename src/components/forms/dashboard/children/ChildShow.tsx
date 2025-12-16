@@ -79,21 +79,25 @@ const ChildShow = ({
           readOnly={isReadOnly}
         />
 
-        <DiseasesPart
-          control={methods.control}
-          locale={locale}
-          hasDiseases={hasDiseases}
-          diseases={diseases}
-          readOnly={isReadOnly}
-        />
+        {hasDiseases === "yes" && (
+          <DiseasesPart
+            control={methods.control}
+            locale={locale}
+            hasDiseases={hasDiseases}
+            diseases={diseases}
+            readOnly={isReadOnly}
+          />
+        )}
 
-        <AllergiesPart
-          control={methods.control}
-          locale={locale}
-          hasAllergies={hasAllergies}
-          allergies={allergies}
-          readOnly={isReadOnly}
-        />
+        {hasAllergies === "yes" && (
+          <AllergiesPart
+            control={methods.control}
+            locale={locale}
+            hasAllergies={hasAllergies}
+            allergies={allergies}
+            readOnly={isReadOnly}
+          />
+        )}
 
         <Recommendations
           control={methods.control}
