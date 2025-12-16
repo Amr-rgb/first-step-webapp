@@ -149,6 +149,12 @@ const ParentPart = ({
 }) => {
   const t = useTranslations("auth.parent-signup.form");
   const sectionT = useTranslations("dashboard.center.children.form.sections");
+  const { watch } = useFormContext<SignUpParentFormData>();
+  
+  const name = watch("name");
+  const phone = watch("phone");
+  const kinship = watch("kinship");
+  const email = watch("email");
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -157,98 +163,106 @@ const ParentPart = ({
       </h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("name.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder={t("name.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(name)) && (
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("name.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t("name.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("phone.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <PhoneInput
-                  {...field}
-                  value={field.value?.replace(/^\+966/, "")}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const local = e.target.value
-                      .replace(/^\+?966|^00966|^966/, "")
-                      .replace(/^0+/, "");
-                    field.onChange(`+966${local}`);
-                  }}
-                  locale={locale}
-                  readOnly={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(phone)) && (
+          <FormField
+            control={control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("phone.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <PhoneInput
+                    {...field}
+                    value={field.value?.replace(/^\+966/, "")}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const local = e.target.value
+                        .replace(/^\+?966|^00966|^966/, "")
+                        .replace(/^0+/, "");
+                      field.onChange(`+966${local}`);
+                    }}
+                    locale={locale}
+                    readOnly={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="kinship"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("kinship.label")}</span>
-              </Label>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder={t("kinship.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(kinship)) && (
+          <FormField
+            control={control}
+            name="kinship"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("kinship.label")}</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t("kinship.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("email.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder={t("name.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(email)) && (
+          <FormField
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("email.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder={t("name.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </div>
   );
@@ -266,6 +280,11 @@ const ChildPart = ({
   const t = useTranslations("auth.add-child.1.form");
   const sectionT = useTranslations("dashboard.center.children.form.sections");
   const { watch, getValues } = useFormContext<SignUpParentFormData>();
+  
+  const childName = watch("childName");
+  const birthDate = watch("birthDate");
+  const fatherName = watch("fatherName");
+  const motherName = watch("motherName");
   const childImage = watch("childImage");
   const qrCode = (getValues() as any)?.qrCode || null;
 
@@ -276,92 +295,100 @@ const ChildPart = ({
       </h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
-        <FormField
-          control={control}
-          name="childName"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("name.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("name.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(childName)) && (
+          <FormField
+            control={control}
+            name="childName"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("name.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("name.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="birthDate"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("date-of-birth.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              {!readOnly ? (
-                <DatePicker value={field.value} onChange={field.onChange} />
-              ) : (
-                <Input
-                  placeholder={t("name.placeholder")}
-                  {...field}
-                  value={field.value.toLocaleDateString()}
-                  disabled={readOnly}
-                />
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(birthDate)) && (
+          <FormField
+            control={control}
+            name="birthDate"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("date-of-birth.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                {!readOnly ? (
+                  <DatePicker value={field.value} onChange={field.onChange} />
+                ) : (
+                  <Input
+                    placeholder={t("name.placeholder")}
+                    {...field}
+                    value={field.value.toLocaleDateString()}
+                    disabled={readOnly}
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="fatherName"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("father-name.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("father-name.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(fatherName)) && (
+          <FormField
+            control={control}
+            name="fatherName"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("father-name.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("father-name.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="motherName"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("mother-name.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("mother-name.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(motherName)) && (
+          <FormField
+            control={control}
+            name="motherName"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("mother-name.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("mother-name.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {/* Three Cards Section: Gender, QR Code, Child Photo */}
         <div className="col-span-1 md:col-span-2">
@@ -784,6 +811,21 @@ const Recommendations = ({
 }) => {
   const t = useTranslations("auth.add-child.3.form");
   const sectionT = useTranslations("dashboard.center.children.form.sections");
+  const { watch } = useFormContext<SignUpParentFormData>();
+  
+  const childDescription = watch("childDescription");
+  const favoriteThings = watch("favoriteThings");
+  const recommendations = watch("recommendations");
+
+  // In readOnly mode, only show section if at least one field has value
+  if (
+    readOnly &&
+    !hasValue(childDescription) &&
+    !hasValue(favoriteThings) &&
+    !hasValue(recommendations)
+  ) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -792,66 +834,72 @@ const Recommendations = ({
       </h2>
 
       <div className="grid grid-cols-1 lg:p-4 xl:grid-cols-2 gap-y-4 gap-x-10">
-        <FormField
-          control={control}
-          name="childDescription"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("description.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("description.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(childDescription)) && (
+          <FormField
+            control={control}
+            name="childDescription"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("description.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("description.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="favoriteThings"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("likes.label")}</span>
-                <span className="text-red-500">*</span>
-              </Label>
-              <FormControl>
-                <Input
-                  placeholder={t("likes.placeholder")}
-                  {...field}
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(favoriteThings)) && (
+          <FormField
+            control={control}
+            name="favoriteThings"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("likes.label")}</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+                <FormControl>
+                  <Input
+                    placeholder={t("likes.placeholder")}
+                    {...field}
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={control}
-          name="recommendations"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <span className="text-base">{t("recommendations.label")}</span>
-              <FormControl>
-                <Textarea
-                  placeholder={t("recommendations.placeholder")}
-                  {...field}
-                  className="min-h-[150px]"
-                  disabled={readOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {(!readOnly || hasValue(recommendations)) && (
+          <FormField
+            control={control}
+            name="recommendations"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <span className="text-base">{t("recommendations.label")}</span>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("recommendations.placeholder")}
+                    {...field}
+                    className="min-h-[150px]"
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </div>
   );
@@ -870,86 +918,104 @@ const AuthorizationPart = ({
 }) => {
   const t = useTranslations("auth.add-child.4.form");
   const sectionT = useTranslations("dashboard.center.children.form.sections");
+  const { watch } = useFormContext<SignUpParentFormData>();
+  const comments = watch("comments");
+
+  // Filter authorized persons to only show those with data in readOnly mode
+  const validAuthorizedPersons = readOnly
+    ? authorizedPersons?.filter(
+        (person) => hasValue(person.name) || hasValue(person.idNumber)
+      ) || []
+    : authorizedPersons || [];
+
+  // In readOnly mode, only show section if there are valid authorized persons or comments
+  if (readOnly && validAuthorizedPersons.length === 0 && !hasValue(comments)) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col gap-y-4">
       <h2 className="heading-4 font-medium text-primary">
         {sectionT("authorized")}
       </h2>
-      <div className="space-y-6 lg:p-6 lg:pb-0">
-        {authorizedPersons?.map((_, index) => (
-          <div key={index} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={control}
-                name={`authorizedPersons.${index}.name`}
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>
-                      <span className="text-base">{t("authorize.label")}</span>
-                      {index > 0 ? ` ${index + 1}` : ""}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <FormControl>
-                      <Input
-                        placeholder={t("authorize.placeholder")}
-                        {...field}
-                        disabled={readOnly}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name={`authorizedPersons.${index}.idNumber`}
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>
-                      <span className="text-base">{t("identity.label")}</span>
-                      {index > 0 ? ` ${index + 1}` : ""}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <FormControl>
-                      <Input
-                        placeholder={t("identity.placeholder")}
-                        {...field}
-                        disabled={readOnly}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="lg:px-6">
-        <FormField
-          control={control}
-          name="comments"
-          render={({ field }) => (
-            <FormItem>
-              <Label>
-                <span className="text-base">{t("comment.label")}</span>
-              </Label>
-              <FormControl>
-                <Textarea
-                  placeholder={t("comment.placeholder")}
-                  {...field}
-                  className="min-h-[100px]"
-                  disabled={readOnly}
+      {validAuthorizedPersons.length > 0 && (
+        <div className="space-y-6 lg:p-6 lg:pb-0">
+          {validAuthorizedPersons.map((_, index) => (
+            <div key={index} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={control}
+                  name={`authorizedPersons.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">{t("authorize.label")}</span>
+                        {index > 0 ? ` ${index + 1}` : ""}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder={t("authorize.placeholder")}
+                          {...field}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+
+                <FormField
+                  control={control}
+                  name={`authorizedPersons.${index}.idNumber`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>
+                        <span className="text-base">{t("identity.label")}</span>
+                        {index > 0 ? ` ${index + 1}` : ""}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <FormControl>
+                        <Input
+                          placeholder={t("identity.placeholder")}
+                          {...field}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {(!readOnly || hasValue(comments)) && (
+        <div className="lg:px-6">
+          <FormField
+            control={control}
+            name="comments"
+            render={({ field }) => (
+              <FormItem>
+                <Label>
+                  <span className="text-base">{t("comment.label")}</span>
+                </Label>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("comment.placeholder")}
+                    {...field}
+                    className="min-h-[100px]"
+                    disabled={readOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
     </div>
   );
 };
