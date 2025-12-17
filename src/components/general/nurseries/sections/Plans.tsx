@@ -25,8 +25,8 @@ interface Plan {
   id: number;
   title: string;
   enrollment_type: string;
-  start_age: number;
-  end_age: number;
+  start_age: number | { type: string; age: number };
+  end_age: number | { type: string; age: number };
   count: number;
   price_amount: string;
 }
@@ -239,23 +239,31 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     }
 
     if (selectedAge && selectedAge !== "all") {
-      const [minStr, maxStr] = selectedAge.split("_");
-      const minAge = parseInt(minStr);
-      const maxAge = parseInt(maxStr);
+      const parts = selectedAge.split("_");
+      // Format: startAge_startType_endAge_endType
+      if (parts.length === 4) {
+        const minAge = parseInt(parts[0]);
+        const minType = parts[1];
+        const maxAge = parseInt(parts[2]);
+        const maxType = parts[3];
 
-      // Match plans that overlap with the selected range
-      result = result.filter((p) => {
-        // Check for overlap: plan starts before selection ends AND plan ends after selection starts
-        return p.start_age <= maxAge && p.end_age >= minAge;
-        // Or simpler exact match if that is the intent?
-        // The user said "ages to be taken from the plans itself", so likely exact ranges.
-        // Let's assume we want to show plans that match these specific start/end ages.
-        // return p.start_age === minAge && p.end_age === maxAge;
-      });
-      // Actually strictly filtering by equality of the range is usually what "taken from plan" implies for filters
-      result = result.filter(
-        (p) => p.start_age === minAge && p.end_age === maxAge
-      );
+        result = result.filter((p) => {
+          const sAge =
+            typeof p.start_age === "number" ? p.start_age : p.start_age.age;
+          const sType =
+            typeof p.start_age === "number" ? "year" : p.start_age.type;
+          const eAge =
+            typeof p.end_age === "number" ? p.end_age : p.end_age.age;
+          const eType = typeof p.end_age === "number" ? "year" : p.end_age.type;
+
+          return (
+            sAge === minAge &&
+            sType === minType &&
+            eAge === maxAge &&
+            eType === maxType
+          );
+        });
+      }
     }
 
     return result;
@@ -270,21 +278,33 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
     // group by start_age and end_age
     const ranges = new Set<string>();
     plans.forEach((p) => {
-      ranges.add(`${p.start_age}_${p.end_age}`);
+      const sAge =
+        typeof p.start_age === "number" ? p.start_age : p.start_age.age;
+      const sType = typeof p.start_age === "number" ? "year" : p.start_age.type;
+      const eAge = typeof p.end_age === "number" ? p.end_age : p.end_age.age;
+      const eType = typeof p.end_age === "number" ? "year" : p.end_age.type;
+
+      ranges.add(`${sAge}_${sType}_${eAge}_${eType}`);
     });
 
     return Array.from(ranges)
       .map((range) => {
-        const [start, end] = range.split("_");
+        const [start, startType, end, endType] = range.split("_");
         return {
           value: range,
           label:
             locale === "ar"
-              ? `من ${start} سنوات ل ${end} سنوات`
-              : `From ${start} to ${end} years`, // Adjusted English label
+              ? `من ${start} ${getEnrollmentTypeLabel(
+                  startType
+                )} ل ${end} ${getEnrollmentTypeLabel(endType)}`
+              : `From ${start} ${getEnrollmentTypeLabel(
+                  startType
+                )} to ${end} ${getEnrollmentTypeLabel(endType)}`,
         };
       })
       .sort((a, b) => {
+        // Rough sort by start age (converting to approximate months if needed or just simple value sort if types match)
+        // Simplification: just parsing the first number
         const startA = parseInt(a.value.split("_")[0]);
         const startB = parseInt(b.value.split("_")[0]);
         return startA - startB;
@@ -356,7 +376,7 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                 className={
                   selectedEnrollmentType === type
                     ? ""
-                    : "!border-mid-gray !text-mid-gray"
+                    : "border-mid-gray! text-mid-gray!"
                 }
               >
                 {getEnrollmentTypeLabel(type)}
@@ -417,8 +437,24 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                   <div className="space-y-4 pt-2">
                     {/* Age Range */}
                     <p className="text-sm text-gray-600">
-                      {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
-                      {locale === "ar" ? "سنة" : "years"}
+                      {t("plans.ageRange")}:{" "}
+                      {typeof plan.start_age === "number"
+                        ? plan.start_age
+                        : plan.start_age.age}{" "}
+                      {getEnrollmentTypeLabel(
+                        typeof plan.start_age === "number"
+                          ? "year"
+                          : plan.start_age.type
+                      )}{" "}
+                      -{" "}
+                      {typeof plan.end_age === "number"
+                        ? plan.end_age
+                        : plan.end_age.age}{" "}
+                      {getEnrollmentTypeLabel(
+                        typeof plan.end_age === "number"
+                          ? "year"
+                          : plan.end_age.type
+                      )}
                     </p>
 
                     {/* Booking Button */}

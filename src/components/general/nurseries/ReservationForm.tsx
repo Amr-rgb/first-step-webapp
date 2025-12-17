@@ -51,8 +51,8 @@ interface Plan {
 interface ApiPlan {
   id: number;
   title: string;
-  start_age: number;
-  end_age: number;
+  start_age: number | { type: string; age: number };
+  end_age: number | { type: string; age: number };
   count: number;
   enrollment_type: string;
   price_amount: number;
