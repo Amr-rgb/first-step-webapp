@@ -2882,5 +2882,66 @@
     },
     "forLimitedTime": "لفترة محدودة",
     "noImage": "لا توجد صورة"
+  },
+  "wallet": {
+    "title": "محفظتي",
+    "availableBalance": "الرصيد المستحق",
+    "cumulativeBalance": "الرصيد التراكمي",
+    "canWithdraw": "يمكنك طلب سحبه",
+    "dailyChanges": "تغييرات رصيدك اليومي",
+    "dateRange": "من {from} ل {to}",
+    "tablePlaceholder": "سجل السحب / العمليات",
+    "showBalanceHistory": "عرض سجل الرصيد",
+    "showWithdrawHistory": "عرض سجل السحب",
+    "requestWithdraw": "طلب سحب الرصيد",
+    "filters": {
+      "all": "الكل",
+      "accepted": "مدفوعة",
+      "pending": "قيد المراجعة",
+      "rejected": "مرفوضة"
+    },
+    "balanceHistory": {
+      "title": "سجل الرصيد",
+      "headers": {
+        "enrollmentId": "رقم الاشتراك",
+        "paymentDate": "تاريخ ووقت الدفع",
+        "branch": "الفرع",
+        "parentName": "اسم ولي الأمر",
+        "balanceBefore": "الرصيد قبل",
+        "amount": "المبلغ",
+        "balanceAfter": "الرصيد بعد"
+      },
+      "currency": "ر.س",
+      "noData": "لا توجد سجلات"
+    },
+    "withdrawRequests": {
+      "title": "سجل طلبات السحب",
+      "headers": {
+        "withdrawId": "رقم السحب",
+        "requestDate": "تاريخ ووقت طلب السحب",
+        "amount": "مبلغ السحب",
+        "method": "طريقة السحب",
+        "status": "حالة التحويل",
+        "receipt": "إيصال التحويل"
+      },
+      "currency": "ر.س",
+      "noData": "لا توجد طلبات سحب",
+      "status": {
+        "accepted": "مدفوعة",
+        "pending": "قيد المراجعة",
+        "rejected": "مرفوضة"
+      },
+      "methods": {
+        "moyasar": "ميسر"
+      }
+    },
+    "errors": {
+      "noBalance": "لا يوجد رصيد متاح للسحب",
+      "withdrawFailed": "فشل في إرسال طلب السحب",
+      "loadFailed": "فشل في تحميل البيانات"
+    },
+    "success": {
+      "withdrawSent": "تم إرسال طلب السحب بنجاح"
+    }
   }
 }

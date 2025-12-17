@@ -2866,5 +2866,66 @@
     },
     "forLimitedTime": "For Limited Time",
     "noImage": "No Image"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "availableBalance": "Available Balance",
+    "cumulativeBalance": "Cumulative Balance",
+    "canWithdraw": "You can request withdrawal",
+    "dailyChanges": "Daily Balance Changes",
+    "dateRange": "From {from} to {to}",
+    "tablePlaceholder": "Withdrawal / Transaction Records",
+    "showBalanceHistory": "Show Balance History",
+    "showWithdrawHistory": "Show Withdrawal History",
+    "requestWithdraw": "Request Withdrawal",
+    "filters": {
+      "all": "All",
+      "accepted": "Paid",
+      "pending": "Pending Review",
+      "rejected": "Rejected"
+    },
+    "balanceHistory": {
+      "title": "Balance History",
+      "headers": {
+        "enrollmentId": "Subscription ID",
+        "paymentDate": "Payment Date & Time",
+        "branch": "Branch",
+        "parentName": "Parent Name",
+        "balanceBefore": "Balance Before",
+        "amount": "Amount",
+        "balanceAfter": "Balance After"
+      },
+      "currency": "SAR",
+      "noData": "No records found"
+    },
+    "withdrawRequests": {
+      "title": "Withdrawal Requests History",
+      "headers": {
+        "withdrawId": "Withdrawal ID",
+        "requestDate": "Request Date & Time",
+        "amount": "Withdrawal Amount",
+        "method": "Withdrawal Method",
+        "status": "Transfer Status",
+        "receipt": "Transfer Receipt"
+      },
+      "currency": "SAR",
+      "noData": "No withdrawal requests",
+      "status": {
+        "accepted": "Paid",
+        "pending": "Pending Review",
+        "rejected": "Rejected"
+      },
+      "methods": {
+        "moyasar": "Moyasar"
+      }
+    },
+    "errors": {
+      "noBalance": "No available balance to withdraw",
+      "withdrawFailed": "Failed to send withdrawal request",
+      "loadFailed": "Failed to load data"
+    },
+    "success": {
+      "withdrawSent": "Withdrawal request sent successfully"
+    }
   }
 }
