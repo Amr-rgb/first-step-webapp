@@ -58,7 +58,12 @@ const createPlanSchema = (t: any, isEditing: boolean) =>
       }),
       enrollment_type: z.string().min(1, t("enrollmentTypeRequired")),
       count: z.number().min(1, t("countMustBePositive")),
-      price_amount: z.number().min(0.01, t("priceMustBePositive")),
+      price_amount: z
+        .number({
+          invalid_type_error: t("priceMustBeNumber"),
+          required_error: t("priceRequired"),
+        })
+        .min(1, t("priceMustBePositive")),
       branches: isEditing
         ? z.array(z.string()).optional()
         : z.array(z.string()).min(1, t("selectBranchesError")),
@@ -197,6 +202,7 @@ export const PlansSection = () => {
       ...plan,
       start_age: normalizeAge(plan.start_age),
       end_age: normalizeAge(plan.end_age),
+      price_amount: Number(plan.price_amount),
     });
     setIsDialogOpen(true);
   };
@@ -242,8 +248,14 @@ export const PlansSection = () => {
             p.id === editingPlan.id
               ? {
                   ...formData,
+                  price_amount: Number(formData.price_amount),
                 }
-              : p
+              : {
+                  ...p,
+                  start_age: normalizeAge(p.start_age),
+                  end_age: normalizeAge(p.end_age),
+                  price_amount: Number(p.price_amount),
+                }
           )
         : [formData];
 
@@ -571,7 +583,6 @@ export const PlansSection = () => {
                 <Input
                   type="number"
                   min="0"
-                  step="0.01"
                   value={formData.price_amount}
                   onChange={(e) => {
                     setFormData({
