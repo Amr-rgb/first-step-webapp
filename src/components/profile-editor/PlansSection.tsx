@@ -31,7 +31,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Zod schema for plan validation
 // Helper to normalize age for compatibility
-const normalizeAge = (age: number | { type: string; age: number }) => {
+const normalizeAge = (
+  age: number | { type: string; age: number } | null | undefined
+) => {
+  if (age === null || age === undefined) {
+    return { type: "year", age: 0 };
+  }
   if (typeof age === "number") {
     return { type: "year", age };
   }

@@ -440,20 +440,20 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
                       {t("plans.ageRange")}:{" "}
                       {typeof plan.start_age === "number"
                         ? plan.start_age
-                        : plan.start_age.age}{" "}
+                        : plan.start_age?.age}{" "}
                       {getEnrollmentTypeLabel(
                         typeof plan.start_age === "number"
                           ? "year"
-                          : plan.start_age.type
+                          : plan.start_age?.type || ""
                       )}{" "}
                       -{" "}
                       {typeof plan.end_age === "number"
                         ? plan.end_age
-                        : plan.end_age.age}{" "}
+                        : plan.end_age?.age}{" "}
                       {getEnrollmentTypeLabel(
                         typeof plan.end_age === "number"
                           ? "year"
-                          : plan.end_age.type
+                          : plan.end_age?.type || ""
                       )}
                     </p>
 

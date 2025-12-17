@@ -189,21 +189,25 @@ const PlansPreview = ({ locale }: { locale: string }) => {
                         {t("plans.ageRange")}:{" "}
                         {typeof plan.start_age === "number"
                           ? `${plan.start_age}`
-                          : plan.start_age.age}{" "}
+                          : plan.start_age?.age}{" "}
                         {typeof plan.start_age === "number"
                           ? locale === "ar"
                             ? "سنة"
                             : "Year"
-                          : getEnrollmentTypeLabel(plan.start_age.type)}{" "}
+                          : plan.start_age?.type
+                          ? getEnrollmentTypeLabel(plan.start_age.type)
+                          : ""}{" "}
                         -{" "}
                         {typeof plan.end_age === "number"
                           ? `${plan.end_age}`
-                          : plan.end_age.age}{" "}
+                          : plan.end_age?.age}{" "}
                         {typeof plan.end_age === "number"
                           ? locale === "ar"
                             ? "سنة"
                             : "Year"
-                          : getEnrollmentTypeLabel(plan.end_age.type)}
+                          : plan.end_age?.type
+                          ? getEnrollmentTypeLabel(plan.end_age.type)
+                          : ""}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
