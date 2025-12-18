@@ -2943,5 +2943,89 @@
     "success": {
       "withdrawSent": "تم إرسال طلب السحب بنجاح"
     }
+  },
+  "consultations": {
+    "tabs": {
+      "parents": "استشارات للأفراد",
+      "centers": "استشارات للمراكز"
+    },
+    "share": {
+      "button": "شارك رابط الاستشارات مع دائرتك المقربة",
+      "title": "استشارات First Step",
+      "copied": "تم نسخ الرابط بنجاح"
+    },
+    "parent": {
+      "intro": "نقدم لأولياء الأمور والمعلمين استشارات تربوية ونفسية متخصصة تساعدهم على فهم احتياجات أطفالهم والتعامل مع التحديات السلوكية والتعليمية بأسلوب واعٍ ومناسب لكل مرحلة عمرية.",
+      "bullet1": "نقدم لأولياء الأمور والمعلمين",
+      "bullet2": "نقدم لأولياء الأمور والمعلمين",
+      "bullet3": "نقدم لأولياء الأمور والمعلمين",
+      "formTitle": "استشيرنا لطفلك ولنفسك"
+    },
+    "center": {
+      "intro": "نوفر للحضانات والمراكز التعليمية استشارات متخصصة لدعم الكوادر التعليمية وتطوير بيئة تعليمية آمنة وفعالة بما يواكب أفضل الممارسات التربوية.",
+      "bullet1": "نقدم لأولياء الأمور والمعلمين",
+      "bullet2": "نقدم لأولياء الأمور والمعلمين",
+      "bullet3": "نقدم لأولياء الأمور والمعلمين",
+      "formTitle": "استشيرنا لتحسين وتطوير مركزك"
+    },
+    "form": {
+      "subtitle": "إذا كان لديك استفسار أو مشكلة لا تتردد بالتواصل معنا",
+      "name": "الاسم",
+      "namePlaceholder": "مثال: هبة الله عمارة",
+      "phone": "رقم الجوال",
+      "phonePlaceholder": "",
+      "email": "الايميل",
+      "emailPlaceholder": "mennaemarauxi@gmail.com",
+      "kindOfUser": "نوع الفرد",
+      "kindOfUserPlaceholder": "مثال: ولي أمر",
+      "subject": "موضوع الاستشارة",
+      "subjectPlaceholder": "مثال: تربوي",
+      "file": "إرفاق ملف",
+      "filePlaceholder": "ارفق ملف له علاقة بالاستشارة",
+      "description": "اكتب استشارتك",
+      "descriptionPlaceholder": "اكتب استشارتك",
+      "centerName": "اسم المركز",
+      "centerNamePlaceholder": "مثال: حضانة Kids time",
+      "centerSpec": "تخصص المركز",
+      "centerSpecPlaceholder": "مثال: تربوي",
+      "requesterName": "اسم مقدم طلب الاستشارة",
+      "requesterNamePlaceholder": "مثال: أحمد محمد",
+      "requesterMission": "مهنة مقدم طلب الاستشارة",
+      "requesterMissionPlaceholder": "مثال: مدير فرع الرياض",
+      "cancel": "إلغاء",
+      "submit": "إرسال الاستشارة",
+      "submitting": "جاري الإرسال...",
+      "success": "تم إرسال الاستشارة بنجاح!",
+      "error": "حدث خطأ أثناء إرسال الاستشارة",
+      "kindOptions": {
+        "parent": "ولي أمر",
+        "teacher": "معلم/معلمة",
+        "other": "أخرى"
+      },
+      "subjectOptions": {
+        "educational": "تربوي",
+        "psychological": "نفسي",
+        "behavioral": "سلوكي",
+        "administrative": "إداري",
+        "technical": "تقني",
+        "other": "أخرى"
+      },
+      "centerSpecOptions": {
+        "nursery": "حضانة",
+        "educational": "تعليمي",
+        "rehabilitation": "تأهيلي",
+        "other": "أخرى"
+      },
+      "missionOptions": {
+        "manager": "مدير",
+        "supervisor": "مشرف",
+        "teacher": "معلم/معلمة",
+        "other": "أخرى"
+      },
+      "errors": {
+        "required": "هذا الحقل مطلوب",
+        "invalidEmail": "البريد الإلكتروني غير صالح"
+      }
+    }
   }
 }

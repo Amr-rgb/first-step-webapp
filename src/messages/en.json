@@ -2927,5 +2927,89 @@
     "success": {
       "withdrawSent": "Withdrawal request sent successfully"
     }
+  },
+  "consultations": {
+    "tabs": {
+      "parents": "Consultations for Parents",
+      "centers": "Consultations for Centers"
+    },
+    "share": {
+      "button": "Share consultation link with your circle",
+      "title": "First Step Consultations",
+      "copied": "Link copied successfully"
+    },
+    "parent": {
+      "intro": "We provide specialized educational and psychological consultations for parents and teachers to help them understand their children's needs and deal with behavioral and educational challenges in a mindful and age-appropriate manner.",
+      "bullet1": "Consultations for parents and teachers",
+      "bullet2": "Consultations for parents and teachers",
+      "bullet3": "Consultations for parents and teachers",
+      "formTitle": "Consult us for your child and yourself"
+    },
+    "center": {
+      "intro": "We provide specialized consultations for nurseries and educational centers to support teaching staff and develop a safe and effective educational environment in line with best educational practices.",
+      "bullet1": "Consultations for parents and teachers",
+      "bullet2": "Consultations for parents and teachers",
+      "bullet3": "Consultations for parents and teachers",
+      "formTitle": "Consult us to improve and develop your center"
+    },
+    "form": {
+      "subtitle": "If you have an inquiry or problem, don't hesitate to contact us",
+      "name": "Name",
+      "namePlaceholder": "e.g., Heba Allah Amara",
+      "phone": "Phone Number",
+      "phonePlaceholder": "",
+      "email": "Email",
+      "emailPlaceholder": "mennaemarauxi@gmail.com",
+      "kindOfUser": "Type of User",
+      "kindOfUserPlaceholder": "e.g., Parent",
+      "subject": "Consultation Subject",
+      "subjectPlaceholder": "e.g., Educational",
+      "file": "Attach File",
+      "filePlaceholder": "Attach a file related to the consultation",
+      "description": "Write your consultation",
+      "descriptionPlaceholder": "Write your consultation",
+      "centerName": "Center Name",
+      "centerNamePlaceholder": "e.g., Kids time nursery",
+      "centerSpec": "Center Specialization",
+      "centerSpecPlaceholder": "e.g., Educational",
+      "requesterName": "Name of Consultation Requester",
+      "requesterNamePlaceholder": "e.g., Ahmed Mohammed",
+      "requesterMission": "Role of Consultation Requester",
+      "requesterMissionPlaceholder": "e.g., Riyadh Branch Manager",
+      "cancel": "Cancel",
+      "submit": "Send Consultation",
+      "submitting": "Sending...",
+      "success": "Consultation sent successfully!",
+      "error": "Error sending consultation",
+      "kindOptions": {
+        "parent": "Parent",
+        "teacher": "Teacher",
+        "other": "Other"
+      },
+      "subjectOptions": {
+        "educational": "Educational",
+        "psychological": "Psychological",
+        "behavioral": "Behavioral",
+        "administrative": "Administrative",
+        "technical": "Technical",
+        "other": "Other"
+      },
+      "centerSpecOptions": {
+        "nursery": "Nursery",
+        "educational": "Educational",
+        "rehabilitation": "Rehabilitation",
+        "other": "Other"
+      },
+      "missionOptions": {
+        "manager": "Manager",
+        "supervisor": "Supervisor",
+        "teacher": "Teacher",
+        "other": "Other"
+      },
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email address"
+      }
+    }
   }
 }
