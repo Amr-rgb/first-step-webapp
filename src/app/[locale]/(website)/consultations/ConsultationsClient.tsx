@@ -1,6 +1,15 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Share2, Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,15 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Share2, Loader2 } from "lucide-react";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+
 import PhoneInput from "@/components/forms/PhoneInput";
 import { FileUploader } from "@/components/forms/FileUploader";
 import {
@@ -70,6 +72,42 @@ export default function ConsultationsClient({
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [isPending, startTransition] = useTransition();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [multiplier, setMultiplier] = useState(120);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      // Subtract buffer for side spacing
+      const availableWidth = Math.min(width, 1400) - 400;
+      const newMultiplier = Math.min(Math.max(availableWidth / 7, 70), 180);
+      setMultiplier(newMultiplier);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const parentsGuide = t.raw("tips.parents").map((tip: any) => ({
+    ...tip,
+    image: tip.image || "/assets/illustrations/parent.png",
+  }));
+
+  const centersGuide = t.raw("tips.centers").map((tip: any) => ({
+    ...tip,
+    image: tip.image || "/assets/illustrations/center.png",
+  }));
+
+  const guides = activeTab === "parent" ? parentsGuide : centersGuide;
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSelectedIndex((prev) => (prev + 1) % guides.length);
+    }, 3000); // Scroll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [guides.length, activeTab]);
 
   // Parent form
   const parentForm = useForm<ParentFormData>({
@@ -103,6 +141,7 @@ export default function ConsultationsClient({
 
   const handleTabChange = (newTab: TabType) => {
     setActiveTab(newTab);
+    setSelectedIndex(0);
     const params = new URLSearchParams(searchParams.toString());
 
     if (newTab === "center") {
@@ -540,6 +579,7 @@ export default function ConsultationsClient({
               <div className="flex flex-col-reverse sm:flex-row justify-center items-center gap-4 pt-4">
                 <Button
                   type="button"
+                  size="sm"
                   variant="outline"
                   onClick={handleCancel}
                   disabled={isPending}
@@ -549,6 +589,7 @@ export default function ConsultationsClient({
                 </Button>
                 <Button
                   type="submit"
+                  size="sm"
                   disabled={isPending}
                   className="w-full sm:w-auto min-w-[150px] blue-gradient"
                 >
@@ -831,6 +872,7 @@ export default function ConsultationsClient({
               <div className="flex flex-col-reverse sm:flex-row justify-center items-center gap-4 pt-4">
                 <Button
                   type="button"
+                  size="sm"
                   variant="outline"
                   onClick={handleCancel}
                   disabled={isPending}
@@ -840,6 +882,7 @@ export default function ConsultationsClient({
                 </Button>
                 <Button
                   type="submit"
+                  size="sm"
                   disabled={isPending}
                   className="w-full sm:w-auto min-w-[150px] blue-gradient"
                 >
@@ -855,6 +898,78 @@ export default function ConsultationsClient({
               </div>
             </form>
           )}
+        </div>
+
+        {/* Tips Section */}
+        <div className="mt-16 md:mt-24">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-blue text-center mb-12">
+            {t("tipsTitle")}
+          </h2>
+
+          {/* Custom Stacked Cards Carousel */}
+          <div className="relative h-[400px] md:h-[608px] overflow-hidden px-6 md:px-12 lg:px-20">
+            <div className="absolute inset-0 flex items-center justify-center">
+              {guides.map((tip: any, index: number) => {
+                const totalItems = guides.length;
+
+                // Calculate circular distance
+                let distance = index - selectedIndex;
+                if (distance > totalItems / 2) distance -= totalItems;
+                if (distance < -totalItems / 2) distance += totalItems;
+
+                const absDistance = Math.abs(distance);
+                const isActive = distance === 0;
+
+                // Only render cards within visible range (3 on each side)
+                if (absDistance > 3) return null;
+
+                // Stacking calculations
+                const zIndex = 40 - absDistance;
+                const scale = isActive ? 1 : 0.85 - absDistance * 0.05;
+
+                // Position: cards fan out to sides, peeking from behind
+                const translateX = distance * multiplier;
+                const rotateY = distance * -3;
+
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSelectedIndex(index)}
+                    className="absolute transition-all duration-500 ease-out cursor-pointer focus:outline-none"
+                    style={{
+                      zIndex,
+                      transform: `translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`,
+                    }}
+                  >
+                    <div
+                      className={cn(
+                        "w-[260px] sm:w-[320px] md:w-[480px] lg:w-[540px] rounded-3xl border py-11 px-4 sm:px-6 md:px-8 flex flex-col items-center text-center transition-all duration-500",
+                        isActive
+                          ? "border-secondary-mint-green bg-white bg-linear-to-b from-white/15 via-secondary-mint-green/12 to-secondary-mint-green/24"
+                          : "bg-white border-light-gray"
+                      )}
+                    >
+                      <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-64 md:h-64 lg:w-80 lg:h-80 mb-3 sm:mb-4 md:mb-6 pointer-events-none">
+                        <Image
+                          src={tip.image}
+                          alt={tip.title}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <h3 className="max-w-[400px] text-xl md:text-2xl lg:text-[2rem] text-primary-blue mb-2 sm:mb-3 md:mb-4 leading-tight">
+                        {tip.title}
+                      </h3>
+                      <p className="max-w-[400px] text-sm md:text-base lg:text-xl font-normal">
+                        {tip.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

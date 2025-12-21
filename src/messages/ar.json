@@ -3026,6 +3026,83 @@
         "required": "هذا الحقل مطلوب",
         "invalidEmail": "البريد الإلكتروني غير صالح"
       }
+    },
+    "tipsTitle": "تثقيف وتوعية",
+    "tips": {
+      "parents": [
+        {
+          "title": "تعزيز الاستقلالية",
+          "description": "تشجيع الطفل على الاعتماد على نفسه في المهام البسيطة يبني شخصيته ويعزز شعوره بالمسؤولية",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "مراعاة الفروق الفردية",
+          "description": "كل طفل له قدراته وسرعته الخاصة في التعلم، ومقارنة الأطفال ببعضهم قد تؤثر سلباً على ثقتهم بأنفسهم",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "التشجيع بدل العقاب",
+          "description": "تعزيز السلوك الإيجابي بالكلمة الطيبة أو المكافآت البسيطة يساعد الطفل على التعلم بطريقة أفضل من العقاب",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "روتين يومي ثابت",
+          "description": "وجود روتين واضح للنوم، الأكل، والتعلم يساعد الطفل على الشعور بالأمان ويزيد من تركيزه واستقراره السلوكي",
+          "image": "/assets/illustrations/tips/board.png"
+        },
+        {
+          "title": "التواصل الإيجابي مع الطفل",
+          "description": "الاستماع للطفل والتحدث معه بهدوء يعزز ثقته بنفسه ويقوي العلاقة بينه وبين والديه والمعلمين",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "التعلم من خلال اللعب",
+          "description": "اللعب وسيلة فعالة لتطوير مهارات الطفل الذهنية والاجتماعية وتحفيزه على التعلم بدون ضغط",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "تهيئة بيئة تعليمية مناسبة",
+          "description": "توفير مكان هادئ ومريح يساعد الطفل على التركيز ويجعل عملية التعلم أكثر سهولة ومتعة",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ],
+      "centers": [
+        {
+          "title": "مراعاة الفروق الفردية",
+          "description": "الاهتمام باختلاف قدرات الأطفال واحتياجاتهم يساعد على خلق بيئة تعليمية عادلة وداعمة للجميع",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "التواصل مع أولياء الأمور",
+          "description": "التواصل المستمر والشفاف مع أولياء الأمور يعزز الثقة ويساهم في متابعة تطور الطفل بشكل أفضل",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "تنظيم الروتين اليومي",
+          "description": "وضع جدول يومي واضح ومتوازن بين التعلم واللعب والراحة يساعد الأطفال على الاستقرار والالتزام داخل المركز",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "جاهزية المبنى وسلامته",
+          "description": "التأكد من سلامة المبنى، التهوية الجيدة، الإضاءة المناسبة، ومساحات اللعب الآمنة يوفّر بيئة صحية ومريحة",
+          "image": "/assets/illustrations/tips/team-work.png"
+        },
+        {
+          "title": "توفير أدوات تعليمية مناسبة",
+          "description": "استخدام وسائل تعليمية آمنة ومتنوعة يدعم عملية التعلم ويحفز الأطفال على المشاركة والاستكشاف",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "التعلم من خلال اللعب",
+          "description": "اللعب وسيلة فعالة لتطوير مهارات الطفل الذهنية والاجتماعية وتحفيزه على التعلم بدون ضغط",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "تهيئة بيئة تعليمية مناسبة",
+          "description": "توفير مكان هادئ ومريح يساعد الطفل على التركيز ويجعل عملية التعلم أكثر سهولة ومتعة",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ]
     }
   }
 }

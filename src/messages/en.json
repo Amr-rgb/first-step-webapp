@@ -3010,6 +3010,83 @@
         "required": "This field is required",
         "invalidEmail": "Invalid email address"
       }
+    },
+    "tipsTitle": "Education and Awareness",
+    "tips": {
+      "parents": [
+        {
+          "title": "Promoting Independence",
+          "description": "Encouraging a child to rely on themselves in simple tasks builds their character and enhances their sense of responsibility.",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "Considering Individual Differences",
+          "description": "Every child has their own abilities and learning pace; comparing children can negatively affect their self-confidence.",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "Encouragement over Punishment",
+          "description": "Reinforcing positive behavior with kind words or simple rewards helps children learn more effectively than punishment.",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "Consistent Daily Routine",
+          "description": "Having a clear routine for sleep, meals, and learning helps children feel secure and improves their focus and behavioral stability.",
+          "image": "/assets/illustrations/tips/board.png"
+        },
+        {
+          "title": "Positive Communication with the Child",
+          "description": "Listening to the child and communicating calmly strengthens their self-confidence and builds a strong relationship with parents and teachers.",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "Learning through Play",
+          "description": "Play is an effective way to develop a child's cognitive and social skills while motivating learning without pressure.",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "Providing a Suitable Learning Environment",
+          "description": "Providing a quiet and comfortable space helps children concentrate and makes learning easier and more enjoyable.",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ],
+      "centers": [
+        {
+          "title": "Considering Individual Differences",
+          "description": "Paying attention to children’s different abilities and needs helps create a fair and supportive learning environment for everyone.",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "Communication with Parents",
+          "description": "Ongoing and transparent communication with parents builds trust and supports better monitoring of the child’s development.",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "Organizing the Daily Routine",
+          "description": "Establishing a clear and balanced daily schedule that includes learning, play, and rest helps children stay stable and engaged at the center.",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "Building Readiness and Safety",
+          "description": "Ensuring building safety, proper ventilation, adequate lighting, and secure play areas provides a healthy and comfortable environment.",
+          "image": "/assets/illustrations/tips/team-work.png"
+        },
+        {
+          "title": "Providing Appropriate Educational Tools",
+          "description": "Using safe and diverse educational tools supports the learning process and encourages children to participate and explore.",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "Learning through Play",
+          "description": "Play is an effective approach for developing children’s cognitive and social skills while encouraging learning without pressure.",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "Providing a Suitable Learning Environment",
+          "description": "Providing a calm and comfortable environment helps children focus and makes the learning experience smoother and more enjoyable.",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ]
     }
   }
 }
