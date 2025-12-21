@@ -21,6 +21,10 @@
         "title": "العروض والخصومات",
         "path": "/offers-and-coupons"
       },
+      "consultations": {
+        "title": "الاستشارات",
+        "path": "/consultations"
+      },
       "blog": {
         "title": "المدونة",
         "path": "/blog"

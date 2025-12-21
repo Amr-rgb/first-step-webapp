@@ -130,6 +130,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     "nurseries",
     // "centers",
     "coupon-codes",
+    "consultations",
     "blog",
     "story",
     "contact",
@@ -190,7 +191,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           </div>
         )}
 
-        <div className="flex justify-between items-center gap-x-8">
+        <div className="flex justify-between items-center gap-x-0">
           {/* Left */}
           <div className="flex-1">
             <Link className="inline-block w-fit" href={"/"}>

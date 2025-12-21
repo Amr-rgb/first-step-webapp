@@ -21,6 +21,10 @@
         "title": "Offers & Coupons",
         "path": "/offers-and-coupons"
       },
+      "consultations": {
+        "title": "Consultations",
+        "path": "/consultations"
+      },
       "blog": {
         "title": "Blog",
         "path": "/blog"
