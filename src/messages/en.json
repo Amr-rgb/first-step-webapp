@@ -2805,6 +2805,7 @@
       "cancel": "Cancel",
       "submit": "Submit Offer to Website",
       "archive": "Archive",
+      "restore": "Restore Offer",
       "permanentDelete": "Permanent Delete",
       "processing": "Processing...",
       "saving": "Saving..."
@@ -2854,15 +2855,19 @@
     },
     "dialog": {
       "confirmDelete": {
-        "title": "Confirm Deletion",
-        "message": "Are you sure you want to delete this offer?",
-        "archiveOption": "Archive offer (can be restored later)",
-        "deleteOption": "Permanent delete (cannot be restored)"
+        "title": "Manage Offer Status",
+        "message": "How do you want to process this offer?",
+        "archiveTitle": "Archive Offer",
+        "archiveOption": "The offer will be hidden from the website but can be restored later from the deleted list.",
+        "deleteTitle": "Permanent Delete",
+        "deleteOption": "The offer will be permanently removed. This action cannot be undone."
       }
     },
     "toast": {
       "archiveSuccess": "Offer archived successfully",
       "archiveError": "Error occurred during archiving",
+      "restoreSuccess": "Offer restored successfully",
+      "restoreError": "Error occurred during restoration",
       "deleteSuccess": "Offer permanently deleted",
       "deleteError": "Error occurred during deletion",
       "createSuccess": "Offer added successfully",

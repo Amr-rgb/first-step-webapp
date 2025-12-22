@@ -215,6 +215,17 @@ export const adminService = {
     }
   },
 
+  restoreExternalOffer: async (id: string) => {
+    try {
+      const response = await apiClient.put(
+        `/dashboard/external-show/active/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   deleteExternalOffer: async (id: string) => {
     try {
       const response = await apiClient.delete(`/dashboard/external-show/${id}`);
