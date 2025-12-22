@@ -1135,7 +1135,7 @@
         "subtitle": "Register children's attendance and departure easily",
         "codeLabel": "Click the button below to activate",
         "downloadApp": "Share the app with parents",
-        "attendanceTitle": "Attendance Records",
+        "attendanceTitle": "Attendance & Departure Records",
         "buttons": {
           "generate": "Generate Code",
           "generating": "Generating..."
@@ -1154,8 +1154,10 @@
           "date": "Date",
           "arrivalTime": "Arrival Time",
           "departureTime": "Departure Time",
+          "temperature": "Temperature",
           "program": "Program",
           "branch": "Branch",
+          "showAll": "Show All",
           "noData": "No attendance records yet"
         },
         "modal": {

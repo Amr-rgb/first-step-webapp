@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   pagination?: boolean;
   isLoading?: boolean;
   getRowId?: (row: TData) => string;
+  noResultsMessage?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -48,6 +49,7 @@ export function DataTable<TData, TValue>({
   pagination,
   isLoading = false,
   getRowId,
+  noResultsMessage,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
@@ -186,7 +188,7 @@ export function DataTable<TData, TValue>({
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {noResultsMessage || "No results."}
                     </TableCell>
                   </TableRow>
                 )}

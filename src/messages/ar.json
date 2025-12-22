@@ -1130,7 +1130,7 @@
         "subtitle": "سجل حضور وانصراف الأطفال بسهولة",
         "codeLabel": "اضغط زر التفعيل لتوليدك",
         "downloadApp": "شارك التطبيق مع موظفيك",
-        "attendanceTitle": "سجل الحضور",
+        "attendanceTitle": "سجل الحضور والانصراف",
         "buttons": {
           "generate": "توليد الكود",
           "generating": "جاري التوليد..."
@@ -1149,8 +1149,10 @@
           "date": "التاريخ",
           "arrivalTime": "وقت الحضور",
           "departureTime": "وقت الانصراف",
+          "temperature": "درجة الحرارة",
           "program": "البرنامج",
           "branch": "الفرع",
+          "showAll": "عرض الكل",
           "noData": "لا توجد سجلات حضور بعد"
         },
         "modal": {

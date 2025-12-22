@@ -1051,6 +1051,15 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getAllAttendance: async () => {
+    try {
+      const response = await apiClient.get("/attendance-all");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {
