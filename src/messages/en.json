@@ -2876,6 +2876,7 @@
       "imageLimit": "You can upload a maximum of 10 images"
     },
     "forLimitedTime": "For Limited Time",
+    "location": "Location",
     "noImage": "No Image"
   },
   "wallet": {
