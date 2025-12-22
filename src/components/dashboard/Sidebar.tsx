@@ -67,11 +67,11 @@ const getCenterNavbar = (t: any): NavbarItem[] => [
     url: "/dashboard/center/center-data",
     icon: dashboardIcons.site,
   },
-  // {
-  //   title: t("center.gate"),
-  //   url: "/dashboard/center/gate",
-  //   icon: dashboardIcons.site,
-  // },
+  {
+    title: t("center.gate"),
+    url: "/dashboard/center/gate",
+    icon: dashboardIcons.site,
+  },
   {
     title: t("center.ad-or-blog-request"),
     url: "/dashboard/center/ad-or-blog-request",
