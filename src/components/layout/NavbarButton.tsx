@@ -40,9 +40,7 @@ const NavbarButton = () => {
                 {t("buttons.sign-in")}
               </Button>
               <Button asChild size={"sm"} className="sm:hidden font-semibold">
-                <Link href="/sign-in">
-                  {t("buttons.sign-in")}
-                </Link>
+                <Link href="/sign-in">{t("buttons.sign-in")}</Link>
               </Button>
             </>
           )}
@@ -56,15 +54,11 @@ const NavbarButton = () => {
             title={t("buttons.logout")}
           >
             <LogOut className="size-4" />
-            {t("buttons.logout")}
+            {/* {t("buttons.logout")} */}
           </Button>
 
           {dashboardPath && (
-            <Button
-              size="sm"
-              variant="default"
-              asChild
-            >
+            <Button size="sm" variant="default" asChild>
               <Link href={dashboardPath} title={t("buttons.dashboard")}>
                 <LayoutDashboard className="size-4" />
                 {t("buttons.dashboard")}

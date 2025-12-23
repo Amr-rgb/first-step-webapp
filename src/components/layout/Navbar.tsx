@@ -167,8 +167,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         {!token && (
           <div
             className={`z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4 transition-all duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
-              buttonsVisible 
-                ? "opacity-100 translate-x-0 translate-y-0" 
+              buttonsVisible
+                ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 ltr:translate-x-12 rtl:-translate-x-12 translate-y-4"
             }`}
             style={
@@ -177,8 +177,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                     // Fallback for old browsers that don't support ltr/rtl classes
                     top: "18rem", // 72 * 0.25rem = 18rem
                     right: "-7.5rem", // -120px = -7.5rem
-                    transform: buttonsVisible 
-                      ? "rotate(-90deg)" 
+                    transform: buttonsVisible
+                      ? "rotate(-90deg)"
                       : "rotate(-90deg) translateX(3rem) translateY(1rem)",
                     display: "flex",
                     alignItems: "center",
@@ -196,8 +196,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               size={"sm"}
               variant="defaultNoGradient"
               className={`bg-secondary-mint-green rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu ${
-                buttonsVisible 
-                  ? "scale-100 rotate-0 shadow-lg" 
+                buttonsVisible
+                  ? "scale-100 rotate-0 shadow-lg"
                   : "scale-75 rotate-12 shadow-none"
               }`}
             >
@@ -208,8 +208,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               size={"sm"}
               variant="defaultNoGradient"
               className={`bg-secondary-burgundy rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] delay-150 transform-gpu ${
-                buttonsVisible 
-                  ? "scale-100 rotate-0 shadow-lg" 
+                buttonsVisible
+                  ? "scale-100 rotate-0 shadow-lg"
                   : "scale-75 -rotate-12 shadow-none"
               }`}
             >
@@ -348,7 +348,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               <Menu size={24} />
             </Button>
 
-            <div className="ltr:ml-8 rtl:mr-8 hidden sm:block">
+            <div className="ltr:ml-0 rtl:mr-0 hidden sm:block">
               {children ? children : <NavbarButton />}
             </div>
           </div>
