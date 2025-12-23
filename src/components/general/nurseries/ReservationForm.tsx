@@ -843,28 +843,40 @@ const ReservationForm = ({
     if (!selectedApiPlan) return TIME_OPTIONS;
     const { enrollment_type } = selectedApiPlan;
 
+    const getUnitLabel = (count: number, type: string) => {
+      let unitKey = type;
+      if (locale === "ar") {
+        if (count >= 3 && count <= 10) {
+          unitKey = `${type}s`;
+        }
+      } else if (count > 1) {
+        unitKey = `${type}s`;
+      }
+      return t(`units.${unitKey as any}`);
+    };
+
     switch (enrollment_type) {
       case "hour":
         return TIME_OPTIONS;
       case "day":
         return Array.from(
           { length: 30 },
-          (_, i) => `${i + 1} ${t("units.day")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "day")}`
         );
       case "week":
         return Array.from(
           { length: 4 },
-          (_, i) => `${i + 1} ${t("units.week")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "week")}`
         );
       case "month":
         return Array.from(
           { length: 12 },
-          (_, i) => `${i + 1} ${t("units.month")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "month")}`
         );
       default:
         return TIME_OPTIONS;
     }
-  }, [selectedApiPlan, t]);
+  }, [selectedApiPlan, t, locale]);
 
   // -- Effects --
 
@@ -919,10 +931,17 @@ const ReservationForm = ({
   useEffect(() => {
     if (selectedApiPlan) {
       const { enrollment_type, count } = selectedApiPlan;
-      const tUnits = {
-        day: locale === "ar" ? t("units.day") : "Day",
-        week: locale === "ar" ? t("units.week") : "Week",
-        month: locale === "ar" ? t("units.month") : "Month",
+
+      const getLabel = (c: number, type: string) => {
+        let unitKey = type;
+        if (locale === "ar") {
+          if (c >= 3 && c <= 10) {
+            unitKey = `${type}s`;
+          }
+        } else if (c > 1) {
+          unitKey = `${type}s`;
+        }
+        return t(`units.${unitKey as any}`);
       };
 
       switch (enrollment_type) {
@@ -931,16 +950,20 @@ const ReservationForm = ({
           setToTime("16:00");
           break;
         case "day":
-          setFromTime(`1 ${tUnits.day}`);
-          setToTime(`${count} ${tUnits.day}`);
+          setFromTime(`1 ${getLabel(1, "day")}`);
+          setToTime(`${count} ${getLabel(count, "day")}`);
           break;
         case "week":
-          setFromTime(`1 ${tUnits.week}`);
-          setToTime(`${count} ${tUnits.week}`);
+          setFromTime(`1 ${getLabel(1, "week")}`);
+          setToTime(`${count} ${getLabel(count, "week")}`);
           break;
         case "month":
-          setFromTime(`1 ${tUnits.month}`);
-          setToTime(`${count} ${tUnits.month}`);
+          setFromTime(`1 ${getLabel(1, "month")}`);
+          setToTime(`${count} ${getLabel(count, "month")}`);
+          break;
+        case "year":
+          setFromTime(`1 ${getLabel(1, "year")}`);
+          setToTime(`${count} ${getLabel(count, "year")}`);
           break;
         default:
           setFromTime("");

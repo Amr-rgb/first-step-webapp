@@ -349,14 +349,17 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                                 {locale === "ar" ? "المدة:" : "Duration:"}
                               </span>{" "}
                               {plan.count}{" "}
-                              {plan.enrollment_type === "hour" &&
-                                (locale === "ar" ? "ساعة" : "hours")}
-                              {plan.enrollment_type === "day" &&
-                                (locale === "ar" ? "يوم" : "days")}
-                              {plan.enrollment_type === "month" &&
-                                (locale === "ar" ? "شهر" : "months")}
-                              {plan.enrollment_type === "year" &&
-                                (locale === "ar" ? "سنة" : "years")}
+                              {(() => {
+                                let unitKey = plan.enrollment_type;
+                                if (locale === "ar") {
+                                  if (plan.count >= 3 && plan.count <= 10) {
+                                    unitKey = `${plan.enrollment_type}s`;
+                                  }
+                                } else if (plan.count > 1) {
+                                  unitKey = `${plan.enrollment_type}s`;
+                                }
+                                return t(`plans.units.${unitKey}`);
+                              })()}
                             </div>
                           )}
                         </div>

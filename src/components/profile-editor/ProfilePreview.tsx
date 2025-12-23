@@ -72,26 +72,33 @@ const PlansPreview = ({ locale }: { locale: string }) => {
   const getEnrollmentTypeLabel = (type: string) => {
     switch (type) {
       case "hour":
-        return locale === "ar" ? "ساعة" : "Hour";
+        return t("plans.units.hour");
       case "day":
-        return locale === "ar" ? "يوم" : "Day";
+        return t("plans.units.day");
+      case "week":
+        return t("plans.units.week");
       case "month":
-        return locale === "ar" ? "شهر" : "Month";
+        return t("plans.units.month");
       case "year":
-        return locale === "ar" ? "سنة" : "Year";
+        return t("plans.units.year");
       default:
         return type;
     }
   };
 
   const getDurationLabel = (count: number, type: string) => {
-    const typeLabel = getEnrollmentTypeLabel(type);
     if (count === 1) {
-      return typeLabel;
+      return getEnrollmentTypeLabel(type);
     }
-    return `${count} ${typeLabel}${
-      locale === "ar" ? "ات" : count > 1 ? "s" : ""
-    }`;
+
+    let unitKey = `${type}s`;
+    if (locale === "ar") {
+      const isPluralRange = count >= 3 && count <= 10;
+      unitKey = isPluralRange ? `${type}s` : type;
+    }
+
+    const label = t(`plans.units.${unitKey as any}`);
+    return `${count} ${label}`;
   };
 
   const selectedBranch = typedBranches.find((b) => b.id === selectedBranchId);

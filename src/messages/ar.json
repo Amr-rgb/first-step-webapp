@@ -2164,7 +2164,19 @@
         "endAgeMustBeGreater": "العمر النهائي يجب أن يكون أكبر من العمر الابتدائي",
         "enrollmentTypeRequired": "نوع التسجيل مطلوب",
         "countMustBePositive": "العدد يجب أن يكون أكبر من 0",
-        "priceMustBePositive": "السعر يجب أن يكون أكبر من 0"
+        "priceMustBePositive": "السعر يجب أن يكون أكبر من 0",
+        "units": {
+          "hour": "ساعة",
+          "hours": "ساعات",
+          "day": "يوم",
+          "days": "أيام",
+          "week": "أسبوع",
+          "weeks": "أسابيع",
+          "month": "شهر",
+          "months": "شهور",
+          "year": "سنة",
+          "years": "سنوات"
+        }
       }
     },
     "tables": {
@@ -2392,7 +2404,9 @@
         "week": "أسبوع",
         "weeks": "أسابيع",
         "month": "شهر",
-        "months": "أشهر"
+        "months": "شهور",
+        "year": "سنة",
+        "years": "سنوات"
       },
       "noPricingPlans": "لا توجد خطط تسعير متاحة لهذا الفرع",
       "paymentDetails": "تفاصيل الدفع",
@@ -2672,7 +2686,19 @@
       "bookNow": "احجز الآن",
       "ageRange": "الفئة العمرية",
       "duration": "المدة",
-      "price": "السعر"
+      "price": "السعر",
+      "units": {
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "day": "يوم",
+        "days": "أيام",
+        "week": "أسبوع",
+        "weeks": "أسابيع",
+        "month": "شهر",
+        "months": "شهور",
+        "year": "سنة",
+        "years": "سنوات"
+      }
     }
   },
   "branches": {
@@ -2875,9 +2901,16 @@
       "hourly": "بالساعة"
     },
     "units": {
-      "month": "شهر",
+      "hour": "ساعة",
+      "hours": "ساعات",
+      "day": "يوم",
+      "days": "أيام",
       "week": "أسبوع",
-      "day": "يوم"
+      "weeks": "أسابيع",
+      "month": "شهر",
+      "months": "شهور",
+      "year": "سنة",
+      "years": "سنوات"
     },
     "labels": {
       "numberOfHours": "عدد الساعات",
