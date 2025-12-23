@@ -36,8 +36,11 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
 
   const isActive = (path: string) => pathname === path;
 
+  const [isMounted, setIsMounted] = useState(false);
+
   // Check if we need old browser fallback and show buttons with animation
   useEffect(() => {
+    setIsMounted(true);
     const isOld = isOldBrowser();
     setNeedsOldBrowserFallback(isOld);
 
@@ -300,80 +303,85 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         </div>
       )}
 
-      {/* Mobile Menu Overlay - Fixed to whole viewport */}
-      <div
-        ref={overlayRef}
-        className={`z-10000 fixed top-0 left-0 w-screen h-screen bg-black/50 transition-opacity duration-300 ${
-          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={forceCloseMenu}
-        aria-hidden="true"
-        style={{
-          // Fallback for old browsers
-          opacity: isMenuOpen ? 1 : 0,
-          pointerEvents: isMenuOpen ? "auto" : "none",
-          width: "100vw",
-          height: "100vh",
-        }}
-      />
-
-      {/* Enhanced slide-out menu with ref */}
-      <div
-        ref={menuRef}
-        className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isMenuOpen
-            ? "translate-x-0"
-            : "ltr:translate-x-full rtl:-translate-x-full"
-        }`}
-        style={{
-          height: "100vh",
-          // Fallback for old browsers
-          transform: isMenuOpen
-            ? "translateX(0)"
-            : isRtl
-            ? "translateX(-100%)"
-            : "translateX(100%)",
-        }}
-      >
-        {/* Menu header with enhanced close button */}
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
-          <button
-            ref={closeButtonRef}
+      {/* Mobile Menu - Only render on client to avoid flash on reload */}
+      {isMounted && (
+        <>
+          {/* Mobile Menu Overlay - Fixed to whole viewport */}
+          <div
+            ref={overlayRef}
+            className={`z-10000 fixed top-0 left-0 w-screen h-screen bg-black/50 transition-opacity duration-300 ${
+              isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
             onClick={forceCloseMenu}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-            aria-label="Close menu"
+            aria-hidden="true"
+            style={{
+              // Fallback for old browsers
+              opacity: isMenuOpen ? 1 : 0,
+              pointerEvents: isMenuOpen ? "auto" : "none",
+              width: "100vw",
+              height: "100vh",
+            }}
+          />
+
+          {/* Enhanced slide-out menu with ref */}
+          <div
+            ref={menuRef}
+            className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+              isMenuOpen
+                ? "translate-x-0"
+                : "ltr:translate-x-full rtl:-translate-x-full"
+            }`}
+            style={{
+              height: "100vh",
+              // Fallback for old browsers
+              transform: isMenuOpen
+                ? "translateX(0)"
+                : isRtl
+                ? "translateX(-100%)"
+                : "translateX(100%)",
+            }}
           >
-            <X size={20} />
-          </button>
-        </div>
+            {/* Menu header with enhanced close button */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
+              <button
+                ref={closeButtonRef}
+                onClick={forceCloseMenu}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-        {/* Menu items */}
-        <div className="flex flex-col h-[calc(100vh-65px)] overflow-y-auto custom-scrollbar">
-          <ul className="pt-2 pb-4">
-            {links.map((link) => (
-              <li key={link.id}>
-                <Link
-                  href={link.path}
-                  className={`block px-6 py-4 text-base transition-colors duration-200 ${
-                    isActive(link.path)
-                      ? "font-bold text-emerald-600 bg-emerald-50"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                  onClick={forceCloseMenu}
-                >
-                  {link.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
+            {/* Menu items */}
+            <div className="flex flex-col h-[calc(100vh-65px)] overflow-y-auto custom-scrollbar">
+              <ul className="pt-2 pb-4">
+                {links.map((link) => (
+                  <li key={link.id}>
+                    <Link
+                      href={link.path}
+                      className={`block px-6 py-4 text-base transition-colors duration-200 ${
+                        isActive(link.path)
+                          ? "font-bold text-emerald-600 bg-emerald-50"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                      onClick={forceCloseMenu}
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
 
-          {/* Call to action button */}
-          <div className="px-4 pb-4 mt-auto">
-            {children ? children : <NavbarButton />}
+              {/* Call to action button */}
+              <div className="px-4 pb-4 mt-auto">
+                {children ? children : <NavbarButton />}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 };
