@@ -13,7 +13,9 @@ export default function LocaleProvider({ children }: LocaleProviderProps) {
   useEffect(() => {
     // Extract locale from pathname
     const localeMatch = pathname?.match(/^\/(\w+)/);
-    const locale = localeMatch ? localeMatch[1] : "en";
+    const potentialLocale = localeMatch ? localeMatch[1] : null;
+    const validLocales = ["ar", "en"] as const;
+    const locale: string = validLocales.includes(potentialLocale as any) ? potentialLocale! : "ar";
 
     // Update HTML attributes
     const htmlElement = document.documentElement;

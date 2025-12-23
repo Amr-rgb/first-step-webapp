@@ -141,9 +141,15 @@ export const createChildStep1Schema = (locale: "ar" | "en" = "ar") =>
     kinship: z.string().min(2, {
       message: getErrorMessage("general-field-required", locale),
     }),
-    childNationalNumber: z.string().length(10, {
-      message: getErrorMessage("general-field-required", locale),
-    }),
+    childNationalNumber: z
+      .string()
+      .refine(
+        (val) => val === "" || val.length === 10,
+        {
+          message: locale === "ar" ? "الرقم الوطني يجب أن يكون 10 أرقام أو يترك فارغاً" : "National number must be 10 digits or left empty",
+        }
+      )
+      .optional(),
     childImage: z
       .instanceof(File, {
         message: getErrorMessage("general-field-required", locale),

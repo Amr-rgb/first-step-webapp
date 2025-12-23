@@ -799,6 +799,115 @@
     }
   },
   "dashboard": {
+    "shared": {
+      "children": {
+        "form": {
+          "buttons": {
+            "add": "Add Child",
+            "edit": "Edit Child Profile",
+            "cancel": "Cancel",
+            "save": "Save Changes"
+          },
+          "sections": {
+            "childInfo": "Child Information",
+            "chronicDiseases": "Chronic Diseases",
+            "allergies": "Allergies",
+            "recommendations": "Child-Specific Recommendations",
+            "authorizedPersons": "Authorized Persons"
+          },
+          "options": {
+            "yes": "Yes",
+            "no": "No"
+          },
+          "diseases": {
+            "name": {
+              "label": "Disease Name",
+              "placeholder": "Disease Name"
+            },
+            "medication": {
+              "label": "Medication",
+              "placeholder": "Medication"
+            },
+            "procedures": {
+              "label": "Emergency Procedures",
+              "placeholder": "Emergency Procedures"
+            },
+            "add": "Add Another Disease"
+          },
+          "allergies": {
+            "type": {
+              "label": "Allergy Type",
+              "placeholder": "Allergy Type"
+            },
+            "causes": {
+              "label": "Allergy Causes",
+              "placeholder": "Allergy Causes"
+            },
+            "procedures": {
+              "label": "Emergency Procedures",
+              "placeholder": "Emergency Procedures"
+            },
+            "add": "Add Another Allergy Type"
+          },
+          "childNationalNumber": {
+            "label": "Child National Number",
+            "placeholder": "Enter child national number"
+          },
+          "kinship": {
+            "label": "Relationship",
+            "placeholder": "e.g., Mother, Father, Brother, Sister..."
+          },
+          "gender": {
+            "label": "Child's Gender",
+            "male": "Boy",
+            "female": "Girl"
+          },
+          "qrCode": {
+            "label": "QR code"
+          },
+          "childImage": {
+            "label": "Child Photo",
+            "changePhoto": "Change Photo"
+          },
+          "authorizedPersons": {
+            "name": {
+              "label": "Authorized Person's Name",
+              "placeholder": "Enter authorized person's full name"
+            },
+            "idNumber": {
+              "label": "Authorized Person's ID Number",
+              "placeholder": "Enter ID number"
+            },
+            "add": "Add Another Authorized Person"
+          },
+          "comments": {
+            "label": "Any comments or notes?",
+            "placeholder": "Enter any additional notes"
+          },
+          "recommendations": {
+            "description": {
+              "label": "Describe your child in 3 words",
+              "placeholder": "Enter 3 descriptive words"
+            },
+            "likes": {
+              "label": "Things your child likes",
+              "placeholder": "Enter things your child enjoys"
+            },
+            "recommendations": {
+              "label": "Do you have any recommendations regarding your child?",
+              "placeholder": "Enter any special recommendations"
+            }
+          },
+          "errors": {
+            "fieldRequired": "This field is required",
+            "fileSizeError": "File Size Error",
+            "fileSizeMessage": "File size must be less than 5MB",
+            "fileTypeError": "Unsupported File Type",
+            "fileTypeMessage": "Please select a PNG or JPG image"
+          }
+        }
+      }
+    },
     "sidebar": {
       "parent": {
         "home": "Home",
@@ -832,6 +941,13 @@
         "team": "Team",
         "chat": "Chat",
         "discount-coupons": "Discount Coupons"
+      },
+      "actions": {
+        "createParentAccounts": "Create Parent Accounts",
+        "registerChildrenNow": "Register Children Now",
+        "haveSubscription": "Have a subscription?",
+        "findNursery": "Find your child's nursery or center",
+        "findNurseryShort": "Find a nursery"
       }
     },
     "account": {
@@ -1215,6 +1331,21 @@
         "error": "Error: {error}",
         "unknownError": "Unknown error",
         "noChildren": "No children found.",
+        "addTitle": "Add Child",
+        "editTitle": "Edit Child Profile",
+        "viewTitle": "View Child Profile",
+        "buttons": {
+          "add": "Add Child",
+          "edit": "Edit Child Profile",
+          "cancel": "Cancel",
+          "save": "Save Changes"
+        },
+        "messages": {
+          "addSuccess": "Child added successfully!",
+          "editSuccess": "Child information updated successfully!",
+          "addSuccessDescription": "Child has been added successfully!",
+          "editSuccessDescription": "Child information has been updated successfully!"
+        },
         "card": {
           "birthday": "Birthday:",
           "gender": "Gender:",

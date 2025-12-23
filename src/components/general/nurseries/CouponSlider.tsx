@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import CouponCard from "@/components/coupons/CouponCard";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 
 interface Coupon {
@@ -39,6 +39,8 @@ interface CouponSliderProps {
 
 export default function CouponSlider({ coupons }: CouponSliderProps) {
   const t = useTranslations("nurseries");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   const sortedCoupons = React.useMemo(() => {
     return [...coupons].sort((a, b) => b.id - a.id);
@@ -56,14 +58,15 @@ export default function CouponSlider({ coupons }: CouponSliderProps) {
             opts={{
               align: "start",
               loop: true,
+              direction: isRTL ? "rtl" : "ltr",
             }}
             className="w-full"
           >
-            <CarouselContent className="-ml-4">
+            <CarouselContent className={isRTL ? "-mr-4" : "-ml-4"}>
               {sortedCoupons.map((coupon) => (
                 <CarouselItem
                   key={coupon.id}
-                  className="pl-4 basis-[85%] sm:basis-[65%] md:basis-1/2 lg:basis-[43%] xl:basis-1/3"
+                  className={`${isRTL ? "pr-4" : "pl-4"} basis-[85%] sm:basis-[65%] md:basis-1/2 lg:basis-[43%] xl:basis-1/3`}
                 >
                   <div className="p-1">
                     <CouponCard
@@ -79,8 +82,17 @@ export default function CouponSlider({ coupons }: CouponSliderProps) {
               ))}
             </CarouselContent>
             <div className="hidden md:block">
-              <CarouselPrevious className="left-0 -translate-x-1/2" />
-              <CarouselNext className="right-0 translate-x-1/2" />
+              {isRTL ? (
+                <>
+                  <CarouselNext className="right-0 translate-x-1/2" />
+                  <CarouselPrevious className="left-0 -translate-x-1/2" />
+                </>
+              ) : (
+                <>
+                  <CarouselPrevious className="left-0 -translate-x-1/2" />
+                  <CarouselNext className="right-0 translate-x-1/2" />
+                </>
+              )}
             </div>
           </Carousel>
         </div>

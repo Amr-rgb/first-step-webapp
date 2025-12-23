@@ -25,38 +25,37 @@ const Children = () => {
     const childrenArray = Array.isArray(children) ? children : children?.data;
     if (!Array.isArray(childrenArray)) return [];
 
-    return childrenArray.flatMap((child: any): Child[] => {
+    return childrenArray.map((child: any): Child => {
       const enrollments = Array.isArray(child?.enrollments)
         ? child.enrollments
         : [];
 
+      // If no enrollments, show child with pending status
       if (enrollments.length === 0) {
-        return [
-          {
-            id: child.id,
-            child_name: child.child_name,
-            birthday_date: child.birthday_date,
-            parent_name: child.parent_name || child.user?.name || "",
-            branch_name: "",
-            enrollments: [{ status: "pending" }],
-          },
-        ];
-      }
-
-      return enrollments.map(
-        (enrollment: any): Child => ({
+        return {
           id: child.id,
           child_name: child.child_name,
           birthday_date: child.birthday_date,
-          parent_name:
-            enrollment.parent_name ||
-            child.parent_name ||
-            child.user?.name ||
-            "",
-          branch_name: enrollment.branch_name || "",
-          enrollments: [{ status: enrollment.status || "pending" }],
-        })
-      );
+          parent_name: child.parent_name || child.user?.name || "",
+          branch_name: "",
+          enrollments: [{ status: "pending" }],
+        };
+      }
+
+      // Show only the most recent enrollment (first one in array)
+      const latestEnrollment = enrollments[0];
+      return {
+        id: child.id,
+        child_name: child.child_name,
+        birthday_date: child.birthday_date,
+        parent_name:
+          latestEnrollment.parent_name ||
+          child.parent_name ||
+          child.user?.name ||
+          "",
+        branch_name: latestEnrollment.branch_name || "",
+        enrollments: [{ status: latestEnrollment.status || "pending" }],
+      };
     });
   }, [children]);
 
@@ -90,6 +89,7 @@ const Children = () => {
           globalFilterValue={searchQuery}
           setGlobalFilterValue={setSearchQuery}
           isLoading={isLoading}
+          getRowId={(row) => String(row.id)}
         />
       </div>
     </div>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useEventsStore } from "@/store/eventsStore";
 import { useOccasions } from "@/hooks/useOccasions";
+import DatePicker from "@/components/general/DatePicker";
 
 type CardProps = {
   id: string;
@@ -33,7 +34,7 @@ const Card = ({
 
   const [isEditing, setIsEditing] = useState(isNew);
   const [newTitle, setNewTitle] = useState(title);
-  const [newDate, setNewDate] = useState(rawDate.toISOString().split("T")[0]);
+  const [newDate, setNewDate] = useState<Date | undefined>(rawDate);
 
   // Focus on title input when entering edit mode
   useEffect(() => {
@@ -47,7 +48,9 @@ const Card = ({
   const { updateOccasion, deleteOccasion } = useOccasions();
 
   const handleSave = () => {
-    const updated = { title: newTitle, date: new Date(newDate) };
+    if (!newDate) return;
+    
+    const updated = { title: newTitle, date: newDate };
 
     if (type === "occasion") {
       updateOccasion.mutate({ id, updates: updated });
@@ -70,7 +73,7 @@ const Card = ({
   const handleCancel = () => {
     setIsEditing(false);
     setNewTitle(title);
-    setNewDate(rawDate.toISOString().split("T")[0]);
+    setNewDate(rawDate);
     onEditComplete?.();
   };
 
@@ -118,11 +121,10 @@ const Card = ({
             className="text-sm"
             placeholder="Title"
           />
-          <Input
-            type="date"
+          <DatePicker
             value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            className="text-sm"
+            onChange={setNewDate}
+            standalone
           />
           <div className="flex justify-end gap-2 pt-1">
             <button

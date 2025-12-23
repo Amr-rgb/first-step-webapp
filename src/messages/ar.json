@@ -795,6 +795,115 @@
     }
   },
   "dashboard": {
+    "shared": {
+      "children": {
+        "form": {
+          "buttons": {
+            "add": "إضافة الطفل",
+            "edit": "تعديل ملف الطفل",
+            "cancel": "إلغاء",
+            "save": "حفظ التعديلات"
+          },
+          "sections": {
+            "childInfo": "بيانات الطفل",
+            "chronicDiseases": "الأمراض المزمنة",
+            "allergies": "الحساسية",
+            "recommendations": "توصيات تتعلق بالطفل",
+            "authorizedPersons": "الأشخاص المفوضة"
+          },
+          "options": {
+            "yes": "نعم",
+            "no": "لا"
+          },
+          "diseases": {
+            "name": {
+              "label": "اسم المرض",
+              "placeholder": "اسم المرض"
+            },
+            "medication": {
+              "label": "الدواء",
+              "placeholder": "الدواء"
+            },
+            "procedures": {
+              "label": "إجراءات الطوارئ",
+              "placeholder": "إجراءات الطوارئ"
+            },
+            "add": "إضافة مرض آخر"
+          },
+          "allergies": {
+            "type": {
+              "label": "نوع الحساسية",
+              "placeholder": "نوع الحساسية"
+            },
+            "causes": {
+              "label": "مسببات الحساسية",
+              "placeholder": "مسببات الحساسية"
+            },
+            "procedures": {
+              "label": "إجراءات الطوارئ",
+              "placeholder": "إجراءات الطوارئ"
+            },
+            "add": "إضافة نوع حساسية آخر"
+          },
+          "childNationalNumber": {
+            "label": "رقم هوية الطفل",
+            "placeholder": "أدخل رقم هوية الطفل"
+          },
+          "kinship": {
+            "label": "صلة القرابة",
+            "placeholder": "مثال: الأم، الأب، الأخ، الأخت..."
+          },
+          "gender": {
+            "label": "جنس الطفل",
+            "male": "ولد",
+            "female": "بنت"
+          },
+          "qrCode": {
+            "label": "QR code"
+          },
+          "childImage": {
+            "label": "صورة الطفل",
+            "changePhoto": "تغيير الصورة"
+          },
+          "authorizedPersons": {
+            "name": {
+              "label": "اسم الشخص المفوض",
+              "placeholder": "أدخل اسم الشخص المفوض الكامل"
+            },
+            "idNumber": {
+              "label": "رقم هوية الشخص المفوض",
+              "placeholder": "أدخل رقم الهوية"
+            },
+            "add": "إضافة شخص مفوض آخر"
+          },
+          "comments": {
+            "label": "هل لديك أي تعليق أو ملاحظة",
+            "placeholder": "أدخل أي ملاحظات إضافية"
+          },
+          "recommendations": {
+            "description": {
+              "label": "صف لنا طفلك في 3 كلمات",
+              "placeholder": "أدخل 3 كلمات وصفية"
+            },
+            "likes": {
+              "label": "أشياء يحبها طفلك",
+              "placeholder": "أدخل الأشياء التي يستمتع بها طفلك"
+            },
+            "recommendations": {
+              "label": "هل لديك أي توصيات تتعلق بطفلك؟",
+              "placeholder": "أدخل أي توصيات خاصة"
+            }
+          },
+          "errors": {
+            "fieldRequired": "هذا الحقل مطلوب",
+            "fileSizeError": "خطأ في حجم الملف",
+            "fileSizeMessage": "حجم الملف يجب أن يكون أقل من 5MB",
+            "fileTypeError": "نوع الملف غير مدعوم",
+            "fileTypeMessage": "يرجى اختيار صورة PNG أو JPG"
+          }
+        }
+      }
+    },
     "sidebar": {
       "parent": {
         "home": "الرئيسية",
@@ -828,6 +937,13 @@
         "team": "الفريق",
         "chat": "المحادثات",
         "discount-coupons": "كوبونات الخصم"
+      },
+      "actions": {
+        "createParentAccounts": "إنشاء حسابات أولياء الأمور",
+        "registerChildrenNow": "سجل الأطفال الآن",
+        "haveSubscription": "لديك إشتراك؟",
+        "findNursery": "اعثر على حضانة أو مركز طفلك",
+        "findNurseryShort": "اعثر على حضانة"
       }
     },
     "account": {
@@ -1210,6 +1326,21 @@
         "error": "خطأ: {error}",
         "unknownError": "خطأ غير معروف",
         "noChildren": "لم يتم العثور على أطفال.",
+        "addTitle": "إضافة طفل",
+        "editTitle": "تعديل ملف الطفل",
+        "viewTitle": "عرض ملف الطفل",
+        "buttons": {
+          "add": "إضافة الطفل",
+          "edit": "تعديل ملف الطفل",
+          "cancel": "إلغاء",
+          "save": "حفظ التعديلات"
+        },
+        "messages": {
+          "addSuccess": "تم إضافة الطفل بنجاح!",
+          "editSuccess": "تم تحديث بيانات الطفل بنجاح!",
+          "addSuccessDescription": "تمت إضافة الطفل بنجاح!",
+          "editSuccessDescription": "تم تحديث بيانات الطفل بنجاح!"
+        },
         "card": {
           "birthday": "تاريخ الميلاد:",
           "gender": "الجنس:",

@@ -10,7 +10,7 @@ import { ReservationStatus, useReservationStatus } from "./shared/status";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Child = {
-  id: number;
+  id: number | string; // Allow both number and string IDs
   child_name: string;
   birthday_date: string;
   parent_name: string;

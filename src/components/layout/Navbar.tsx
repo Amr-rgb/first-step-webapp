@@ -26,6 +26,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const token = useAuthToken();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [needsOldBrowserFallback, setNeedsOldBrowserFallback] = useState(true); // Start with true for SSR
+  const [buttonsVisible, setButtonsVisible] = useState(false); // New state for button visibility
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -33,18 +34,28 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
 
   const isActive = (path: string) => pathname === path;
 
-  // Check if we need old browser fallback
+  // Check if we need old browser fallback and show buttons with animation
   useEffect(() => {
     const isOld = isOldBrowser();
     setNeedsOldBrowserFallback(isOld);
+
+    // Show buttons with a longer delay to ensure proper rendering and smoother animation
+    const buttonTimer = setTimeout(() => {
+      setButtonsVisible(true);
+    }, 600); // Increased to 600ms for better stability
 
     // If it's a modern browser, remove the fallback styles after a short delay
     if (!isOld) {
       const timer = setTimeout(() => {
         setNeedsOldBrowserFallback(false);
       }, 100);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(buttonTimer);
+      };
     }
+
+    return () => clearTimeout(buttonTimer);
   }, []);
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -155,17 +166,25 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
       >
         {!token && (
           <div
-            className="z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4"
+            className={`z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4 transition-all duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+              buttonsVisible 
+                ? "opacity-100 translate-x-0 translate-y-0" 
+                : "opacity-0 ltr:translate-x-12 rtl:-translate-x-12 translate-y-4"
+            }`}
             style={
               needsOldBrowserFallback
                 ? {
                     // Fallback for old browsers that don't support ltr/rtl classes
                     top: "18rem", // 72 * 0.25rem = 18rem
                     right: "-7.5rem", // -120px = -7.5rem
-                    transform: "rotate(-90deg)",
+                    transform: buttonsVisible 
+                      ? "rotate(-90deg)" 
+                      : "rotate(-90deg) translateX(3rem) translateY(1rem)",
                     display: "flex",
                     alignItems: "center",
                     gap: "1rem",
+                    opacity: buttonsVisible ? 1 : 0,
+                    transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                     // RTL support for old browsers
                     left: "auto",
                   }
@@ -176,7 +195,11 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               asChild
               size={"sm"}
               variant="defaultNoGradient"
-              className="bg-secondary-mint-green rounded-[8px]"
+              className={`bg-secondary-mint-green rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu ${
+                buttonsVisible 
+                  ? "scale-100 rotate-0 shadow-lg" 
+                  : "scale-75 rotate-12 shadow-none"
+              }`}
             >
               <Link href={"/sign-up/parent"}>{t("buttons.join-parent")}</Link>
             </Button>
@@ -184,7 +207,11 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               asChild
               size={"sm"}
               variant="defaultNoGradient"
-              className="bg-secondary-burgundy rounded-[8px]"
+              className={`bg-secondary-burgundy rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] delay-150 transform-gpu ${
+                buttonsVisible 
+                  ? "scale-100 rotate-0 shadow-lg" 
+                  : "scale-75 -rotate-12 shadow-none"
+              }`}
             >
               <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>
             </Button>

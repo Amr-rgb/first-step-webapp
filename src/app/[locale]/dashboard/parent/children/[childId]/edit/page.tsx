@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ChildWrapper from "@/components/forms/dashboard/children/ChildWrapper";
 import { parentService } from "@/services/dashboardApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 const EditChildSkeleton = () => {
   return (
@@ -46,6 +47,7 @@ export default function EditChild({
   params: Promise<{ childId: string }>;
 }) {
   const meta = usePageMetadata();
+  const t = useTranslations("dashboard.parent.children");
 
   const { childId } = use(params);
 
@@ -59,7 +61,7 @@ export default function EditChild({
       <div>
         <div className="mb-3.5 flex items-center justify-between">
           <h1 className="heading-4 font-bold text-primary max-w-[39.75rem] mx-auto">
-            تعديل بيانات الطفل
+            {t("editTitle")}
           </h1>
         </div>
         <EditChildSkeleton />
@@ -139,7 +141,7 @@ export default function EditChild({
     <div>
       <div className="mb-3.5 flex items-center justify-between">
         <h1 className="heading-4 font-bold text-primary max-w-[39.75rem] mx-auto">
-          تعديل بيانات الطفل
+          {t("editTitle")}
         </h1>
       </div>
 

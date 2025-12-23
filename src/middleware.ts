@@ -6,15 +6,17 @@ const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const validLocales = ["ar", "en"];
 
   // 1. Check for existing locale in pathname
   const localeMatch = pathname.match(/^\/(\w+)/);
-  let locale = localeMatch ? localeMatch[1] : null;
+  const potentialLocale = localeMatch ? localeMatch[1] : null;
+  let locale = validLocales.includes(potentialLocale || "") ? potentialLocale : null;
 
-  // 2. If no locale in path, check cookie
+  // 2. If no valid locale in path, check cookie and redirect
   if (!locale) {
     const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
-    locale = cookieLocale || "ar"; // Default to Arabic if no cookie
+    locale = validLocales.includes(cookieLocale || "") ? cookieLocale : "ar"; // Default to Arabic if no valid cookie
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}${pathname}`;
     return NextResponse.redirect(url);

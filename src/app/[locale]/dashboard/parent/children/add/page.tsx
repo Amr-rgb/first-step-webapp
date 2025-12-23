@@ -42,11 +42,14 @@ const initialValues = {
 };
 
 export default async function AddChild() {
+  const { getTranslations } = await import("next-intl/server");
+  const t = await getTranslations("dashboard.parent.children");
+
   return (
     <div>
       <div className="mb-3.5 flex items-center justify-between">
         <h1 className="heading-4 font-bold text-primary max-w-[39.75rem] mx-auto">
-          إضافة طفل
+          {t("addTitle")}
         </h1>
       </div>
 

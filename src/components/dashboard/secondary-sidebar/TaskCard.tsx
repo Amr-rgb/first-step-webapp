@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/useTasks";
+import DatePicker from "@/components/general/DatePicker";
 
 type TaskCardProps = {
   id: string;
@@ -33,7 +34,7 @@ const TaskCard = ({
 
   const [isEditing, setIsEditing] = useState(isNew);
   const [newTitle, setNewTitle] = useState(title);
-  const [newDate, setNewDate] = useState(rawDate.toISOString().split("T")[0]);
+  const [newDate, setNewDate] = useState<Date | undefined>(rawDate);
 
   // Focus on title input when entering edit mode
   useEffect(() => {
@@ -46,12 +47,14 @@ const TaskCard = ({
   const { updateTask, deleteTask, toggleTaskDone } = useTasks();
 
   const handleSave = () => {
+    if (!newDate) return;
+    
     updateTask.mutate(
       {
         id,
         updates: {
           title: newTitle,
-          date: new Date(newDate),
+          date: newDate,
           done,
         },
       },
@@ -93,7 +96,7 @@ const TaskCard = ({
         onClick={() => {
           setIsEditing(false);
           setNewTitle(title);
-          setNewDate(rawDate.toISOString().split("T")[0]);
+          setNewDate(rawDate);
           onEditComplete?.();
         }}
       />
@@ -111,18 +114,17 @@ const TaskCard = ({
             className="text-sm"
             placeholder="Task title"
           />
-          <Input
-            type="date"
+          <DatePicker
             value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            className="text-sm"
+            onChange={setNewDate}
+            standalone
           />
           <div className="flex justify-end gap-2 pt-1">
             <button
               onClick={() => {
                 setIsEditing(false);
                 setNewTitle(title);
-                setNewDate(rawDate.toISOString().split("T")[0]);
+                setNewDate(rawDate);
                 onEditComplete?.();
               }}
               className="p-1.5 rounded hover:bg-gray-100"

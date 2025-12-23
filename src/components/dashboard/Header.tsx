@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { parentService } from "@/services/dashboardApi";
 import {
   Bell,
   Settings,
@@ -20,6 +22,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useDashboardSearch } from "@/hooks/use-dashboard-search";
 import SearchResults from "./SearchResults";
 import {
@@ -433,80 +436,7 @@ export default function Header({
 
         <NotificationDropdown />
 
-        {/* Language Switcher */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center justify-center hover:bg-gray-100 rounded-lg p-1 transition-colors">
-              <div className="flex items-center gap-x-1.5">
-                <Image
-                  src={
-                    locale === "en"
-                      ? "/assets/icons/english.svg"
-                      : "/assets/icons/arabic.svg"
-                  }
-                  alt={locale === "en" ? "English" : "Arabic"}
-                  width={20}
-                  height={20}
-                />
-                <span className="text-sm font-medium text-mid-gray">
-                  {locale === "en" ? languageT("en") : languageT("ar")}
-                </span>
-              </div>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem
-              onClick={() => {
-                if (locale !== "ar") {
-                  // pathname from usePathname() already excludes the locale prefix
-                  const newPath = `/ar${pathname}`;
-                  router.push(newPath);
-                }
-              }}
-              className={locale === "ar" ? "opacity-50" : ""}
-            >
-              <div className="flex items-center justify-between w-full gap-x-2">
-                <div className="flex items-center gap-x-2">
-                  <Image
-                    src="/assets/icons/arabic.svg"
-                    alt="Arabic"
-                    width={20}
-                    height={20}
-                  />
-                  <span className="text-sm font-medium">{languageT("ar")}</span>
-                </div>
-                {locale === "ar" && (
-                  <span className="text-xs text-primary">✓</span>
-                )}
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                if (locale !== "en") {
-                  // pathname from usePathname() already excludes the locale prefix
-                  const newPath = `/en${pathname}`;
-                  router.push(newPath);
-                }
-              }}
-              className={locale === "en" ? "opacity-50" : ""}
-            >
-              <div className="flex items-center justify-between w-full gap-x-2">
-                <div className="flex items-center gap-x-2">
-                  <Image
-                    src="/assets/icons/english.svg"
-                    alt="English"
-                    width={20}
-                    height={20}
-                  />
-                  <span className="text-sm font-medium">{languageT("en")}</span>
-                </div>
-                {locale === "en" && (
-                  <span className="text-xs text-primary">✓</span>
-                )}
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DashboardLanguageSwitcher />
 
         {/* Settings Dropdown Menu */}
         <DropdownMenu>
@@ -587,5 +517,68 @@ export default function Header({
         </button>
       </div>
     </header>
+  );
+}
+
+function DashboardLanguageSwitcher() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
+  const languageT = useTranslations("language");
+  const language = locale === "en" ? languageT("en") : languageT("ar");
+  const iconSrc =
+    locale === "en" ? "/assets/icons/english.svg" : "/assets/icons/arabic.svg";
+
+  const toggleLanguage = (newLocale: "ar" | "en") => {
+    // Use the i18n pathname (without locale) and let the router handle locale switching
+    router.replace(pathname, { locale: newLocale });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center justify-center hover:bg-gray-100 rounded-lg p-1 transition-colors">
+          <div className="flex items-center gap-x-1.5">
+            <Image src={iconSrc} alt="language" width={20} height={20} />
+            <span className="text-sm font-medium text-mid-gray">{language}</span>
+          </div>
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem onClick={() => toggleLanguage("ar")}>
+          <div className="flex items-center justify-between w-full gap-x-2">
+            <div className="flex items-center gap-x-2">
+              <Image
+                src="/assets/icons/arabic.svg"
+                alt="arabic"
+                width={20}
+                height={20}
+              />
+              <span className="text-sm font-medium">{languageT("ar")}</span>
+            </div>
+            {locale === "ar" && (
+              <span className="text-xs text-primary">✓</span>
+            )}
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => toggleLanguage("en")}>
+          <div className="flex items-center justify-between w-full gap-x-2">
+            <div className="flex items-center gap-x-2">
+              <Image
+                src="/assets/icons/english.svg"
+                alt="english"
+                width={20}
+                height={20}
+              />
+              <span className="text-sm font-medium">{languageT("en")}</span>
+            </div>
+            {locale === "en" && (
+              <span className="text-xs text-primary">✓</span>
+            )}
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

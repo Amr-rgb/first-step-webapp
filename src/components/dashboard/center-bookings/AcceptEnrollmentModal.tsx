@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import DatePicker from "@/components/general/DatePicker";
 
 interface AcceptEnrollmentModalProps {
   open: boolean;
@@ -32,28 +33,33 @@ export const AcceptEnrollmentModal = ({
   enrollmentType = "",
 }: AcceptEnrollmentModalProps) => {
   const t = useTranslations("dashboard.center-bookings");
-  const [startingDate, setStartingDate] = useState("");
+  const [startingDate, setStartingDate] = useState<Date | undefined>(undefined);
   const [startingTime, setStartingTime] = useState("");
-  const [dayString, setDayString] = useState("");
+  const [dayString, setDayString] = useState<Date | undefined>(undefined);
 
   const isHourly = enrollmentType === "hour";
 
   const handleConfirm = () => {
     if (isHourly) {
       if (startingTime && dayString) {
-        onConfirm({ startingTime, dayString });
+        onConfirm({ 
+          startingTime, 
+          dayString: dayString.toISOString().split("T")[0] 
+        });
       }
     } else {
       if (startingDate) {
-        onConfirm({ startingDate });
+        onConfirm({ 
+          startingDate: startingDate.toISOString().split("T")[0] 
+        });
       }
     }
   };
 
   const handleClose = () => {
-    setStartingDate("");
+    setStartingDate(undefined);
     setStartingTime("");
-    setDayString("");
+    setDayString(undefined);
     onOpenChange(false);
   };
 
@@ -73,12 +79,11 @@ export const AcceptEnrollmentModal = ({
             <>
               <div className="space-y-2">
                 <Label htmlFor="day_string">التاريخ</Label>
-                <Input
-                  id="day_string"
-                  type="date"
+                <DatePicker
                   value={dayString}
-                  onChange={(e) => setDayString(e.target.value)}
-                  required
+                  onChange={setDayString}
+                  standalone
+                  allowFuture={true}
                 />
               </div>
               <div className="space-y-2">
@@ -95,12 +100,11 @@ export const AcceptEnrollmentModal = ({
           ) : (
             <div className="space-y-2">
               <Label htmlFor="starting_date">{t("fields.startDay")}</Label>
-              <Input
-                id="starting_date"
-                type="date"
+              <DatePicker
                 value={startingDate}
-                onChange={(e) => setStartingDate(e.target.value)}
-                required
+                onChange={setStartingDate}
+                standalone
+                allowFuture={true}
               />
             </div>
           )}
