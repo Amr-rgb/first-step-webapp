@@ -27,7 +27,7 @@ const NavbarButton = () => {
   }
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex gap-4 items-center ltr:ml-2 rtl:mr-2">
       {!token ? (
         <>
           {!isSignInPage && (
