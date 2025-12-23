@@ -11,12 +11,14 @@ export default function middleware(request: NextRequest) {
   // 1. Check for existing locale in pathname
   const localeMatch = pathname.match(/^\/(\w+)/);
   const potentialLocale = localeMatch ? localeMatch[1] : null;
-  let locale = validLocales.includes(potentialLocale || "") ? potentialLocale : null;
+  let locale = validLocales.includes(potentialLocale || "")
+    ? potentialLocale
+    : null;
 
   // 2. If no valid locale in path, check cookie and redirect
   if (!locale) {
     const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
-    locale = validLocales.includes(cookieLocale || "") ? cookieLocale : "ar"; // Default to Arabic if no valid cookie
+    locale = validLocales.find((l) => l === cookieLocale) || "ar"; // Default to Arabic if no valid cookie
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}${pathname}`;
     return NextResponse.redirect(url);
