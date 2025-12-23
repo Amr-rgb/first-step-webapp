@@ -14,12 +14,16 @@
         "path": "/services"
       },
       "nurseries": {
-        "title": "Nurseries",
+        "title": "Centers",
         "path": "/nurseries"
       },
       "coupon-codes": {
         "title": "Offers & Coupons",
         "path": "/offers-and-coupons"
+      },
+      "consultations": {
+        "title": "Consultations",
+        "path": "/consultations"
       },
       "blog": {
         "title": "Blog",
@@ -1247,7 +1251,7 @@
         "subtitle": "Register children's attendance and departure easily",
         "codeLabel": "Click the button below to activate",
         "downloadApp": "Share the app with parents",
-        "attendanceTitle": "Attendance Records",
+        "attendanceTitle": "Attendance & Departure Records",
         "buttons": {
           "generate": "Generate Code",
           "generating": "Generating..."
@@ -1266,8 +1270,10 @@
           "date": "Date",
           "arrivalTime": "Arrival Time",
           "departureTime": "Departure Time",
+          "temperature": "Temperature",
           "program": "Program",
           "branch": "Branch",
+          "showAll": "Show All",
           "noData": "No attendance records yet"
         },
         "modal": {
@@ -2930,6 +2936,7 @@
       "cancel": "Cancel",
       "submit": "Submit Offer to Website",
       "archive": "Archive",
+      "restore": "Restore Offer",
       "permanentDelete": "Permanent Delete",
       "processing": "Processing...",
       "saving": "Saving..."
@@ -2979,15 +2986,19 @@
     },
     "dialog": {
       "confirmDelete": {
-        "title": "Confirm Deletion",
-        "message": "Are you sure you want to delete this offer?",
-        "archiveOption": "Archive offer (can be restored later)",
-        "deleteOption": "Permanent delete (cannot be restored)"
+        "title": "Manage Offer Status",
+        "message": "How do you want to process this offer?",
+        "archiveTitle": "Archive Offer",
+        "archiveOption": "The offer will be hidden from the website but can be restored later from the deleted list.",
+        "deleteTitle": "Permanent Delete",
+        "deleteOption": "The offer will be permanently removed. This action cannot be undone."
       }
     },
     "toast": {
       "archiveSuccess": "Offer archived successfully",
       "archiveError": "Error occurred during archiving",
+      "restoreSuccess": "Offer restored successfully",
+      "restoreError": "Error occurred during restoration",
       "deleteSuccess": "Offer permanently deleted",
       "deleteError": "Error occurred during deletion",
       "createSuccess": "Offer added successfully",
@@ -2996,6 +3007,229 @@
       "imageLimit": "You can upload a maximum of 10 images"
     },
     "forLimitedTime": "For Limited Time",
+    "location": "Location",
     "noImage": "No Image"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "availableBalance": "Available Balance",
+    "cumulativeBalance": "Cumulative Balance",
+    "canWithdraw": "You can request withdrawal",
+    "dailyChanges": "Daily Balance Changes",
+    "dateRange": "From {from} to {to}",
+    "tablePlaceholder": "Withdrawal / Transaction Records",
+    "showBalanceHistory": "Show Balance History",
+    "showWithdrawHistory": "Show Withdrawal History",
+    "requestWithdraw": "Request Withdrawal",
+    "filters": {
+      "all": "All",
+      "accepted": "Paid",
+      "pending": "Pending Review",
+      "rejected": "Rejected"
+    },
+    "balanceHistory": {
+      "title": "Balance History",
+      "headers": {
+        "enrollmentId": "Subscription ID",
+        "paymentDate": "Payment Date & Time",
+        "branch": "Branch",
+        "parentName": "Parent Name",
+        "balanceBefore": "Balance Before",
+        "amount": "Amount",
+        "balanceAfter": "Balance After"
+      },
+      "currency": "SAR",
+      "noData": "No records found"
+    },
+    "withdrawRequests": {
+      "title": "Withdrawal Requests History",
+      "headers": {
+        "withdrawId": "Withdrawal ID",
+        "requestDate": "Request Date & Time",
+        "amount": "Withdrawal Amount",
+        "method": "Withdrawal Method",
+        "status": "Transfer Status",
+        "receipt": "Transfer Receipt"
+      },
+      "currency": "SAR",
+      "noData": "No withdrawal requests",
+      "status": {
+        "accepted": "Paid",
+        "pending": "Pending Review",
+        "rejected": "Rejected"
+      },
+      "methods": {
+        "moyasar": "Moyasar"
+      }
+    },
+    "errors": {
+      "noBalance": "No available balance to withdraw",
+      "withdrawFailed": "Failed to send withdrawal request",
+      "loadFailed": "Failed to load data"
+    },
+    "success": {
+      "withdrawSent": "Withdrawal request sent successfully"
+    }
+  },
+  "consultations": {
+    "tabs": {
+      "parents": "Consultations for Parents",
+      "centers": "Consultations for Centers"
+    },
+    "share": {
+      "button": "Share consultation link with your circle",
+      "title": "First Step Consultations",
+      "copied": "Link copied successfully"
+    },
+    "parent": {
+      "intro": "We provide specialized educational and psychological consultations for parents and teachers to help them understand their children's needs and deal with behavioral and educational challenges in a mindful and age-appropriate manner.",
+      "bullet1": "Consultations for parents and teachers",
+      "bullet2": "Consultations for parents and teachers",
+      "bullet3": "Consultations for parents and teachers",
+      "formTitle": "Consult us for your child and yourself"
+    },
+    "center": {
+      "intro": "We provide specialized consultations for nurseries and educational centers to support teaching staff and develop a safe and effective educational environment in line with best educational practices.",
+      "bullet1": "Consultations for parents and teachers",
+      "bullet2": "Consultations for parents and teachers",
+      "bullet3": "Consultations for parents and teachers",
+      "formTitle": "Consult us to improve and develop your center"
+    },
+    "form": {
+      "subtitle": "If you have an inquiry or problem, don't hesitate to contact us",
+      "name": "Name",
+      "namePlaceholder": "e.g., Heba Allah Amara",
+      "phone": "Phone Number",
+      "phonePlaceholder": "",
+      "email": "Email",
+      "emailPlaceholder": "mennaemarauxi@gmail.com",
+      "kindOfUser": "Type of User",
+      "kindOfUserPlaceholder": "e.g., Parent",
+      "subject": "Consultation Subject",
+      "subjectPlaceholder": "e.g., Educational",
+      "file": "Attach File",
+      "filePlaceholder": "Attach a file related to the consultation",
+      "description": "Write your consultation",
+      "descriptionPlaceholder": "Write your consultation",
+      "centerName": "Center Name",
+      "centerNamePlaceholder": "e.g., Kids time nursery",
+      "centerSpec": "Center Specialization",
+      "centerSpecPlaceholder": "e.g., Educational",
+      "requesterName": "Name of Consultation Requester",
+      "requesterNamePlaceholder": "e.g., Ahmed Mohammed",
+      "requesterMission": "Role of Consultation Requester",
+      "requesterMissionPlaceholder": "e.g., Riyadh Branch Manager",
+      "cancel": "Cancel",
+      "submit": "Send Consultation",
+      "submitting": "Sending...",
+      "success": "Consultation sent successfully!",
+      "error": "Error sending consultation",
+      "kindOptions": {
+        "parent": "Parent",
+        "teacher": "Teacher",
+        "other": "Other"
+      },
+      "subjectOptions": {
+        "educational": "Educational",
+        "psychological": "Psychological",
+        "behavioral": "Behavioral",
+        "administrative": "Administrative",
+        "technical": "Technical",
+        "other": "Other"
+      },
+      "centerSpecOptions": {
+        "nursery": "Nursery",
+        "educational": "Educational",
+        "rehabilitation": "Rehabilitation",
+        "other": "Other"
+      },
+      "missionOptions": {
+        "manager": "Manager",
+        "supervisor": "Supervisor",
+        "teacher": "Teacher",
+        "other": "Other"
+      },
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email address"
+      }
+    },
+    "tipsTitle": "Education and Awareness",
+    "tips": {
+      "parents": [
+        {
+          "title": "Promoting Independence",
+          "description": "Encouraging a child to rely on themselves in simple tasks builds their character and enhances their sense of responsibility.",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "Considering Individual Differences",
+          "description": "Every child has their own abilities and learning pace; comparing children can negatively affect their self-confidence.",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "Encouragement over Punishment",
+          "description": "Reinforcing positive behavior with kind words or simple rewards helps children learn more effectively than punishment.",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "Consistent Daily Routine",
+          "description": "Having a clear routine for sleep, meals, and learning helps children feel secure and improves their focus and behavioral stability.",
+          "image": "/assets/illustrations/tips/board.png"
+        },
+        {
+          "title": "Positive Communication with the Child",
+          "description": "Listening to the child and communicating calmly strengthens their self-confidence and builds a strong relationship with parents and teachers.",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "Learning through Play",
+          "description": "Play is an effective way to develop a child's cognitive and social skills while motivating learning without pressure.",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "Providing a Suitable Learning Environment",
+          "description": "Providing a quiet and comfortable space helps children concentrate and makes learning easier and more enjoyable.",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ],
+      "centers": [
+        {
+          "title": "Considering Individual Differences",
+          "description": "Paying attention to children’s different abilities and needs helps create a fair and supportive learning environment for everyone.",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "Communication with Parents",
+          "description": "Ongoing and transparent communication with parents builds trust and supports better monitoring of the child’s development.",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "Organizing the Daily Routine",
+          "description": "Establishing a clear and balanced daily schedule that includes learning, play, and rest helps children stay stable and engaged at the center.",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "Building Readiness and Safety",
+          "description": "Ensuring building safety, proper ventilation, adequate lighting, and secure play areas provides a healthy and comfortable environment.",
+          "image": "/assets/illustrations/tips/team-work.png"
+        },
+        {
+          "title": "Providing Appropriate Educational Tools",
+          "description": "Using safe and diverse educational tools supports the learning process and encourages children to participate and explore.",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "Learning through Play",
+          "description": "Play is an effective approach for developing children’s cognitive and social skills while encouraging learning without pressure.",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "Providing a Suitable Learning Environment",
+          "description": "Providing a calm and comfortable environment helps children focus and makes the learning experience smoother and more enjoyable.",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ]
+    }
   }
 }

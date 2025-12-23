@@ -94,10 +94,10 @@ const GateCodeModal: React.FC<GateCodeModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md rounded-[20px] p-0 overflow-hidden bg-white">
+      <DialogContent className="sm:max-w-lg rounded-[20px] p-0 overflow-hidden bg-white">
         <div className="relative p-6 flex flex-col items-center justify-center text-center min-h-[400px]">
           {step === "select" ? (
-            <div className="w-full max-w-xs space-y-6">
+            <div className="w-full max-w-sm space-y-6">
               <div className="flex justify-center mb-4">
                 <Image
                   src="/assets/illustrations/gate.png"
@@ -147,7 +147,7 @@ const GateCodeModal: React.FC<GateCodeModalProps> = ({
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-xs space-y-8 animate-in fade-in zoom-in duration-300">
+            <div className="w-full max-w-sm space-y-8 animate-in fade-in zoom-in duration-300">
               <div className="flex justify-center">
                 <Image
                   src="/assets/illustrations/gate.png"
@@ -167,11 +167,11 @@ const GateCodeModal: React.FC<GateCodeModalProps> = ({
                 </p>
               </div>
 
-              <div className="flex justify-center gap-3 py-2">
+              <div className="grid grid-cols-4 sm:flex justify-center gap-2 py-2">
                 {generatedCode.split("").map((digit, idx) => (
                   <div
                     key={idx}
-                    className="w-12 h-14 flex items-center justify-center border-2 border-primary rounded-xl text-2xl font-bold text-primary bg-white shadow-sm"
+                    className="h-14 flex items-center justify-center border-2 border-primary rounded-xl text-2xl font-bold text-primary bg-white shadow-sm sm:grow"
                   >
                     {digit}
                   </div>

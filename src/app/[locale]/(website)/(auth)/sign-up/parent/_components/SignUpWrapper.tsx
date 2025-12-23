@@ -21,6 +21,7 @@ import { ApiError } from "@/lib/error-handling";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import EnrollmentModal from "@/components/modals/EnrollmentModal";
+import { trackSignUp } from "@/lib/snapchatPixel";
 
 const SignUpWrapper = () => {
   const router = useRouter();
@@ -95,6 +96,13 @@ const SignUpWrapper = () => {
         // Show enrollment modal instead of redirecting
         setShowEnrollmentModal(true);
       }
+
+      // Track Sign Up
+      trackSignUp({
+        sign_up_method: "Email",
+        user_email: response.data.email,
+        user_phone_number: response.data.phone,
+      });
     },
     onError: handleApiError,
   });

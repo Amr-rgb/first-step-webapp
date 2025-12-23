@@ -448,8 +448,18 @@ export interface PricingFormData {
   id?: number;
   enrollment_type: string;
   title: string;
-  start_age: number;
-  end_age: number;
+  start_age:
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
+  end_age:
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
   count: number;
   price_amount: number;
 }
