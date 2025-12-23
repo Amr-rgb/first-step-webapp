@@ -193,7 +193,7 @@ const PlanSelection = ({
               showOnlySelected
                 ? ""
                 : plans.length > 4
-                ? "min-w-[120px] flex-shrink-0"
+                ? "min-w-[120px] shrink-0"
                 : "flex-1",
               isSelected
                 ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
@@ -347,7 +347,7 @@ const ChildSelection = ({
           Array.from({ length: 4 }).map((_, idx) => (
             <motion.div
               key={idx}
-              className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center flex-shrink-0"
+              className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center shrink-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
@@ -361,7 +361,7 @@ const ChildSelection = ({
         {!isLoading && error && (
           <div
             onClick={() => router.push(`/${locale}/dashboard/parent/children`)}
-            className="flex flex-col items-center justify-center p-2 rounded-lg border-2 border-dashed min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 bg-blue-50 border-blue-300 mx-auto cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all flex-shrink-0"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border-2 border-dashed min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 bg-blue-50 border-blue-300 mx-auto cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all shrink-0"
           >
             <div className="w-16 h-16 flex items-center justify-center mb-2">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
@@ -408,7 +408,7 @@ const ChildSelection = ({
                 key={idStr}
                 onClick={() => onSelect(idStr)}
                 className={cn(
-                  "flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start flex-shrink-0",
+                  "flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start shrink-0",
                   selectedIds.includes(idStr)
                     ? "border-[#4D5EDB] shadow bg-white"
                     : "border-gray-300 bg-white",
@@ -608,7 +608,7 @@ const CouponSection = ({
           locale === "ar" ? "text-right" : "text-left"
         )}
       >
-        <AlertCircle size={10} className="mt-0.5 flex-shrink-0" />
+        <AlertCircle size={10} className="mt-0.5 shrink-0" />
         {t("labels.paymentNotice")}
       </p>
     </motion.div>
