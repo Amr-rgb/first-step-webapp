@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { Plus, Minus, Check, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Plus, Minus, Check, Search, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import useDebounce from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +52,12 @@ const COLORS = [
 
 const promocodeSchema = z
   .object({
-    title: z.string().min(1, "Coupon name is required"),
+    title: z
+      .string()
+      .min(1, "Coupon name is required")
+      .min(3, "Coupon name must be at least 3 characters")
+      .max(50, "Coupon name must not exceed 50 characters")
+      .regex(/^[a-zA-Z0-9\s\-_]+$/, "Coupon name can only contain letters, numbers, spaces, hyphens, and underscores"),
     description: z.string().min(1, "Description is required"),
     percentage: z.number().min(0).max(100),
     start_date: z.date({ required_error: "Start date is required" }),
@@ -95,7 +101,6 @@ export default function CreatePromocodeModal({
   onSwitchToEdit,
 }: CreatePromocodeModalProps) {
   const t = useTranslations("discountCodes.createModal");
-  const locale = useLocale();
   const queryClient = useQueryClient();
 
   const { data: centersData, isLoading: centersLoading } = useQuery({
@@ -127,8 +132,58 @@ export default function CreatePromocodeModal({
   const [activeCenterId, setActiveCenterId] = useState<number | null>(null);
   const [centerSearchQuery, setCenterSearchQuery] = useState("");
   const [branchSearchQuery, setBranchSearchQuery] = useState("");
+  const [titleValidation, setTitleValidation] = useState<{
+    isChecking: boolean;
+    isValid: boolean | null;
+    message: string;
+  }>({ isChecking: false, isValid: null, message: "" });
 
   const centers: Center[] = centersData || [];
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(promocodeSchema),
+    defaultValues,
+    mode: "onChange",
+  });
+
+  // Debounce the title value for validation
+  const debouncedTitle = useDebounce(form.watch("title"), 500);
+
+  // Simple title validation effect
+  useEffect(() => {
+    const validateTitle = async () => {
+      // Skip validation for short titles or when editing same title
+      if (!debouncedTitle || debouncedTitle.length < 3) {
+        setTitleValidation({ isChecking: false, isValid: null, message: "" });
+        return;
+      }
+
+      if (promocodeId && promocodeData?.data?.title === debouncedTitle) {
+        setTitleValidation({ isChecking: false, isValid: true, message: "" });
+        return;
+      }
+
+      setTitleValidation({ isChecking: true, isValid: null, message: "" });
+
+      try {
+        const response = await adminService.checkPromocodeExists(debouncedTitle);
+        const exists = response?.exists || false;
+        
+        setTitleValidation({
+          isChecking: false,
+          isValid: !exists,
+          message: exists 
+            ? (t("titleExists") || "This coupon name already exists")
+            : (t("titleAvailable") || "Coupon name is available")
+        });
+      } catch (error) {
+        console.error('Title validation error:', error);
+        setTitleValidation({ isChecking: false, isValid: null, message: "" });
+      }
+    };
+
+    validateTitle();
+  }, [debouncedTitle, promocodeId, promocodeData, t]);
 
   const filteredCenters = useMemo(() => {
     if (!centerSearchQuery) return centers;
@@ -154,11 +209,18 @@ export default function CreatePromocodeModal({
     );
   }, [centers, effectiveActiveCenterId, branchSearchQuery]);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(promocodeSchema),
-    defaultValues,
-    mode: "onChange",
-  });
+  const resetForm = () => {
+    setStep(1);
+    form.reset(defaultValues as FormData);
+    setSelectedCenters([]);
+    setSelectedBranches([]);
+    setAllowChildrenOnly(false);
+    setSelectedColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
+    setStatus("active");
+    setActiveCenterId(null);
+    setCenterSearchQuery("");
+    setBranchSearchQuery("");
+  };
 
   const createMutation = useMutation({
     mutationFn: adminService.createPromocode,
@@ -200,19 +262,6 @@ export default function CreatePromocodeModal({
       toast.error(error.message || t("error"));
     },
   });
-
-  const resetForm = () => {
-    setStep(1);
-    form.reset(defaultValues as FormData);
-    setSelectedCenters([]);
-    setSelectedBranches([]);
-    setAllowChildrenOnly(false);
-    setSelectedColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
-    setStatus("active");
-    setActiveCenterId(null);
-    setCenterSearchQuery("");
-    setBranchSearchQuery("");
-  };
 
   useEffect(() => {
     if (isOpen && centersData) {
@@ -300,6 +349,12 @@ export default function CreatePromocodeModal({
     // Prevent submission if in step 1 (e.g. via Enter key) and just move to step 2
     if (step === 1) {
       setStep(2);
+      return;
+    }
+
+    // Block submission if title already exists
+    if (!promocodeId && titleValidation.isValid === false) {
+      toast.error(titleValidation.message || "Please choose a different coupon name");
       return;
     }
 
@@ -471,6 +526,11 @@ export default function CreatePromocodeModal({
       "max_number_of_usage",
     ]);
 
+    // Wait for validation or block if title exists
+    if (titleValidation.isChecking || titleValidation.isValid === false) {
+      return;
+    }
+
     if (isValid) {
       setStep(2);
     }
@@ -584,20 +644,48 @@ export default function CreatePromocodeModal({
                     <FormField
                       control={form.control}
                       name="title"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <FormLabel>
                             {t("couponName")}{" "}
                             <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              placeholder={t("couponNamePlaceholder")}
-                              disabled={isViewMode}
-                            />
+                            <div className="relative">
+                              <Input
+                                {...field}
+                                placeholder={t("couponNamePlaceholder")}
+                                disabled={isViewMode}
+                                className={`${
+                                  fieldState.error || titleValidation.isValid === false
+                                    ? "border-red-500"
+                                    : titleValidation.isValid === true
+                                    ? "border-green-500"
+                                    : ""
+                                } pr-10`}
+                              />
+                              
+                              {/* Single validation icon based on state */}
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                {titleValidation.isChecking ? (
+                                  <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                                ) : titleValidation.isValid === true ? (
+                                  <CheckCircle className="w-5 h-5 text-green-500" />
+                                ) : (fieldState.error || titleValidation.isValid === false) ? (
+                                  <XCircle className="w-5 h-5 text-red-500" />
+                                ) : null}
+                              </div>
+                            </div>
                           </FormControl>
                           <FormMessage />
+                          {/* Validation Message */}
+                          {titleValidation.message && !fieldState.error && (
+                            <p className={`text-sm mt-1 ${
+                              titleValidation.isValid === false ? "text-red-500" : "text-green-600"
+                            }`}>
+                              {titleValidation.message}
+                            </p>
+                          )}
                         </FormItem>
                       )}
                     />
@@ -1107,8 +1195,21 @@ export default function CreatePromocodeModal({
                       type="button"
                       onClick={(e) => handleStep1Continue(e)}
                       className="flex-1 bg-primary"
+                      disabled={
+                        createMutation.isPending || 
+                        updateMutation.isPending ||
+                        titleValidation.isChecking ||
+                        titleValidation.isValid === false
+                      }
                     >
-                      {t("continue")}
+                      {titleValidation.isChecking ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {t("checking") || "Checking..."}
+                        </>
+                      ) : (
+                        t("continue")
+                      )}
                     </Button>
                   </>
                 ) : (

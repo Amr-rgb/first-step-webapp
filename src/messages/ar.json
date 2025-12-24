@@ -2834,7 +2834,11 @@
       "searchBranches": "بحث عن الفروع",
       "searchCenters": "بحث عن المراكز",
       "noBranches": "لا توجد فروع",
-      "noCenters": "لا توجد مراكز"
+      "noCenters": "لا توجد مراكز",
+      "titleExists": "اسم الكوبون موجود بالفعل",
+      "titleAvailable": "اسم الكوبون متاح",
+      "checking": "جاري التحقق...",
+      "selectCenterFirst": "اختر مركزاً أولاً لعرض الفروع"
     },
     "loading": "جاري تحميل كوبونات الخصم...",
     "error": "خطأ في تحميل كوبونات الخصم"
