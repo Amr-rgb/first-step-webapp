@@ -859,10 +859,21 @@ const ProfileEditor = ({
                           <SelectValue placeholder="Select enrollment type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="hour">Hour</SelectItem>
-                          <SelectItem value="day">Day</SelectItem>
-                          <SelectItem value="month">Month</SelectItem>
-                          <SelectItem value="year">Year</SelectItem>
+                          <SelectItem value="hour">
+                            {t("plans.units.hour")}
+                          </SelectItem>
+                          <SelectItem value="day">
+                            {t("plans.units.day")}
+                          </SelectItem>
+                          <SelectItem value="week">
+                            {t("plans.units.week")}
+                          </SelectItem>
+                          <SelectItem value="month">
+                            {t("plans.units.month")}
+                          </SelectItem>
+                          <SelectItem value="year">
+                            {t("plans.units.year")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -884,10 +895,21 @@ const ProfileEditor = ({
                         className="h-10"
                       />
                       <p className="text-xs text-gray-500">
-                        {plan.enrollment_type === "hour" && "hours"}
-                        {plan.enrollment_type === "day" && "days"}
-                        {plan.enrollment_type === "month" && "months"}
-                        {plan.enrollment_type === "year" && "years"}
+                        {(() => {
+                          const currentLocale =
+                            typeof window !== "undefined"
+                              ? window.location.pathname.split("/")[1]
+                              : "en";
+                          let unitKey = plan.enrollment_type;
+                          if (currentLocale === "ar") {
+                            if (plan.count >= 3 && plan.count <= 10) {
+                              unitKey = `${plan.enrollment_type}s`;
+                            }
+                          } else if (plan.count > 1) {
+                            unitKey = `${plan.enrollment_type}s`;
+                          }
+                          return t(`plans.units.${unitKey}`);
+                        })()}
                       </p>
                     </div>
 

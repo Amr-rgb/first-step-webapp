@@ -254,7 +254,7 @@ export default async function HomePage({
       <FeaturesSection />
       <SubscriptionSection />
       {/* <VisionMission /> */}
-      <Values locale={locale} error={error} />
+      <Values locale={locale} />
       <BlogsWrapper locale={locale} number={4} />
       <FAQs commonQuestions={commonQuestions} error={error} locale={locale} />
       <Contact />

@@ -374,23 +374,17 @@ export const BookingDetailsModal = ({
             <div className="grid grid-cols-4 gap-3">
               {filteredPricingPlans.map((plan: any) => {
                 const isSelected = selectedPricingId === plan.id;
-                const durationLabel = `${plan.count} ${
-                  plan.enrollment_type === "hour"
-                    ? plan.count > 1
-                      ? tBookings("pricingCard.hours")
-                      : tBookings("pricingCard.hour")
-                    : plan.enrollment_type === "day"
-                    ? plan.count > 1
-                      ? tBookings("pricingCard.days")
-                      : tBookings("pricingCard.day")
-                    : plan.enrollment_type === "week"
-                    ? plan.count > 1
-                      ? tBookings("pricingCard.weeks")
-                      : tBookings("pricingCard.week")
-                    : plan.count > 1
-                    ? tBookings("pricingCard.months")
-                    : tBookings("pricingCard.month")
-                }`;
+                const durationLabel = (() => {
+                  let unitKey = plan.enrollment_type;
+                  if (locale === "ar") {
+                    if (plan.count >= 3 && plan.count <= 10) {
+                      unitKey = `${plan.enrollment_type}s`;
+                    }
+                  } else if (plan.count > 1) {
+                    unitKey = `${plan.enrollment_type}s`;
+                  }
+                  return `${plan.count} ${tBookings(`pricingCard.${unitKey}`)}`;
+                })();
 
                 return (
                   <PlanCard

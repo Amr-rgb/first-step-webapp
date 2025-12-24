@@ -121,7 +121,7 @@ export const adminService = {
       formData.append("money_details", payload.money_details);
       formData.append("time_details", payload.time_details);
       formData.append("additional_details", payload.additional_details);
-      formData.append("url", payload.url);
+      formData.append("location", payload.url);
 
       // Append multiple images
       payload.photos.forEach((photo, index) => {
@@ -179,7 +179,7 @@ export const adminService = {
         formData.append("additional_details", payload.additional_details);
       }
       if (payload.url !== undefined) {
-        formData.append("url", payload.url);
+        formData.append("location", payload.url);
       }
 
       // Append multiple images if provided

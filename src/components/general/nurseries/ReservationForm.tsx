@@ -193,7 +193,7 @@ const PlanSelection = ({
               showOnlySelected
                 ? ""
                 : plans.length > 4
-                ? "min-w-[120px] flex-shrink-0"
+                ? "min-w-[120px] shrink-0"
                 : "flex-1",
               isSelected
                 ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
@@ -347,7 +347,7 @@ const ChildSelection = ({
           Array.from({ length: 4 }).map((_, idx) => (
             <motion.div
               key={idx}
-              className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center flex-shrink-0"
+              className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center shrink-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
@@ -361,7 +361,7 @@ const ChildSelection = ({
         {!isLoading && error && (
           <div
             onClick={() => router.push(`/${locale}/dashboard/parent/children`)}
-            className="flex flex-col items-center justify-center p-2 rounded-lg border-2 border-dashed min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 bg-blue-50 border-blue-300 mx-auto cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all flex-shrink-0"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border-2 border-dashed min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 bg-blue-50 border-blue-300 mx-auto cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all shrink-0"
           >
             <div className="w-16 h-16 flex items-center justify-center mb-2">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
@@ -408,7 +408,7 @@ const ChildSelection = ({
                 key={idStr}
                 onClick={() => onSelect(idStr)}
                 className={cn(
-                  "flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start flex-shrink-0",
+                  "flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start shrink-0",
                   selectedIds.includes(idStr)
                     ? "border-[#4D5EDB] shadow bg-white"
                     : "border-gray-300 bg-white",
@@ -608,7 +608,7 @@ const CouponSection = ({
           locale === "ar" ? "text-right" : "text-left"
         )}
       >
-        <AlertCircle size={10} className="mt-0.5 flex-shrink-0" />
+        <AlertCircle size={10} className="mt-0.5 shrink-0" />
         {t("labels.paymentNotice")}
       </p>
     </motion.div>
@@ -843,28 +843,40 @@ const ReservationForm = ({
     if (!selectedApiPlan) return TIME_OPTIONS;
     const { enrollment_type } = selectedApiPlan;
 
+    const getUnitLabel = (count: number, type: string) => {
+      let unitKey = type;
+      if (locale === "ar") {
+        if (count >= 3 && count <= 10) {
+          unitKey = `${type}s`;
+        }
+      } else if (count > 1) {
+        unitKey = `${type}s`;
+      }
+      return t(`units.${unitKey as any}`);
+    };
+
     switch (enrollment_type) {
       case "hour":
         return TIME_OPTIONS;
       case "day":
         return Array.from(
           { length: 30 },
-          (_, i) => `${i + 1} ${t("units.day")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "day")}`
         );
       case "week":
         return Array.from(
           { length: 4 },
-          (_, i) => `${i + 1} ${t("units.week")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "week")}`
         );
       case "month":
         return Array.from(
           { length: 12 },
-          (_, i) => `${i + 1} ${t("units.month")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "month")}`
         );
       default:
         return TIME_OPTIONS;
     }
-  }, [selectedApiPlan, t]);
+  }, [selectedApiPlan, t, locale]);
 
   // -- Effects --
 
@@ -919,10 +931,17 @@ const ReservationForm = ({
   useEffect(() => {
     if (selectedApiPlan) {
       const { enrollment_type, count } = selectedApiPlan;
-      const tUnits = {
-        day: locale === "ar" ? t("units.day") : "Day",
-        week: locale === "ar" ? t("units.week") : "Week",
-        month: locale === "ar" ? t("units.month") : "Month",
+
+      const getLabel = (c: number, type: string) => {
+        let unitKey = type;
+        if (locale === "ar") {
+          if (c >= 3 && c <= 10) {
+            unitKey = `${type}s`;
+          }
+        } else if (c > 1) {
+          unitKey = `${type}s`;
+        }
+        return t(`units.${unitKey as any}`);
       };
 
       switch (enrollment_type) {
@@ -931,16 +950,20 @@ const ReservationForm = ({
           setToTime("16:00");
           break;
         case "day":
-          setFromTime(`1 ${tUnits.day}`);
-          setToTime(`${count} ${tUnits.day}`);
+          setFromTime(`1 ${getLabel(1, "day")}`);
+          setToTime(`${count} ${getLabel(count, "day")}`);
           break;
         case "week":
-          setFromTime(`1 ${tUnits.week}`);
-          setToTime(`${count} ${tUnits.week}`);
+          setFromTime(`1 ${getLabel(1, "week")}`);
+          setToTime(`${count} ${getLabel(count, "week")}`);
           break;
         case "month":
-          setFromTime(`1 ${tUnits.month}`);
-          setToTime(`${count} ${tUnits.month}`);
+          setFromTime(`1 ${getLabel(1, "month")}`);
+          setToTime(`${count} ${getLabel(count, "month")}`);
+          break;
+        case "year":
+          setFromTime(`1 ${getLabel(1, "year")}`);
+          setToTime(`${count} ${getLabel(count, "year")}`);
           break;
         default:
           setFromTime("");

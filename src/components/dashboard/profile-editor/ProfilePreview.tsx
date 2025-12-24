@@ -42,12 +42,12 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
 
   if (isEmpty) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             {/* Empty State */}
             <div className="bg-white rounded-2xl shadow-xl p-12 border border-gray-100">
-              <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+              <div className="w-32 h-32 mx-auto mb-6 bg-linear-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
                 <svg
                   className="w-16 h-16 text-blue-500"
                   fill="none"
@@ -204,7 +204,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
               {section.data.ctaText && (
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#6A8DFF] to-[#3B5BDB] text-white px-12 py-4 text-lg font-bold rounded-xl shadow-lg hover:opacity-90 transition transform hover:scale-105"
+                  className="bg-linear-to-r from-[#6A8DFF] to-[#3B5BDB] text-white px-12 py-4 text-lg font-bold rounded-xl shadow-lg hover:opacity-90 transition transform hover:scale-105"
                 >
                   {section.data.ctaText}
                 </Button>
@@ -270,7 +270,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {image.caption && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-4">
                             <p className="text-white text-sm">
                               {image.caption}
                             </p>
@@ -349,14 +349,17 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                                 {locale === "ar" ? "المدة:" : "Duration:"}
                               </span>{" "}
                               {plan.count}{" "}
-                              {plan.enrollment_type === "hour" &&
-                                (locale === "ar" ? "ساعة" : "hours")}
-                              {plan.enrollment_type === "day" &&
-                                (locale === "ar" ? "يوم" : "days")}
-                              {plan.enrollment_type === "month" &&
-                                (locale === "ar" ? "شهر" : "months")}
-                              {plan.enrollment_type === "year" &&
-                                (locale === "ar" ? "سنة" : "years")}
+                              {(() => {
+                                let unitKey = plan.enrollment_type;
+                                if (locale === "ar") {
+                                  if (plan.count >= 3 && plan.count <= 10) {
+                                    unitKey = `${plan.enrollment_type}s`;
+                                  }
+                                } else if (plan.count > 1) {
+                                  unitKey = `${plan.enrollment_type}s`;
+                                }
+                                return t(`plans.units.${unitKey}`);
+                              })()}
                             </div>
                           )}
                         </div>
@@ -444,7 +447,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
                           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                         </svg>
                       </div>
-                      <p className="absolute left-1/2 -translate-x-1/2 group-even:top-[20%] group-odd:top-[100%] text-2xl text-center font-bold text-nowrap whitespace-nowrap">
+                      <p className="absolute left-1/2 -translate-x-1/2 group-even:top-[20%] group-odd:top-full text-2xl text-center font-bold text-nowrap whitespace-nowrap">
                         {branch.name || `Branch ${index + 1}`}
                       </p>
                     </div>
@@ -584,7 +587,7 @@ const ProfilePreview = ({ sections, isEmpty }: ProfilePreviewProps) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Preview Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-purple-50 border-b border-gray-200 px-6 py-4">
+      <div className="bg-linear-to-r from-primary/10 to-purple-50 border-b border-gray-200 px-6 py-4">
         <div className="text-center">
           <h1 className="text-lg font-semibold text-gray-900">
             ✨ Live Preview - This is how your nursery profile will appear to
