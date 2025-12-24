@@ -2850,7 +2850,11 @@
       "searchBranches": "Search Branches",
       "searchCenters": "Search Centers",
       "noBranches": "No branches found",
-      "noCenters": "No centers found"
+      "noCenters": "No centers found",
+      "titleExists": "This coupon name already exists",
+      "titleAvailable": "Coupon name is available",
+      "checking": "Checking...",
+      "selectCenterFirst": "Select a center first to view branches"
     },
     "loading": "Loading discount codes...",
     "error": "Error loading discount codes"

@@ -101,6 +101,25 @@ export const adminService = {
     }
   },
 
+  checkPromocodeExists: async (title: string) => {
+    try {
+      // Use apiClient to ensure proper authentication headers are included
+      const formData = new FormData();
+      formData.append('title', title);
+      
+      const response = await apiClient.post('/promocodes/check-exists', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error checking promocode existence:', error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   createExternalOffer: async (payload: {
     center_name: string;
     address: string;
