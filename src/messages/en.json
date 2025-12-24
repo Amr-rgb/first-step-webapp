@@ -2168,7 +2168,19 @@
         "endAgeMustBeGreater": "End age must be greater than start age",
         "enrollmentTypeRequired": "Enrollment type is required",
         "countMustBePositive": "Count must be greater than 0",
-        "priceMustBePositive": "Price must be greater than 0"
+        "priceMustBePositive": "Price must be greater than 0",
+        "units": {
+          "hour": "Hour",
+          "hours": "Hours",
+          "day": "Day",
+          "days": "Days",
+          "week": "Week",
+          "weeks": "Weeks",
+          "month": "Month",
+          "months": "Months",
+          "year": "Year",
+          "years": "Years"
+        }
       }
     },
     "tables": {
@@ -2391,7 +2403,9 @@
         "week": "week",
         "weeks": "weeks",
         "month": "month",
-        "months": "months"
+        "months": "months",
+        "year": "year",
+        "years": "years"
       },
       "noPricingPlans": "No pricing plans available for this branch",
       "paymentDetails": "Payment Details",
@@ -2671,7 +2685,19 @@
       "bookNow": "Book Now",
       "ageRange": "Age Range",
       "duration": "Duration",
-      "price": "Price"
+      "price": "Price",
+      "units": {
+        "hour": "Hour",
+        "hours": "Hours",
+        "day": "Day",
+        "days": "Days",
+        "week": "Week",
+        "weeks": "Weeks",
+        "month": "Month",
+        "months": "Months",
+        "year": "Year",
+        "years": "Years"
+      }
     }
   },
   "chat": {
@@ -2863,9 +2889,16 @@
       "hourly": "Hourly"
     },
     "units": {
-      "month": "Month",
+      "hour": "Hour",
+      "hours": "Hours",
+      "day": "Day",
+      "days": "Days",
       "week": "Week",
-      "day": "Day"
+      "weeks": "Weeks",
+      "month": "Month",
+      "months": "Months",
+      "year": "Year",
+      "years": "Years"
     },
     "labels": {
       "numberOfHours": "Number of Hours",

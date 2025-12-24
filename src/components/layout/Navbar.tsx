@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import NavbarButton from "./NavbarButton";
 import { useAuthToken } from "@/store/authStore";
@@ -28,14 +28,19 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const [needsOldBrowserFallback, setNeedsOldBrowserFallback] = useState(true); // Start with true for SSR
   const [buttonsVisible, setButtonsVisible] = useState(false); // New state for button visibility
   const pathname = usePathname();
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const menuRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const isActive = (path: string) => pathname === path;
 
+  const [isMounted, setIsMounted] = useState(false);
+
   // Check if we need old browser fallback and show buttons with animation
   useEffect(() => {
+    setIsMounted(true);
     const isOld = isOldBrowser();
     setNeedsOldBrowserFallback(isOld);
 
@@ -88,7 +93,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         }, 100);
       } else {
         // Close menu
-        menuRef.current.style.transform = "translateX(100%)";
+        menuRef.current.style.transform = isRtl
+          ? "translateX(-100%)"
+          : "translateX(100%)";
         overlayRef.current.style.opacity = "0";
         overlayRef.current.style.pointerEvents = "none";
       }
@@ -99,7 +106,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const forceCloseMenu = () => {
     setIsMenuOpen(false);
     if (menuRef.current && overlayRef.current) {
-      menuRef.current.style.transform = "translateX(100%)";
+      menuRef.current.style.transform = isRtl
+        ? "translateX(-100%)"
+        : "translateX(100%)";
       overlayRef.current.style.opacity = "0";
       overlayRef.current.style.pointerEvents = "none";
     }
@@ -158,93 +167,149 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     "hover:text-primary hover:font-bold hover:text-xl hover:text-secondary-orange duration-300 ";
 
   return (
-    <div className="sticky top-0 z-[50] w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
-      <div
-        className={`relative container mx-auto px-4 transition-all duration-300 ${
-          isScrolled ? "py-2" : "py-2.5"
-        }`}
-      >
-        {!token && (
-          <div
-            className={`z-[9999] fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4 transition-all duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
-              buttonsVisible 
-                ? "opacity-100 translate-x-0 translate-y-0" 
-                : "opacity-0 ltr:translate-x-12 rtl:-translate-x-12 translate-y-4"
-            }`}
-            style={
-              needsOldBrowserFallback
-                ? {
-                    // Fallback for old browsers that don't support ltr/rtl classes
-                    top: "18rem", // 72 * 0.25rem = 18rem
-                    right: "-7.5rem", // -120px = -7.5rem
-                    transform: buttonsVisible 
-                      ? "rotate(-90deg)" 
-                      : "rotate(-90deg) translateX(3rem) translateY(1rem)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    opacity: buttonsVisible ? 1 : 0,
-                    transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                    // RTL support for old browsers
-                    left: "auto",
-                  }
-                : undefined
-            }
-          >
-            <Button
-              asChild
-              size={"sm"}
-              variant="defaultNoGradient"
-              className={`bg-secondary-mint-green rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu ${
-                buttonsVisible 
-                  ? "scale-100 rotate-0 shadow-lg" 
-                  : "scale-75 rotate-12 shadow-none"
-              }`}
-            >
-              <Link href={"/sign-up/parent"}>{t("buttons.join-parent")}</Link>
-            </Button>
-            <Button
-              asChild
-              size={"sm"}
-              variant="defaultNoGradient"
-              className={`bg-secondary-burgundy rounded-[8px] transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] delay-150 transform-gpu ${
-                buttonsVisible 
-                  ? "scale-100 rotate-0 shadow-lg" 
-                  : "scale-75 -rotate-12 shadow-none"
-              }`}
-            >
-              <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>
-            </Button>
-          </div>
-        )}
+    <>
+      <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
+        <div
+          className={`relative container mx-auto px-4 transition-all duration-300 ${
+            isScrolled ? "py-2" : "py-2.5"
+          }`}
+        >
+          <div className="flex justify-between items-center gap-x-0">
+            {/* Left */}
+            <div className="flex-1">
+              <Link className="inline-block w-fit" href={"/"}>
+                <div
+                  className={`relative transition-all duration-300 ${
+                    isScrolled ? "w-[140px] " : "w-[236px] "
+                  }`}
+                  style={{
+                    height: isScrolled ? "35px" : "59.9px",
+                    aspectRatio: "236/59.9",
+                  }}
+                >
+                  <Image
+                    src="/assets/logos/complete_logo.svg"
+                    alt="logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </Link>
+            </div>
 
-        <div className="flex justify-between items-center gap-x-0">
-          {/* Left */}
-          <div className="flex-1">
-            <Link className="inline-block w-fit" href={"/"}>
-              <div
-                className={`relative transition-all duration-300 ${
-                  isScrolled ? "w-[140px] " : "w-[236px] "
-                }`}
-                style={{
-                  height: isScrolled ? "35px" : "59.9px",
-                  aspectRatio: "236/59.9",
-                }}
+            {/* Centered navigation */}
+            <div
+              className={`hidden xl:block shrink-0 rounded-full transition-all duration-300 ${
+                isScrolled ? "py-4 px-10" : "py-7 px-14"
+              }`}
+            >
+              <ul className="flex justify-between items-center gap-x-9">
+                {links.map((link) => (
+                  <li
+                    key={link.id}
+                    className="relative inline-block font-medium text-center h-7"
+                  >
+                    <Link
+                      href={link.path}
+                      className={`text-base text-gray ${hoverEffect} ${
+                        isActive(link.path)
+                          ? "text-xl font-extrabold text-primary"
+                          : ""
+                      }`}
+                    >
+                      {link.title}
+                    </Link>
+
+                    <span className="relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0">
+                      {link.title}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Right - Mobile menu trigger */}
+            <div className="flex-1 text-right flex items-center justify-end">
+              {/* Enhanced Menu Icon */}
+              <Button
+                className="xl:hidden p-2 rounded-full bg-linear-to-t from-white from-30 to-emerald-50 text-gray-700"
+                aria-expanded={isMenuOpen}
+                aria-label="Toggle navigation menu"
+                onClick={toggleMenu}
               >
-                <Image
-                  src="/assets/logos/complete_logo.svg"
-                  alt="logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </Link>
-          </div>
+                <Menu size={24} />
+              </Button>
 
-          {/* Enhanced mobile menu overlay with ref */}
+              <div className="ltr:ml-0 rtl:mr-0 hidden sm:block">
+                {children ? children : <NavbarButton />}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Action Buttons - Fixed to viewport */}
+      {!token && (
+        <div
+          className={`z-9999 fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4 transition-all duration-800 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+            buttonsVisible
+              ? "opacity-100 translate-x-0 translate-y-0"
+              : "opacity-0 ltr:translate-x-12 rtl:-translate-x-12 translate-y-4"
+          }`}
+          style={
+            needsOldBrowserFallback
+              ? {
+                  // Fallback for old browsers that don't support ltr/rtl classes
+                  top: "18rem", // 72 * 0.25rem = 18rem
+                  right: "-7.5rem", // -120px = -7.5rem
+                  transform: buttonsVisible
+                    ? "rotate(-90deg)"
+                    : "rotate(-90deg) translateX(3rem) translateY(1rem)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  opacity: buttonsVisible ? 1 : 0,
+                  transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  // RTL support for old browsers
+                  left: "auto",
+                }
+              : undefined
+          }
+        >
+          <Button
+            asChild
+            size={"sm"}
+            variant="defaultNoGradient"
+            className={`bg-secondary-mint-green rounded-[8px] transition-all duration-600 ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu ${
+              buttonsVisible
+                ? "scale-100 rotate-0 shadow-lg"
+                : "scale-75 rotate-12 shadow-none"
+            }`}
+          >
+            <Link href={"/sign-up/parent"}>{t("buttons.join-parent")}</Link>
+          </Button>
+          <Button
+            asChild
+            size={"sm"}
+            variant="defaultNoGradient"
+            className={`bg-secondary-burgundy rounded-[8px] transition-all duration-600 ease-[cubic-bezier(0.34,1.56,0.64,1)] delay-150 transform-gpu ${
+              buttonsVisible
+                ? "scale-100 rotate-0 shadow-lg"
+                : "scale-75 -rotate-12 shadow-none"
+            }`}
+          >
+            <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>
+          </Button>
+        </div>
+      )}
+
+      {/* Mobile Menu - Only render on client to avoid flash on reload */}
+      {isMounted && (
+        <>
+          {/* Mobile Menu Overlay - Fixed to whole viewport */}
           <div
             ref={overlayRef}
-            className={`z-[9999] fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${
+            className={`z-10000 fixed top-0 left-0 w-screen h-screen bg-black/50 transition-opacity duration-300 ${
               isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
             onClick={forceCloseMenu}
@@ -253,18 +318,27 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               // Fallback for old browsers
               opacity: isMenuOpen ? 1 : 0,
               pointerEvents: isMenuOpen ? "auto" : "none",
+              width: "100vw",
+              height: "100vh",
             }}
           />
 
           {/* Enhanced slide-out menu with ref */}
           <div
             ref={menuRef}
-            className={`z-[9999] fixed top-0 bottom-0 right-0 w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-              isMenuOpen ? "translate-x-0" : "translate-x-full"
+            className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+              isMenuOpen
+                ? "translate-x-0"
+                : "ltr:translate-x-full rtl:-translate-x-full"
             }`}
             style={{
+              height: "100vh",
               // Fallback for old browsers
-              transform: isMenuOpen ? "translateX(0)" : "translateX(100%)",
+              transform: isMenuOpen
+                ? "translateX(0)"
+                : isRtl
+                ? "translateX(-100%)"
+                : "translateX(100%)",
             }}
           >
             {/* Menu header with enhanced close button */}
@@ -281,80 +355,34 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
             </div>
 
             {/* Menu items */}
-            <ul className="pt-2 pb-4">
-              {links.map((link) => (
-                <li key={link.id}>
-                  <Link
-                    href={link.path}
-                    className={`block px-6 py-4 text-base transition-colors duration-200 ${
-                      isActive(link.path)
-                        ? "font-bold text-emerald-600 bg-emerald-50"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                    onClick={forceCloseMenu}
-                  >
-                    {link.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-col h-[calc(100vh-65px)] overflow-y-auto custom-scrollbar">
+              <ul className="pt-2 pb-4">
+                {links.map((link) => (
+                  <li key={link.id}>
+                    <Link
+                      href={link.path}
+                      className={`block px-6 py-4 text-base transition-colors duration-200 ${
+                        isActive(link.path)
+                          ? "font-bold text-emerald-600 bg-emerald-50"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                      onClick={forceCloseMenu}
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
 
-            {/* Call to action button */}
-            <div className="px-4 pb-4">
-              {children ? children : <NavbarButton />}
+              {/* Call to action button */}
+              <div className="px-4 pb-4 mt-auto">
+                {children ? children : <NavbarButton />}
+              </div>
             </div>
           </div>
-
-          {/* Centered navigation */}
-          <div
-            className={`hidden xl:block shrink-0 rounded-full transition-all duration-300 ${
-              isScrolled ? "py-4 px-10" : "py-7 px-14"
-            }`}
-          >
-            <ul className="flex justify-between items-center gap-x-9">
-              {links.map((link) => (
-                <li
-                  key={link.id}
-                  className="relative inline-block font-medium text-center h-7"
-                >
-                  <Link
-                    href={link.path}
-                    className={`text-base text-gray ${hoverEffect} ${
-                      isActive(link.path)
-                        ? "text-xl font-extrabold text-primary"
-                        : ""
-                    }`}
-                  >
-                    {link.title}
-                  </Link>
-
-                  <span className="relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0">
-                    {link.title}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Right - Mobile menu trigger */}
-          <div className="flex-1 text-right flex items-center justify-end">
-            {/* Enhanced Menu Icon */}
-            <Button
-              className="xl:hidden p-2 rounded-full bg-gradient-to-t from-white from-30 to-emerald-50 text-gray-700"
-              aria-expanded={isMenuOpen}
-              aria-label="Toggle navigation menu"
-              onClick={toggleMenu}
-            >
-              <Menu size={24} />
-            </Button>
-
-            <div className="ltr:ml-8 rtl:mr-8 hidden sm:block">
-              {children ? children : <NavbarButton />}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </>
   );
 };
 

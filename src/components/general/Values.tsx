@@ -25,22 +25,15 @@ const valuesConstants = [
   },
 ];
 
-const Values = async ({
-  locale,
-  error,
-}: {
-  locale: "ar" | "en";
-  error?: any;
-}) => {
+const Values = async ({ locale }: { locale: "ar" | "en" }) => {
   let values: any[] = [];
+  let error = null;
 
-  if (!error) {
-    try {
-      values = await websiteService.getOurValues(locale);
-    } catch (err) {
-      console.error("Error fetching values:", err);
-      error = err;
-    }
+  try {
+    values = await websiteService.getOurValues(locale);
+  } catch (err) {
+    console.error("Error fetching values:", err);
+    error = err;
   }
 
   return (
