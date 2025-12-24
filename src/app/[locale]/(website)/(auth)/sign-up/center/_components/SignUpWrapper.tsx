@@ -12,6 +12,7 @@ import LoadingOverlay from "@/components/forms/LoadingOverlay";
 import { UseFormReturn } from "react-hook-form";
 import { toastError } from "@/lib/toast";
 import { ApiError } from "@/lib/error-handling";
+import { trackSignUp } from "@/lib/snapchatPixel";
 
 const SignUpWrapper = () => {
   const router = useRouter();
@@ -138,6 +139,12 @@ const SignUpWrapper = () => {
       return await authService.registerCenter(data);
     },
     onSuccess: (data) => {
+      // Track Sign Up
+      trackSignUp({
+        sign_up_method: "Center",
+        // Center sign up might behave differently, check data structure if available, or just generic
+        // Assuming data returned might adhere to similar structure or we just track event
+      });
       router.push(`/${locale}/sign-in`);
     },
     onError,

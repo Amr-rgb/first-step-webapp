@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/promocodeService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, RefreshCw, Archive, Trash2 } from "lucide-react";
 import ExternalOfferCard from "./ExternalOfferCard";
 import ExternalOfferForm from "./ExternalOfferForm";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,12 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-// Define missing Dialog subcomponents locally if they don't exist in the main Dialog export
-// Usually Shadcn Dialog exports DialogContent, DialogHeader, etc.
-// If DialogDescription/Footer are missing, we can just use divs.
-// I will verify standard shadcn structure usually has them.
-// If not, I will use divs.
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export default function ExternalOffers() {
   const t = useTranslations("externalOffers");
@@ -74,6 +70,17 @@ export default function ExternalOffers() {
       toast.error(error.message || t("toast.deleteError"));
       setDeleteId(null);
       setIsPermanentDelete(false);
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: adminService.restoreExternalOffer,
+    onSuccess: () => {
+      toast.success(t("toast.restoreSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["external-offers"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || t("toast.restoreError"));
     },
   });
 
@@ -174,6 +181,7 @@ export default function ExternalOffers() {
               offer={offer}
               onDelete={setDeleteId}
               onEdit={handleEdit}
+              onRestore={(id) => restoreMutation.mutate(id)}
             />
           ))
         ) : (
@@ -190,7 +198,7 @@ export default function ExternalOffers() {
         offer={editingOffer}
       />
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete/Archive Confirmation Dialog */}
       <Dialog
         open={!!deleteId}
         onOpenChange={(open: boolean) => {
@@ -200,64 +208,58 @@ export default function ExternalOffers() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-right">
-              {t("dialog.confirmDelete.title")}
+            <DialogTitle className="text-xl font-bold flex items-center justify-start gap-2 rtl:flex-row-reverse">
+              <Archive className="w-5 h-5 text-primary" />
+              {t("buttons.archive")}
             </DialogTitle>
-            <div className="text-right text-gray-500 mt-2">
-              {t("dialog.confirmDelete.message")}
+            <div className="mt-2">
+              {t("dialog.confirmDelete.archiveOption")}
             </div>
           </DialogHeader>
 
-          <div className="space-y-3 my-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="deleteType"
-                checked={!isPermanentDelete}
-                onChange={() => setIsPermanentDelete(false)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">
-                أرشفة العرض (يمكن استرجاعه لاحقاً)
-              </span>
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="deleteType"
-                checked={isPermanentDelete}
-                onChange={() => setIsPermanentDelete(true)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm text-red-600">
-                حذف نهائي (لا يمكن استرجاعه)
-              </span>
-            </label>
+          <div className="flex items-center justify-start gap-2 py-4 px-2 bg-red-50/50 rounded-lg border border-red-100 mt-2 rtl:flex-row-reverse">
+            <Checkbox
+              id="permanent-delete"
+              checked={isPermanentDelete}
+              onCheckedChange={(checked: boolean) =>
+                setIsPermanentDelete(checked)
+              }
+              className="border-red-300 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
+            />
+            <span
+              // htmlFor="permanent-delete"
+              className="text-xs font-medium text-red-600 cursor-pointer"
+            >
+              {t("dialog.confirmDelete.deleteTitle")} ({" "}
+              {t("dialog.confirmDelete.deleteOption")} )
+            </span>
           </div>
 
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="flex flex-row-reverse gap-3 mt-6">
+            <Button
+              variant={isPermanentDelete ? "destructive" : "default"}
+              className="flex-1"
+              onClick={confirmDelete}
+              disabled={archiveMutation.isPending || deleteMutation.isPending}
+            >
+              {(archiveMutation.isPending || deleteMutation.isPending) && (
+                <RefreshCw className="w-4 h-4 ml-2 animate-spin" />
+              )}
+              {isPermanentDelete
+                ? t("buttons.permanentDelete")
+                : t("buttons.archive")}
+            </Button>
             <Button
               variant="outline"
+              className="flex-1"
               onClick={() => {
                 setDeleteId(null);
                 setIsPermanentDelete(false);
               }}
             >
               {t("buttons.cancel")}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-              disabled={archiveMutation.isPending || deleteMutation.isPending}
-            >
-              {archiveMutation.isPending || deleteMutation.isPending
-                ? t("buttons.processing")
-                : isPermanentDelete
-                ? t("buttons.permanentDelete")
-                : t("buttons.archive")}
             </Button>
           </div>
         </DialogContent>

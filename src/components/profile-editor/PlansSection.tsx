@@ -30,23 +30,66 @@ import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Zod schema for plan validation
+// Helper to normalize age for compatibility
+const normalizeAge = (
+  age: number | { type: string; age: number } | null | undefined
+) => {
+  if (age === null || age === undefined) {
+    return { type: "year", age: 0 };
+  }
+  if (typeof age === "number") {
+    return { type: "year", age };
+  }
+  return age;
+};
+
+// Zod schema for plan validation
 const createPlanSchema = (t: any, isEditing: boolean) =>
   z
     .object({
       title: z.string().min(1, t("titleRequired")).min(2, t("titleTooShort")),
-      start_age: z.number().min(0, t("startAgeInvalid")),
-      end_age: z.number().min(0, t("endAgeInvalid")),
+      start_age: z.object({
+        type: z.string(),
+        age: z.number().min(0, t("startAgeInvalid")),
+      }),
+      end_age: z.object({
+        type: z.string(),
+        age: z.number().min(0, t("endAgeInvalid")),
+      }),
       enrollment_type: z.string().min(1, t("enrollmentTypeRequired")),
       count: z.number().min(1, t("countMustBePositive")),
-      price_amount: z.number().min(0.01, t("priceMustBePositive")),
+      price_amount: z
+        .number({
+          invalid_type_error: t("priceMustBeNumber"),
+          required_error: t("priceRequired"),
+        })
+        .min(1, t("priceMustBePositive")),
       branches: isEditing
         ? z.array(z.string()).optional()
         : z.array(z.string()).min(1, t("selectBranchesError")),
     })
-    .refine((data) => data.end_age > data.start_age, {
-      message: t("endAgeMustBeGreater"),
-      path: ["end_age"],
-    });
+    .refine(
+      (data) => {
+        const startMonths =
+          data.start_age.type === "year"
+            ? data.start_age.age * 12
+            : data.start_age.age;
+        const endMonths =
+          data.end_age.type === "year"
+            ? data.end_age.age * 12
+            : data.end_age.age;
+        return endMonths > startMonths;
+      },
+      {
+        message: t("endAgeMustBeGreater"),
+        path: ["end_age"],
+      }
+    );
+
+type FormDataState = Omit<PricingFormData, "start_age" | "end_age"> & {
+  start_age: { type: string; age: number };
+  end_age: { type: string; age: number };
+};
 
 export const PlansSection = () => {
   const t = useTranslations("dashboard.profileEditor.plans");
@@ -58,11 +101,11 @@ export const PlansSection = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PricingFormData | null>(null);
 
-  const [formData, setFormData] = useState<PricingFormData>({
+  const [formData, setFormData] = useState<FormDataState>({
     enrollment_type: "",
     title: "",
-    start_age: 0,
-    end_age: 0,
+    start_age: { type: "month", age: 0 },
+    end_age: { type: "year", age: 0 },
     count: 0,
     price_amount: 0,
   });
@@ -133,8 +176,8 @@ export const PlansSection = () => {
     setFormData({
       enrollment_type: "",
       title: "",
-      start_age: 0,
-      end_age: 0,
+      start_age: { type: "month", age: 0 },
+      end_age: { type: "year", age: 0 },
       count: 0,
       price_amount: 0,
     });
@@ -155,7 +198,12 @@ export const PlansSection = () => {
 
   const handleEditPlan = (plan: PricingFormData) => {
     setEditingPlan(plan);
-    setFormData(plan);
+    setFormData({
+      ...plan,
+      start_age: normalizeAge(plan.start_age),
+      end_age: normalizeAge(plan.end_age),
+      price_amount: Number(plan.price_amount),
+    });
     setIsDialogOpen(true);
   };
 
@@ -197,7 +245,17 @@ export const PlansSection = () => {
     ).map((branchId) => {
       const updatedPricing = editingPlan
         ? branchPricing.map((p: PricingFormData) =>
-            p.id === editingPlan.id ? formData : p
+            p.id === editingPlan.id
+              ? {
+                  ...formData,
+                  price_amount: Number(formData.price_amount),
+                }
+              : {
+                  ...p,
+                  start_age: normalizeAge(p.start_age),
+                  end_age: normalizeAge(p.end_age),
+                  price_amount: Number(p.price_amount),
+                }
           )
         : [formData];
 
@@ -282,8 +340,8 @@ export const PlansSection = () => {
                           <h4 className="font-semibold">{plan.title}</h4>
                           {/* <p className="text-sm text-muted-foreground">
                               {t("ageRange", {
-                                start: plan.start_age,
-                                end: plan.end_age,
+                                start: `${plan.start_age.age} ${t(plan.start_age.type)}`,
+                                end: `${plan.end_age.age} ${t(plan.end_age.type)}`,
                               })}
                             </p>
                             <p className="text-sm">
@@ -379,43 +437,87 @@ export const PlansSection = () => {
             </div>
 
             {/* Age Range */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label>{t("startAge")}</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={formData.start_age}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      start_age: Number(e.target.value),
-                    });
-                    clearFieldError("start_age");
-                  }}
-                  className={formErrors.start_age ? "border-destructive" : ""}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    value={formData.start_age.age}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        start_age: {
+                          ...formData.start_age,
+                          age: Number(e.target.value),
+                        },
+                      });
+                      clearFieldError("start_age");
+                    }}
+                    className={formErrors.start_age ? "border-destructive" : ""}
+                  />
+                  <Select
+                    value={formData.start_age.type}
+                    onValueChange={(value) => {
+                      setFormData({
+                        ...formData,
+                        start_age: { ...formData.start_age, type: value },
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="w-[110px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="month">{t("month")}</SelectItem>
+                      <SelectItem value="year">{t("year")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {formErrors.start_age && (
                   <p className="text-sm text-destructive mt-1">
                     {formErrors.start_age}
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>{t("endAge")}</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={formData.end_age}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      end_age: Number(e.target.value),
-                    });
-                    clearFieldError("end_age");
-                  }}
-                  className={formErrors.end_age ? "border-destructive" : ""}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    value={formData.end_age.age}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        end_age: {
+                          ...formData.end_age,
+                          age: Number(e.target.value),
+                        },
+                      });
+                      clearFieldError("end_age");
+                    }}
+                    className={formErrors.end_age ? "border-destructive" : ""}
+                  />
+                  <Select
+                    value={formData.end_age.type}
+                    onValueChange={(value) => {
+                      setFormData({
+                        ...formData,
+                        end_age: { ...formData.end_age, type: value },
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="w-[110px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="month">{t("month")}</SelectItem>
+                      <SelectItem value="year">{t("year")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {formErrors.end_age && (
                   <p className="text-sm text-destructive mt-1">
                     {formErrors.end_age}
@@ -481,7 +583,6 @@ export const PlansSection = () => {
                 <Input
                   type="number"
                   min="0"
-                  step="0.01"
                   value={formData.price_amount}
                   onChange={(e) => {
                     setFormData({

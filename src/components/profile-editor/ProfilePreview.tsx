@@ -186,8 +186,28 @@ const PlansPreview = ({ locale }: { locale: string }) => {
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-600">
-                        {t("plans.ageRange")}: {plan.start_age}-{plan.end_age}{" "}
-                        {locale === "ar" ? "سنة" : "years"}
+                        {t("plans.ageRange")}:{" "}
+                        {typeof plan.start_age === "number"
+                          ? `${plan.start_age}`
+                          : plan.start_age?.age}{" "}
+                        {typeof plan.start_age === "number"
+                          ? locale === "ar"
+                            ? "سنة"
+                            : "Year"
+                          : plan.start_age?.type
+                          ? getEnrollmentTypeLabel(plan.start_age.type)
+                          : ""}{" "}
+                        -{" "}
+                        {typeof plan.end_age === "number"
+                          ? `${plan.end_age}`
+                          : plan.end_age?.age}{" "}
+                        {typeof plan.end_age === "number"
+                          ? locale === "ar"
+                            ? "سنة"
+                            : "Year"
+                          : plan.end_age?.type
+                          ? getEnrollmentTypeLabel(plan.end_age.type)
+                          : ""}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">

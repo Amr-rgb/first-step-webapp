@@ -18,6 +18,7 @@ export default function SnapPixel() {
         });
 
         snaptr('track', 'PAGE_VIEW');
+        snaptr('track', 'AD_CLICK');
       `}
     </Script>
   );

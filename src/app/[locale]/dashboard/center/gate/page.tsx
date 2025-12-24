@@ -7,15 +7,59 @@ import { Button } from "@/components/ui/button";
 import { centerService } from "@/services/dashboardApi";
 import { toastSuccess, toastError } from "@/lib/toast";
 import Image from "next/image";
-import { Copy } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
 
 import GateCodeModal from "@/components/modals/GateCodeModal";
 import { cn } from "@/lib/utils";
+import { DataTable } from "@/components/tables/DataTable";
+import {
+  useAttendanceColumns,
+  Attendance,
+} from "@/components/tables/data/attendance";
+import DatePicker from "@/components/general/DatePicker";
+import { useEffect } from "react";
+import { format, isSameDay, parse } from "date-fns";
 
 export default function FirstStepGatePage() {
   usePageMetadata();
   const t = useTranslations("dashboard.center.gate");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const columns = useAttendanceColumns();
+
+  const fetchAttendance = async () => {
+    setIsLoading(true);
+    try {
+      const response = await centerService.getAllAttendance();
+      // The API response.data is protected by the service to return response.data already
+      // Wait, let's check centerService.getAllAttendance in the file
+      setAttendance(response.data || []);
+    } catch (error) {
+      toastError(t("errors.fetchAttendance") || "Failed to fetch attendance");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendance();
+  }, []);
+
+  const filteredAttendance = attendance.filter((item) => {
+    if (!date) return true;
+
+    // Check item.created_date which is in "30/11/2025" or similar format
+    try {
+      const itemDate = parse(item.created_date, "dd/MM/yyyy", new Date());
+      return isSameDay(itemDate, date);
+    } catch (e) {
+      console.error("Error parsing date:", item.created_date);
+      return false;
+    }
+  });
 
   const handleCopyLink = (type: "googleplay" | "appstore") => {
     // For now, just show "Link copied" toast
@@ -126,47 +170,45 @@ export default function FirstStepGatePage() {
       </div>
 
       {/* Attendance Table Section */}
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="heading-4 mb-4 font-semibold">{t("attendanceTitle")}</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.number")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.childName")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.date")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.arrivalTime")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.departureTime")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.program")}
-                </th>
-                <th className="p-3 text-start text-sm font-medium text-gray-700">
-                  {t("table.branch")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td
-                  colSpan={7}
-                  className="p-8 text-center text-sm text-muted-foreground"
+      <div>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="heading-4 font-medium text-primary">
+            {t("attendanceTitle")}
+          </h2>
+
+          <div className="w-full sm:w-64">
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs text-muted-foreground block">
+                {t("table.date")}
+              </label>
+              {date && (
+                <button
+                  onClick={() => setDate(undefined)}
+                  className="text-xs text-primary hover:underline transition-all"
                 >
-                  {t("table.noData")}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  {t("table.showAll")}
+                </button>
+              )}
+            </div>
+            <DatePicker value={date} onChange={setDate} standalone={true} />
+          </div>
         </div>
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center p-12 space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">
+              {t("loading") || "Loading attendance records..."}
+            </p>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredAttendance}
+            noResultsMessage={t("table.noData")}
+            pagination
+          />
+        )}
       </div>
 
       <GateCodeModal

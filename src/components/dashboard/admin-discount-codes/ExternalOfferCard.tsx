@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import {
   Carousel,
@@ -16,33 +16,52 @@ interface ExternalOfferCardProps {
   offer: any;
   onDelete: (id: string) => void;
   onEdit: (offer: any) => void;
+  onRestore: (id: string) => void;
 }
 
 export default function ExternalOfferCard({
   offer,
   onDelete,
   onEdit,
+  onRestore,
 }: ExternalOfferCardProps) {
   const t = useTranslations("externalOffers");
   // Parsing photos if they are inconsistent
   const photos = Array.isArray(offer.photos) ? offer.photos : [];
+  const isArchived = offer.status === "archived";
 
   return (
     <Card className="relative overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-4 flex flex-col md:flex-row h-full">
-        {/* Delete Button - Positioned absolute or flex */}
-        <div className="absolute top-4 left-4 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(offer.id);
-            }}
-          >
-            <Trash2 className="w-5 h-5" />
-          </Button>
+        {/* Actions Button Group - Positioned absolute or flex */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+          {isArchived ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-green-500 hover:text-green-600 hover:bg-green-50 rounded-full shadow-sm bg-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRestore(offer.id);
+              }}
+              title={t("buttons.restore")}
+            >
+              <RefreshCw className="w-5 h-5" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm bg-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(offer.id);
+              }}
+              title={t("buttons.archive")}
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          )}
         </div>
 
         {/* Content Section (Right side in RTL) */}
@@ -61,29 +80,28 @@ export default function ExternalOfferCard({
             <p className="text-gray-700">{offer.descriptions}</p>
           </div>
 
-          <div className="space-y-2 mt-auto">
+          <div className="space-y-2 mt-auto text-sm">
             <p className="font-semibold text-primary">{offer.money_details}</p>
 
-            {offer.url && (
-              <a
-                href={offer.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline text-sm block dir-ltr truncate"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {offer.url}
-              </a>
+            {offer.location && (
+              <div className="flex items-center gap-1 ltr:flex-row rtl:flex-row-reverse">
+                <span className="text-gray-600 shrink-0">{t("location")}:</span>
+                <a
+                  href={offer.location}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-info hover:underline block truncate"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {offer.location}
+                </a>
+              </div>
             )}
           </div>
 
           <div className="text-start text-gray-600 text-sm">
             {offer.time_details}
             <div className="mt-1">{offer.additional_details}</div>
-            <div className="mt-1 font-bold">
-              <span>0553297766</span>
-              {/* This phone number seems hardcoded in image but likely comes from details */}
-            </div>
           </div>
         </div>
 

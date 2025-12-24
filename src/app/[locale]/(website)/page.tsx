@@ -11,6 +11,7 @@ import Contact from "@/components/general/contact/Contact";
 import { websiteService } from "@/services/api";
 import HeroWithEvents from "@/components/general/HeroWithEvents";
 import PreviewVideo from "@/components/general/PreviewVideo";
+import SnapPageTracker from "@/components/SnapPageTracker";
 
 export const revalidate = 86400;
 
@@ -257,6 +258,7 @@ export default async function HomePage({
       <BlogsWrapper locale={locale} number={4} />
       <FAQs commonQuestions={commonQuestions} error={error} locale={locale} />
       <Contact />
+      <SnapPageTracker />
     </main>
   );
 }

@@ -14,12 +14,16 @@
         "path": "/services"
       },
       "nurseries": {
-        "title": "الحضانات",
+        "title": "المراكز",
         "path": "/nurseries"
       },
       "coupon-codes": {
         "title": "العروض والخصومات",
         "path": "/offers-and-coupons"
+      },
+      "consultations": {
+        "title": "الاستشارات",
+        "path": "/consultations"
       },
       "blog": {
         "title": "المدونة",
@@ -1242,7 +1246,7 @@
         "subtitle": "سجل حضور وانصراف الأطفال بسهولة",
         "codeLabel": "اضغط زر التفعيل لتوليدك",
         "downloadApp": "شارك التطبيق مع موظفيك",
-        "attendanceTitle": "سجل الحضور",
+        "attendanceTitle": "سجل الحضور والانصراف",
         "buttons": {
           "generate": "توليد الكود",
           "generating": "جاري التوليد..."
@@ -1261,8 +1265,10 @@
           "date": "التاريخ",
           "arrivalTime": "وقت الحضور",
           "departureTime": "وقت الانصراف",
+          "temperature": "درجة الحرارة",
           "program": "البرنامج",
           "branch": "الفرع",
+          "showAll": "عرض الكل",
           "noData": "لا توجد سجلات حضور بعد"
         },
         "modal": {
@@ -2950,6 +2956,7 @@
       "cancel": "إلغاء",
       "submit": "رفع العرض على الموقع",
       "archive": "أرشفة",
+      "restore": "استعادة العرض",
       "permanentDelete": "حذف نهائي",
       "processing": "جاري المعالجة...",
       "saving": "جاري الحفظ..."
@@ -2999,15 +3006,19 @@
     },
     "dialog": {
       "confirmDelete": {
-        "title": "تأكيد الحذف",
-        "message": "هل أنت متأكد من أنك تريد حذف هذا العرض؟",
-        "archiveOption": "أرشفة العرض (يمكن استرجاعه لاحقاً)",
-        "deleteOption": "حذف نهائي (لا يمكن استرجاعه)"
+        "title": "إدارة حالة العرض",
+        "message": "كيف ترغب في معالجة هذا العرض؟",
+        "archiveTitle": "أرشفة العرض",
+        "archiveOption": "سيتم إخفاء العرض من الموقع مع إمكانية استعادته لاحقاً من قائمة المحذوفات.",
+        "deleteTitle": "حذف نهائي",
+        "deleteOption": "سيتم حذف العرض نهائياً، لا يمكن التراجع عن هذا الإجراء."
       }
     },
     "toast": {
       "archiveSuccess": "تم أرشفة العرض بنجاح",
       "archiveError": "حدث خطأ أثناء الأرشفة",
+      "restoreSuccess": "تم استعادة العرض بنجاح",
+      "restoreError": "حدث خطأ أثناء استعادة العرض",
       "deleteSuccess": "تم حذف العرض نهائياً",
       "deleteError": "حدث خطأ أثناء الحذف",
       "createSuccess": "تم إضافة العرض بنجاح",
@@ -3016,6 +3027,229 @@
       "imageLimit": "يمكنك رفع 10 صور كحد أقصى"
     },
     "forLimitedTime": "لفترة محدودة",
+    "location": "الموقع",
     "noImage": "لا توجد صورة"
+  },
+  "wallet": {
+    "title": "محفظتي",
+    "availableBalance": "الرصيد المستحق",
+    "cumulativeBalance": "الرصيد التراكمي",
+    "canWithdraw": "يمكنك طلب سحبه",
+    "dailyChanges": "تغييرات رصيدك اليومي",
+    "dateRange": "من {from} ل {to}",
+    "tablePlaceholder": "سجل السحب / العمليات",
+    "showBalanceHistory": "عرض سجل الرصيد",
+    "showWithdrawHistory": "عرض سجل السحب",
+    "requestWithdraw": "طلب سحب الرصيد",
+    "filters": {
+      "all": "الكل",
+      "accepted": "مدفوعة",
+      "pending": "قيد المراجعة",
+      "rejected": "مرفوضة"
+    },
+    "balanceHistory": {
+      "title": "سجل الرصيد",
+      "headers": {
+        "enrollmentId": "رقم الاشتراك",
+        "paymentDate": "تاريخ ووقت الدفع",
+        "branch": "الفرع",
+        "parentName": "اسم ولي الأمر",
+        "balanceBefore": "الرصيد قبل",
+        "amount": "المبلغ",
+        "balanceAfter": "الرصيد بعد"
+      },
+      "currency": "ر.س",
+      "noData": "لا توجد سجلات"
+    },
+    "withdrawRequests": {
+      "title": "سجل طلبات السحب",
+      "headers": {
+        "withdrawId": "رقم السحب",
+        "requestDate": "تاريخ ووقت طلب السحب",
+        "amount": "مبلغ السحب",
+        "method": "طريقة السحب",
+        "status": "حالة التحويل",
+        "receipt": "إيصال التحويل"
+      },
+      "currency": "ر.س",
+      "noData": "لا توجد طلبات سحب",
+      "status": {
+        "accepted": "مدفوعة",
+        "pending": "قيد المراجعة",
+        "rejected": "مرفوضة"
+      },
+      "methods": {
+        "moyasar": "ميسر"
+      }
+    },
+    "errors": {
+      "noBalance": "لا يوجد رصيد متاح للسحب",
+      "withdrawFailed": "فشل في إرسال طلب السحب",
+      "loadFailed": "فشل في تحميل البيانات"
+    },
+    "success": {
+      "withdrawSent": "تم إرسال طلب السحب بنجاح"
+    }
+  },
+  "consultations": {
+    "tabs": {
+      "parents": "استشارات للأفراد",
+      "centers": "استشارات للمراكز"
+    },
+    "share": {
+      "button": "شارك رابط الاستشارات مع دائرتك المقربة",
+      "title": "استشارات First Step",
+      "copied": "تم نسخ الرابط بنجاح"
+    },
+    "parent": {
+      "intro": "نقدم لأولياء الأمور والمعلمين استشارات تربوية ونفسية متخصصة تساعدهم على فهم احتياجات أطفالهم والتعامل مع التحديات السلوكية والتعليمية بأسلوب واعٍ ومناسب لكل مرحلة عمرية.",
+      "bullet1": "نقدم لأولياء الأمور والمعلمين",
+      "bullet2": "نقدم لأولياء الأمور والمعلمين",
+      "bullet3": "نقدم لأولياء الأمور والمعلمين",
+      "formTitle": "استشيرنا لطفلك ولنفسك"
+    },
+    "center": {
+      "intro": "نوفر للحضانات والمراكز التعليمية استشارات متخصصة لدعم الكوادر التعليمية وتطوير بيئة تعليمية آمنة وفعالة بما يواكب أفضل الممارسات التربوية.",
+      "bullet1": "نقدم لأولياء الأمور والمعلمين",
+      "bullet2": "نقدم لأولياء الأمور والمعلمين",
+      "bullet3": "نقدم لأولياء الأمور والمعلمين",
+      "formTitle": "استشيرنا لتحسين وتطوير مركزك"
+    },
+    "form": {
+      "subtitle": "إذا كان لديك استفسار أو مشكلة لا تتردد بالتواصل معنا",
+      "name": "الاسم",
+      "namePlaceholder": "مثال: هبة الله عمارة",
+      "phone": "رقم الجوال",
+      "phonePlaceholder": "",
+      "email": "الايميل",
+      "emailPlaceholder": "mennaemarauxi@gmail.com",
+      "kindOfUser": "نوع الفرد",
+      "kindOfUserPlaceholder": "مثال: ولي أمر",
+      "subject": "موضوع الاستشارة",
+      "subjectPlaceholder": "مثال: تربوي",
+      "file": "إرفاق ملف",
+      "filePlaceholder": "ارفق ملف له علاقة بالاستشارة",
+      "description": "اكتب استشارتك",
+      "descriptionPlaceholder": "اكتب استشارتك",
+      "centerName": "اسم المركز",
+      "centerNamePlaceholder": "مثال: حضانة Kids time",
+      "centerSpec": "تخصص المركز",
+      "centerSpecPlaceholder": "مثال: تربوي",
+      "requesterName": "اسم مقدم طلب الاستشارة",
+      "requesterNamePlaceholder": "مثال: أحمد محمد",
+      "requesterMission": "مهنة مقدم طلب الاستشارة",
+      "requesterMissionPlaceholder": "مثال: مدير فرع الرياض",
+      "cancel": "إلغاء",
+      "submit": "إرسال الاستشارة",
+      "submitting": "جاري الإرسال...",
+      "success": "تم إرسال الاستشارة بنجاح!",
+      "error": "حدث خطأ أثناء إرسال الاستشارة",
+      "kindOptions": {
+        "parent": "ولي أمر",
+        "teacher": "معلم/معلمة",
+        "other": "أخرى"
+      },
+      "subjectOptions": {
+        "educational": "تربوي",
+        "psychological": "نفسي",
+        "behavioral": "سلوكي",
+        "administrative": "إداري",
+        "technical": "تقني",
+        "other": "أخرى"
+      },
+      "centerSpecOptions": {
+        "nursery": "حضانة",
+        "educational": "تعليمي",
+        "rehabilitation": "تأهيلي",
+        "other": "أخرى"
+      },
+      "missionOptions": {
+        "manager": "مدير",
+        "supervisor": "مشرف",
+        "teacher": "معلم/معلمة",
+        "other": "أخرى"
+      },
+      "errors": {
+        "required": "هذا الحقل مطلوب",
+        "invalidEmail": "البريد الإلكتروني غير صالح"
+      }
+    },
+    "tipsTitle": "تثقيف وتوعية",
+    "tips": {
+      "parents": [
+        {
+          "title": "تعزيز الاستقلالية",
+          "description": "تشجيع الطفل على الاعتماد على نفسه في المهام البسيطة يبني شخصيته ويعزز شعوره بالمسؤولية",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "مراعاة الفروق الفردية",
+          "description": "كل طفل له قدراته وسرعته الخاصة في التعلم، ومقارنة الأطفال ببعضهم قد تؤثر سلباً على ثقتهم بأنفسهم",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "التشجيع بدل العقاب",
+          "description": "تعزيز السلوك الإيجابي بالكلمة الطيبة أو المكافآت البسيطة يساعد الطفل على التعلم بطريقة أفضل من العقاب",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "روتين يومي ثابت",
+          "description": "وجود روتين واضح للنوم، الأكل، والتعلم يساعد الطفل على الشعور بالأمان ويزيد من تركيزه واستقراره السلوكي",
+          "image": "/assets/illustrations/tips/board.png"
+        },
+        {
+          "title": "التواصل الإيجابي مع الطفل",
+          "description": "الاستماع للطفل والتحدث معه بهدوء يعزز ثقته بنفسه ويقوي العلاقة بينه وبين والديه والمعلمين",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "التعلم من خلال اللعب",
+          "description": "اللعب وسيلة فعالة لتطوير مهارات الطفل الذهنية والاجتماعية وتحفيزه على التعلم بدون ضغط",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "تهيئة بيئة تعليمية مناسبة",
+          "description": "توفير مكان هادئ ومريح يساعد الطفل على التركيز ويجعل عملية التعلم أكثر سهولة ومتعة",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ],
+      "centers": [
+        {
+          "title": "مراعاة الفروق الفردية",
+          "description": "الاهتمام باختلاف قدرات الأطفال واحتياجاتهم يساعد على خلق بيئة تعليمية عادلة وداعمة للجميع",
+          "image": "/assets/illustrations/tips/little-girl.png"
+        },
+        {
+          "title": "التواصل مع أولياء الأمور",
+          "description": "التواصل المستمر والشفاف مع أولياء الأمور يعزز الثقة ويساهم في متابعة تطور الطفل بشكل أفضل",
+          "image": "/assets/illustrations/tips/woman-playing.png"
+        },
+        {
+          "title": "تنظيم الروتين اليومي",
+          "description": "وضع جدول يومي واضح ومتوازن بين التعلم واللعب والراحة يساعد الأطفال على الاستقرار والالتزام داخل المركز",
+          "image": "/assets/illustrations/tips/follow-your-dreams.png"
+        },
+        {
+          "title": "جاهزية المبنى وسلامته",
+          "description": "التأكد من سلامة المبنى، التهوية الجيدة، الإضاءة المناسبة، ومساحات اللعب الآمنة يوفّر بيئة صحية ومريحة",
+          "image": "/assets/illustrations/tips/team-work.png"
+        },
+        {
+          "title": "توفير أدوات تعليمية مناسبة",
+          "description": "استخدام وسائل تعليمية آمنة ومتنوعة يدعم عملية التعلم ويحفز الأطفال على المشاركة والاستكشاف",
+          "image": "/assets/illustrations/tips/woman-communicating.png"
+        },
+        {
+          "title": "التعلم من خلال اللعب",
+          "description": "اللعب وسيلة فعالة لتطوير مهارات الطفل الذهنية والاجتماعية وتحفيزه على التعلم بدون ضغط",
+          "image": "/assets/illustrations/tips/baby-playing.png"
+        },
+        {
+          "title": "تهيئة بيئة تعليمية مناسبة",
+          "description": "توفير مكان هادئ ومريح يساعد الطفل على التركيز ويجعل عملية التعلم أكثر سهولة ومتعة",
+          "image": "/assets/illustrations/tips/boy-reading.png"
+        }
+      ]
+    }
   }
 }

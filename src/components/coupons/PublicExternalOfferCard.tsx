@@ -55,27 +55,27 @@ export default function PublicExternalOfferCard({
             <p className="text-gray-700">{offer.descriptions}</p>
           </div>
 
-          <div className="space-y-2 mt-auto">
+          <div className="space-y-2 mt-auto text-sm">
             <p className="font-semibold text-primary">{offer.money_details}</p>
 
-            {offer.url && (
-              <a
-                href={offer.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline text-sm block ltr:text-left rtl:text-right truncate"
-              >
-                {offer.url}
-              </a>
+            {offer.location && (
+              <div className="flex items-center gap-1 ltr:flex-row rtl:flex-row-reverse">
+                <span className="text-gray-600 shrink-0">{t("location")}:</span>
+                <a
+                  href={offer.location}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-info hover:underline block truncate"
+                >
+                  {offer.location}
+                </a>
+              </div>
             )}
           </div>
 
           <div className="text-start text-gray-600 text-sm">
             {offer.time_details}
             <div className="mt-1">{offer.additional_details}</div>
-            <div className="mt-1 font-bold">
-              <span>0553297766</span>
-            </div>
           </div>
         </div>
 
