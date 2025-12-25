@@ -76,8 +76,6 @@ export const apiClient = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION,
-    "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET,
   },
 });
 
@@ -227,8 +225,8 @@ export const websiteService = {
           headers: {
             "Content-Type": "application/json",
             lang: locale,
-            "X-Authorization": process.env.X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
+            "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -1381,14 +1379,25 @@ export const enrollmentService = {
 export const parentService = {
   getChildren: async (): Promise<any[]> => {
     try {
+      console.log("[parentService.getChildren] Calling API endpoint: /parent/children");
       const response = await apiClient.get("/parent/children");
+      console.log("[parentService.getChildren] Response status:", response.status);
+      console.log("[parentService.getChildren] Response data:", JSON.stringify(response.data, null, 2));
+      
       // Some endpoints return { data: [...] } while others return [] directly
       const data = response.data;
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data?.data)) return data.data;
+      if (Array.isArray(data)) {
+        console.log("[parentService.getChildren] Data is array, returning:", data.length, "items");
+        return data;
+      }
+      if (Array.isArray(data?.data)) {
+        console.log("[parentService.getChildren] Data.data is array, returning:", data.data.length, "items");
+        return data.data;
+      }
+      console.log("[parentService.getChildren] No array found, returning empty array");
       return [];
     } catch (error) {
-      console.error("Error fetching parent children:", error);
+      console.error("[parentService.getChildren] Error occurred:", error);
       throw ApiErrorHandler.handle(error);
     }
   },

@@ -16,7 +16,8 @@ import {
   getBranchPricingAction,
   createEnrollmentAction,
 } from "@/actions/nurseryActions";
-import { getChildrenAction } from "@/actions/parentActions";
+import { parentService as dashboardParentService } from "@/services/dashboardApi";
+import { parentService } from "@/services/api";
 import { applyPromoCodeAction } from "@/actions/promoCodeActions";
 import { ApplyPromoCodeResponse } from "@/services/dashboardApi";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
@@ -772,10 +773,24 @@ const ReservationForm = ({
     error: childrenError,
   } = useQuery({
     queryKey: ["parent-children"],
-    queryFn: () => getChildrenAction(),
+    queryFn: () => dashboardParentService.getParentChildren(),
     enabled: !submitSuccess && !!authUser,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Debug logging for children data
+  useEffect(() => {
+    console.log("[ReservationForm] Children query state:", {
+      isLoading: isChildrenLoading,
+      hasError: !!childrenError,
+      error: childrenError,
+      childrenCount: realChildren?.length,
+      children: realChildren,
+      authUser: !!authUser,
+      submitSuccess,
+      queryEnabled: !submitSuccess && !!authUser,
+    });
+  }, [realChildren, isChildrenLoading, childrenError, authUser, submitSuccess]);
 
   // -- Derived Data --
   const defaultPlans: Plan[] = useMemo(() => {
