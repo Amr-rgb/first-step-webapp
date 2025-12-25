@@ -14,10 +14,9 @@ import DatePicker from "@/components/general/DatePicker";
 import { format } from "date-fns";
 import {
   getBranchPricingAction,
-  createEnrollmentAction,
 } from "@/actions/nurseryActions";
 import { parentService as dashboardParentService } from "@/services/dashboardApi";
-import { parentService } from "@/services/api";
+import { parentService, enrollmentService } from "@/services/api";
 import { applyPromoCodeAction } from "@/actions/promoCodeActions";
 import { ApplyPromoCodeResponse } from "@/services/dashboardApi";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
@@ -1083,13 +1082,21 @@ const ReservationForm = ({
     e.preventDefault();
     setIsSubmitting(true);
 
+    console.log("[ReservationForm] Form submission started");
+    console.log("[ReservationForm] Selected children:", selectedChildren);
+    console.log("[ReservationForm] Selected plan:", selectedPlanObj);
+    console.log("[ReservationForm] Selected branch:", selectedBranch);
+    console.log("[ReservationForm] Auth user:", authUser);
+
     const planId = selectedPlanObj?.planId;
     if (!planId) {
+      console.error("[ReservationForm] No plan selected");
       toastError(t("errors.noPlanSelected"));
       setIsSubmitting(false);
       return;
     }
     if (!selectedBranch) {
+      console.error("[ReservationForm] No branch selected");
       toastError(t("errors.noBranchSelected"));
       setIsSubmitting(false);
       return;
@@ -1097,6 +1104,7 @@ const ReservationForm = ({
 
     const phone =
       (authUser as any)?.phone || (authUser as any)?.user?.phone || "";
+    console.log("[ReservationForm] Parent phone:", phone);
 
     try {
       const enrollmentPayload: any = {
@@ -1117,7 +1125,11 @@ const ReservationForm = ({
         enrollmentPayload.starting_date = bookingDate;
       }
 
-      await createEnrollmentAction(enrollmentPayload);
+      console.log("[ReservationForm] Enrollment payload:", enrollmentPayload);
+      
+      const result = await enrollmentService.createEnrollment(enrollmentPayload);
+      console.log("[ReservationForm] Enrollment created successfully:", result);
+      
       setIsSubmitting(false);
       setSubmitSuccess(true);
       toastSuccess(t("success.bookingSent"));
@@ -1126,7 +1138,14 @@ const ReservationForm = ({
         setTimeout(() => onClose(), 1500);
       }
     } catch (err: any) {
-      console.error("Booking error:", err);
+      console.error("[ReservationForm] Booking error:", err);
+      console.error("[ReservationForm] Error details:", {
+        message: err?.message,
+        data: err?.data,
+        error: err?.error,
+        status: err?.status,
+        errors: err?.errors,
+      });
       setIsSubmitting(false);
 
       const errorTitle = t("errors.bookingError");
@@ -1134,6 +1153,7 @@ const ReservationForm = ({
 
       if (err?.data?.error) errorDescription = err.data.error;
       else if (err?.error) errorDescription = err.error;
+      else if (err?.message) errorDescription = err.message;
 
       toastError(errorTitle, errorDescription);
     }
