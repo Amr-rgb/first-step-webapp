@@ -43,5 +43,13 @@ export async function createEnrollmentAction(payload: {
   starting_time?: string;
   starting_date?: string;
 }) {
-  return await enrollmentService.createEnrollment(payload);
+  console.log("[createEnrollmentAction] Starting enrollment creation with payload:", payload);
+  try {
+    const result = await enrollmentService.createEnrollment(payload);
+    console.log("[createEnrollmentAction] Enrollment created successfully:", result);
+    return result;
+  } catch (error) {
+    console.error("[createEnrollmentAction] Error creating enrollment:", error);
+    throw error;
+  }
 }
