@@ -23,7 +23,11 @@ import { authService } from "@/services/api";
 import { useRouter } from "@/i18n/navigation";
 import { LoaderCircle } from "lucide-react";
 
-const SendEmailForm = ({ onSuccess }: { onSuccess?: (email: string) => void }) => {
+const SendEmailForm = ({
+  onSuccess,
+}: {
+  onSuccess?: (email: string) => void;
+}) => {
   const t = useTranslations("auth.forgot-password.form");
   const tBtns = useTranslations("auth.buttons");
   const locale = useLocale();
@@ -67,7 +71,11 @@ const SendEmailForm = ({ onSuccess }: { onSuccess?: (email: string) => void }) =
       if (!error?.errors?.email) {
         form.setError("root", {
           type: "server",
-          message: error.message || "خطأ غير متوقع",
+          message:
+            error.message ||
+            (locale === "ar"
+              ? "خطأ غير متوقع"
+              : "An unexpected error occurred"),
         });
       }
     },
@@ -105,7 +113,9 @@ const SendEmailForm = ({ onSuccess }: { onSuccess?: (email: string) => void }) =
         />
 
         {form.formState.errors.root && (
-          <p className="text-action">{form.formState.errors.root.message}</p>
+          <p className="text-action text-center text-sm font-medium">
+            {form.formState.errors.root.message}
+          </p>
         )}
 
         <div className="mt-12 flex flex-col items-center gap-y-4">
@@ -123,13 +133,17 @@ const SendEmailForm = ({ onSuccess }: { onSuccess?: (email: string) => void }) =
                 <LoaderCircle />
               </span>
             )}
-            {tBtns("send-code")}
+            {mutation.isPending || form.formState.isSubmitting
+              ? locale === "ar"
+                ? "جاري الإرسال..."
+                : "Sending..."
+              : tBtns("send-code")}
           </Button>
           <Button
             variant={"outline"}
             size={"long"}
             type="button"
-            className="text-mid-gray !border-light-gray"
+            className="text-mid-gray border-light-gray!"
             disabled={
               mutation.isPending ||
               mutation.isSuccess ||
