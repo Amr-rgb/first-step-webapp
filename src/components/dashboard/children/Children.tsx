@@ -140,7 +140,7 @@ const Children = ({
             name={child.child_name}
             birthday={child.birthday_date}
             gender={child.gender}
-            userName={userName || child.user.name}
+            userName={userName || child.user?.name}
             image={child.image}
             disease_details={
               (child.disease_details
