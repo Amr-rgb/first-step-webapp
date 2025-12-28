@@ -24,7 +24,13 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/api";
 import { useRouter } from "@/i18n/navigation";
 
-const ResetPasswordForm = ({ email, onSuccess }: { email: string; onSuccess?: () => void }) => {
+const ResetPasswordForm = ({
+  email,
+  onSuccess,
+}: {
+  email: string;
+  onSuccess?: () => void;
+}) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const t = useTranslations("auth.reset-password.form");
@@ -160,23 +166,35 @@ const ResetPasswordForm = ({ email, onSuccess }: { email: string; onSuccess?: ()
         )}
 
         <div className="mt-12 flex flex-col items-center gap-y-4">
-        <Button
-          size={"long"}
-          type="submit"
-          disabled={mutation.isPending || mutation.isSuccess || !form.formState.isValid}
-        >
-          {(mutation.isPending || mutation.isSuccess) && (
-            <span className="animate-spin mr-2.5">
-              <LoaderCircle />
-            </span>
-          )}
-          {mutation.isPending ? "Updating Password..." : "Reset Password"}
-        </Button>
+          <Button
+            size={"long"}
+            type="submit"
+            disabled={
+              mutation.isPending ||
+              mutation.isSuccess ||
+              !form.formState.isValid
+            }
+          >
+            {(mutation.isPending ||
+              mutation.isSuccess ||
+              form.formState.isSubmitting) && (
+              <span className="animate-spin mr-2.5">
+                <LoaderCircle />
+              </span>
+            )}
+            {mutation.isPending || form.formState.isSubmitting
+              ? locale === "ar"
+                ? "جاري التحديث..."
+                : "Updating..."
+              : locale === "ar"
+              ? "إعادة تعيين كلمة السر"
+              : "Reset Password"}
+          </Button>
           <Button
             variant={"outline"}
             size={"long"}
             type="button"
-            className="text-mid-gray !border-light-gray"
+            className="text-mid-gray border-light-gray!"
             disabled={mutation.isPending || mutation.isSuccess}
           >
             <span>{tBtns("sign-in-google")}</span>
