@@ -41,16 +41,16 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
 
-  let commonQuestions: any[];
-  let error = null;
+  let commonQuestions: any[] = [];
+  // let error = null;
 
-  try {
-    commonQuestions = await websiteService.getCommonQuestions(locale);
-  } catch (err: any) {
-    console.error("Error fetching common questions:", err);
-    error = err;
-    commonQuestions = [];
-  }
+  // try {
+  //   commonQuestions = await websiteService.getCommonQuestions(locale);
+  // } catch (err: any) {
+  //   console.error("Error fetching common questions:", err);
+  //   error = err;
+  //   commonQuestions = [];
+  // }
 
   if (!commonQuestions || commonQuestions.length === 0) {
     // notFound();
@@ -256,7 +256,7 @@ export default async function HomePage({
       {/* <VisionMission /> */}
       <Values locale={locale} />
       <BlogsWrapper locale={locale} number={4} />
-      <FAQs commonQuestions={commonQuestions} error={error} locale={locale} />
+      <FAQs commonQuestions={commonQuestions} locale={locale} />
       <Contact />
       <SnapPageTracker />
     </main>
