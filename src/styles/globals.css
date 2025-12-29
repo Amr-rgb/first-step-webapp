@@ -8,6 +8,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Global HTML overflow fix - Prevents horizontal page shift on RTL layouts */
+/* This must be outside @layer to have high enough specificity */
+html {
+  overflow-x: hidden !important;
+  scrollbar-gutter: stable;
+}
+
 @theme {
   /* Black & White */
   --color-black: #000000;
@@ -319,14 +326,7 @@
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* Removed duplicate @layer base block that was overriding body overflow-x-hidden */
 /* Sonner Toast Styling - Match Notification Components */
 [data-sonner-toaster] {
   --width: 356px;
