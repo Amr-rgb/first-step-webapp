@@ -38,6 +38,7 @@ import {
 } from "@/components/tables/data/wallet-withdraw-requests";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 
 // Tab types
 type TableTab = "balanceHistory" | "withdrawRequests";
@@ -212,47 +213,57 @@ export function WalletPageClient() {
         {/* Info Cards Column */}
         <div className="flex flex-col gap-4 h-full justify-start">
           {/* Total Balance Card */}
-          <Card className="flex flex-col flex-1 justify-center items-center p-6 bg-white shadow-sm border-none relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-full h-2 bg-primary"></div>
-            <div className="text-center z-10">
-              <h3 className="text-lg text-muted-foreground font-medium mb-2">
+          <Card className="flex flex-1 justify-between items-center p-6 bg-white border shadow-none relative overflow-hidden">
+            <div className=" z-10">
+              <h3 className="text-base text-gray font-bold mb-2">
                 {t("availableBalance")}
               </h3>
-              <div className="text-4xl font-bold text-primary flex items-center justify-center gap-1">
-                {isBalanceLoading ? (
-                  <Skeleton className="h-10 w-24" />
-                ) : (
-                  <>
-                    <span>{balanceData?.available_balance || 0}</span>
-                    <span className="sar">$</span>
-                  </>
-                )}
-              </div>
               <p className="text-sm text-info mt-2 cursor-pointer">
                 {t("canWithdraw")}
               </p>
             </div>
+            <div className="text-3xl lg:text-5xl font-bold text-primary flex items-center justify-center gap-1">
+              {isBalanceLoading ? (
+                <Skeleton className="h-10 w-24" />
+              ) : (
+                <>
+                  <span>{balanceData?.available_balance || 0}</span>
+                  <span className="sar">$</span>
+                </>
+              )}
+            </div>
           </Card>
 
           {/* Cumulative Balance Card */}
-          <Card className="flex flex-col flex-1 justify-center items-center p-6 bg-primary text-primary-foreground shadow-sm border-none relative overflow-hidden">
-            <div className="absolute inset-0 bg-blue-gradient opacity-90"></div>
-            <div className="text-center z-10 relative">
-              <h3 className="text-lg font-medium mb-2 opacity-90">
-                {t("cumulativeBalance")}
-              </h3>
-              <div className="text-4xl font-bold flex items-center justify-center gap-1">
-                {isBalanceHistoryLoading ? (
-                  <Skeleton className="h-10 w-24 bg-white/20" />
-                ) : (
-                  <>
-                    <span>{cumulativeBalance}</span>
-                    <span className="sar">$</span>
-                  </>
-                )}
-              </div>
+          <Card className="flex flex-col flex-1 justify-center p-6 bg-primary text-primary-foreground shadow-none border-none relative overflow-hidden">
+            <h3 className="text-lg font-medium mb-2 opacity-90">
+              {t("cumulativeBalance")}
+            </h3>
+            <div className="text-3xl lg:text-5xl font-bold flex items-center gap-1">
+              {isBalanceHistoryLoading ? (
+                <Skeleton className="h-10 w-24 bg-white/20" />
+              ) : (
+                <>
+                  <span>{cumulativeBalance}</span>
+                  <span className="sar">$</span>
+                </>
+              )}
             </div>
-            <div className="absolute bottom-0 right-0 w-16 h-16 bg-white/10 rounded-tl-full"></div>
+
+            <div className="z-50 absolute left-0 top-1/2 -translate-y-1/2">
+              <Image
+                src="/assets/illustrations/safe-money.png"
+                alt="wallet"
+                width={144}
+                height={124}
+              />
+            </div>
+
+            <div className="z-40 absolute w-full aspect-square right-[60%] top-1/2 -translate-y-1/2">
+              <div className="rotate-90 absolute w-full h-full rounded-full blue-gradient" />
+              <div className="rotate-45 absolute w-full h-full rounded-full blue-gradient -translate-x-[15px]" />
+              <div className="absolute w-full h-full rounded-full blue-gradient -translate-x-[30px]" />
+            </div>
           </Card>
         </div>
 
