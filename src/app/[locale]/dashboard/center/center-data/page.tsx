@@ -125,6 +125,8 @@ const ProfileEditor = () => {
       title: t("sections.branches"),
       component: BranchesSection,
     },
+        { id: "plans", title: t("sections.plans"), component: PlansSection },
+
     {
       id: "philosophy",
       title: t("sections.philosophy"),
@@ -148,7 +150,6 @@ const ProfileEditor = () => {
     { id: "contact", title: t("sections.contact"), component: ContactSection },
     // { id: "ads", title: t("sections.ads"), component: AdsSection },
     { id: "teams", title: t("sections.teams"), component: TeamsSection },
-    { id: "plans", title: t("sections.plans"), component: PlansSection },
   ];
 
   if (!canViewCenterData) {
@@ -186,7 +187,7 @@ const ProfileEditor = () => {
       <Card className="max-w-4xl mx-auto shadow-none border-0">
         <CardHeader className="p-0 pb-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl sm:text-2xl lg:text-3xl">
+            <CardTitle className="text-xl sm:text-2xl lg:text-3xl m-b:8rem">
               {t("title")}
             </CardTitle>
             <div className="flex gap-2">

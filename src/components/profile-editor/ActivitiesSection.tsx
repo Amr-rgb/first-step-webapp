@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ImagesUploader } from "@/components/forms/ImagesUploader";
 import { PortfolioFormData } from "@/types";
 import { useTranslations } from "next-intl";
@@ -24,18 +25,19 @@ export const ActivitiesSection = ({
     });
   };
 
-  const handleSubtitleChange = (value: string) => {
+  
+  const handleDescriptionChange = (value: string) => {
     onChange({
       ...data,
-      activity_section_subtitle: value,
+      activity_section_description: value,
     });
   };
 
   return (
     <div className="space-y-6">
       {/* Section Title and Subtitle */}
-      <div className="grid grid-cols-1">
-        {/* <div className="space-y-2">
+      <div className="grid grid-cols-1 space-y-6">
+        {/* <div className="space-y-3">
           <Label
             htmlFor="activity_section_title"
             className="text-sm font-medium"
@@ -51,19 +53,21 @@ export const ActivitiesSection = ({
           />
         </div> */}
 
-        <div className="space-y-2">
+       
+
+        <div className="space-y-3">
           <Label
-            htmlFor="activity_section_subtitle"
+            htmlFor="activity_section_description"
             className="text-sm font-medium"
           >
-            {t("sectionSubtitle")}
+            {t("sectionDescription")}
           </Label>
-          <Input
-            id="activity_section_subtitle"
-            value={data.activity_section_subtitle || ""}
-            onChange={(e) => handleSubtitleChange(e.target.value)}
-            placeholder={t("sectionSubtitlePlaceholder")}
-            className="h-10"
+          <Textarea
+            id="activity_section_description"
+            value={data.activity_section_description || ""}
+            onChange={(e) => handleDescriptionChange(e.target.value)}
+            placeholder={t("sectionDescriptionPlaceholder")}
+            rows={3}
           />
         </div>
       </div>

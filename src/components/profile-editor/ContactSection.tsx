@@ -31,7 +31,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
   return (
     <div className="space-y-6">
       {/* Address */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="address">{t("address")}</Label>
         <Textarea
           id="address"
@@ -44,7 +44,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
 
       {/* Working hours + phone */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label htmlFor="working_hours">{t("workingHours")}</Label>
           <Input
             id="working_hours"
@@ -54,7 +54,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label htmlFor="phone_number">{t("phoneNumber")}</Label>
           <Input
             id="phone_number"
@@ -66,7 +66,7 @@ export const ContactSection = ({ data, onChange }: ContactSectionProps) => {
       </div>
 
       {/* Email */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="email_address">{t("emailAddress")}</Label>
         <Input
           id="email_address"

@@ -2085,6 +2085,8 @@
         "sectionTitlePlaceholder": "عنوان الأنشطة",
         "sectionSubtitle": "العنوان الفرعي للقسم",
         "sectionSubtitlePlaceholder": "أدخل العنوان الفرعي للأنشطة",
+        "sectionDescription": "وصف القسم",
+        "sectionDescriptionPlaceholder": "أدخل وصف الأنشطة",
         "activityImages": "صور الأنشطة",
         "addImage": "إضافة صورة",
         "noImages": "لا يوجد أنشطة"

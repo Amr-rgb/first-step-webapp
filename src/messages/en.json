@@ -2089,6 +2089,8 @@
         "sectionTitlePlaceholder": "Enter activities section title",
         "sectionSubtitle": "Section Subtitle",
         "sectionSubtitlePlaceholder": "Enter activities section subtitle",
+        "sectionDescription": "Section Description",
+        "sectionDescriptionPlaceholder": "Enter activities section description",
         "activityImages": "Activity Images",
         "addImage": "Add Image",
         "noImages": "No images added yet"
