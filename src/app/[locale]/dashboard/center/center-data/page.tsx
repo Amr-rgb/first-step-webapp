@@ -111,8 +111,9 @@ const ProfileEditor = () => {
 
   const handleSavePortfolio = () => {
     if (!hasChanges || !currentData) return;
-    const dirtyData = getDirtyData();
-    savePortfolio(dirtyData);
+    // Always send complete data, not just dirty fields
+    // This ensures arrays like services are sent completely
+    savePortfolio(currentData);
     // Update original data after save
     setOriginalData(currentData);
     setHasChanges(false);
