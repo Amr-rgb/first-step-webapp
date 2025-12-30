@@ -382,7 +382,6 @@ export interface PortfolioData {
   nursery_state?: NurseryState;
   images_activities?: string[];
   activity_section_title?: string;
-  activity_section_subtitle?: string;
   activity_section_description?: string;
   teams?: TeamMember[];
   contact_info?: ContactInfo;
