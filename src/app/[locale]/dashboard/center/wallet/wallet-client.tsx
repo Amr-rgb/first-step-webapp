@@ -208,10 +208,10 @@ export function WalletPageClient() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:h-[264px]">
         {/* Info Cards Column */}
-        <div className="flex flex-col gap-4 h-full justify-start">
+        <div className="flex flex-col sm:flex-row lg:flex-col gap-4 h-full justify-start">
           {/* Total Balance Card */}
           <Card className="flex flex-1 justify-between items-center p-6 bg-white border shadow-none relative overflow-hidden">
             <div className=" z-10">
@@ -269,8 +269,8 @@ export function WalletPageClient() {
 
         {/* Chart Section */}
         <div className="lg:col-span-2 h-full">
-          <Card className="h-full border-none shadow-sm flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <Card className="h-full border-none shadow-none flex flex-col">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-lg font-medium">
                 {t("dailyChanges")}
               </CardTitle>
@@ -296,9 +296,9 @@ export function WalletPageClient() {
 
       {/* Table Section */}
       <div className="mt-4">
-        <Card className="border-none shadow-sm">
+        <Card className="border-none shadow-none">
           <CardHeader className="pb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               {/* Left Side: Buttons (Toggle View & Request Withdraw) */}
               <div className="flex items-center gap-2">
                 {/* Withdraw Request Button */}
@@ -368,7 +368,7 @@ export function WalletPageClient() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <div>
             {activeTab === "balanceHistory" ? (
               <DataTable
                 columns={balanceHistoryColumns}
@@ -384,7 +384,7 @@ export function WalletPageClient() {
                 pagination
               />
             )}
-          </CardContent>
+          </div>
         </Card>
       </div>
     </div>
