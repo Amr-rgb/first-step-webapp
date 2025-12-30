@@ -987,6 +987,15 @@ export const centerService = {
     }
   },
 
+  getPromocodes: async () => {
+    try {
+      const response = await apiClient.get("/promocodes");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   // Portfolio endpoints
   savePortfolio: async (payload: PortfolioFormData) => {
     try {

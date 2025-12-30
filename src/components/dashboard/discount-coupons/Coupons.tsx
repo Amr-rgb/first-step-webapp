@@ -15,31 +15,30 @@ import { toastSuccess, toastError } from "@/lib/toast";
 
 type FilterType = "all" | "active" | "not-started" | "paused" | "expired";
 
-interface PaymentHistoryItem {
-  id: number;
-  total: string;
-  plan: string;
-  duration: number;
-  city: {
-    id: number;
-    name: {
-      en: string;
-      ar: string;
-    };
-  } | null;
-  address: string;
-  logo: string;
-  nursery_name: string;
-  name: string;
-  email: string;
-  neighborhood: string;
-  location: string;
-  start_of_subscription: string;
-  end_of_subscription: string;
-  status: "active" | "expired";
-}
-
 type CouponStatus = "active" | "not-started" | "paused" | "expired";
+
+interface PromocodeApiResponse {
+  id: number;
+  title: string;
+  description: string;
+  percentage: string;
+  start_date: string;
+  end_date: string;
+  max_number_of_usage: number;
+  kind_of_child: string;
+  status: string;
+  color: string;
+  amount: string;
+  center_id: number | null;
+  branch_id: number | null;
+  paid_enrollments_count: number;
+  centers: Array<{ id: number; name: string }>;
+  branches: Array<{ id: number; name: string; center_id: number }>;
+  is_global: boolean;
+  scope_type: string;
+  created_at: string;
+  updated_at: string;
+}
 
 interface Coupon {
   id: string;
@@ -58,14 +57,14 @@ export default function Coupons() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch payment history from API
+  // Fetch promocodes from API
   const {
-    data: paymentHistoryResponse,
+    data: promocodesResponse,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["center-payment-history"],
-    queryFn: () => centerService.getSubscriptionsLog(),
+    queryKey: ["center-promocodes"],
+    queryFn: () => centerService.getPromocodes(),
   });
 
   // Request new promocode mutation
@@ -88,25 +87,23 @@ export default function Coupons() {
     },
   });
 
-  // Transform payment history data to coupon format
+  // Transform promocodes API data to coupon format
   const coupons: Coupon[] = useMemo(() => {
-    if (!paymentHistoryResponse?.data) return [];
+    if (!promocodesResponse?.data) return [];
 
-    const paymentHistory: PaymentHistoryItem[] = paymentHistoryResponse.data;
+    const promocodes: PromocodeApiResponse[] = promocodesResponse.data;
 
-    return paymentHistory.map((payment) => {
-      // Determine status based on payment status and dates
+    return promocodes.map((promo) => {
+      // Map API status to component status
       let status: CouponStatus = "expired";
-      const now = new Date();
-      const startDate = new Date(payment.start_of_subscription);
-      const endDate = new Date(payment.end_of_subscription);
-
-      if (payment.status === "active" && endDate > now) {
+      const apiStatus = promo.status.toLowerCase();
+      
+      if (apiStatus === "active") {
         status = "active";
-      } else if (startDate > now) {
+      } else if (apiStatus === "not-started" || apiStatus === "not_started") {
         status = "not-started";
-      } else if (payment.status === "active" && endDate <= now) {
-        status = "expired";
+      } else if (apiStatus === "paused") {
+        status = "paused";
       } else {
         status = "expired";
       }
@@ -122,25 +119,18 @@ export default function Coupons() {
         });
       };
 
-      // Calculate discount (if any - this might need to be adjusted based on actual API response)
-      // For now, we'll use the plan duration as a proxy for discount percentage
-      const discountPercentage =
-        payment.duration >= 12 ? 20 : payment.duration >= 6 ? 15 : 10;
-      const discountValue =
-        (parseFloat(payment.total) * discountPercentage) / 100;
-
       return {
-        id: payment.id.toString(),
-        couponName: payment.plan || "Subscription",
-        discountPercentage,
-        discountValue: Math.round(discountValue),
-        startDate: formatDate(payment.start_of_subscription),
-        endDate: formatDate(payment.end_of_subscription),
-        usageCount: 1, // Each payment is a single usage
+        id: promo.id.toString(),
+        couponName: promo.title,
+        discountPercentage: parseFloat(promo.percentage),
+        discountValue: parseFloat(promo.amount),
+        startDate: formatDate(promo.start_date),
+        endDate: formatDate(promo.end_date),
+        usageCount: promo.paid_enrollments_count,
         status,
       };
     });
-  }, [paymentHistoryResponse, locale]);
+  }, [promocodesResponse, locale]);
 
   const filters = [
     { value: "all" as FilterType, label: t("filters.all") },
@@ -215,7 +205,7 @@ export default function Coupons() {
         <div className="py-12 text-center text-red-500">
           {error instanceof Error
             ? error.message
-            : "Failed to load payment history"}
+            : "Failed to load promocodes"}
         </div>
       </div>
     );
