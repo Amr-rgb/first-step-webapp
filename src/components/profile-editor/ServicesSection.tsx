@@ -127,7 +127,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                 <div className="space-y-3">
                   <Label>{t("serviceTitle")}</Label>
                   <Input
-                    value={service.title}
+                    value={service.title || ''}
                     onChange={(e) =>
                       updateService(index, "title", e.target.value)
                     }
@@ -139,11 +139,11 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                   <div className="flex justify-between items-center">
                     <Label>{t("serviceDescription")}</Label>
                     <span className="text-xs text-muted-foreground">
-                      {service.description.length}/200
+                      {(service.description || '').length}/200
                     </span>
                   </div>
                   <Textarea
-                    value={service.description}
+                    value={service.description || ''}
                     onChange={(e) =>
                       updateService(index, "description", e.target.value)
                     }
