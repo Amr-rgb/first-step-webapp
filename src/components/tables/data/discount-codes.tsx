@@ -12,8 +12,6 @@ export type DiscountCode = {
   startDate: string;
   endDate: string;
   usageLimit: number;
-  usedCount: number;
-  pendingUsage: number;
   discountPercentage: number;
   discountValue: number;
   status: DiscountCodeStatus;
@@ -79,34 +77,6 @@ export const useDiscountCodesColumns = ({
         return (
           <div className="text-center">
             {limit} {t("table.usage")}
-          </div>
-        );
-      },
-    },
-    // 5. Pending Usage
-    {
-      accessorKey: "pendingUsage",
-      header: () => (
-        <div className="text-center">{t("table.pendingUsage")}</div>
-      ),
-      cell: ({ row }) => {
-        const pendingUsage = row.getValue("pendingUsage") as number;
-        return (
-          <div className="text-center">
-            {pendingUsage} {t("table.usage")}
-          </div>
-        );
-      },
-    },
-    // 6. Used Count
-    {
-      accessorKey: "usedCount",
-      header: () => <div className="text-center">{t("table.usedCount")}</div>,
-      cell: ({ row }) => {
-        const usedCount = row.getValue("usedCount") as number;
-        return (
-          <div className="text-center">
-            {usedCount} {t("table.usage")}
           </div>
         );
       },

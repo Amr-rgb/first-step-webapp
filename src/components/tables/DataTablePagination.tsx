@@ -32,7 +32,7 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex items-center justify-center gap-4 px-2">
-      <div className="text-sm text-primary">
+      <div className="text-sm text-primary" dir="ltr">
         {start} - {end} of {totalRows}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
@@ -86,13 +86,13 @@ export function DataTablePagination<TData>({
           <SelectTrigger
             data-color={"#2b3990"}
             style={{ "--icon-color": "#2b3990" } as React.CSSProperties}
-            className="p-2 !py-0 w-fit border-none !bg-[#8080801A] text-primary"
+            className="p-2 py-0! w-fit border-none bg-[#8080801A]! text-primary"
           >
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
           <SelectContent side="top">
             {[10, 20, 30, 40, 50].map((pageSize) => (
-              <SelectItem className="!p-2" key={pageSize} value={`${pageSize}`}>
+              <SelectItem className="p-2!" key={pageSize} value={`${pageSize}`}>
                 {pageSize}
               </SelectItem>
             ))}

@@ -507,6 +507,12 @@ export function getDashboardMetadata(
 
 export function makePageMetadata(locale: Locale, pathname: string): Metadata {
   const m = getDashboardMetadata(locale, pathname);
+  const baseUrl = "https://firststep-app.com";
+
+  // Normalize route for alternates
+  const route = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/") || "/";
+  const cleanRoute = route === "/" ? "" : route;
+
   return {
     title: m.title,
     description: m.description,
@@ -515,9 +521,11 @@ export function makePageMetadata(locale: Locale, pathname: string): Metadata {
       description: m.description,
     },
     alternates: {
+      canonical: `${baseUrl}/${locale}${cleanRoute}`,
       languages: {
-        en: "/en",
-        ar: "/ar",
+        en: `${baseUrl}/en${cleanRoute}`,
+        ar: `${baseUrl}/ar${cleanRoute}`,
+        "x-default": `${baseUrl}/ar${cleanRoute}`,
       },
     },
   };

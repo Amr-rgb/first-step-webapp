@@ -38,9 +38,11 @@ export async function generateMetadata({
 
   return {
     alternates: {
+      canonical: `${baseUrl}/${locale}${route}`,
       languages: {
         en: `${baseUrl}/en${route}`,
         ar: `${baseUrl}/ar${route}`,
+        "x-default": `${baseUrl}/ar${route}`,
       },
     },
   };

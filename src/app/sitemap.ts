@@ -42,6 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             en: `${baseUrl}/en${route === "" ? "" : route}`,
             ar: `${baseUrl}/ar${route === "" ? "" : route}`,
+            "x-default": `${baseUrl}/ar${route === "" ? "" : route}`,
           },
         },
       });
@@ -67,6 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             languages: {
               en: `${baseUrl}/en/nurseries/${slug}`,
               ar: `${baseUrl}/ar/nurseries/${slug}`,
+              "x-default": `${baseUrl}/ar/nurseries/${slug}`,
             },
           },
         });
@@ -94,6 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             languages: {
               en: `${baseUrl}/en/blog/${blog.id}`,
               ar: `${baseUrl}/ar/blog/${blog.id}`,
+              "x-default": `${baseUrl}/ar/blog/${blog.id}`,
             },
           },
         });

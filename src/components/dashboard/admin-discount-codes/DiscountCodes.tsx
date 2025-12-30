@@ -92,8 +92,6 @@ export default function DiscountCodes() {
         ? format(new Date(promo.end_date), "dd / MM / yyyy")
         : "",
       usageLimit: promo.max_number_of_usage || 0,
-      usedCount: promo.used_count || 0,
-      pendingUsage: promo.pending_usage || 0,
       discountPercentage: parseFloat(promo.percentage) || 0,
       discountValue: promo.amount ? parseFloat(promo.amount) : 0,
       status: mapApiStatus(promo.status),

@@ -151,7 +151,7 @@ export function DataTable<TData, TValue>({
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={header.id} className="rtl:text-right">
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -171,7 +171,6 @@ export function DataTable<TData, TValue>({
                       key={row.id}
                       id={getRowId ? getRowId(row.original) : undefined}
                       data-state={row.getIsSelected() && "selected"}
-                      className="transition-all"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

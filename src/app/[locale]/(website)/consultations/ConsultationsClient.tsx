@@ -38,24 +38,28 @@ interface ConsultationsClientProps {
 
 // Parent consultation form schema
 const parentConsultationSchema = z.object({
-  name: z.string().min(1, "required"),
-  phone: z.string().min(1, "required"),
-  email: z.string().email("invalidEmail"),
-  kind_of_user: z.string().min(1, "required"),
-  subject_of_consultation: z.string().min(1, "required"),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email("invalidEmail").optional().or(z.literal("")),
+  kind_of_user: z.string().optional(),
+  kind_of_user_other: z.string().optional(),
+  subject_of_consultation: z.string().optional(),
+  subject_of_consultation_other: z.string().optional(),
   description: z.string().min(1, "required"),
   file: z.any().optional(),
 });
 
 // Center consultation form schema
 const centerConsultationSchema = z.object({
-  center_name: z.string().min(1, "required"),
-  center_specification: z.string().min(1, "required"),
-  name_of_consultan_request: z.string().min(1, "required"),
-  mission_of_consultant_request: z.string().min(1, "required"),
-  phone: z.string().min(1, "required"),
-  email: z.string().email("invalidEmail"),
-  subject_of_consultan: z.string().min(1, "required"),
+  center_name: z.string().optional(),
+  center_specification: z.string().optional(),
+  center_specification_other: z.string().optional(),
+  name_of_consultan_request: z.string().optional(),
+  mission_of_consultant_request: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email("invalidEmail").optional().or(z.literal("")),
+  subject_of_consultan: z.string().optional(),
+  subject_of_consultan_other: z.string().optional(),
   description: z.string().min(1, "required"),
   file: z.any().optional(),
 });
@@ -114,7 +118,9 @@ export default function ConsultationsClient({
       phone: "",
       email: "",
       kind_of_user: "",
+      kind_of_user_other: "",
       subject_of_consultation: "",
+      subject_of_consultation_other: "",
       description: "",
       file: null,
     },
@@ -125,11 +131,13 @@ export default function ConsultationsClient({
     defaultValues: {
       center_name: "",
       center_specification: "",
+      center_specification_other: "",
       name_of_consultan_request: "",
       mission_of_consultant_request: "",
       phone: "",
       email: "",
       subject_of_consultan: "",
+      subject_of_consultan_other: "",
       description: "",
       file: null,
     },
@@ -170,11 +178,17 @@ export default function ConsultationsClient({
         }
 
         const payload = {
-          name: data.name,
-          phone: `+966${data.phone}`,
-          email: data.email,
-          kind_of_user: data.kind_of_user,
-          subject_of_consultation: data.subject_of_consultation,
+          name: data.name || "",
+          phone: data.phone ? `+966${data.phone}` : "",
+          email: data.email || "",
+          kind_of_user:
+            data.kind_of_user === "other"
+              ? data.kind_of_user_other || "Other"
+              : data.kind_of_user || "",
+          subject_of_consultation:
+            data.subject_of_consultation === "other"
+              ? data.subject_of_consultation_other || "Other"
+              : data.subject_of_consultation || "",
           description: data.description,
         };
 
@@ -204,13 +218,20 @@ export default function ConsultationsClient({
         }
 
         const payload = {
-          center_name: data.center_name,
-          center_specification: data.center_specification,
-          name_of_consultan_request: data.name_of_consultan_request,
-          mission_of_consultant_request: data.mission_of_consultant_request,
-          phone: `+966${data.phone}`,
-          email: data.email,
-          subject_of_consultan: data.subject_of_consultan,
+          center_name: data.center_name || "",
+          center_specification:
+            data.center_specification === "other"
+              ? data.center_specification_other || "Other"
+              : data.center_specification || "",
+          name_of_consultan_request: data.name_of_consultan_request || "",
+          mission_of_consultant_request:
+            data.mission_of_consultant_request || "",
+          phone: data.phone ? `+966${data.phone}` : "",
+          email: data.email || "",
+          subject_of_consultan:
+            data.subject_of_consultan === "other"
+              ? data.subject_of_consultan_other || "Other"
+              : data.subject_of_consultan || "",
           description: data.description,
         };
 
@@ -388,6 +409,7 @@ function ParentFormSection({
           label={t("form.name")}
           error={form.formState.errors.name}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("name")}
@@ -400,6 +422,7 @@ function ParentFormSection({
           label={t("form.phone")}
           error={form.formState.errors.phone}
           t={t}
+          required={false}
         >
           <Controller
             name="phone"
@@ -416,43 +439,58 @@ function ParentFormSection({
           />
         </FormField>
 
-        <FormField
-          label={t("form.kindOfUser")}
-          error={form.formState.errors.kind_of_user}
-          t={t}
-        >
-          <Controller
-            name="kind_of_user"
-            control={form.control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  className={cn(
-                    form.formState.errors.kind_of_user && "border-destructive"
-                  )}
-                >
-                  <SelectValue placeholder={t("form.kindOfUserPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="parent">
-                    {t("form.kindOptions.parent")}
-                  </SelectItem>
-                  <SelectItem value="teacher">
-                    {t("form.kindOptions.teacher")}
-                  </SelectItem>
-                  <SelectItem value="other">
-                    {t("form.kindOptions.other")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </FormField>
+        <div className="space-y-4">
+          <FormField
+            label={t("form.kindOfUser")}
+            error={form.formState.errors.kind_of_user}
+            t={t}
+            required={false}
+          >
+            <Controller
+              name="kind_of_user"
+              control={form.control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.kind_of_user && "border-destructive"
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={t("form.kindOfUserPlaceholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="parent">
+                      {t("form.kindOptions.parent")}
+                    </SelectItem>
+                    <SelectItem value="teacher">
+                      {t("form.kindOptions.teacher")}
+                    </SelectItem>
+                    <SelectItem value="other">
+                      {t("form.kindOptions.other")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormField>
+          {form.watch("kind_of_user") === "other" && (
+            <Input
+              {...form.register("kind_of_user_other")}
+              placeholder={
+                t("form.kindOfUserOtherPlaceholder") || "Please specify"
+              }
+              className="mt-2"
+            />
+          )}
+        </div>
 
         <FormField
           label={t("form.email")}
           error={form.formState.errors.email}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("email")}
@@ -462,42 +500,54 @@ function ParentFormSection({
           />
         </FormField>
 
-        <FormField
-          label={t("form.subject")}
-          error={form.formState.errors.subject_of_consultation}
-          t={t}
-        >
-          <Controller
-            name="subject_of_consultation"
-            control={form.control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  className={cn(
-                    form.formState.errors.subject_of_consultation &&
-                      "border-destructive"
-                  )}
-                >
-                  <SelectValue placeholder={t("form.subjectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="educational">
-                    {t("form.subjectOptions.educational")}
-                  </SelectItem>
-                  <SelectItem value="psychological">
-                    {t("form.subjectOptions.psychological")}
-                  </SelectItem>
-                  <SelectItem value="behavioral">
-                    {t("form.subjectOptions.behavioral")}
-                  </SelectItem>
-                  <SelectItem value="other">
-                    {t("form.subjectOptions.other")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </FormField>
+        <div className="space-y-4">
+          <FormField
+            label={t("form.subject")}
+            error={form.formState.errors.subject_of_consultation}
+            t={t}
+            required={false}
+          >
+            <Controller
+              name="subject_of_consultation"
+              control={form.control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.subject_of_consultation &&
+                        "border-destructive"
+                    )}
+                  >
+                    <SelectValue placeholder={t("form.subjectPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="educational">
+                      {t("form.subjectOptions.educational")}
+                    </SelectItem>
+                    <SelectItem value="psychological">
+                      {t("form.subjectOptions.psychological")}
+                    </SelectItem>
+                    <SelectItem value="behavioral">
+                      {t("form.subjectOptions.behavioral")}
+                    </SelectItem>
+                    <SelectItem value="other">
+                      {t("form.subjectOptions.other")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormField>
+          {form.watch("subject_of_consultation") === "other" && (
+            <Input
+              {...form.register("subject_of_consultation_other")}
+              placeholder={
+                t("form.subjectOtherPlaceholder") || "Please specify"
+              }
+              className="mt-2"
+            />
+          )}
+        </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">
@@ -521,6 +571,7 @@ function ParentFormSection({
         label={t("form.description")}
         error={form.formState.errors.description}
         t={t}
+        required={true}
       >
         <Textarea
           {...form.register("description")}
@@ -557,6 +608,7 @@ function CenterFormSection({
           label={t("form.centerName")}
           error={form.formState.errors.center_name}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("center_name")}
@@ -567,47 +619,62 @@ function CenterFormSection({
           />
         </FormField>
 
-        <FormField
-          label={t("form.centerSpec")}
-          error={form.formState.errors.center_specification}
-          t={t}
-        >
-          <Controller
-            name="center_specification"
-            control={form.control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  className={cn(
-                    form.formState.errors.center_specification &&
-                      "border-destructive"
-                  )}
-                >
-                  <SelectValue placeholder={t("form.centerSpecPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="nursery">
-                    {t("form.centerSpecOptions.nursery")}
-                  </SelectItem>
-                  <SelectItem value="educational">
-                    {t("form.centerSpecOptions.educational")}
-                  </SelectItem>
-                  <SelectItem value="rehabilitation">
-                    {t("form.centerSpecOptions.rehabilitation")}
-                  </SelectItem>
-                  <SelectItem value="other">
-                    {t("form.centerSpecOptions.other")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </FormField>
+        <div className="space-y-4">
+          <FormField
+            label={t("form.centerSpec")}
+            error={form.formState.errors.center_specification}
+            t={t}
+            required={false}
+          >
+            <Controller
+              name="center_specification"
+              control={form.control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.center_specification &&
+                        "border-destructive"
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={t("form.centerSpecPlaceholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nursery">
+                      {t("form.centerSpecOptions.nursery")}
+                    </SelectItem>
+                    <SelectItem value="educational">
+                      {t("form.centerSpecOptions.educational")}
+                    </SelectItem>
+                    <SelectItem value="rehabilitation">
+                      {t("form.centerSpecOptions.rehabilitation")}
+                    </SelectItem>
+                    <SelectItem value="other">
+                      {t("form.centerSpecOptions.other")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormField>
+          {form.watch("center_specification") === "other" && (
+            <Input
+              {...form.register("center_specification_other")}
+              placeholder={
+                t("form.centerSpecOtherPlaceholder") || "Please specify"
+              }
+              className="mt-2"
+            />
+          )}
+        </div>
 
         <FormField
           label={t("form.requesterName")}
           error={form.formState.errors.name_of_consultan_request}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("name_of_consultan_request")}
@@ -623,6 +690,7 @@ function CenterFormSection({
           label={t("form.requesterMission")}
           error={form.formState.errors.mission_of_consultant_request}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("mission_of_consultant_request")}
@@ -638,6 +706,7 @@ function CenterFormSection({
           label={t("form.phone")}
           error={form.formState.errors.phone}
           t={t}
+          required={false}
         >
           <Controller
             name="phone"
@@ -658,6 +727,7 @@ function CenterFormSection({
           label={t("form.email")}
           error={form.formState.errors.email}
           t={t}
+          required={false}
         >
           <Input
             {...form.register("email")}
@@ -667,42 +737,54 @@ function CenterFormSection({
           />
         </FormField>
 
-        <FormField
-          label={t("form.subject")}
-          error={form.formState.errors.subject_of_consultan}
-          t={t}
-        >
-          <Controller
-            name="subject_of_consultan"
-            control={form.control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  className={cn(
-                    form.formState.errors.subject_of_consultan &&
-                      "border-destructive"
-                  )}
-                >
-                  <SelectValue placeholder={t("form.subjectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="educational">
-                    {t("form.subjectOptions.educational")}
-                  </SelectItem>
-                  <SelectItem value="administrative">
-                    {t("form.subjectOptions.administrative")}
-                  </SelectItem>
-                  <SelectItem value="technical">
-                    {t("form.subjectOptions.technical")}
-                  </SelectItem>
-                  <SelectItem value="other">
-                    {t("form.subjectOptions.other")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </FormField>
+        <div className="space-y-4">
+          <FormField
+            label={t("form.subject")}
+            error={form.formState.errors.subject_of_consultan}
+            t={t}
+            required={false}
+          >
+            <Controller
+              name="subject_of_consultan"
+              control={form.control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      form.formState.errors.subject_of_consultan &&
+                        "border-destructive"
+                    )}
+                  >
+                    <SelectValue placeholder={t("form.subjectPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="educational">
+                      {t("form.subjectOptions.educational")}
+                    </SelectItem>
+                    <SelectItem value="administrative">
+                      {t("form.subjectOptions.administrative")}
+                    </SelectItem>
+                    <SelectItem value="technical">
+                      {t("form.subjectOptions.technical")}
+                    </SelectItem>
+                    <SelectItem value="other">
+                      {t("form.subjectOptions.other")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </FormField>
+          {form.watch("subject_of_consultan") === "other" && (
+            <Input
+              {...form.register("subject_of_consultan_other")}
+              placeholder={
+                t("form.subjectOtherPlaceholder") || "Please specify"
+              }
+              className="mt-2"
+            />
+          )}
+        </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">
@@ -726,6 +808,7 @@ function CenterFormSection({
         label={t("form.description")}
         error={form.formState.errors.description}
         t={t}
+        required={true}
       >
         <Textarea
           {...form.register("description")}
@@ -829,15 +912,19 @@ function FormField({
   error,
   children,
   t,
+  required,
 }: {
   label: string;
   error?: any;
   children: React.ReactNode;
   t: any;
+  required?: boolean;
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-destructive">*</span>}
+      </label>
       {children}
       {error && (
         <p className="text-sm text-destructive">

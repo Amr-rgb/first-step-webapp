@@ -8,6 +8,32 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const validLocales = ["ar", "en"];
 
+  // 0. Redirect old/legacy URLs for SEO
+  const legacyRedirects: Record<string, string> = {
+    "/about": "/our-story",
+    "/terms-of-service": "/terms-conditions",
+  };
+
+  // Check if pathname (without locale) is a legacy route
+  for (const locale of validLocales) {
+    for (const [oldPath, newPath] of Object.entries(legacyRedirects)) {
+      if (pathname === `/${locale}${oldPath}`) {
+        return NextResponse.redirect(
+          new URL(`/${locale}${newPath}`, request.url),
+          301
+        );
+      }
+    }
+  }
+
+  // Handle bare legacy redirects (without locale prefix)
+  if (legacyRedirects[pathname]) {
+    // This will let the locale logic below handle adding the locale after redirecting the path
+    const url = request.nextUrl.clone();
+    url.pathname = legacyRedirects[pathname];
+    return NextResponse.redirect(url, 301);
+  }
+
   // 1. Check for existing locale in pathname
   const localeMatch = pathname.match(/^\/(\w+)/);
   const potentialLocale = localeMatch ? localeMatch[1] : null;

@@ -30,7 +30,13 @@ import { useRouter } from "@/i18n/navigation";
 import { LoaderCircle } from "lucide-react";
 import { ApiError } from "@/lib/error-handling";
 
-const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => void }) => {
+const SendOTPForm = ({
+  email,
+  onSuccess,
+}: {
+  email: string;
+  onSuccess?: () => void;
+}) => {
   const t = useTranslations("auth.otp.form");
   const tBtns = useTranslations("auth.buttons");
   const router = useRouter();
@@ -55,7 +61,10 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
     mutationFn: async (data) => {
       if (!email) {
         throw {
-          message: "Email not found.",
+          message:
+            locale === "ar"
+              ? "البريد الإلكتروني غير موجود."
+              : "Email not found.",
           errors: {},
           status: 400,
         };
@@ -128,7 +137,7 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
     if (resendCount >= MAX_RESEND_ATTEMPTS) {
       form.setError("root", {
         type: "limit",
-        message: "Maximum resend attempts reached. Please try again later.",
+        message: t("max-attempts-reached"),
       });
       return;
     }
@@ -141,16 +150,31 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col space-y-6"
       >
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-mid-gray text-center break-all">
+            {t("description")}{" "}
+            <span className="font-semibold text-primary">{email}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/forgot-password")}
+            className="text-primary text-sm hover:underline font-medium"
+          >
+            {locale === "ar" ? "تغيير البريد الإلكتروني" : "Change Email"}
+          </button>
+        </div>
+
         <FormField
           control={form.control}
           name="otp"
           render={({ field }) => (
             <FormItem dir="ltr" className="flex flex-col items-center">
-              <FormLabel className="font-medium text-mid-gray">
-                {t("description")}
-              </FormLabel>
               <FormControl>
-                <InputOTP maxLength={4} {...field}>
+                <InputOTP
+                  maxLength={4}
+                  {...field}
+                  disabled={mutation.isPending}
+                >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
@@ -159,34 +183,41 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
                   </InputOTPGroup>
                 </InputOTP>
               </FormControl>
-              <FormDescription className="font-medium text-mid-gray text-base">
+              <FormDescription className="font-medium text-mid-gray text-base mt-4">
                 {otpExpired ? (
                   resendCount >= MAX_RESEND_ATTEMPTS ? (
                     <span className="font-normal text-red-600">
                       {t("max-attempts-reached")}
                     </span>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={handleResendOTP}
-                      disabled={
-                        resendMutation.isPending ||
-                        resendCount >= MAX_RESEND_ATTEMPTS
-                      }
-                      className="text-primary hover:text-primary-dark underline disabled:text-gray-400 disabled:no-underline"
-                    >
-                      {resendMutation.isPending ? (
-                        <span className="flex items-center gap-2">
-                          <LoaderCircle size={14} className="animate-spin" />
-                          Sending...
-                        </span>
-                      ) : (
-                        t("resend-code")
-                      )}
-                    </button>
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-red-500 text-sm italic">
+                        {t("timer-expired")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleResendOTP}
+                        disabled={
+                          resendMutation.isPending ||
+                          resendCount >= MAX_RESEND_ATTEMPTS
+                        }
+                        className="text-primary hover:text-primary-dark underline disabled:text-gray-400 disabled:no-underline"
+                      >
+                        {resendMutation.isPending ? (
+                          <span className="flex items-center gap-2">
+                            <LoaderCircle size={14} className="animate-spin" />
+                            {locale === "ar" ? "جاري الإرسال..." : "Sending..."}
+                          </span>
+                        ) : (
+                          t("resend-code")
+                        )}
+                      </button>
+                    </div>
                   )
                 ) : (
-                  `${t("timer")} ${timeLeft}`
+                  <span className="tabular-nums">
+                    {t("timer")} {timeLeft}
+                  </span>
                 )}
               </FormDescription>
               <FormMessage />
@@ -195,7 +226,7 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
         />
 
         {form.formState.errors.root && (
-          <p className="text-action text-center">
+          <p className="text-action text-center text-sm font-medium">
             {form.formState.errors.root.message}
           </p>
         )}
@@ -211,7 +242,11 @@ const SendOTPForm = ({ email, onSuccess }: { email: string; onSuccess?: () => vo
                 <LoaderCircle />
               </span>
             )}
-            {t("verify")}
+            {mutation.isPending || form.formState.isSubmitting
+              ? locale === "ar"
+                ? "جاري التحقق..."
+                : "Verifying..."
+              : t("verify")}
           </Button>
         </div>
       </form>
