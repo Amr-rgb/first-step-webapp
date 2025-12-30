@@ -75,6 +75,7 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
 
   const isPending = center.status === "pending";
   const isRejected = center.status === "canceled";
+  const isConfirmed = center.status === "confirmed";
 
   return (
     <div
@@ -95,9 +96,9 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
           >
             {t(`status.${center.status}`)}
           </span>
-          {(isPending || isRejected) && (
+          {(isPending || isRejected || isConfirmed) && (
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm p-1 rounded-lg">
-              {isPending && (
+              {(isPending || isConfirmed) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -111,18 +112,20 @@ const CenterCard = ({ center }: { center: CenterCardType }) => {
                   {t("reject")}
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleAccept}
-                disabled={isProcessing}
-                className="text-green-600 hover:bg-green-50 h-8 px-3"
-              >
-                {isProcessing && acceptMutation.isPending ? (
-                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                ) : null}
-                {isRejected ? t("accept") : t("accept")}
-              </Button>
+              {(isPending || isRejected) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAccept}
+                  disabled={isProcessing}
+                  className="text-green-600 hover:bg-green-50 h-8 px-3"
+                >
+                  {isProcessing && acceptMutation.isPending ? (
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  ) : null}
+                  {t("accept")}
+                </Button>
+              )}
             </div>
           )}
         </div>
