@@ -123,7 +123,7 @@ export default function NewsletterPopup({
           {/* Illustrations - Absolute Positioned (Desktop) */}
 
           {/* Offer Alert (Megaphone) - Top Left */}
-          <div className="absolute top-0 left-8 z-10 w-32 md:w-48 hidden md:block">
+          <div className="absolute top-0 rtl:left-8 ltr:right-8 ltr:rotate-y-180 z-10 w-32 md:w-48 hidden md:block">
             <Image
               src="/assets/illustrations/offer-alert.png"
               alt="Offer Alert"
@@ -134,7 +134,7 @@ export default function NewsletterPopup({
           </div>
 
           {/* Coupon Cards - Bottom Left */}
-          <div className="absolute bottom-0 left-0 z-10 w-64 md:w-[400px] hidden md:block">
+          <div className="absolute bottom-0 rtl:left-0 ltr:right-0 ltr:rotate-y-180 z-10 w-64 md:w-[400px] hidden md:block">
             <Image
               src="/assets/illustrations/coupon-cards.png"
               alt="Coupons"
@@ -145,7 +145,7 @@ export default function NewsletterPopup({
           </div>
 
           {/* Mobile Image */}
-          <div className="md:hidden w-full flex justify-center pt-12 pb-4 bg-gradient-to-b from-blue-50 to-white">
+          <div className="md:hidden w-full flex justify-center pt-12 pb-4 bg-linear-to-b from-blue-50 to-white">
             <Image
               src="/assets/illustrations/offer-alert.png"
               alt="Offer Alert"
@@ -156,7 +156,7 @@ export default function NewsletterPopup({
           </div>
 
           {/* Content Section - Right Side */}
-          <div className="w-full md:w-1/2 md:ml-auto p-8 md:p-12 flex flex-col justify-center items-center md:items-end text-center md:text-right z-20">
+          <div className="w-full md:w-1/2 md:ltr:mr-auto p-8 md:p-12 flex flex-col justify-center items-center md:items-start md:rtl:items-end text-center md:rtl:text-right md:text-left z-20">
             <div className="mb-2 hidden">
               <DialogTitle>{t("title")}</DialogTitle>
             </div>
