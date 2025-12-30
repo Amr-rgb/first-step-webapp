@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { centerService } from "@/services/dashboardApi";
-import { useHasRole } from "@/store/authStore";
+import { useHasRole, useAuthUser } from "@/store/authStore";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 
 export type Stats = {
   total_enrollments: number;
@@ -37,6 +38,7 @@ type Role = "center" | "branch";
 
 export const useCenterStats = (role: Role) => {
   const isCenter = useHasRole(["center", "branch_admin"]);
+  const { subscriptionRequired } = useSubscriptionStore();
 
   const {
     data: stats,
@@ -52,11 +54,19 @@ export const useCenterStats = (role: Role) => {
       return response;
     },
     enabled: isCenter,
+    retry: (failureCount, error: any) => {
+      // Don't retry if it's a subscription error
+      if (error?.response?.status === 402 || subscriptionRequired) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   return {
     stats,
     isLoading,
     error,
+    subscriptionRequired,
   };
 };

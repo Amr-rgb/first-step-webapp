@@ -990,13 +990,73 @@ export const centerService = {
   // Portfolio endpoints
   savePortfolio: async (payload: PortfolioFormData) => {
     try {
-      const response = await apiClient.post("/portfolios", payload, {
+      console.log('📤 Sending portfolio data:', payload);
+      
+      // Convert to FormData to handle file uploads
+      const formData = new FormData();
+      
+      // Helper function to append data recursively
+      const appendFormData = (key: string, value: any) => {
+        if (value === null || value === undefined) {
+          return;
+        }
+        
+        // Skip ONLY empty strings for image fields
+        if (typeof value === 'string' && value === '' && 
+            (key.includes('image') || key.includes('background'))) {
+          console.log(`⏭️  Skipping empty string for ${key}`);
+          return;
+        }
+        
+        if (value instanceof File) {
+          formData.append(key, value);
+          console.log(`📎 Adding file for ${key}:`, value.name);
+        } else if (Array.isArray(value)) {
+          if (value.length === 0) {
+            return; // Skip empty arrays
+          }
+          value.forEach((item, index) => {
+            if (item instanceof File) {
+              formData.append(`${key}[${index}]`, item);
+              console.log(`📎 Adding file for ${key}[${index}]:`, item.name);
+            } else if (typeof item === 'object' && item !== null) {
+              Object.keys(item).forEach(subKey => {
+                appendFormData(`${key}[${index}][${subKey}]`, item[subKey]);
+              });
+            } else {
+              formData.append(`${key}[${index}]`, item);
+            }
+          });
+        } else if (typeof value === 'object' && !(value instanceof File)) {
+          Object.keys(value).forEach(subKey => {
+            appendFormData(`${key}[${subKey}]`, value[subKey]);
+          });
+        } else {
+          formData.append(key, String(value));
+        }
+      };
+      
+      // Append all fields from payload
+      Object.keys(payload).forEach(key => {
+        appendFormData(key, (payload as any)[key]);
+      });
+      
+      // Log FormData contents
+      console.log('📤 FormData entries:');
+      for (const pair of formData.entries()) {
+        console.log(`  ${pair[0]}:`, pair[1]);
+      }
+      
+      const response = await apiClient.post("/portfolios", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
+      console.log('✅ Portfolio saved successfully:', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Portfolio save failed:', error);
+      console.error('Error response:', error.response?.data);
       throw ApiErrorHandler.handle(error);
     }
   },
