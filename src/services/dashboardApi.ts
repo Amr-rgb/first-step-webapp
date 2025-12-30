@@ -1001,10 +1001,15 @@ export const centerService = {
           return;
         }
         
-        // Skip ONLY empty strings for image fields
-        if (typeof value === 'string' && value === '' && 
+        // Skip ALL string values for image fields (empty strings or URLs)
+        // Only send File objects for images
+        if (typeof value === 'string' && 
             (key.includes('image') || key.includes('background'))) {
-          console.log(`⏭️  Skipping empty string for ${key}`);
+          if (value === '') {
+            console.log(`⏭️  Skipping empty image field for ${key}`);
+          } else {
+            console.log(`⏭️  Skipping existing image URL for ${key}:`, value.substring(0, 50));
+          }
           return;
         }
         
