@@ -59,7 +59,7 @@ export const PhilosophySection = ({
   return (
     <div className="space-y-6">
       {sections.map(({ key, title, label, placeholder }) => (
-        <div key={key} className="space-y-2">
+        <div key={key} className="space-y-3">
           {/* <h3 className="text-lg font-semibold">{title}</h3> */}
           <div className="flex justify-between items-center">
             <Label htmlFor={key} className="mb-1 block">

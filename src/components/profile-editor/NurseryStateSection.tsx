@@ -33,8 +33,8 @@ export const NurseryStateSection = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Area */}
-      <div>
-        <Label htmlFor="area" className="mb-1 block">
+      <div className="space-y-3">
+        <Label htmlFor="area">
           {t("area")}
         </Label>
         <Input
@@ -47,8 +47,8 @@ export const NurseryStateSection = ({
       </div>
 
       {/* Class Rooms */}
-      <div>
-        <Label htmlFor="class_rooms" className="mb-1 block">
+      <div className="space-y-3">
+        <Label htmlFor="class_rooms">
           {t("classRooms")}
         </Label>
         <Input
@@ -62,8 +62,8 @@ export const NurseryStateSection = ({
       </div>
 
       {/* Team Members */}
-      <div>
-        <Label htmlFor="team_members" className="mb-1 block">
+      <div className="space-y-3">
+        <Label htmlFor="team_members">
           {t("teamMembers")}
         </Label>
         <Input

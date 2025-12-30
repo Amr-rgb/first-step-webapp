@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useCenterStats } from "@/hooks/useCenterStats";
 import { useHasRole, useAuthUser } from "@/store/authStore";
@@ -20,7 +20,7 @@ interface Task {
 const PortfolioProgressBar = () => {
   const t = useTranslations("dashboard.portfolioProgress");
   const locale = useLocale();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const isCenter = useHasRole("center");
   const user = useAuthUser();
   const { data: portfolioData, isLoading: isLoadingPortfolio } = usePortfolio();
@@ -240,14 +240,10 @@ const PortfolioProgressBar = () => {
                     task.completed
                       ? "bg-green-50/50"
                       : "bg-transparent hover:bg-white/50"
-                  }`}
+                  } ${isRTL ? "flex-row-reverse" : "flex-row"}`}
+                  dir={isRTL ? "rtl" : "ltr"}
                 >
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800 mb-1">
-                      {task.title}
-                    </h3>
-                    <p className="text-sm text-gray-600">{task.description}</p>
-                  </div>
+                  {/* Radio check cycle next to title */}
                   <div className="flex-shrink-0 mt-1">
                     <div
                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -271,6 +267,23 @@ const PortfolioProgressBar = () => {
                         ></div>
                       )}
                     </div>
+                  </div>
+
+                  {/* Title and description */}
+                  <div className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>
+                    <h3 className="text-lg font-bold text-gray-800 mb-1">
+                      {task.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">{task.description}</p>
+                  </div>
+
+                  {/* Arrow icon on the other side */}
+                  <div className="flex-shrink-0 mt-1">
+                    <ChevronRight 
+                      className={`w-5 h-5 text-gray-400 transition-colors hover:text-gray-600 ${
+                        isRTL ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
                 </div>
               );

@@ -282,7 +282,7 @@ export const PlansSection = () => {
       <Card className="shadow-none border-0">
         <CardContent className="space-y-6 p-0">
           {/* Branch Selector */}
-          <div>
+          <div className="space-y-3">
             <Label>{t("selectBranch")}</Label>
             <Select
               value={selectedBranchId?.toString()}
@@ -393,7 +393,7 @@ export const PlansSection = () => {
           <div className="space-y-5">
             {/* Branches (only when adding new) */}
             {!editingPlan && (
-              <div>
+              <div className="space-y-3">
                 <Label>{t("branches")}</Label>
                 <MultiSelect
                   options={
@@ -418,7 +418,7 @@ export const PlansSection = () => {
             )}
 
             {/* Title */}
-            <div>
+            <div className="space-y-3">
               <Label>{t("planTitle")}</Label>
               <Input
                 value={formData.title}
@@ -527,7 +527,7 @@ export const PlansSection = () => {
             </div>
 
             {/* Enrollment Type */}
-            <div>
+            <div className="space-y-3">
               <Label>{t("enrollmentType")}</Label>
               <Select
                 value={formData.enrollment_type}
@@ -560,7 +560,7 @@ export const PlansSection = () => {
 
             {/* Count & Price */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-3">
                 <Label>{t("count")}</Label>
                 <Input
                   type="number"
@@ -578,7 +578,7 @@ export const PlansSection = () => {
                   </p>
                 )}
               </div>
-              <div>
+              <div className="space-y-3">
                 <Label>{t("price")}</Label>
                 <Input
                   type="number"

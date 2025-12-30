@@ -29,7 +29,7 @@ export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
     <div className="space-y-6">
       {/* Title + Subtitle */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label htmlFor="title_of_hero">{t("title")}</Label>
           <Input
             id="title_of_hero"
@@ -39,7 +39,7 @@ export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label htmlFor="subtitle_of_hero">{t("subtitle")}</Label>
           <Input
             id="subtitle_of_hero"
@@ -51,7 +51,7 @@ export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
       </div>
 
       {/* Description */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex justify-between items-center">
           <Label htmlFor="description">{t("description")}</Label>
           <span className="text-xs text-muted-foreground">
@@ -69,7 +69,7 @@ export const HeroSection = ({ data, onChange }: HeroSectionProps) => {
       </div>
 
       {/* Background Image */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label>{t("backgroundImage")}</Label>
         <ImageUploader
           value={

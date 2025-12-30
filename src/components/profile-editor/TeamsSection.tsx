@@ -107,7 +107,7 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-4">
                 {/* Left side - Name and Mission */}
                 <div className="space-y-4">
-                  <div>
+                  <div className="space-y-3">
                     <Label>{t("memberName")}</Label>
                     <Input
                       value={member.name}
@@ -118,7 +118,7 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-3">
                     <Label>{t("memberMission")}</Label>
                     <Input
                       value={member.mission}
@@ -131,7 +131,7 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
                 </div>
 
                 {/* Right side - Image */}
-                <div>
+                <div className="space-y-3">
                   <Label>{t("memberImage")}</Label>
                   <ImageUploader
                     value={

@@ -383,6 +383,7 @@ export interface PortfolioData {
   images_activities?: string[];
   activity_section_title?: string;
   activity_section_subtitle?: string;
+  activity_section_description?: string;
   teams?: TeamMember[];
   contact_info?: ContactInfo;
   ads_images?: string[];
@@ -425,7 +426,7 @@ export interface PortfolioFormData {
     team_members: string;
   };
   activity_section_title: string;
-  activity_section_subtitle: string;
+  activity_section_description: string;
   images_activities: (File | string)[];
   contact_info: {
     address: string;

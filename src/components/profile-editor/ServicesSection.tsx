@@ -124,7 +124,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                   </Button>
                 </div>
 
-                <div>
+                <div className="space-y-3">
                   <Label>{t("serviceTitle")}</Label>
                   <Input
                     value={service.title}
@@ -135,8 +135,8 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                   />
                 </div>
 
-                <div>
-                  <div className="flex justify-between items-center mb-2">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
                     <Label>{t("serviceDescription")}</Label>
                     <span className="text-xs text-muted-foreground">
                       {service.description.length}/200
@@ -153,7 +153,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                   />
                 </div>
 
-                <div>
+                <div className="space-y-3">
                   <Label>{t("serviceImage")}</Label>
                   <ImageUploader
                     value={

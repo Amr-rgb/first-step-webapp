@@ -6,6 +6,7 @@ import Link from "next/link";
 interface ActivitiesProps {
   title?: string;
   subtitle?: string;
+  description?: string;
   activities: string[];
   buttonText?: string;
   preview?: boolean;
@@ -16,6 +17,7 @@ interface ActivitiesProps {
 const Activities = ({
   title,
   subtitle,
+  description,
   activities,
   buttonText,
   preview = false,
@@ -31,9 +33,11 @@ const Activities = ({
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">
           {title || t("activities.title")}
         </h2>
-        <div className="text-center text-[#22336C] mb-8 font-medium">
-          {subtitle || t("activities.description")}
-        </div>
+        {(description || subtitle) && (
+          <div className="text-center text-[#22336C] mb-8 font-medium">
+            {description || subtitle}
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-8 lg:px-12 mb-8">
           {/* Show 6 placeholder slots */}
           {Array.from({ length: 6 }).map((_, index) => (
@@ -84,9 +88,11 @@ const Activities = ({
       <h2 className="text-2xl md:text-3xl font-bold text-center text-[#B12F53] mb-2">
         {t("activities.title")}
       </h2>
-      <div className="text-center text-[#22336C] mb-8 font-medium">
-        {subtitle || t("activities.description")}
-      </div>
+      {(description || subtitle) && (
+        <div className="text-center text-[#22336C] mb-8 font-medium">
+          {description || subtitle}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-8 lg:px-12 mb-8">
         {/* Column 1 - Small first, Tall second */}
         <div className="flex flex-col gap-4">

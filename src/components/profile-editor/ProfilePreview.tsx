@@ -441,7 +441,7 @@ export const ProfilePreview = ({
       {/* 9. Activities Section */}
       <Activities
         title={data.activity_section_title}
-        subtitle={data.activity_section_subtitle}
+        description={data.activity_section_description}
         activities={data.images_activities || []}
         buttonText={t("branches.cta")}
         locale={locale}
