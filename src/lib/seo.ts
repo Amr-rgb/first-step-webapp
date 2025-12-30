@@ -65,7 +65,8 @@ export const defaultSEOConfig: SEOConfig = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "First Step - Smart Childcare Platform | Choose the right nursery for your child | Find Trusted Nurseries in Saudi Arabia",
+    title:
+      "First Step - Smart Childcare Platform | Choose the right nursery for your child | Find Trusted Nurseries in Saudi Arabia",
     description:
       "Discover the best and most trusted nurseries and daycares in Saudi Arabia all in one place. First Step helps you choose a child care that provides balanced care and education for your child",
     images: ["/assets/logos/complete_logo.svg"],
@@ -77,7 +78,7 @@ export const arabicSEOConfig: SEOConfig = {
   title:
     " ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك بسهولة في السعودية",
   description:
-  "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
+    "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
   keywords: [
     "رعاية الأطفال",
     "حضانه",
@@ -98,9 +99,10 @@ export const arabicSEOConfig: SEOConfig = {
     "منصة رعاية الأطفال",
   ],
   openGraph: {
-    title: " ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك بسهولة في السعودية",
+    title:
+      " ‌‌منصة ‌‌First Step‌‌ اختاري الحضانة المناسبة لطفلك بسهولة في السعودية",
     description:
-    "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
+      "   اكتشفي أفضل الحضانات وروضات الأطفال الموثوقة في السعودية من مكان واحد. First Step تساعدك في اختيار حضانة توفر رعاية وتعليم متوازن لطفلك.",
     images: ["/assets/logos/complete_logo.svg"],
     locale: "ar_SA",
     type: "website",
@@ -116,11 +118,18 @@ export const arabicSEOConfig: SEOConfig = {
 
 export function generateMetadata(
   locale: string,
+  pathname: string = "",
   customTitle?: string,
   customDescription?: string,
   customKeywords?: string[]
 ): Metadata {
+  const baseUrl = "https://firststep-app.com";
   const config = locale === "ar" ? arabicSEOConfig : defaultSEOConfig;
+
+  // Ensure pathname doesn't have leading locale if it's passed from some places
+  // but usually it should be the raw route
+  const cleanPath = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/") || "/";
+  const route = cleanPath === "/" ? "" : cleanPath;
 
   return {
     title: customTitle || config.title,
@@ -138,10 +147,11 @@ export function generateMetadata(
     },
     robots: config.robots,
     alternates: {
-      canonical: `https://firststep-app.com/${locale}`,
+      canonical: `${baseUrl}/${locale}${route}`,
       languages: {
-        en: "https://firststep-app.com/en",
-        ar: "https://firststep-app.com/ar",
+        en: `${baseUrl}/en${route}`,
+        ar: `${baseUrl}/ar${route}`,
+        "x-default": `${baseUrl}/ar${route}`, // Arabic is the default locale
       },
     },
     other: {

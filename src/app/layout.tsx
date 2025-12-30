@@ -43,10 +43,11 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://firststep-app.com"),
   alternates: {
-    canonical: "./",
+    canonical: "/",
     languages: {
       en: "/en",
       ar: "/ar",
+      "x-default": "/ar",
     },
   },
   openGraph: {

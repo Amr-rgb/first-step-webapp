@@ -6,79 +6,35 @@ import { DataTable } from "@/components/tables/DataTable";
 import { useAdminEnrollments } from "@/hooks/useAdminEnrollments";
 import { useTranslations } from "next-intl";
 import EmptyState from "@/components/common/EmptyState";
-
-import { Parent } from "@/hooks/useAdminEnrollments";
-import { ReservationStatus } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const transformEnrollmentsToBookings = (data: Parent[] = []) => {
-  const bookings = [];
-
-  for (const parent of data) {
-    // Group enrollments by parent
-    const parentEnrollments: Record<string, any> = {};
-
-    // First, collect all enrollments for this parent
-    for (const child of parent.children) {
-      for (const enrollment of child.enrollments) {
-        const key = `${parent.parent_id}-${enrollment.branch_name}-${enrollment.enrollment_date}`;
-
-        if (!parentEnrollments[key]) {
-          // Create a new booking entry for this parent-branch-date combination
-          parentEnrollments[key] = {
-            id: enrollment.enrollment_id,
-            parentName: parent.parent_name,
-            center: enrollment.branch_name,
-            childs: [],
-            branch: enrollment.branch_name,
-            startDate: enrollment.enrollment_date,
-            endDate: "", // You might need to adjust this based on your data model
-            amount: 0, // Will sum up amounts
-            enrollment_id: enrollment.enrollment_id,
-            enrollment_date: enrollment.enrollment_date,
-            status: enrollment.status,
-          };
-        }
-
-        // Add child to the children array
-        parentEnrollments[key].childs.push({
-          id: child.child_id.toString(),
-          name: child.child_name,
-          reservationStatus: enrollment.status as ReservationStatus,
-        });
-
-        // Sum up the amounts
-        parentEnrollments[key].amount +=
-          parseFloat(enrollment.price_amount) || 0;
-      }
-    }
-
-    // Add all bookings for this parent to the result
-    bookings.push(...Object.values(parentEnrollments));
-  }
-
-  return bookings;
-};
 
 const Bookings = () => {
   const t = useTranslations("dashboard.admin.bookings");
   const { enrollments, isLoading, error } = useAdminEnrollments();
   const [selectedChildMap, setSelectedChildMap] = useState<
-    Record<number, string>
+    Record<string, string>
   >({});
 
-  // Transform enrollments data to match the Booking type
-  const bookingsData = useMemo(() => {
-    return transformEnrollmentsToBookings(enrollments);
+  const bookings = useMemo(() => {
+    return (
+      [...(enrollments || [])]
+        .reverse()
+        .filter((b) => b.children && b.children.length > 0) || []
+    );
   }, [enrollments]);
 
-  const columns = getColumns(selectedChildMap, setSelectedChildMap);
+  const columns = useMemo(() => {
+    return getColumns(selectedChildMap, setSelectedChildMap);
+  }, [selectedChildMap]);
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 lg:p-4">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="border rounded-lg p-4 space-y-3">
+          <div
+            key={index}
+            className="border rounded-lg p-4 space-y-3 bg-white shadow-sm"
+          >
             <div className="flex items-center justify-between">
               <Skeleton className="h-6 w-32" />
               <Skeleton className="h-8 w-24" />
@@ -93,28 +49,36 @@ const Bookings = () => {
 
   if (error) {
     return (
-      <div className="text-center py-10 text-red-500">{t("errorLoading")}</div>
+      <div className="text-center py-20 text-red-500 font-medium">
+        {t("errorLoading") || "Error loading bookings data."}
+      </div>
     );
   }
 
   return (
-    <div>
-      <div className="mt-6 lg:p-4 space-y-1">
-        <p className="heading-4 font-medium text-primary text-center">
+    <div className="w-full">
+      <div className="mt-6 lg:p-4 space-y-6">
+        <h1 className="text-2xl font-bold text-primary text-center">
           {t("title")}
-        </p>
-        {bookingsData.length > 0 ? (
-          <DataTable
-            columns={columns}
-            data={bookingsData}
-            getRowId={(row) => `enrollment-${row.id}`}
-          />
+        </h1>
+
+        {bookings.length > 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <DataTable
+              columns={columns}
+              data={bookings}
+              getRowId={(row) => row.id.toString()}
+              pagination
+            />
+          </div>
         ) : (
-          <EmptyState
-            icon="📅"
-            size="lg"
-            translationKey="dashboard.emptyStates.bookings"
-          />
+          <div className="py-20">
+            <EmptyState
+              icon="📅"
+              size="lg"
+              translationKey="dashboard.emptyStates.bookings"
+            />
+          </div>
         )}
       </div>
     </div>

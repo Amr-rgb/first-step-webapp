@@ -7,68 +7,64 @@ import { useReservationStatus } from "./shared/status";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-export type Booking = {
-  id: number;
-  parentName: string;
-  center: string;
-  childs: { id: string; name: string; reservationStatus: ReservationStatus }[];
-  branch: string;
-  startDate: string;
-  endDate: string;
-  amount: number;
-};
+import { AdminBooking } from "@/hooks/useAdminEnrollments";
+
+export type Booking = AdminBooking;
 
 export const getColumns = (
-  selectedChildMap: Record<number, string>,
+  selectedChildMap: Record<string, string>,
   setSelectedChildMap: React.Dispatch<
-    React.SetStateAction<Record<number, string>>
+    React.SetStateAction<Record<string, string>>
   >
 ): ColumnDef<Booking>[] => [
   {
     accessorKey: "childNumber",
     header: () => (
-      <div className="text-[.7rem] font-normal text-center">---</div>
+      <div className="text-[.7rem] font-normal text-center min-w-[30px]">
+        ---
+      </div>
     ),
     cell: ({ row }) => {
       return <div className="text-center">{row.index + 1}</div>;
     },
   },
   {
-    accessorKey: "parentName",
-    header: "Parent Name",
+    accessorKey: "parent_name",
+    header: () => <div className="min-w-[120px]">Parent Name</div>,
   },
   {
     accessorKey: "center",
-    header: "المركز أو الحضانة",
+    header: () => <div className="min-w-[150px]">المركز أو الحضانة</div>,
     cell: ({ row }) => {
       const center = row.getValue("center") as string;
       return <div className="text-right">{center || "غير محدد"}</div>;
     },
   },
   {
-    accessorKey: "startDate",
-    header: "تاريخ بدء الحجز",
+    accessorKey: "start_date",
+    header: () => <div className="min-w-[100px]">تاريخ بدء الحجز</div>,
     cell: ({ row }) => {
-      const date = row.getValue("startDate") as string;
+      const date = row.getValue("start_date") as string;
       return <div className="text-center">{date || "غير محدد"}</div>;
     },
   },
   {
-    accessorKey: "endDate",
-    header: "تاريخ انتهاء الحجز",
+    accessorKey: "end_date",
+    header: () => <div className="min-w-[100px]">تاريخ انتهاء الحجز</div>,
     cell: ({ row }) => {
-      const date = row.getValue("endDate") as string;
+      const date = row.getValue("end_date") as string;
       return <div className="text-center">{date || "غير محدد"}</div>;
     },
   },
   {
-    accessorKey: "childs",
-    header: "Child",
+    accessorKey: "children",
+    header: () => <div className="min-w-[120px]">Child</div>,
     cell: ({ row }) => {
-      const parentId = row.original.id;
-      const childs = row.original.childs;
+      const rowId = row.original.id.toString();
+      const children = row.original.children;
 
-      const selectedValue = selectedChildMap[parentId] ?? childs[0]?.id ?? "";
+      const selectedValue =
+        selectedChildMap[rowId] ?? children[0]?.id.toString() ?? "";
 
       return (
         <select
@@ -77,11 +73,11 @@ export const getColumns = (
           onChange={(e) =>
             setSelectedChildMap((prev) => ({
               ...prev,
-              [parentId]: e.target.value,
+              [rowId]: e.target.value,
             }))
           }
         >
-          {childs.map((child) => (
+          {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.name}
             </option>
@@ -92,17 +88,17 @@ export const getColumns = (
   },
   {
     accessorKey: "branch",
-    header: "الفرع",
+    header: () => <div className="min-w-[120px]">الفرع</div>,
     cell: ({ row }) => {
       const branch = row.getValue("branch") as string;
       return <div className="text-right">{branch || "غير محدد"}</div>;
     },
   },
   {
-    accessorKey: "amount",
-    header: "المبلغ",
+    accessorKey: "price_amount",
+    header: () => <div className="min-w-[80px]">المبلغ</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount")) || 0;
+      const amount = parseFloat(row.getValue("price_amount")) || 0;
       return (
         <div className="space-x-1 text-left">
           <span>{amount.toFixed(2)}</span>
@@ -113,22 +109,15 @@ export const getColumns = (
   },
   {
     id: "reservationStatus",
-    header: "حالة الحجز",
+    header: () => <div className="min-w-[120px]">حالة الحجز</div>,
     cell: ({ row }) => {
       const { getStatusText, getStatusColorClass } = useReservationStatus();
 
-      const parent = row.original;
-      const selectedChildId =
-        selectedChildMap[parent.id] ?? parent.childs[0]?.id;
-      const selectedChild = parent.childs.find(
-        (child) => child.id === selectedChildId
-      );
-
-      const status = selectedChild?.reservationStatus;
+      const status = row.original.status as ReservationStatus;
       const colorClasses = getStatusColorClass(
         status || "waitingForConfirmation"
       );
-      const text = status ? getStatusText(status) : "اختر الطفل";
+      const text = getStatusText(status);
 
       return (
         <div

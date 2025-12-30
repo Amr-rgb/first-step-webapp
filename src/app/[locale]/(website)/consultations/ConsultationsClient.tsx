@@ -38,12 +38,12 @@ interface ConsultationsClientProps {
 
 // Parent consultation form schema
 const parentConsultationSchema = z.object({
-  name: z.string().min(1, "required"),
-  phone: z.string().min(1, "required"),
-  email: z.string().email("invalidEmail").min(1, "required"),
-  kind_of_user: z.string().min(1, "required"),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email("invalidEmail").optional().or(z.literal("")),
+  kind_of_user: z.string().optional(),
   kind_of_user_other: z.string().optional(),
-  subject_of_consultation: z.string().min(1, "required"),
+  subject_of_consultation: z.string().optional(),
   subject_of_consultation_other: z.string().optional(),
   description: z.string().min(1, "required"),
   file: z.any().optional(),
@@ -51,14 +51,14 @@ const parentConsultationSchema = z.object({
 
 // Center consultation form schema
 const centerConsultationSchema = z.object({
-  center_name: z.string().min(1, "required"),
-  center_specification: z.string().min(1, "required"),
+  center_name: z.string().optional(),
+  center_specification: z.string().optional(),
   center_specification_other: z.string().optional(),
-  name_of_consultan_request: z.string().min(1, "required"),
-  mission_of_consultant_request: z.string().min(1, "required"),
-  phone: z.string().min(1, "required"),
-  email: z.string().email("invalidEmail").min(1, "required"),
-  subject_of_consultan: z.string().min(1, "required"),
+  name_of_consultan_request: z.string().optional(),
+  mission_of_consultant_request: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email("invalidEmail").optional().or(z.literal("")),
+  subject_of_consultan: z.string().optional(),
   subject_of_consultan_other: z.string().optional(),
   description: z.string().min(1, "required"),
   file: z.any().optional(),
@@ -409,7 +409,7 @@ function ParentFormSection({
           label={t("form.name")}
           error={form.formState.errors.name}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("name")}
@@ -422,7 +422,7 @@ function ParentFormSection({
           label={t("form.phone")}
           error={form.formState.errors.phone}
           t={t}
-          required={true}
+          required={false}
         >
           <Controller
             name="phone"
@@ -444,7 +444,7 @@ function ParentFormSection({
             label={t("form.kindOfUser")}
             error={form.formState.errors.kind_of_user}
             t={t}
-            required={true}
+            required={false}
           >
             <Controller
               name="kind_of_user"
@@ -490,7 +490,7 @@ function ParentFormSection({
           label={t("form.email")}
           error={form.formState.errors.email}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("email")}
@@ -505,7 +505,7 @@ function ParentFormSection({
             label={t("form.subject")}
             error={form.formState.errors.subject_of_consultation}
             t={t}
-            required={true}
+            required={false}
           >
             <Controller
               name="subject_of_consultation"
@@ -608,7 +608,7 @@ function CenterFormSection({
           label={t("form.centerName")}
           error={form.formState.errors.center_name}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("center_name")}
@@ -624,7 +624,7 @@ function CenterFormSection({
             label={t("form.centerSpec")}
             error={form.formState.errors.center_specification}
             t={t}
-            required={true}
+            required={false}
           >
             <Controller
               name="center_specification"
@@ -674,7 +674,7 @@ function CenterFormSection({
           label={t("form.requesterName")}
           error={form.formState.errors.name_of_consultan_request}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("name_of_consultan_request")}
@@ -690,7 +690,7 @@ function CenterFormSection({
           label={t("form.requesterMission")}
           error={form.formState.errors.mission_of_consultant_request}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("mission_of_consultant_request")}
@@ -706,7 +706,7 @@ function CenterFormSection({
           label={t("form.phone")}
           error={form.formState.errors.phone}
           t={t}
-          required={true}
+          required={false}
         >
           <Controller
             name="phone"
@@ -727,7 +727,7 @@ function CenterFormSection({
           label={t("form.email")}
           error={form.formState.errors.email}
           t={t}
-          required={true}
+          required={false}
         >
           <Input
             {...form.register("email")}
@@ -742,7 +742,7 @@ function CenterFormSection({
             label={t("form.subject")}
             error={form.formState.errors.subject_of_consultan}
             t={t}
-            required={true}
+            required={false}
           >
             <Controller
               name="subject_of_consultan"

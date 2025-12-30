@@ -171,7 +171,6 @@ export function DataTable<TData, TValue>({
                       key={row.id}
                       id={getRowId ? getRowId(row.original) : undefined}
                       data-state={row.getIsSelected() && "selected"}
-                      className="transition-all"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

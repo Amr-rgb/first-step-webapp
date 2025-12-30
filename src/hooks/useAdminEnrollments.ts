@@ -2,31 +2,33 @@ import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import { useHasRole } from "@/store/authStore";
 
-export type Enrollment = {
-  enrollment_id: number;
-  status: string;
-  enrollment_type: string;
-  price_amount: string;
-  enrollment_date: string;
-  branch_name: string;
+export type AdminChild = {
+  id: number;
+  name: string;
+  gender: string;
+  birthday_date: string;
 };
 
-export type Child = {
-  child_id: number;
-  child_name: string;
-  enrollments: Enrollment[];
-};
-
-export type Parent = {
-  parent_id: number;
+export type AdminBooking = {
+  id: number;
+  center: string;
+  branch: string;
   parent_name: string;
-  children: Child[];
+  start_date: string;
+  end_date: string | null;
+  price_amount: string;
+  status: string;
+  children: AdminChild[];
 };
 
 export const useAdminEnrollments = () => {
   const isAdmin = useHasRole("admin");
 
-  const { data: enrollments, isLoading, error } = useQuery({
+  const {
+    data: enrollments,
+    isLoading,
+    error,
+  } = useQuery<AdminBooking[]>({
     queryKey: ["adminEnrollments"],
     queryFn: adminService.getAdminEnrollments,
     enabled: isAdmin,
