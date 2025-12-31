@@ -90,31 +90,163 @@ const ProfileEditor = () => {
     checkForChanges(newData);
   };
 
-  // Get only the changed fields
-  const getDirtyData = () => {
-    if (!currentData || !originalData) return {};
+  // Map each root key to its logical section
+  const SECTION_KEYS: Record<string, string[]> = {
+    hero: [
+      "title_of_hero",
+      "subtitle_of_hero",
+      "description",
+      "background_image",
+    ],
+    branches: ["branches"],
+    philosophy: ["Philosophy_Methodology_Goal"],
+    services: ["services", "service_section_title"],
+    nurseryState: ["nursery_state"],
+    activities: [
+      "images_activities",
+      "activity_section_title",
+      "activity_section_subtitle",
+    ],
+    contact: ["contact_info"],
+    teams: ["teams"],
+    ads: ["ads_images"],
+  };
 
-    const dirtyData: Partial<PortfolioFormData> = {};
+  // Deep diff logic to detect changes and handle removals as null
+  const getDeepData = (
+    original: any,
+    current: any,
+    includeAll: boolean = false
+  ): any => {
+    // If references are same and we don't need all data, no change
+    if (!includeAll && original === current) return undefined;
 
-    Object.keys(currentData).forEach((key) => {
-      const typedKey = key as keyof PortfolioFormData;
-      if (
-        JSON.stringify(currentData[typedKey]) !==
-        JSON.stringify(originalData[typedKey])
-      ) {
-        (dirtyData as any)[typedKey] = currentData[typedKey];
+    // Handle Files
+    if (current instanceof File || original instanceof File) {
+      if (current === original) return includeAll ? current : undefined;
+      return current === undefined ? null : current;
+    }
+
+    // Handle primitives and nulls
+    if (
+      typeof current !== "object" ||
+      current === null ||
+      typeof original !== "object" ||
+      original === null
+    ) {
+      if (current === original) return includeAll ? current : undefined;
+      return current === undefined ? null : current;
+    }
+
+    // Handle arrays
+    if (Array.isArray(current) || Array.isArray(original)) {
+      const resultArr: any[] = [];
+      let hasArrChanges = false;
+      const maxLen = Math.max(original?.length || 0, current?.length || 0);
+
+      for (let i = 0; i < maxLen; i++) {
+        const itemResult = getDeepData(original?.[i], current?.[i], includeAll);
+        if (itemResult !== undefined || includeAll) {
+          const val =
+            itemResult === undefined && includeAll ? current?.[i] : itemResult;
+          resultArr[i] = val === undefined ? null : val;
+          if (itemResult !== undefined) hasArrChanges = true;
+        }
+      }
+      return hasArrChanges || includeAll ? resultArr : undefined;
+    }
+
+    // Handle objects
+    const resultObj: any = {};
+    let hasObjChanges = false;
+    const allKeys = new Set([
+      ...Object.keys(current || {}),
+      ...Object.keys(original || {}),
+    ]);
+
+    allKeys.forEach((key) => {
+      const valResult = getDeepData(
+        original ? original[key] : undefined,
+        current ? current[key] : undefined,
+        includeAll
+      );
+      if (valResult !== undefined || includeAll) {
+        resultObj[key] =
+          valResult === undefined && includeAll ? current[key] : valResult;
+        if (valResult !== undefined) hasObjChanges = true;
       }
     });
 
-    return dirtyData;
+    return hasObjChanges || includeAll ? resultObj : undefined;
+  };
+
+  const getDirtyData = () => {
+    if (!currentData || !originalData) return {};
+    return getDeepData(originalData, currentData, false) || {};
+  };
+
+  // Helper to get a full section with nulls for removals
+  const getFullSectionWithNulls = (sectionKeys: string[]) => {
+    if (!currentData || !originalData) return {};
+
+    const sectionPayload: any = {};
+
+    sectionKeys.forEach((key) => {
+      const originalVal = (originalData as any)[key];
+      const currentVal = (currentData as any)[key];
+
+      if (originalVal === undefined) {
+        sectionPayload[key] = currentVal;
+        return;
+      }
+
+      sectionPayload[key] = getDeepData(originalVal, currentVal, true);
+    });
+
+    return sectionPayload;
   };
 
   const handleSavePortfolio = () => {
     if (!hasChanges || !currentData) return;
-    // Always send complete data, not just dirty fields
-    // This ensures arrays like services are sent completely
-    savePortfolio(currentData);
-    // Update original data after save
+
+    // Get dirty root keys
+    const dirtyDataRoot = getDirtyData();
+    const changedRootKeys = Object.keys(dirtyDataRoot);
+
+    // Find sections that have changes
+    const dirtySections = Object.entries(SECTION_KEYS)
+      .filter(([_, keys]) => keys.some((key) => changedRootKeys.includes(key)))
+      .map(([sectionId]) => sectionId);
+
+    // Build payload: Send the WHOLE section for any changed field
+    let payload: Partial<PortfolioFormData> = {};
+
+    dirtySections.forEach((sectionId) => {
+      const sectionKeys = SECTION_KEYS[sectionId];
+      const sectionWithNulls = getFullSectionWithNulls(sectionKeys);
+      payload = { ...payload, ...sectionWithNulls };
+    });
+
+    // Also include any other dirty root keys that didn't map to a section
+    changedRootKeys.forEach((key) => {
+      if (!Object.values(SECTION_KEYS).flat().includes(key)) {
+        // For individual keys, we still want to handle nulls if they were removed
+        const val = getDeepData(
+          (originalData as any)[key],
+          (currentData as any)[key],
+          true
+        );
+        (payload as any)[key] = val;
+      }
+    });
+
+    console.log(
+      "💾 Saving section(s) as a whole (with nulls for removals):",
+      payload
+    );
+    savePortfolio(payload);
+
+    // Update original data after save to reset the "changed" state
     setOriginalData(currentData);
     setHasChanges(false);
   };
@@ -126,7 +258,7 @@ const ProfileEditor = () => {
       title: t("sections.branches"),
       component: BranchesSection,
     },
-        { id: "plans", title: t("sections.plans"), component: PlansSection },
+    { id: "plans", title: t("sections.plans"), component: PlansSection },
 
     {
       id: "philosophy",

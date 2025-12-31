@@ -382,7 +382,7 @@ export interface PortfolioData {
   nursery_state?: NurseryState;
   images_activities?: string[];
   activity_section_title?: string;
-  activity_section_description?: string;
+  activity_section_subtitle?: string;
   teams?: TeamMember[];
   contact_info?: ContactInfo;
   ads_images?: string[];
@@ -425,7 +425,7 @@ export interface PortfolioFormData {
     team_members: string;
   };
   activity_section_title: string;
-  activity_section_description: string;
+  activity_section_subtitle: string;
   images_activities: (File | string)[];
   contact_info: {
     address: string;

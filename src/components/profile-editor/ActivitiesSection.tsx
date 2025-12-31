@@ -24,11 +24,10 @@ export const ActivitiesSection = ({
     });
   };
 
-  
-  const handleDescriptionChange = (value: string) => {
+  const handleSubtitleChange = (value: string) => {
     onChange({
       ...data,
-      activity_section_description: value,
+      activity_section_subtitle: value,
     });
   };
 
@@ -52,20 +51,18 @@ export const ActivitiesSection = ({
           />
         </div> */}
 
-       
-
         <div className="space-y-3">
           <Label
-            htmlFor="activity_section_description"
+            htmlFor="activity_section_subtitle"
             className="text-sm font-medium"
           >
-            {t("sectionDescription")}
+            {t("sectionSubtitle")}
           </Label>
           <Textarea
-            id="activity_section_description"
-            value={data.activity_section_description || ""}
-            onChange={(e) => handleDescriptionChange(e.target.value)}
-            placeholder={t("sectionDescriptionPlaceholder")}
+            id="activity_section_subtitle"
+            value={data.activity_section_subtitle || ""}
+            onChange={(e) => handleSubtitleChange(e.target.value)}
+            placeholder={t("sectionSubtitlePlaceholder")}
             rows={3}
           />
         </div>

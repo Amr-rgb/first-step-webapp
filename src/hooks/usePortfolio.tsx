@@ -25,7 +25,7 @@ const transformApiData = (apiData: any): PortfolioFormData => {
       team_members: "",
     },
     activity_section_title: "",
-    activity_section_description: "",
+    activity_section_subtitle: "",
     images_activities: [],
     contact_info: {
       address: "",
@@ -68,7 +68,7 @@ const transformApiData = (apiData: any): PortfolioFormData => {
       team_members: apiData.nursery_state?.team_members?.toString() || "",
     },
     activity_section_title: apiData.activity_section_title || "",
-    activity_section_description: apiData.activity_section_description || "",
+    activity_section_subtitle: apiData.activity_section_subtitle || "",
     images_activities: apiData.images_activities || [],
     contact_info: {
       address: apiData.contact_info?.address || "",

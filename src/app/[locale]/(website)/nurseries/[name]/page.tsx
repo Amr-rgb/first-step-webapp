@@ -188,7 +188,7 @@ export default async function NurseryPage({
         portfolio.images_activities.length > 0 && (
           <Activities
             title={portfolio.activity_section_title}
-            description={portfolio.activity_section_description}
+            description={portfolio.activity_section_subtitle}
             activities={portfolio.images_activities}
             preview={false}
           />
