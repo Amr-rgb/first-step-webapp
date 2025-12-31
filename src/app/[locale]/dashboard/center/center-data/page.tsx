@@ -219,7 +219,7 @@ const ProfileEditor = () => {
       .map(([sectionId]) => sectionId);
 
     // Build payload: Send the WHOLE section for any changed field
-    let payload: Partial<PortfolioFormData> = {};
+    let payload: any = {};
 
     dirtySections.forEach((sectionId) => {
       const sectionKeys = SECTION_KEYS[sectionId];
@@ -230,7 +230,6 @@ const ProfileEditor = () => {
     // Also include any other dirty root keys that didn't map to a section
     changedRootKeys.forEach((key) => {
       if (!Object.values(SECTION_KEYS).flat().includes(key)) {
-        // For individual keys, we still want to handle nulls if they were removed
         const val = getDeepData(
           (originalData as any)[key],
           (currentData as any)[key],
@@ -240,10 +239,48 @@ const ProfileEditor = () => {
       }
     });
 
-    console.log(
-      "💾 Saving section(s) as a whole (with nulls for removals):",
-      payload
-    );
+    // Handle Deletions via separate arrays: delete_images_activities, delete_services, delete_teams
+    const listConfig = [
+      { key: "services", deleteKey: "delete_services" },
+      { key: "teams", deleteKey: "delete_teams" },
+      { key: "images_activities", deleteKey: "delete_images_activities" },
+    ];
+
+    listConfig.forEach(({ key, deleteKey }) => {
+      const originalList = (originalData as any)[key] as any[];
+      const currentList = (currentData as any)[key] as any[];
+
+      if (!originalList) return;
+
+      const deletedIndices: number[] = [];
+
+      originalList.forEach((origItem, index) => {
+        // Deep compare to see if origItem still exists in currentList
+        // Simple string comparison is enough for image URLs
+        const exists = currentList.some((currItem) =>
+          typeof origItem === "string"
+            ? currItem === origItem
+            : JSON.stringify(currItem) === JSON.stringify(origItem)
+        );
+
+        if (!exists) {
+          deletedIndices.push(index);
+        }
+      });
+
+      if (deletedIndices.length > 0) {
+        payload[deleteKey] = deletedIndices;
+      }
+
+      // Compact the main array in payload (remove nulls) so it's a clean list
+      if (payload[key] && Array.isArray(payload[key])) {
+        payload[key] = payload[key].filter(
+          (item: any) => item !== null && item !== undefined
+        );
+      }
+    });
+
+    console.log("💾 Saving portfolio with deletion arrays:", payload);
     savePortfolio(payload);
 
     // Update original data after save to reset the "changed" state

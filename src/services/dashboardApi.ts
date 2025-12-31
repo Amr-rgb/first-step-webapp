@@ -1017,33 +1017,23 @@ export const centerService = {
           console.log(`📎 Adding file for ${key}:`, value.name);
         } else if (Array.isArray(value)) {
           if (value.length === 0) {
-            // Optional: Send empty string for empty array if backend needs it
-            // formData.append(key, "");
             return;
           }
-          for (let i = 0; i < value.length; i++) {
-            const item = value[i];
-            const itemKey = `${key}[${i}]`;
+          value.forEach((item, index) => {
+            if (item === null || item === undefined) return;
 
+            const itemKey = `${key}[${index}]`;
             if (item instanceof File) {
               formData.append(itemKey, item);
               console.log(`📎 Adding file for ${itemKey}:`, item.name);
-            } else if (typeof item === "object" && item !== null) {
+            } else if (typeof item === "object") {
               Object.keys(item).forEach((subKey) => {
                 appendFormData(`${itemKey}[${subKey}]`, item[subKey]);
               });
             } else {
-              // Handle null items in arrays using the new backend requirement: _delete: true
-              if (item === null) {
-                formData.append(`${itemKey}[_delete]`, "true");
-                console.log(
-                  `🗑️ Marking ${itemKey} for deletion (_delete: true)`
-                );
-              } else if (item !== undefined) {
-                formData.append(itemKey, String(item));
-              }
+              formData.append(itemKey, String(item));
             }
-          }
+          });
         } else if (typeof value === "object" && !(value instanceof File)) {
           Object.keys(value).forEach((subKey) => {
             appendFormData(`${key}[${subKey}]`, value[subKey]);
