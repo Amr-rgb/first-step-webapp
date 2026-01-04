@@ -5,6 +5,7 @@ import { UserPlus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 interface EnrollmentData {
   id: number;
@@ -40,6 +41,9 @@ export function EnrollmentNotificationToast({
   onDismiss,
 }: EnrollmentNotificationToastProps) {
   const router = useRouter();
+  const { user } = useAuthStore();
+
+  const dashboardPath = user?.role === "parent" ? "parent" : "center";
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -53,7 +57,7 @@ export function EnrollmentNotificationToast({
     <div className="flex flex-col gap-3 p-4 bg-white rounded-lg shadow-lg border-l-4 border-l-blue-500 min-w-80 max-w-sm">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 p-2 rounded-full bg-blue-100 text-blue-600">
+        <div className="shrink-0 p-2 rounded-full bg-blue-100 text-blue-600">
           <UserPlus className="size-5" />
         </div>
 
@@ -80,7 +84,7 @@ export function EnrollmentNotificationToast({
         <Button
           onClick={() => {
             router.push(
-              `/dashboard/center/bookings?enrollmentId=${enrollment.id}`
+              `/dashboard/${dashboardPath}/bookings?enrollmentId=${enrollment.id}`
             );
             onDismiss?.();
           }}
