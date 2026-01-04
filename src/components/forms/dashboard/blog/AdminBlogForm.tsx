@@ -107,7 +107,7 @@ const AdminBlogForm = ({
                   />
                   <label
                     htmlFor="main-image-upload"
-                    className="w-full aspect-[1440/610] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-full aspect-1440/610 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
                   >
                     {previewMain ? (
                       <img
@@ -154,7 +154,7 @@ const AdminBlogForm = ({
                   />
                   <label
                     htmlFor="card-image-upload"
-                    className="w-full aspect-[264/160] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-full aspect-264/160 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
                   >
                     {previewCard ? (
                       <img
@@ -289,6 +289,7 @@ const AdminBlogForm = ({
                   value={field.value}
                   onChange={field.onChange}
                   placeholder={t("contentEnPlaceholder")}
+                  dir="ltr"
                   readOnly={readOnly}
                 />
               </FormControl>

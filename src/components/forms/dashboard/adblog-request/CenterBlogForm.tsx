@@ -188,7 +188,7 @@ const CenterBlogForm = ({
                   <label
                     htmlFor="image-upload1"
                     className={clsx(
-                      "w-full aspect-[1440/610] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
+                      "w-full aspect-1440/610 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
                       preview1 && "p-2"
                     )}
                   >
@@ -243,7 +243,7 @@ const CenterBlogForm = ({
                   <label
                     htmlFor="image-upload2"
                     className={clsx(
-                      "w-full aspect-[264/160] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
+                      "w-full aspect-264/160 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer transition-colors",
                       preview2 && "p-2"
                     )}
                   >
@@ -321,7 +321,11 @@ const CenterBlogForm = ({
                 <span className="text-red-500">*</span>
               </Label>
               <FormControl>
-                <BlogEditor value={field.value} onChange={field.onChange} />
+                <BlogEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  dir={locale === "ar" ? "rtl" : "ltr"}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -335,7 +339,7 @@ const CenterBlogForm = ({
           <Button
             size={"sm"}
             variant={"outline"}
-            className="!border-light-gray text-mid-gray"
+            className="border-light-gray! text-mid-gray"
             type="button"
             onClick={onCancel || (() => router.back())}
             disabled={isSubmitting}
