@@ -8,6 +8,7 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
+import Blockquote from "@tiptap/extension-blockquote";
 
 import Toolbar from "./Toolbar"; // Our enhanced toolbar
 
@@ -36,6 +37,7 @@ export default function BlogEditor({
       }),
       Superscript,
       Subscript,
+      Blockquote,
       TextAlign.configure({
         types: ["heading", "paragraph"],
         alignments: ["left", "center", "right", "justify"],

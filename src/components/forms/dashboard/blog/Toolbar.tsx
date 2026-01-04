@@ -16,6 +16,8 @@ import {
   // Image as ImageIcon,
   Link as LinkIcon,
   Code,
+  Quote,
+  Minus,
   ChevronDown,
 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
@@ -201,9 +203,22 @@ export default function Toolbar({ editor }: Props) {
         <Code size={16} />
       </Toggle>
 
+      <Toggle
+        pressed={editor.isActive("blockquote")}
+        onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
+      >
+        <Quote size={16} />
+      </Toggle>
+
       {/* Link */}
       <Toggle pressed={editor.isActive("link")} onPressedChange={insertLink}>
         <LinkIcon size={16} />
+      </Toggle>
+
+      <Toggle
+        onPressedChange={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus size={16} />
       </Toggle>
 
       {/* Superscript and Subscript */}
