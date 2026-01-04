@@ -1,6 +1,29 @@
 import { z } from "zod";
 import { getErrorMessage, getImageDimensions } from "./utils";
 
+// Strong Password Validation
+const getPasswordSchema = (locale: "ar" | "en" = "ar") =>
+  z
+    .string()
+    .min(8, {
+      message: getErrorMessage("password-min", locale, { min: 8 }),
+    })
+    .regex(/[a-z]/, {
+      message: getErrorMessage("password-mixed", locale),
+    })
+    .regex(/[A-Z]/, {
+      message: getErrorMessage("password-mixed", locale),
+    })
+    .regex(/[a-zA-Z]/, {
+      message: getErrorMessage("password-letters", locale),
+    })
+    .regex(/[0-9]/, {
+      message: getErrorMessage("password-numbers", locale),
+    })
+    .regex(/[^a-zA-Z0-9]/, {
+      message: getErrorMessage("password-symbols", locale),
+    });
+
 // Sign In Form
 export const createSignInSchema = (locale: "ar" | "en" = "ar") =>
   z.object({
@@ -42,9 +65,7 @@ export type OTPVerificationFormData = z.infer<
 export const createResetPasswordSchema = (locale: "ar" | "en" = "ar") =>
   z
     .object({
-      password: z.string().min(8, {
-        message: getErrorMessage("password-min", locale, { min: 8 }),
-      }),
+      password: getPasswordSchema(locale),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -98,9 +119,7 @@ export const createParentSchema = (locale: "ar" | "en" = "ar") =>
       national_number: z.string().length(10, {
         message: getErrorMessage("general-field-required", locale),
       }),
-      password: z.string().min(8, {
-        message: getErrorMessage("password-min", locale, { min: 8 }),
-      }),
+      password: getPasswordSchema(locale),
       confirmPassword: z.string().min(1, {
         message: getErrorMessage("general-field-required", locale),
       }),
@@ -143,12 +162,12 @@ export const createChildStep1Schema = (locale: "ar" | "en" = "ar") =>
     }),
     childNationalNumber: z
       .string()
-      .refine(
-        (val) => val === "" || val.length === 10,
-        {
-          message: locale === "ar" ? "الرقم الوطني يجب أن يكون 10 أرقام أو يترك فارغاً" : "National number must be 10 digits or left empty",
-        }
-      )
+      .refine((val) => val === "" || val.length === 10, {
+        message:
+          locale === "ar"
+            ? "الرقم الوطني يجب أن يكون 10 أرقام أو يترك فارغاً"
+            : "National number must be 10 digits or left empty",
+      })
       .optional(),
     childImage: z
       .instanceof(File, {
@@ -351,9 +370,7 @@ export const createSignUpParentSchema = (locale: "ar" | "en" = "ar") => {
     national_number: z.string().length(10, {
       message: getErrorMessage("general-field-required", locale),
     }),
-    password: z.string().min(8, {
-      message: getErrorMessage("password-min", locale, { min: 8 }),
-    }),
+    password: getPasswordSchema(locale),
     confirmPassword: z.string().min(1, {
       message: getErrorMessage("general-field-required", locale),
     }),
@@ -385,9 +402,7 @@ const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
     email: z
       .string()
       .email({ message: getErrorMessage("invalid-email", locale) }),
-    password: z.string().min(8, {
-      message: getErrorMessage("password-min", locale, { min: 8 }),
-    }),
+    password: getPasswordSchema(locale),
     confirmPassword: z.string(),
     nursery_name: z
       .string()
@@ -452,9 +467,7 @@ const createCenterStep1Schema = (locale: "ar" | "en" = "ar") =>
     email: z
       .string()
       .email({ message: getErrorMessage("invalid-email", locale) }),
-    password: z.string().min(8, {
-      message: getErrorMessage("password-min", locale, { min: 8 }),
-    }),
+    password: getPasswordSchema(locale),
     confirmPassword: z.string(),
     phone: z
       .string()
@@ -811,9 +824,7 @@ export const createAddBranchAdminSchema = (locale: "ar" | "en" = "ar") =>
       email: z.string().email({
         message: getErrorMessage("invalid-email", locale),
       }),
-      password: z.string().min(8, {
-        message: getErrorMessage("password-min", locale, { min: 8 }),
-      }),
+      password: getPasswordSchema(locale),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
