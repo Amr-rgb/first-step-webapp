@@ -500,7 +500,7 @@ export const parentService = {
 
   getUpcomingEnrollments: async () => {
     try {
-      const response = await apiClient.get("/parent/enrollments/pending");
+      const response = await apiClient.get("/v2/enrollments/pending");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -509,7 +509,7 @@ export const parentService = {
 
   getCurrentEnrollments: async () => {
     try {
-      const response = await apiClient.get("/parent/enrollments/accepted");
+      const response = await apiClient.get("/v2/enrollments/accepted");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
