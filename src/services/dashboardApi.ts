@@ -842,7 +842,7 @@ export const centerService = {
     }
   },
 
-  getBlog: async (id: string) => {
+  getBlog: async (id: string | number) => {
     try {
       const response = await apiClient.get(`/blog-centers/${id}`);
       return response.data.data;
@@ -1355,7 +1355,7 @@ export const adminService = {
     }
   },
 
-  getBlog: async (blogId: string) => {
+  getBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.get(`/dashboard/Blogs/${blogId}`);
       return response.data.data;
@@ -1397,7 +1397,7 @@ export const adminService = {
   },
 
   updateBlog: async (
-    blogId: string,
+    blogId: string | number,
     payload: {
       titleAr?: string;
       titleEn?: string;
@@ -1437,7 +1437,7 @@ export const adminService = {
     }
   },
 
-  deleteBlog: async (blogId: string) => {
+  deleteBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.delete(`/dashboard/Blogs/${blogId}`);
       return response.data;
@@ -1466,7 +1466,7 @@ export const adminService = {
     }
   },
 
-  getCenterBlog: async (blogId: string) => {
+  getCenterBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.get(`/dashboard/specific-ad/${blogId}`);
       return response.data;

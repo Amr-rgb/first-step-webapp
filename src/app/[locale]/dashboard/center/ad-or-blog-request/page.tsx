@@ -32,7 +32,9 @@ const BlogCardSkeleton = () => {
 };
 
 const BlogsSection = () => {
-  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
+  const [selectedBlogId, setSelectedBlogId] = useState<string | number | null>(
+    null
+  );
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations("dashboard.center.ad-or-blog-request");
