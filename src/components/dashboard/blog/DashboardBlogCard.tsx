@@ -3,18 +3,20 @@ import { useLocale, useTranslations } from "next-intl";
 import { Icons } from "@/components/general/icons";
 import { Blog } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 
 interface DashboardBlogCardProps {
   blog: Blog;
   onView?: (blog: Blog) => void;
   onEdit?: (blog: Blog) => void;
+  onDelete?: (blog: Blog) => void;
 }
 
 const DashboardBlogCard = ({
   blog,
   onView,
   onEdit,
+  onDelete,
 }: DashboardBlogCardProps) => {
   const locale = useLocale();
   const t = useTranslations("blog");
@@ -53,6 +55,16 @@ const DashboardBlogCard = ({
               onClick={() => onEdit(blog)}
             >
               <Edit className="w-4 h-4" />
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 w-8 p-0 bg-white/90 hover:bg-white text-destructive shadow-sm"
+              onClick={() => onDelete(blog)}
+            >
+              <Trash2 className="w-4 h-4" />
             </Button>
           )}
         </div>

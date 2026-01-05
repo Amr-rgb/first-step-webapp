@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "@/services/dashboardApi";
 import DashboardBlogCard from "@/components/dashboard/blog/DashboardBlogCard";
 import BlogViewModal from "@/components/dashboard/blog/BlogViewModal";
@@ -11,6 +11,8 @@ import { useTranslations, useLocale } from "next-intl";
 import { Blog } from "@/types";
 import EmptyState from "@/components/common/EmptyState";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { toastSuccess, toastError } from "@/lib/toast";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 const AdminBlogs = () => {
   const t = useTranslations("dashboard.admin.blog");
@@ -19,11 +21,39 @@ const AdminBlogs = () => {
   const [page, setPage] = useState(1);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["adminBlogs", page],
     queryFn: () => adminService.getBlogs(page),
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (blogId: string) => adminService.deleteBlog(blogId),
+    onSuccess: () => {
+      toastSuccess(t("delete.success"));
+      queryClient.invalidateQueries({ queryKey: ["adminBlogs"] });
+      setDeleteDialogOpen(false);
+      setBlogToDelete(null);
+    },
+    onError: () => {
+      toastError(t("delete.error"));
+    },
+  });
+
+  const handleDelete = (blog: Blog) => {
+    setBlogToDelete(blog);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (blogToDelete) {
+      deleteMutation.mutate(blogToDelete.id.toString());
+    }
+  };
 
   if (isLoading) return <div>{t("loading")}</div>;
   if (error) return <div className="text-red-500">{t("error")}</div>;
@@ -75,6 +105,7 @@ const AdminBlogs = () => {
                   setViewModalOpen(true);
                 }}
                 onEdit={() => router.push(`blog/${blog.id}/edit`)}
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -119,6 +150,15 @@ const AdminBlogs = () => {
         isOpen={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         isAdmin={true}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={confirmDelete}
+        title={t("delete.title")}
+        description={t("delete.description")}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );
