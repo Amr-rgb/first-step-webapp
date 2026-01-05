@@ -11,7 +11,11 @@ interface DashboardBlogCardProps {
   onEdit?: (blog: Blog) => void;
 }
 
-const DashboardBlogCard = ({ blog, onView, onEdit }: DashboardBlogCardProps) => {
+const DashboardBlogCard = ({
+  blog,
+  onView,
+  onEdit,
+}: DashboardBlogCardProps) => {
   const locale = useLocale();
   const t = useTranslations("blog");
 
@@ -28,7 +32,7 @@ const DashboardBlogCard = ({ blog, onView, onEdit }: DashboardBlogCardProps) => 
           fill
           className="object-cover"
         />
-        
+
         {/* Absolute positioned action buttons */}
         <div className="absolute top-2 right-2 flex gap-1">
           {onView && (
@@ -54,7 +58,7 @@ const DashboardBlogCard = ({ blog, onView, onEdit }: DashboardBlogCardProps) => 
         </div>
       </div>
 
-      <div className="text-primary font-bold">
+      <div className="text-primary font-bold w-full truncate">
         {typeof blog.title === "string" ? blog.title : blog.title?.[locale]}
       </div>
 
@@ -92,7 +96,6 @@ const DashboardBlogCard = ({ blog, onView, onEdit }: DashboardBlogCardProps) => 
           </span>
         </div>
       </div>
-
     </div>
   );
 };

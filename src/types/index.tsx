@@ -243,7 +243,7 @@ export interface ChildInfoData {
 
 // ===== Content Types =====
 export interface Blog {
-  id: string;
+  id: string | number;
   title: string | { [key: string]: string };
   description: string | { [key: string]: string };
   image: string;

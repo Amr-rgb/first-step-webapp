@@ -1474,6 +1474,8 @@
         "noTitle": "No title",
         "addBlog": "Add Blog",
         "editBlog": "Edit Blog",
+        "page": "Page",
+        "of": "of",
         "centers": {
           "title": "Blogs",
           "loading": "Loading...",

@@ -1346,9 +1346,9 @@ export const adminService = {
     }
   },
 
-  getBlogs: async () => {
+  getBlogs: async (page: number = 1) => {
     try {
-      const response = await apiClient.get(`/dashboard/Blogs`);
+      const response = await apiClient.get(`/dashboard/Blogs?page=${page}`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
