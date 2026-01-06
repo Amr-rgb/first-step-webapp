@@ -2611,6 +2611,10 @@
     }
   },
   "nurseryDetails": {
+    "header": {
+      "sloganFallback": "مستقبل طفلك يبدأ من هنا",
+      "description": "نقدم أفضل رعاية وتعليم لطفلك."
+    },
     "waitingPage": {
       "parentTitle": "شيء جميل قادم!",
       "parentSubtitle": "الأشياء الجميلة تحتاج وقتاً لأنها تُصنع بالحب والعناية.",

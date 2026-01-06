@@ -2610,6 +2610,10 @@
     }
   },
   "nurseryDetails": {
+    "header": {
+      "sloganFallback": "Your child's future starts here",
+      "description": "We provide the best care and education for your child."
+    },
     "waitingPage": {
       "parentTitle": "Something Beautiful is Coming!",
       "parentSubtitle": "Beautiful things take time because they are made with love and care.",
