@@ -10,17 +10,8 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { HeroSection } from "@/components/profile-editor/HeroSection";
 import { BranchesSection } from "@/components/profile-editor/BranchesSection";
 import { PhilosophySection } from "@/components/profile-editor/PhilosophySection";
@@ -61,20 +52,7 @@ const ProfileEditor = () => {
     error: loadError,
     savePortfolio,
     isSaving,
-    saveData,
-    saveError,
   } = usePortfolio();
-
-  const searchParams = useSearchParams();
-  const isDebug = searchParams.get("debug") === "true";
-  const [showDebug, setShowDebug] = useState(false);
-
-  // Show debug dialog when response arrives
-  useEffect(() => {
-    if (isDebug && (saveData || saveError)) {
-      setShowDebug(true);
-    }
-  }, [saveData, saveError, isDebug]);
 
   const [originalData, setOriginalData] = useState<
     PortfolioFormData | undefined
@@ -474,44 +452,6 @@ const ProfileEditor = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Debug UI */}
-      {isDebug && (
-        <Dialog open={showDebug} onOpenChange={setShowDebug}>
-          <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-            <DialogHeader>
-              <div className="flex items-center gap-3">
-                <DialogTitle>
-                  {t("debug.title") || "Network Response Debug"}
-                </DialogTitle>
-                {saveError ? (
-                  <Badge variant="destructive">Error</Badge>
-                ) : (
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    Success
-                  </Badge>
-                )}
-              </div>
-              <DialogDescription>
-                {t("debug.description") ||
-                  "Detailed response from the center data update API."}
-              </DialogDescription>
-            </DialogHeader>
-
-            <ScrollArea className="overflow-scroll flex-1 mt-4 rounded-md border bg-muted p-4">
-              <pre className="text-xs font-mono overflow-auto whitespace-pre p-2">
-                {JSON.stringify(saveError || saveData, null, 2)}
-              </pre>
-            </ScrollArea>
-
-            <div className="flex justify-end mt-4">
-              <Button onClick={() => setShowDebug(false)} variant="outline">
-                {t("common.close") || "Close"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 };
