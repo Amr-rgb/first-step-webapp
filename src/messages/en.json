@@ -2012,6 +2012,13 @@
     },
     "profileEditor": {
       "title": "Center Data",
+      "debug": {
+        "title": "Network Response Debug",
+        "description": "Detailed response from the center data update API."
+      },
+      "common": {
+        "close": "Close"
+      },
       "modes": {
         "edit": "Edit",
         "preview": "Preview"
@@ -2466,6 +2473,7 @@
   },
   "common": {
     "cancel": "Cancel",
+    "close": "Close",
     "confirm": "Confirm",
     "emptyState": {
       "title": "No data available",

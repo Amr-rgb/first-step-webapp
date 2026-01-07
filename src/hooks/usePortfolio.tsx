@@ -121,6 +121,8 @@ export const usePortfolio = () => {
     // Mutation
     savePortfolio: savePortfolioMutation.mutate,
     isSaving: savePortfolioMutation.isPending,
+    saveData: savePortfolioMutation.data,
+    saveError: savePortfolioMutation.error,
 
     // Refetch
     refetch: portfolioQuery.refetch,
