@@ -2079,6 +2079,7 @@
         "goalContentPlaceholder": "Enter goal content"
       },
       "services": {
+        "imageRequired": "All services must have an image",
         "sectionTitle": "Section Title",
         "sectionTitlePlaceholder": "Enter services section title",
         "services": "Services",

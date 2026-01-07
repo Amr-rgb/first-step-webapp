@@ -2075,6 +2075,7 @@
         "goalContentPlaceholder": " أدخل محتوى هدفنا"
       },
       "services": {
+        "imageRequired": "يجب أن تحتوي جميع الخدمات على صورة",
         "sectionTitle": "عنوان خدماتنا",
         "sectionTitlePlaceholder": "أدخل عنوان خدماتنا",
         "services": "خدماتنا",

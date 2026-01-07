@@ -233,6 +233,15 @@ const ProfileEditor = () => {
   const handleSavePortfolio = () => {
     if (!hasChanges || !currentData) return;
 
+    // Validate: prevent saving service without image
+    const servicesWithoutImage = currentData.services?.some(
+      (service) => !service.image_service
+    );
+    if (servicesWithoutImage) {
+      toastError(t("services.imageRequired"));
+      return;
+    }
+
     // Get dirty root keys
     const dirtyDataRoot = getDirtyData();
     const changedRootKeys = Object.keys(dirtyDataRoot);
