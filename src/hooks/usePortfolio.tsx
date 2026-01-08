@@ -3,6 +3,7 @@ import { centerService } from "@/services/dashboardApi";
 import { PortfolioFormData } from "@/types";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { useTranslations } from "next-intl";
+import { ApiError } from "@/lib/error-handling";
 
 // Transform API data to match our form structure
 const transformApiData = (apiData: any): PortfolioFormData => {
@@ -99,16 +100,34 @@ export const usePortfolio = () => {
   });
 
   // Mutation for saving portfolio
-  const savePortfolioMutation = useMutation({
-    mutationFn: async (data: Partial<PortfolioFormData>) => {
-      return await centerService.savePortfolio(data as PortfolioFormData);
+  const savePortfolioMutation = useMutation<any, ApiError, PortfolioFormData>({
+    mutationFn: async (data: PortfolioFormData) => {
+      return await centerService.savePortfolio(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["portfolio"] });
       toastSuccess(t("saveSuccess"));
     },
-    onError: () => {
-      toastError(t("saveError"));
+    onError: (error: ApiError) => {
+      console.error("Failed to save portfolio:", error);
+
+      // Extract details if available
+      if (error.errors && Object.keys(error.errors).length > 0) {
+        const firstErrorKey = Object.keys(error.errors)[0];
+        const firstError = error.errors[firstErrorKey];
+        const firstErrorMessage = Array.isArray(firstError)
+          ? firstError[0]
+          : firstError;
+
+        toastError(t("saveError"), firstErrorMessage);
+      } else {
+        // Fallback to error message or translated generic error
+        const message =
+          error.message && !error.message.includes("server")
+            ? error.message
+            : t("saveError");
+        toastError(message);
+      }
     },
   });
 

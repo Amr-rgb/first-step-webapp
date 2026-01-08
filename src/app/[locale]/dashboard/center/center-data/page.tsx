@@ -292,11 +292,12 @@ const ProfileEditor = () => {
     });
 
     console.log("💾 Saving portfolio with deletion arrays:", payload);
-    savePortfolio(payload);
-
-    // Update original data after save to reset the "changed" state
-    setOriginalData(currentData);
-    setHasChanges(false);
+    savePortfolio(payload, {
+      onSuccess: () => {
+        setOriginalData(currentData);
+        setHasChanges(false);
+      },
+    });
   };
 
   const sections = [
