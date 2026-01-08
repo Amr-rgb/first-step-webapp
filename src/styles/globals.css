@@ -269,7 +269,7 @@ html {
   }
   body {
     font-family: var(--font-primary), sans-serif;
-    @apply bg-background text-foreground max-w-screen overflow-x-hidden;
+    @apply bg-background text-foreground max-w-screen;
   }
   section:not([aria-label="Notifications alt+T"]) {
     @apply py-10;
