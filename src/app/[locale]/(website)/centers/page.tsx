@@ -18,17 +18,15 @@ export async function generateMetadata({
   const params = await paramsPromise;
   return {
     title:
-      params.locale === "ar"
-        ? "First Step دليلك أفضل الحضانات في السعودية | حضانة آمنة ومريحة لطفلك"
-        : "First Step Guide to Best Nurseries in Saudi Arabia | Safe and Comfortable Childcare",
+      params.locale === "ar" ? "First Step | المراكز" : "First Step | Centers",
     description:
       params.locale === "ar"
-        ? "منصة First Step تسهل عليك العثور على حضانة مناسبة لطفلك حسب الموقع، الأسعار، والخدمات. اكتشف أفضل الحضانات في الرياض، جدة، وغيرها من المدن السعودية."
-        : "First Step platform makes it easy to find the right nursery for your child based on location, prices, and services. Discover the best nurseries in Riyadh, Jeddah, and other Saudi cities.",
+        ? "اكتشف أفضل المراكز في المملكة العربية السعودية عبر منصة First Step."
+        : "Discover the best centers in Saudi Arabia through First Step platform.",
   };
 }
 
-export default async function NurseriesPage({
+export default async function CentersPage({
   params,
   searchParams,
 }: {
@@ -52,9 +50,9 @@ export default async function NurseriesPage({
       nurseryService.getNurseries(locale),
       promocodeWebsiteService.getPromocodes(),
     ]);
-    // Filter out nursery with ID 68
+    // Only show nursery with ID 68
     nurseries = (nurseriesData as any[]).filter(
-      (nursery: any) => Number(nursery.id) !== 68
+      (nursery: any) => Number(nursery.id) === 68
     );
     if (couponsResponse.success) {
       coupons = couponsResponse.data;

@@ -14,7 +14,15 @@
         "path": "/services"
       },
       "nurseries": {
+        "title": "Childhood Centers",
+        "path": "/nurseries"
+      },
+      "centers-item": {
         "title": "Centers",
+        "path": "/centers"
+      },
+      "nurseries-item": {
+        "title": "Nurseries",
         "path": "/nurseries"
       },
       "coupon-codes": {

@@ -156,11 +156,28 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     "contact",
   ];
   const links = keys.map((key, index) => {
-    return {
+    const baseLink = {
       id: index,
       title: t(`links.${key}.title`),
       path: t(`links.${key}.path`),
     };
+
+    if (key === "nurseries") {
+      return {
+        ...baseLink,
+        items: [
+          {
+            title: t("links.centers-item.title"),
+            path: t("links.centers-item.path"),
+          },
+          {
+            title: t("links.nurseries-item.title"),
+            path: t("links.nurseries-item.path"),
+          },
+        ],
+      };
+    }
+    return baseLink;
   });
 
   const hoverEffect =
@@ -204,21 +221,43 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               }`}
             >
               <ul className="flex justify-between items-center gap-x-9">
-                {links.map((link) => (
+                {links.map((link: any) => (
                   <li
                     key={link.id}
-                    className="relative inline-block font-medium text-center h-7"
+                    className="relative inline-block font-medium text-center h-7 group"
                   >
                     <Link
                       href={link.path}
                       className={`text-base text-gray ${hoverEffect} ${
-                        isActive(link.path)
+                        isActive(link.path) ||
+                        (link.items &&
+                          link.items.some((item: any) => isActive(item.path)))
                           ? "text-xl font-extrabold text-primary"
                           : ""
                       }`}
                     >
                       {link.title}
                     </Link>
+
+                    {link.items && (
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 hidden group-hover:block transition-all duration-300 animate-in fade-in slide-in-from-top-2">
+                        <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-2 min-w-[200px] overflow-hidden">
+                          {link.items.map((item: any) => (
+                            <Link
+                              key={item.path}
+                              href={item.path}
+                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 text-right ${
+                                isActive(item.path)
+                                  ? "bg-emerald-50 text-primary font-bold"
+                                  : ""
+                              }`}
+                            >
+                              {item.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     <span className="relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0">
                       {link.title}
@@ -357,7 +396,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
             {/* Menu items */}
             <div className="flex flex-col h-[calc(100vh-65px)] overflow-y-auto custom-scrollbar">
               <ul className="pt-2 pb-4">
-                {links.map((link) => (
+                {links.map((link: any) => (
                   <li key={link.id}>
                     <Link
                       href={link.path}
@@ -370,6 +409,25 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                     >
                       {link.title}
                     </Link>
+                    {link.items && (
+                      <ul className="bg-gray-50/50">
+                        {link.items.map((item: any) => (
+                          <li key={item.path}>
+                            <Link
+                              href={item.path}
+                              className={`block ltr:px-12 rtl:px-12 py-3 text-sm transition-colors duration-200 ${
+                                isActive(item.path)
+                                  ? "font-extrabold text-emerald-600"
+                                  : "text-gray-600 hover:bg-gray-100"
+                              }`}
+                              onClick={forceCloseMenu}
+                            >
+                              - {item.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

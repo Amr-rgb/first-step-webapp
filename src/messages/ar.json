@@ -14,7 +14,15 @@
         "path": "/services"
       },
       "nurseries": {
+        "title": "مراكز الطفولة",
+        "path": "/nurseries"
+      },
+      "centers-item": {
         "title": "المراكز",
+        "path": "/centers"
+      },
+      "nurseries-item": {
+        "title": "الحضانات",
         "path": "/nurseries"
       },
       "coupon-codes": {
