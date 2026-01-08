@@ -206,7 +206,7 @@
     "rejectBlog": "Reject"
   },
   "nurseries": {
-    "search": "Search for a center or nursery",
+    "search": "Search for a center/nursery",
     "filters": {
       "all": "All",
       "0-3": "Nurseries for Ages 0-3",
@@ -222,7 +222,7 @@
       "have-account": "Already have an account?",
       "sign-in": "Sign In",
       "center": {
-        "title": "Center Account",
+        "title": "Center/Nursery Account",
         "description": "For nurseries and childcare centers to manage their services"
       },
       "parent": {
@@ -234,7 +234,7 @@
       "sign-in": "Sign In",
       "sign-in-google": "Sign In with Google",
       "sign-up-parent": "Create Parent Account",
-      "sign-up-center": "Create Center Account",
+      "sign-up-center": "Create Center/Nursery Account",
       "send-code": "Send Code",
       "change-password": "Change Password",
       "next": "Next",
@@ -338,7 +338,7 @@
         "national_number": "National Number",
         "kinship": "Child Relationship",
         "comments": "Comments",
-        "nursery_name": "Nursery Name",
+        "nursery_name": "Center/Nursery Name",
         "location": "Location",
         "city": "City",
         "neighborhood": "Neighborhood",
@@ -503,7 +503,7 @@
       }
     },
     "center-signup": {
-      "title": "Create Center Account",
+      "title": "Create Center/Nursery Account",
       "1": {
         "title": "Basic Information",
         "form": {
@@ -528,8 +528,8 @@
             "placeholder": "Enter mobile number"
           },
           "nursery_name": {
-            "label": "Center Name",
-            "placeholder": "Enter center name"
+            "label": "Center/Nursery Name",
+            "placeholder": "Enter center/nursery name"
           },
           "location": {
             "label": "Location Link",
@@ -544,11 +544,11 @@
             "placeholder": "Enter city name"
           },
           "logo": {
-            "label": "Logo",
-            "placeholder": "Upload center logo"
+            "label": "Center/Nursery Logo",
+            "placeholder": "Upload center/nursery logo"
           },
           "type": {
-            "label": "Center Type",
+            "label": "Center/Nursery Type",
             "options": {
               "care": "Care",
               "education": "Educational",
@@ -602,7 +602,7 @@
         "title": "Parent Communication and Food Service",
         "form": {
           "emergency-contact": {
-            "label": "Does the center offer emergency contact with parents?",
+            "label": "Does the center/nursery offer emergency contact with parents?",
             "options": {
               "yes": "Yes",
               "no": "No"
@@ -617,7 +617,7 @@
             }
           },
           "food-service": {
-            "label": "Does the center provide food service?",
+            "label": "Does the center/nursery provide food service?",
             "options": {
               "yes": "Yes",
               "no": "No"
@@ -640,9 +640,9 @@
         "form": {
           "business-license": "Practice License",
           "commercial-registration": "Commercial Registration",
-          "logo": "Center Logo",
+          "logo": "Center/Nursery Logo",
           "file-placeholder": "Choose File",
-          "description": "Required licenses to ensure and confirm the center's credibility",
+          "description": "Required licenses to ensure and confirm the center/nursery's credibility",
           "comments": {
             "label": "Do you have any comments or notes?",
             "placeholder": "Enter any additional comments"
@@ -695,17 +695,17 @@
       "successTitle": "Your Account Has Been Created Successfully!",
       "noSubscription": {
         "title": "Don't Have a Subscription?",
-        "description": "Search for a nursery or center that suits you"
+        "description": "Search for a center/nursery that suits you"
       },
       "hasSubscription": {
         "title": "Have a Subscription?",
-        "description": "Find your child's nursery or center"
+        "description": "Find your child's center/nursery"
       }
     },
     "search": {
       "placeholder": "Search by name or address",
-      "notFound": "Didn't find your child's nursery or center?",
-      "inviteButton": "Invite Your Nursery or Center",
+      "notFound": "Didn't find your child's center/nursery?",
+      "inviteButton": "Invite Your Center/Nursery",
       "copy": "Copy",
       "copied": "Copied"
     },
@@ -1047,7 +1047,7 @@
         "permissionError": "You do not have permission to view advertisements or blogs",
         "ad": {
           "title": "Request Advertisement",
-          "free-notice": "Your first advertisement for your nursery/center is 100% free on the homepage for one day",
+          "free-notice": "Your first advertisement for your center/nursery is 100% free on the homepage for one day",
           "description": "Attract parents with an advertisement that appears at the top of the homepage. You can specify the number of days the advertisement will appear",
           "form": {
             "image": {
@@ -1514,7 +1514,7 @@
           "loading": "Loading...",
           "error": "An error occurred while fetching data",
           "noTitle": "No title",
-          "center": "Nursery or Center",
+          "center": "Center/Nursery",
           "pendingBlogs": "Pending Blogs",
           "acceptedBlogs": "Accepted Blogs",
           "rejectedBlogs": "Rejected Blogs",
@@ -1553,7 +1553,7 @@
       "loading": "Loading...",
       "cards": {
         "children": "Number of Children",
-        "centers": "Number of Nurseries",
+        "centers": "Number of Centers/Nurseries",
         "parents": "Number of Parents",
         "firstStepAds": "Number of First Step Ads",
         "centerAds": "Number of Center/Nursery Ads"
@@ -1575,10 +1575,10 @@
           "actions": "Actions"
         },
         "actions": {
-          "add": "Add Center",
-          "edit": "Edit Center",
-          "delete": "Delete Center",
-          "view": "View Center"
+          "add": "Add Center/Nursery",
+          "edit": "Edit Center/Nursery",
+          "delete": "Delete Center/Nursery",
+          "view": "View Center/Nursery"
         },
         "error": {
           "load": "Could not load centers",
