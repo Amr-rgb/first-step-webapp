@@ -21,6 +21,26 @@ export const websiteService = {
   },
 };
 
+export const centerService = {
+  getPromocodes: async () => {
+    try {
+      const response = await apiClient.get("/promocodes");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  requestNewPromocode: async () => {
+    try {
+      const response = await apiClient.post("/request-new-promocode");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+};
+
 export const adminService = {
   getPromocodes: async () => {
     try {
@@ -105,17 +125,21 @@ export const adminService = {
     try {
       // Use apiClient to ensure proper authentication headers are included
       const formData = new FormData();
-      formData.append('title', title);
-      
-      const response = await apiClient.post('/promocodes/check-exists', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      formData.append("title", title);
+
+      const response = await apiClient.post(
+        "/promocodes/check-exists",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
-      console.error('Error checking promocode existence:', error);
+      console.error("Error checking promocode existence:", error);
       throw ApiErrorHandler.handle(error);
     }
   },

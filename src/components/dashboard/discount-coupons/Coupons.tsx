@@ -9,34 +9,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
+import { centerService as promocodeService } from "@/services/promocodeService";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "@/components/common/EmptyState";
 import { toastSuccess, toastError } from "@/lib/toast";
 
 type FilterType = "all" | "active" | "not-started" | "paused" | "expired";
 
-interface PaymentHistoryItem {
+interface PromocodeBranch {
   id: number;
-  total: string;
-  plan: string;
-  duration: number;
-  city: {
-    id: number;
-    name: {
-      en: string;
-      ar: string;
-    };
-  } | null;
-  address: string;
-  logo: string;
-  nursery_name: string;
   name: string;
-  email: string;
-  neighborhood: string;
-  location: string;
-  start_of_subscription: string;
-  end_of_subscription: string;
-  status: "active" | "expired";
+  center_id: number;
+}
+
+interface PromocodeItem {
+  id: number;
+  title: string;
+  description: string;
+  percentage: string;
+  start_date: string;
+  end_date: string;
+  max_number_of_usage: number;
+  kind_of_child: string;
+  status: CouponStatus;
+  color: string;
+  amount: string;
+  center_id: number | null;
+  branch_id: number | null;
+  paid_enrollments_count: number;
+  branches: PromocodeBranch[];
+  is_global: boolean;
+  scope_type: string;
+  created_at: string;
+  updated_at: string;
 }
 
 type CouponStatus = "active" | "not-started" | "paused" | "expired";
@@ -50,6 +55,7 @@ interface Coupon {
   endDate: string;
   usageCount: number;
   status: CouponStatus;
+  activatedBranches: string[];
 }
 
 export default function Coupons() {
@@ -58,19 +64,19 @@ export default function Coupons() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch payment history from API
+  // Fetch promocodes from API
   const {
-    data: paymentHistoryResponse,
+    data: promocodesResponse,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["center-payment-history"],
-    queryFn: () => centerService.getSubscriptionsLog(),
+    queryKey: ["center-promocodes"],
+    queryFn: () => promocodeService.getPromocodes(),
   });
 
   // Request new promocode mutation
   const requestPromocodeMutation = useMutation({
-    mutationFn: () => centerService.requestNewPromocode(),
+    mutationFn: () => promocodeService.requestNewPromocode(),
     onSuccess: () => {
       toastSuccess(
         t("requestSuccess") || "Request submitted successfully",
@@ -88,31 +94,16 @@ export default function Coupons() {
     },
   });
 
-  // Transform payment history data to coupon format
+  // Transform promocode data to coupon format
   const coupons: Coupon[] = useMemo(() => {
-    if (!paymentHistoryResponse?.data) return [];
+    if (!promocodesResponse?.data) return [];
 
-    const paymentHistory: PaymentHistoryItem[] = paymentHistoryResponse.data;
+    const promocodes: PromocodeItem[] = promocodesResponse.data;
 
-    return paymentHistory.map((payment) => {
-      // Determine status based on payment status and dates
-      let status: CouponStatus = "expired";
-      const now = new Date();
-      const startDate = new Date(payment.start_of_subscription);
-      const endDate = new Date(payment.end_of_subscription);
-
-      if (payment.status === "active" && endDate > now) {
-        status = "active";
-      } else if (startDate > now) {
-        status = "not-started";
-      } else if (payment.status === "active" && endDate <= now) {
-        status = "expired";
-      } else {
-        status = "expired";
-      }
-
+    return promocodes.map((promocode) => {
       // Format dates
       const formatDate = (dateString: string) => {
+        if (!dateString) return "-";
         const date = new Date(dateString);
         return date.toLocaleDateString(locale === "ar" ? "ar-SA" : "en-US", {
           weekday: "long",
@@ -122,25 +113,19 @@ export default function Coupons() {
         });
       };
 
-      // Calculate discount (if any - this might need to be adjusted based on actual API response)
-      // For now, we'll use the plan duration as a proxy for discount percentage
-      const discountPercentage =
-        payment.duration >= 12 ? 20 : payment.duration >= 6 ? 15 : 10;
-      const discountValue =
-        (parseFloat(payment.total) * discountPercentage) / 100;
-
       return {
-        id: payment.id.toString(),
-        couponName: payment.plan || "Subscription",
-        discountPercentage,
-        discountValue: Math.round(discountValue),
-        startDate: formatDate(payment.start_of_subscription),
-        endDate: formatDate(payment.end_of_subscription),
-        usageCount: 1, // Each payment is a single usage
-        status,
+        id: promocode.id.toString(),
+        couponName: promocode.title,
+        discountPercentage: parseFloat(promocode.percentage),
+        discountValue: parseFloat(promocode.amount),
+        startDate: formatDate(promocode.start_date),
+        endDate: formatDate(promocode.end_date),
+        usageCount: promocode.paid_enrollments_count,
+        status: promocode.status,
+        activatedBranches: promocode.branches.map((b) => b.name),
       };
     });
-  }, [paymentHistoryResponse, locale]);
+  }, [promocodesResponse, locale]);
 
   const filters = [
     { value: "all" as FilterType, label: t("filters.all") },
@@ -213,9 +198,7 @@ export default function Coupons() {
     return (
       <div className="space-y-6">
         <div className="py-12 text-center text-red-500">
-          {error instanceof Error
-            ? error.message
-            : "Failed to load payment history"}
+          {error instanceof Error ? error.message : "Failed to load coupons"}
         </div>
       </div>
     );
@@ -268,6 +251,7 @@ export default function Coupons() {
               endDate={coupon.endDate}
               usageCount={coupon.usageCount}
               status={coupon.status}
+              activatedBranches={coupon.activatedBranches}
             />
           ))
         ) : (
