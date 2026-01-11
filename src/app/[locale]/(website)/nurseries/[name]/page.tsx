@@ -91,10 +91,10 @@ export default async function NurseryPage({
       )}
 
       {/* 5. Plans Section */}
-      <Plans nurseryName={readableName} locale={locale} />
+      <Plans centerId={id!} nurseryName={readableName} locale={locale} />
 
       {/* 6. Programs Section */}
-      <Programs programs={[]} nurseryName={readableName} locale={locale} />
+      {/* <Programs programs={[]} nurseryName={readableName} locale={locale} /> */}
 
       {/* 6. Services Section */}
       {portfolio.services &&

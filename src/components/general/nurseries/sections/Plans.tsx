@@ -32,12 +32,13 @@ interface Plan {
 }
 
 interface PlansProps {
+  centerId: string;
   nurseryName: string;
   locale: string;
   preview?: boolean;
 }
 
-const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
+const Plans = ({ centerId, nurseryName, locale, preview }: PlansProps) => {
   const t = useTranslations("nurseryDetails");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -58,27 +59,27 @@ const Plans = ({ nurseryName, locale, preview }: PlansProps) => {
   );
 
   // Resolve center ID by nursery name
-  const { data: nurseries = [] } = useQuery({
-    queryKey: ["nurseries-for-center-id", locale],
-    queryFn: () => getNurseriesAction(locale),
-    enabled: !!locale,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  // const { data: nurseries = [] } = useQuery({
+  //   queryKey: ["nurseries-for-center-id", locale],
+  //   queryFn: () => getNurseriesAction(locale),
+  //   enabled: !!locale,
+  //   staleTime: 5 * 60 * 1000,
+  //   gcTime: 10 * 60 * 1000,
+  // });
 
-  const centerId: string | undefined = (() => {
-    if (!nurseries || nurseries.length === 0) return undefined;
-    const target = nurseries.find((n: any) => {
-      const dbName = (n.nursery_name || n.name || "").toLowerCase().trim();
-      const searchName = (nurseryName || "").toLowerCase().trim();
-      return (
-        dbName === searchName ||
-        dbName.includes(searchName) ||
-        searchName.includes(dbName)
-      );
-    });
-    return target?.id ? String(target.id) : undefined;
-  })();
+  // const centerId: string | undefined = (() => {
+  //   if (!nurseries || nurseries.length === 0) return undefined;
+  //   const target = nurseries.find((n: any) => {
+  //     const dbName = (n.nursery_name || n.name || "").toLowerCase().trim();
+  //     const searchName = (nurseryName || "").toLowerCase().trim();
+  //     return (
+  //       dbName === searchName ||
+  //       dbName.includes(searchName) ||
+  //       searchName.includes(dbName)
+  //     );
+  //   });
+  //   return target?.id ? String(target.id) : undefined;
+  // })();
 
   // Fetch branches for center
   const {
