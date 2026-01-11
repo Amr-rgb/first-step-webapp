@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import NavbarButton from "./NavbarButton";
 import { useAuthToken } from "@/store/authStore";
+import { cn } from "@/lib/utils";
 
 // Simple browser detection for old browsers
 const isOldBrowser = () => {
@@ -27,6 +28,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [needsOldBrowserFallback, setNeedsOldBrowserFallback] = useState(true); // Start with true for SSR
   const [buttonsVisible, setButtonsVisible] = useState(false); // New state for button visibility
+  const [openMobileSubmenuId, setOpenMobileSubmenuId] = useState<number | null>(
+    null
+  );
   const pathname = usePathname();
   const locale = useLocale();
   const isRtl = locale === "ar";
@@ -105,6 +109,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   // Force close menu (for old browsers that might not respond to state changes)
   const forceCloseMenu = () => {
     setIsMenuOpen(false);
+    setOpenMobileSubmenuId(null);
     if (menuRef.current && overlayRef.current) {
       menuRef.current.style.transform = isRtl
         ? "translateX(-100%)"
@@ -151,9 +156,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     // "centers",
     "coupon-codes",
     "consultations",
-    "blog",
-    "story",
-    "contact",
+    "who-are-we",
   ];
   const links = keys.map((key, index) => {
     const baseLink = {
@@ -177,11 +180,31 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         ],
       };
     }
+
+    if (key === "who-are-we") {
+      return {
+        ...baseLink,
+        items: [
+          {
+            title: t("links.blog.title"),
+            path: t("links.blog.path"),
+          },
+          {
+            title: t("links.story.title"),
+            path: t("links.story.path"),
+          },
+          {
+            title: t("links.contact.title"),
+            path: t("links.contact.path"),
+          },
+        ],
+      };
+    }
     return baseLink;
   });
 
   const hoverEffect =
-    "hover:text-primary hover:font-bold hover:text-xl hover:text-secondary-orange duration-300 ";
+    "group-hover:text-primary group-hover:font-bold group-hover:text-xl group-hover:text-secondary-orange duration-300 ";
 
   return (
     <>
@@ -228,7 +251,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                   >
                     <Link
                       href={link.path}
-                      className={`text-base text-gray ${hoverEffect} ${
+                      className={`text-base text-gray flex items-center justify-center gap-1 ${hoverEffect} ${
                         isActive(link.path) ||
                         (link.items &&
                           link.items.some((item: any) => isActive(item.path)))
@@ -237,6 +260,12 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                       }`}
                     >
                       {link.title}
+                      {link.items && (
+                        <ChevronDown
+                          size={14}
+                          className="transition-transform duration-300 group-hover:rotate-180"
+                        />
+                      )}
                     </Link>
 
                     {link.items && (
@@ -246,7 +275,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                             <Link
                               key={item.path}
                               href={item.path}
-                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 text-right ${
+                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 rtl:text-right ltr:text-left ${
                                 isActive(item.path)
                                   ? "bg-emerald-50 text-primary font-bold"
                                   : ""
@@ -259,7 +288,12 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                       </div>
                     )}
 
-                    <span className="relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0">
+                    <span
+                      className={cn(
+                        "relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0",
+                        link.items && "ltr:pr-4 rtl:pl-4"
+                      )}
+                    >
                       {link.title}
                     </span>
                   </li>
@@ -398,19 +432,44 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               <ul className="pt-2 pb-4">
                 {links.map((link: any) => (
                   <li key={link.id}>
-                    <Link
-                      href={link.path}
-                      className={`block px-6 py-4 text-base transition-colors duration-200 ${
-                        isActive(link.path)
-                          ? "font-bold text-emerald-600 bg-emerald-50"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                      onClick={forceCloseMenu}
-                    >
-                      {link.title}
-                    </Link>
-                    {link.items && (
-                      <ul className="bg-gray-50/50">
+                    {link.items ? (
+                      <button
+                        onClick={() =>
+                          setOpenMobileSubmenuId(
+                            openMobileSubmenuId === link.id ? null : link.id
+                          )
+                        }
+                        className={`w-full px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
+                          isActive(link.path) ||
+                          link.items.some((item: any) => isActive(item.path))
+                            ? "font-bold text-emerald-600 bg-emerald-50"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {link.title}
+                        <ChevronDown
+                          size={14}
+                          className={cn(
+                            "transition-transform duration-300",
+                            openMobileSubmenuId === link.id && "rotate-180"
+                          )}
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        href={link.path}
+                        className={`px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
+                          isActive(link.path)
+                            ? "font-bold text-emerald-600 bg-emerald-50"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                        onClick={forceCloseMenu}
+                      >
+                        {link.title}
+                      </Link>
+                    )}
+                    {link.items && openMobileSubmenuId === link.id && (
+                      <ul className="bg-gray-50/50 animate-in slide-in-from-top-1 duration-200">
                         {link.items.map((item: any) => (
                           <li key={item.path}>
                             <Link

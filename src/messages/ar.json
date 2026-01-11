@@ -44,6 +44,10 @@
       "contact": {
         "title": "تواصل معنا",
         "path": "/contact"
+      },
+      "who-are-we": {
+        "title": "من نحن",
+        "path": "#"
       }
     },
     "buttons": {

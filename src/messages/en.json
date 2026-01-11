@@ -44,6 +44,10 @@
       "contact": {
         "title": "Contact us",
         "path": "/contact"
+      },
+      "who-are-we": {
+        "title": "Who are we",
+        "path": "#"
       }
     },
     "buttons": {
