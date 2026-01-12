@@ -15,6 +15,31 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Fix Radix UI Select scroll jump/shift issue */
+/* Completely disable react-remove-scroll body lock for Select components */
+/* This allows the page to stay in place when opening Select dropdowns */
+html,
+html body,
+html[data-scroll-locked],
+html[data-scroll-locked] body,
+body[data-scroll-locked],
+[data-radix-scroll-area-viewport][data-scroll-locked],
+[data-scroll-locked] {
+  overflow: unset !important;
+  overflow-x: hidden !important;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  touch-action: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Reset any position changes from scroll lock */
+body[data-scroll-locked] {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+}
+
 @theme {
   /* Black & White */
   --color-black: #000000;

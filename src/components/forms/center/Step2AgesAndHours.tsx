@@ -108,12 +108,12 @@ export function Step2AgesAndHours({
             name="work_days_from"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>{t("from-day.label")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   disabled={disabled}
                 >
-                  <FormLabel>{t("from-day.label")}</FormLabel>
                   <FormControl>
                     <SelectTrigger>
                       {!isAdd ? (
@@ -149,12 +149,12 @@ export function Step2AgesAndHours({
             name="work_days_to"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>{t("to-day.label")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   disabled={disabled}
                 >
-                  <FormLabel>{t("to-day.label")}</FormLabel>
                   <FormControl>
                     <SelectTrigger>
                       {!isAdd ? (
