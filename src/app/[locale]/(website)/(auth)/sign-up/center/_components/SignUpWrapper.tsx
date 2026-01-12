@@ -51,6 +51,7 @@ const SignUpWrapper = () => {
         city_id: { field: "city", step: 1 },
         logo: { field: "logo", step: 1 },
         nursery_type: { field: "nursery_type", step: 1 },
+        types: { field: "types", step: 1 },
         commercial_record_path: {
           field: "commercial_record_path",
           step: 2,

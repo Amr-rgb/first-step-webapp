@@ -91,6 +91,7 @@ export function SignUp({
           "city",
           "logo",
           "nursery_type",
+          "types",
         ];
       case 2:
         return ["commercial_record_path", "license_path"];
@@ -114,6 +115,14 @@ export function SignUp({
     submitHandler(data);
   };
 
+  const onInvalid = (errors: any) => {
+    const step1Fields = getFieldsToValidate(1);
+    const hasStep1Errors = step1Fields.some((field) => errors[field]);
+    if (hasStep1Errors) {
+      setCurrentStep(1);
+    }
+  };
+
   // Attach the ref to the form provider
   useEffect(() => {
     if (formRef) {
@@ -134,7 +143,10 @@ export function SignUp({
   return (
     <div className="flex flex-col items-center container mx-auto px-4">
       <FormProvider {...methods}>
-        <form className="w-full" onSubmit={methods.handleSubmit(onSubmit)}>
+        <form
+          className="w-full"
+          onSubmit={methods.handleSubmit(onSubmit, onInvalid)}
+        >
           {currentStep === 1 && (
             <h1 className="mb-10 heading-2 text-primary text-center">
               {t("title")}
