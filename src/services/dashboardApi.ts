@@ -67,6 +67,11 @@ const prepareCenterFormData = (
       formData.append("nursery_type[]", item);
     });
   }
+  if (payload.types?.length) {
+    payload.types.forEach((item: string) => {
+      formData.append("types[]", item);
+    });
+  }
 
   if (payload.communication_methods?.length) {
     payload.communication_methods.forEach((item: string) => {

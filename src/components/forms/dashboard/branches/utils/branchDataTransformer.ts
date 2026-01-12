@@ -12,6 +12,11 @@ export const transformFetchedBranchToFormData = (
     phone: fetchedBranch.phone || "",
     neighborhood: fetchedBranch.neighborhood || "",
     nursery_type: fetchedBranch.nursery_type || [],
+    types: Array.isArray(fetchedBranch.types)
+      ? fetchedBranch.types.map((t: any) =>
+          typeof t === "object" ? t.id.toString() : t.toString()
+        )
+      : [],
     city: fetchedBranch.city_id || "",
     location: fetchedBranch.location || "",
     services: fetchedBranch.services || [],
@@ -58,6 +63,7 @@ export const transformFormDataToApiPayload = (
 
   // Arrays and strings (include if present in values)
   if ("nursery_type" in values) result.nursery_type = values.nursery_type || [];
+  if ("types" in values) result.types = values.types || [];
   if ("additional_service" in values)
     result.additional_service = values.additional_service || "";
   if ("services" in values) result.services = values.services || [];

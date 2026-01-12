@@ -58,6 +58,7 @@ const BranchWrapper = ({
       phone: "",
       neighborhood: "",
       nursery_type: [],
+      types: [],
       city: "",
       location: "",
       services: [],

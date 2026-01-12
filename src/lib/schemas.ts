@@ -434,6 +434,9 @@ const createBranchStep1Schema = (locale: "ar" | "en" = "ar") =>
     nursery_type: z
       .array(z.string())
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
+    types: z
+      .array(z.string())
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
     logo: z
       .instanceof(File, {
         message: getErrorMessage("general-field-required", locale),
