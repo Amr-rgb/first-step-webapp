@@ -87,7 +87,7 @@ export default function ParentSignUp({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("phone.label")}
+                  {t("form.phone.label")}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
@@ -259,7 +259,7 @@ export default function ParentSignUp({
           </Button>
 
           <Button
-            className="!border-light-gray text-mid-gray w-full sm:w-auto"
+            className="border-light-gray! text-mid-gray w-full sm:w-auto"
             size="lg"
             type="button"
             variant="outline"
