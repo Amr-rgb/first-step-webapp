@@ -1122,6 +1122,33 @@ export const centerService = {
 };
 
 export const adminService = {
+  createCenterType: async (name: string) => {
+    try {
+      const response = await apiClient.post("/dashboard/types", { name });
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateCenterType: async (id: string, name: string) => {
+    try {
+      const response = await apiClient.put(`/dashboard/types/${id}`, { name });
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterTypes: async () => {
+    try {
+      const response = await apiClient.get("/dashboard/types");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCenters: async () => {
     try {
       const response = await apiClient.get("/dashboard/centers");
