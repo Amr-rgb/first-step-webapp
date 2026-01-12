@@ -553,11 +553,15 @@
           },
           "type": {
             "label": "Center/Nursery Type",
+            "placeholder": "Select types...",
             "options": {
-              "care": "Care",
-              "education": "Educational",
-              "support": "Support and Rehabilitation"
+              "center": "Center",
+              "nursery": "Nursery",
+              "other": "Other"
             }
+          },
+          "nursery_type": {
+            "label": "Center/Nursery Specialties"
           }
         }
       },

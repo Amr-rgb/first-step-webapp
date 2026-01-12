@@ -172,6 +172,7 @@ const SignUpWrapper = () => {
       city: data.city,
       logo: data.logo,
       nursery_type: data.nursery_type,
+      types: data.types,
 
       // Step 2 fields
       commercial_record_path: data.commercial_record_path,

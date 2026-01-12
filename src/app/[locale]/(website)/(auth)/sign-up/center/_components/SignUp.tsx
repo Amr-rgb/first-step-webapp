@@ -51,6 +51,7 @@ export function SignUp({
       city: "",
       logo: undefined,
       nursery_type: [],
+      types: [],
       // step2
       commercial_record_path: undefined,
       license_path: undefined,

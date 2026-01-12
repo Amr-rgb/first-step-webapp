@@ -1018,6 +1018,15 @@ export const nurseryService = {
 };
 
 export const authService = {
+  getCenterTypes: async () => {
+    try {
+      const response = await apiClient.get("/types-public");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   registerParentv2: async (payload: ParentRegisterPayloadv2) => {
     try {
       const response = await apiClient.post("/v2/register-v2", {
@@ -1072,6 +1081,13 @@ export const authService = {
         formData.append("nursery_type[]", item);
       });
 
+      // Append types array
+      if (payload.types) {
+        payload.types.forEach((item) => {
+          formData.append("types[]", item);
+        });
+      }
+
       // Step 2 fields - files
       payload.logo && formData.append("logo", payload.logo);
       payload.license_path &&
@@ -1091,6 +1107,7 @@ export const authService = {
         location: payload.location,
         neighborhood: payload.neighborhood,
         city: payload.city,
+        types: payload.types,
         nursery_type: payload.nursery_type,
         logo: payload.logo?.name,
         license_path: payload.license_path?.name,

@@ -174,6 +174,7 @@ export interface CenterRegisterPayload {
   neighborhood: string;
   city: string;
   nursery_type: string[];
+  types: string[];
   logo: File;
 
   // Step 2 fields
