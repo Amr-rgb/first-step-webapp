@@ -30,19 +30,26 @@ export async function generateMetadata({
   const { locale } = await params;
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "";
+
+  // Use non-www as the canonical domain
   const baseUrl = "https://firststep-app.com";
 
   // Remove the locale from the start of the pathname to get the route
-  // e.g. /en/about -> /about
+  // e.g. /en/about -> /about or /ar/services -> /services
   const route = pathname.replace(`/${locale}`, "") || "";
 
+  // Ensure route doesn't have double slashes
+  const cleanRoute = route.startsWith("/") ? route : `/${route}`;
+  const fullPath = cleanRoute === "/" ? "" : cleanRoute;
+
   return {
+    metadataBase: new URL(baseUrl),
     alternates: {
-      canonical: `${baseUrl}/${locale}${route}`,
+      canonical: `/${locale}${fullPath}`,
       languages: {
-        en: `${baseUrl}/en${route}`,
-        ar: `${baseUrl}/ar${route}`,
-        "x-default": `${baseUrl}/ar${route}`,
+        en: `/en${fullPath}`,
+        ar: `/ar${fullPath}`,
+        "x-default": `/ar${fullPath}`, // Default to Arabic for Saudi Arabia
       },
     },
   };

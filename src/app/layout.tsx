@@ -42,14 +42,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL("https://firststep-app.com"),
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/en",
-      ar: "/ar",
-      "x-default": "/ar",
-    },
-  },
   openGraph: {
     title: "First Step - Smart Childcare Platform",
     description:
