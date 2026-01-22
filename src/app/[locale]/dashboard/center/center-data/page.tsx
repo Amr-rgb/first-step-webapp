@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Accordion,
@@ -58,9 +58,47 @@ const ProfileEditor = () => {
     PortfolioFormData | undefined
   >(portfolioData);
   const [currentData, setCurrentData] = useState<PortfolioFormData | undefined>(
-    portfolioData
+    portfolioData,
   );
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Counter for generating unique local IDs
+  const localIdCounter = useRef(0);
+
+  // Generate a unique local ID for new items
+  const generateLocalId = useCallback(() => {
+    localIdCounter.current += 1;
+    return `local_${Date.now()}_${localIdCounter.current}`;
+  }, []);
+
+  // Add _localId to items that don't have one and create a map for tracking
+  const ensureLocalIds = useCallback(
+    (data: PortfolioFormData | undefined): PortfolioFormData | undefined => {
+      if (!data) return data;
+
+      return {
+        ...data,
+        services: data.services.map((service: any) => ({
+          ...service,
+          _localId:
+            service._localId || service.id?.toString() || generateLocalId(),
+        })),
+        teams: data.teams.map((team: any) => ({
+          ...team,
+          _localId: team._localId || team.id?.toString() || generateLocalId(),
+        })),
+        images_activities: data.images_activities.map((img: any) =>
+          typeof img === "string"
+            ? { url: img, _localId: img }
+            : {
+                ...img,
+                _localId: img._localId || img.url || generateLocalId(),
+              },
+        ),
+      };
+    },
+    [generateLocalId],
+  );
 
   // Check permissions and redirect if unauthorized
   useEffect(() => {
@@ -73,11 +111,12 @@ const ProfileEditor = () => {
   // Update local state when query data changes
   useEffect(() => {
     if (!isLoadingData && portfolioData) {
-      setOriginalData(portfolioData);
-      setCurrentData(portfolioData);
+      const dataWithIds = ensureLocalIds(portfolioData);
+      setOriginalData(dataWithIds);
+      setCurrentData(dataWithIds);
       setHasChanges(false);
     }
-  }, [portfolioData, isLoadingData]);
+  }, [portfolioData, isLoadingData, ensureLocalIds]);
 
   // Check if data has changed
   const checkForChanges = (newData: PortfolioFormData) => {
@@ -118,7 +157,7 @@ const ProfileEditor = () => {
   const getDeepData = (
     original: any,
     current: any,
-    includeAll: boolean = false
+    includeAll: boolean = false,
   ): any => {
     // If references are same and we don't need all data, no change
     if (!includeAll && original === current) return undefined;
@@ -170,7 +209,7 @@ const ProfileEditor = () => {
       const valResult = getDeepData(
         original ? original[key] : undefined,
         current ? current[key] : undefined,
-        includeAll
+        includeAll,
       );
       if (valResult !== undefined || includeAll) {
         resultObj[key] =
@@ -213,7 +252,7 @@ const ProfileEditor = () => {
 
     // Validate: prevent saving service without image
     const servicesWithoutImage = currentData.services?.some(
-      (service) => !service.image_service
+      (service) => !service.image_service,
     );
     if (servicesWithoutImage) {
       toastError(t("services.imageRequired"));
@@ -244,20 +283,25 @@ const ProfileEditor = () => {
         const val = getDeepData(
           (originalData as any)[key],
           (currentData as any)[key],
-          true
+          true,
         );
         (payload as any)[key] = val;
       }
     });
 
     // Handle Deletions via separate arrays: delete_images_activities, delete_services, delete_teams
+    // Use _localId for matching instead of index-based comparison
     const listConfig = [
-      { key: "services", deleteKey: "delete_services" },
-      { key: "teams", deleteKey: "delete_teams" },
-      { key: "images_activities", deleteKey: "delete_images_activities" },
+      { key: "services", deleteKey: "delete_services", idField: "_localId" },
+      { key: "teams", deleteKey: "delete_teams", idField: "_localId" },
+      {
+        key: "images_activities",
+        deleteKey: "delete_images_activities",
+        idField: "_localId",
+      },
     ];
 
-    listConfig.forEach(({ key, deleteKey }) => {
+    listConfig.forEach(({ key, deleteKey, idField }) => {
       const originalList = (originalData as any)[key] as any[];
       const currentList = (currentData as any)[key] as any[];
 
@@ -265,16 +309,18 @@ const ProfileEditor = () => {
 
       const deletedIndices: number[] = [];
 
-      originalList.forEach((origItem, index) => {
-        // Deep compare to see if origItem still exists in currentList
-        // Simple string comparison is enough for image URLs
-        const exists = currentList.some((currItem) =>
-          typeof origItem === "string"
-            ? currItem === origItem
-            : JSON.stringify(currItem) === JSON.stringify(origItem)
-        );
+      // Create a Set of current item IDs for O(1) lookup
+      const currentIds = new Set(
+        currentList.map((item) =>
+          typeof item === "object" ? item[idField] : item,
+        ),
+      );
 
-        if (!exists) {
+      originalList.forEach((origItem, index) => {
+        // Check if the original item's ID exists in current list
+        const origId =
+          typeof origItem === "object" ? origItem[idField] : origItem;
+        if (!currentIds.has(origId)) {
           deletedIndices.push(index);
         }
       });
@@ -283,11 +329,21 @@ const ProfileEditor = () => {
         payload[deleteKey] = deletedIndices;
       }
 
-      // Compact the main array in payload (remove nulls) so it's a clean list
+      // Clean the payload array: remove nulls and strip _localId before sending
       if (payload[key] && Array.isArray(payload[key])) {
-        payload[key] = payload[key].filter(
-          (item: any) => item !== null && item !== undefined
-        );
+        payload[key] = payload[key]
+          .filter((item: any) => item !== null && item !== undefined)
+          .map((item: any) => {
+            if (typeof item === "object" && item !== null) {
+              const { _localId, ...rest } = item;
+              // For images_activities, extract just the url or File
+              if (key === "images_activities") {
+                return rest.url !== undefined ? rest.url : rest;
+              }
+              return rest;
+            }
+            return item;
+          });
       }
     });
 
@@ -412,7 +468,7 @@ const ProfileEditor = () => {
                       value={section.id}
                       className="border border-border rounded-lg overflow-hidden"
                     >
-                      <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 [&[data-state=open]]:border-b border-border">
+                      <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 data-[state=open]:border-b border-border">
                         {section.title}
                       </AccordionTrigger>
                       <AccordionContent className="px-4 sm:px-6 py-4 sm:py-6 bg-muted/20">
