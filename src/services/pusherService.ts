@@ -25,7 +25,7 @@ class PusherService {
       onTyping?: (data: { userId: string; isTyping: boolean }) => void;
       onUserOnline?: (userId: string) => void;
       onUserOffline?: (userId: string) => void;
-    }
+    },
   ) {
     if (!this.pusher) {
       this.initialize();
@@ -56,7 +56,7 @@ class PusherService {
         "user.typing",
         (data: { userId: string; isTyping: boolean }) => {
           callbacks.onTyping!(data);
-        }
+        },
       );
     }
 
@@ -76,7 +76,7 @@ class PusherService {
     callbacks: {
       onChatUpdate?: (chatData: any) => void;
       onNewChatCreated?: (chatData: any) => void;
-    }
+    },
   ) {
     if (!this.pusher) {
       this.initialize();
@@ -213,7 +213,7 @@ class PusherService {
       channel.bind("new-message", (message: any) => {
         console.log(
           "📨 Admin conversations new message callback triggered:",
-          message
+          message,
         );
         callbacks.onNewMessage!(message);
       });
@@ -223,7 +223,7 @@ class PusherService {
       channel.bind("conversation-updated", (conversationData: any) => {
         console.log(
           "📋 Admin conversations update callback triggered:",
-          conversationData
+          conversationData,
         );
         callbacks.onConversationUpdate!(conversationData);
       });
@@ -238,7 +238,7 @@ class PusherService {
     callbacks: {
       onNewMessage?: (message: any) => void;
       onTyping?: (data: { userId: string; isTyping: boolean }) => void;
-    }
+    },
   ) {
     if (!this.pusher) {
       this.initialize();
@@ -267,7 +267,7 @@ class PusherService {
         "user.typing",
         (data: { userId: string; isTyping: boolean }) => {
           callbacks.onTyping!(data);
-        }
+        },
       );
     }
 
@@ -344,48 +344,82 @@ class PusherService {
       this.channels.delete(channelName);
       console.log(
         "🔧 Admin unsubscribed from specific chat channel:",
-        channelName
+        channelName,
       );
     }
   }
 
   // notification channel
 
-  subscribeToUniversalNotifications(callbacks: {
-    onNewNotification?: (notification: any) => void;
-    onNotificationUpdated?: (data: {
-      notification_id: string;
-      read_at: string;
-    }) => void;
-  }) {
+  subscribeToUniversalNotifications(
+    currentUserId: number,
+    callbacks: {
+      onNewNotification?: (notification: any) => void;
+      onNotificationUpdated?: (data: {
+        notification_id: string;
+        read_at: string;
+      }) => void;
+    },
+  ) {
     if (!this.pusher) {
       this.initialize();
     }
 
     const channelName = "universal-notifications";
+    console.log(
+      "🔔 Subscribing to universal notifications for user:",
+      currentUserId,
+    );
+
     let channel = this.channels.get(channelName);
 
     if (!channel) {
       channel = this.pusher!.subscribe(channelName);
       this.channels.set(channelName, channel);
+      console.log("✅ Universal notifications channel subscribed");
     } else {
       // Unbind previous events to avoid duplicates
       channel.unbind(
-        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated"
+        "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
       );
       channel.unbind("notification-updated");
+      console.log("🔄 Re-binding universal notifications events");
     }
 
-    // Bind to Laravel notification events
+    // Bind to Laravel notification events with user ID filtering
     if (callbacks.onNewNotification) {
       channel.bind(
         "Illuminate\\Notifications\\Events\\BroadcastNotificationCreated",
-        callbacks.onNewNotification
+        (notification: any) => {
+          console.log("📬 Notification received:", {
+            notifiableId: notification.notifiable_id,
+            currentUserId: currentUserId,
+            notificationType: notification.type,
+            title: notification.title,
+          });
+
+          // CRITICAL: Only process notifications intended for this user
+          if (notification.notifiable_id === currentUserId) {
+            console.log(
+              "✅ Notification is for current user, processing...",
+              notification,
+            );
+            callbacks.onNewNotification!(notification);
+          } else {
+            console.log("⚠️ Notification is NOT for current user, ignoring.", {
+              expected: currentUserId,
+              received: notification.notifiable_id,
+            });
+          }
+        },
       );
     }
 
     if (callbacks.onNotificationUpdated) {
-      channel.bind("notification-updated", callbacks.onNotificationUpdated);
+      channel.bind("notification-updated", (data: any) => {
+        console.log("🔄 Notification update received:", data);
+        callbacks.onNotificationUpdated!(data);
+      });
     }
 
     return channel;

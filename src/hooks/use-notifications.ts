@@ -10,7 +10,7 @@ import { showNotificationFromData } from "@/lib/notification-toast";
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<UniversalNotification[]>(
-    []
+    [],
   );
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,8 +55,8 @@ export function useNotifications() {
         prev.map((notification) =>
           notification.id === notificationId
             ? { ...notification, read_at: new Date().toISOString() }
-            : notification
-        )
+            : notification,
+        ),
       );
 
       setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -74,7 +74,7 @@ export function useNotifications() {
         prev.map((notification) => ({
           ...notification,
           read_at: notification.read_at || new Date().toISOString(),
-        }))
+        })),
       );
 
       setUnreadCount(0);
@@ -132,7 +132,7 @@ export function useNotifications() {
 
       // Add to processed set
       setProcessedNotificationIds(
-        (prev) => new Set([...prev, notification.id])
+        (prev) => new Set([...prev, notification.id]),
       );
 
       setNotifications((prev) => {
@@ -184,7 +184,7 @@ export function useNotifications() {
         });
       }
     },
-    [processedNotificationIds, notifications.length, unreadCount]
+    [processedNotificationIds, notifications.length, unreadCount],
   );
 
   // Initialize Pusher subscription
@@ -199,23 +199,26 @@ export function useNotifications() {
 
     isSubscribedRef.current = true;
 
-    // Subscribe to universal notifications
-    const channel = pusherService.subscribeToUniversalNotifications({
-      onNewNotification: handleNewNotification,
-      onNotificationUpdated: (data) => {
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === data.notification_id
-              ? { ...notification, read_at: data.read_at }
-              : notification
-          )
-        );
+    // Subscribe to universal notifications with user ID filtering
+    const channel = pusherService.subscribeToUniversalNotifications(
+      user.id, // Pass user ID for server-side filtering
+      {
+        onNewNotification: handleNewNotification,
+        onNotificationUpdated: (data) => {
+          setNotifications((prev) =>
+            prev.map((notification) =>
+              notification.id === data.notification_id
+                ? { ...notification, read_at: data.read_at }
+                : notification,
+            ),
+          );
 
-        if (data.read_at) {
-          setUnreadCount((prev) => Math.max(0, prev - 1));
-        }
+          if (data.read_at) {
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+          }
+        },
       },
-    });
+    );
 
     // Cleanup function
     return () => {
