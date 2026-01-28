@@ -63,6 +63,22 @@ const ERRORMESSAGES = {
     ar: "يجب أن تحتوي كلمة المرور على {min} أحرف على الأقل",
     en: "Password must be at least {min} characters",
   },
+  "password-mixed": {
+    ar: "يجب أن تحتوي كلمة المرور على حروف كبيرة وصغيرة",
+    en: "Password must contain both uppercase and lowercase letters",
+  },
+  "password-letters": {
+    ar: "يجب أن تحتوي كلمة المرور على حرف واحد على الأقل",
+    en: "Password must contain at least one letter",
+  },
+  "password-numbers": {
+    ar: "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+    en: "Password must contain at least one number",
+  },
+  "password-symbols": {
+    ar: "يجب أن تحتوي كلمة المرور على رمز واحد على الأقل (مثال: !, $, #, %)",
+    en: "Password must contain at least one symbol (e.g., !, $, #, %)",
+  },
   "password-match": {
     ar: "كلمات المرور غير متطابقة",
     en: "Passwords do not match",

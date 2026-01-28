@@ -14,6 +14,9 @@ import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import BranchFormSkeleton from "./BranchFormSkeleton";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useQuery } from "@tanstack/react-query";
+import { authService } from "@/services/api";
+import { transformFetchedBranchToFormData } from "./utils/branchDataTransformer";
 
 const BranchShow = ({ branchId }: { branchId: string }) => {
   const locale = useLocale();
@@ -24,41 +27,27 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
   const { data: fetchedBranch, isLoading: isFetchingBranch } =
     useBranch(branchId);
 
+  const { data: apiCenterTypes } = useQuery({
+    queryKey: ["centerTypes"],
+    queryFn: () => authService.getCenterTypes(),
+  });
+
   const transformedInitialValues: BranchFormData | undefined = useMemo(() => {
     if (!fetchedBranch) return undefined;
-    return {
-      name: "",
-      password: "",
-      confirmPassword: "",
-      nursery_name: fetchedBranch.nursery_name || "",
-      email: fetchedBranch.email || "",
-      phone: fetchedBranch.phone || "",
-      neighborhood: fetchedBranch.neighborhood || "",
-      nursery_type: fetchedBranch.nursery_type || [],
-      city: fetchedBranch.city_id || "",
-      location: fetchedBranch.location || "",
-      services: fetchedBranch.services || [],
-      additional_service: fetchedBranch.additional_service || "",
-      accepted_ages: fetchedBranch.accepted_ages || [],
-      work_days_from: fetchedBranch.work_days_from || "",
-      work_days_to: fetchedBranch.work_days_to || "",
-      work_hours_from: fetchedBranch.work_hours_from || "",
-      work_hours_to: fetchedBranch.work_hours_to || "",
-      emergency_contact: fetchedBranch.emergency_contact ? "yes" : "no",
-      communication_methods: fetchedBranch.communication_methods || [],
-      meals_and_periods: {
-        provides_food: fetchedBranch.provides_food ? "yes" : "no",
-        first_meals: fetchedBranch.first_meals || [],
-        second_meals: fetchedBranch.second_meals || [],
-        time_of_first_period: fetchedBranch.time_of_first_period || "",
-        time_of_second_period: fetchedBranch.time_of_second_period || "",
-      },
-      license_path: fetchedBranch.license_path || undefined,
-      commercial_record_path: fetchedBranch.commercial_record_path || undefined,
-      logo: fetchedBranch.logo || undefined,
-      comments: fetchedBranch.comments || "",
-    };
-  }, [fetchedBranch]);
+    const formData = transformFetchedBranchToFormData(fetchedBranch);
+
+    // Map names to IDs if types contains names
+    if (apiCenterTypes && Array.isArray(apiCenterTypes)) {
+      formData.types = formData.types.map((typeVal) => {
+        const matchingType = apiCenterTypes.find(
+          (t: any) => t.name === typeVal || t.id.toString() === typeVal
+        );
+        return matchingType ? matchingType.id.toString() : typeVal;
+      });
+    }
+
+    return formData;
+  }, [fetchedBranch, apiCenterTypes]);
 
   const methods = useForm<BranchFormData>({
     resolver: zodResolver(branchSchema),
@@ -68,6 +57,7 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
       phone: "",
       neighborhood: "",
       nursery_type: [],
+      types: [],
       city: "",
       location: "",
       services: [],

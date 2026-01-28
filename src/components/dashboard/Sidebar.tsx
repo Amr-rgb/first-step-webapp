@@ -28,12 +28,13 @@ import { useEffect, useState } from "react";
 import { useAuthUser } from "@/store/authStore";
 import ParentAccountsModal from "@/components/modals/ParentAccountsModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSubscriptionRequired } from "@/store/subscriptionStore";
+import { toastError } from "@/lib/toast";
 
 interface NavbarItem {
   title: string;
   url: string;
   icon: (props: any) => React.JSX.Element;
-  isSpecial?: boolean;
 }
 
 const getCenterNavbar = (t: any): NavbarItem[] => [
@@ -195,8 +196,9 @@ const DashboardSideBar = () => {
   const [isParentAccountsModalOpen, setIsParentAccountsModalOpen] =
     useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const subscriptionRequired = useSubscriptionRequired();
 
-  // Wait for Zustand to hydrate from localStorage
+  // Wait for hydration
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -211,8 +213,8 @@ const DashboardSideBar = () => {
   let navbar = pathname.includes("/dashboard/center")
     ? getCenterNavbar(t)
     : pathname.includes("dashboard/admin")
-    ? getAdminNavbar(t)
-    : getParentNavbar(t);
+      ? getAdminNavbar(t)
+      : getParentNavbar(t);
 
   // Filter out specific items for branch_admin (only after hydration)
   if (isHydrated && user?.role === "branch_admin") {
@@ -220,19 +222,40 @@ const DashboardSideBar = () => {
       (item) =>
         !item.url.includes("/branches") &&
         !item.url.includes("/center-data") &&
-        !item.url.includes("/ad-or-blog-request")
+        !item.url.includes("/ad-or-blog-request"),
     );
   }
 
   const basePathname = pathname.includes("/dashboard/center")
     ? "/dashboard/center"
     : pathname.includes("dashboard/admin")
-    ? "/dashboard/admin"
-    : "/dashboard/parent";
+      ? "/dashboard/admin"
+      : "/dashboard/parent";
+
+  const handleLinkClick = (
+    e: React.MouseEvent,
+    url: string,
+    isAllowed: boolean,
+  ) => {
+    if (subscriptionRequired && !isAllowed) {
+      e.preventDefault();
+      toastError(
+        locale === "ar" ? "يجب الاشتراك للمتابعة" : "Subscription required",
+        locale === "ar"
+          ? "لقد انتهت الفترة التجريبية. يرجى الاشتراك للمتابعة."
+          : "Your trial has expired. Please subscribe to continue.",
+      );
+      return;
+    }
+    if (isMobile) toggleSidebar();
+  };
 
   return (
     <Sidebar
-      className="h-screen py-10 transition-all duration-300 ease-in-out fixed top-0 left-0 z-40"
+      className={cn(
+        "h-screen py-10 transition-all duration-300 ease-in-out fixed top-0 left-0 z-40",
+        subscriptionRequired && "saturated-sidebar",
+      )}
       side={locale === "ar" ? "right" : "left"}
       collapsible="icon"
       style={
@@ -301,7 +324,7 @@ const DashboardSideBar = () => {
                         <Skeleton
                           className={cn(
                             "rounded-[.5rem]",
-                            state === "collapsed" ? "size-4.5" : "size-8"
+                            state === "collapsed" ? "size-4.5" : "size-8",
                           )}
                         />
                         {state !== "collapsed" && (
@@ -318,6 +341,11 @@ const DashboardSideBar = () => {
                     (pathname.startsWith(item.url + "/") &&
                       item.url !== basePathname);
 
+                  const isAllowed =
+                    item.url.includes("/account") ||
+                    item.url.includes("/billing");
+                  const isLocked = subscriptionRequired && !isAllowed;
+
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
@@ -325,15 +353,19 @@ const DashboardSideBar = () => {
                           asChild
                           variant={isActive ? "default" : "defaultNoGradient"}
                           className="bg-transparent shadow-none"
-                          onClick={isMobile ? () => toggleSidebar() : undefined}
+                          onClick={(e) =>
+                            handleLinkClick(e, item.url, isAllowed)
+                          }
                         >
                           <Link
-                            href={item.url}
+                            href={isLocked ? "#" : item.url}
                             className={cn(
                               "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
+                              isLocked &&
+                                "opacity-60 cursor-not-allowed grayscale-[0.5]",
                               isActive
-                                ? "!bg-primary !text-white !font-bold scale-[0.98] py-6.5"
-                                : "bg-transparent !text-mid-gray hover:bg-gray-100/50 hover:scale-[0.99] py-6.5"
+                                ? "bg-primary! text-white! font-bold! scale-[0.98] py-6.5"
+                                : "bg-transparent text-mid-gray! hover:bg-gray-100/50 hover:scale-[0.99] py-6.5",
                             )}
                           >
                             <Tooltip>
@@ -347,7 +379,7 @@ const DashboardSideBar = () => {
                                       : "",
                                     state === "collapsed"
                                       ? "bg-transparent"
-                                      : "p-2"
+                                      : "p-2",
                                   )}
                                 >
                                   <item.icon
@@ -358,10 +390,10 @@ const DashboardSideBar = () => {
                                       state === "collapsed" && !isActive
                                         ? "text-primary"
                                         : state === "collapsed" && isActive
-                                        ? "text-white"
-                                        : isActive
-                                        ? "text-primary"
-                                        : "text-white"
+                                          ? "text-white"
+                                          : isActive
+                                            ? "text-primary"
+                                            : "text-white",
                                     )}
                                   />
                                 </div>
@@ -387,7 +419,7 @@ const DashboardSideBar = () => {
       <SidebarFooter
         className={cn(
           "mt-4 justify-end items-center transition-all duration-300 ease-in-out",
-          state === "collapsed" ? "my-4 px-2" : ""
+          state === "collapsed" ? "my-4 px-2" : "",
         )}
       >
         {/* Parent Accounts Button - Only show for center role */}
@@ -395,18 +427,34 @@ const DashboardSideBar = () => {
           <div
             className={cn(
               "w-full mb-4",
-              state === "collapsed" ? "px-0" : "px-4"
+              state === "collapsed" ? "px-0" : "px-4",
             )}
           >
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  onClick={() => setIsParentAccountsModalOpen(true)}
+                  onClick={(e) => {
+                    if (subscriptionRequired) {
+                      e.preventDefault();
+                      toastError(
+                        locale === "ar"
+                          ? "يجب الاشتراك للمتابعة"
+                          : "Subscription required",
+                        locale === "ar"
+                          ? "لقد انتهت الفترة التجريبية. يرجى الاشتراك للمتابعة."
+                          : "Your trial has expired. Please subscribe to continue.",
+                      );
+                      return;
+                    }
+                    setIsParentAccountsModalOpen(true);
+                  }}
                   className={cn(
                     "w-full transition-all duration-200",
+                    subscriptionRequired &&
+                      "cursor-default opacity-60 grayscale-[0.5]",
                     state === "collapsed"
                       ? "h-auto p-0 border-0 bg-transparent hover:bg-transparent"
-                      : "border-2 border-solid border-primary bg-transparent hover:bg-primary/5 py-4 h-full"
+                      : "border-2 border-solid border-primary bg-transparent hover:bg-primary/5 py-4 h-full",
                   )}
                   variant="outline"
                 >
@@ -457,18 +505,36 @@ const DashboardSideBar = () => {
           <div
             className={cn(
               "w-full mb-4",
-              state === "collapsed" ? "px-0" : "px-4"
+              state === "collapsed" ? "px-0" : "px-4",
             )}
           >
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/nurseries" className="block w-full">
+                <Link
+                  href={subscriptionRequired ? "#" : "/nurseries"}
+                  onClick={(e) => {
+                    if (subscriptionRequired) {
+                      e.preventDefault();
+                      toastError(
+                        locale === "ar"
+                          ? "يجب الاشتراك للمتابعة"
+                          : "Subscription required",
+                        locale === "ar"
+                          ? "لقد انتهت الفترة التجريبية. يرجى الاشتراك للمتابعة."
+                          : "Your trial has expired. Please subscribe to continue.",
+                      );
+                    }
+                  }}
+                  className="block w-full"
+                >
                   <div
                     className={cn(
-                      "w-full transition-all duration-200 rounded-xl border-1 border-secondary-mint-green flex items-center overflow-hidden relative",
+                      "w-full transition-all duration-200 rounded-xl border border-secondary-mint-green flex items-center overflow-hidden relative",
+                      subscriptionRequired &&
+                        "opacity-60 grayscale-[0.5] cursor-not-allowed",
                       state === "collapsed"
                         ? "h-auto p-0 border-0 bg-transparent justify-center"
-                        : "bg-white py-4 px-3 gap-3"
+                        : "bg-white py-4 px-3 gap-3",
                     )}
                   >
                     {state === "collapsed" ? (
@@ -520,7 +586,7 @@ const DashboardSideBar = () => {
               "w-8",
               state === "collapsed"
                 ? "opacity-100 duration-1000 ease-in"
-                : "opacity-0 h-0"
+                : "opacity-0 h-0",
             )}
             src={"/assets/logos/logo.svg"}
             alt="logo"
@@ -529,7 +595,7 @@ const DashboardSideBar = () => {
           />
           <Image
             className={cn(
-              state === "expanded" ? "opacity-100 duration-500" : "opacity-0"
+              state === "expanded" ? "opacity-100 duration-500" : "opacity-0",
             )}
             src={"/assets/logos/complete_logo.svg"}
             alt="logo"

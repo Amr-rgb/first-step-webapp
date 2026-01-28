@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Accordion,
@@ -26,6 +26,7 @@ import { ProfilePreview } from "@/components/profile-editor/ProfilePreview";
 import { PortfolioData, PortfolioFormData } from "@/types";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useAuthUser } from "@/store/authStore";
 import { Edit, Eye } from "lucide-react";
 import { toastError } from "@/lib/toast";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
@@ -39,6 +40,7 @@ const ProfileEditor = () => {
   const locale = params.locale as string;
   const router = useRouter();
   const { can } = usePermissions();
+  const user = useAuthUser();
   const canViewCenterData = can("view", "center-data");
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
@@ -56,26 +58,65 @@ const ProfileEditor = () => {
     PortfolioFormData | undefined
   >(portfolioData);
   const [currentData, setCurrentData] = useState<PortfolioFormData | undefined>(
-    portfolioData
+    portfolioData,
   );
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Counter for generating unique local IDs
+  const localIdCounter = useRef(0);
+
+  // Generate a unique local ID for new items
+  const generateLocalId = useCallback(() => {
+    localIdCounter.current += 1;
+    return `local_${Date.now()}_${localIdCounter.current}`;
+  }, []);
+
+  // Add _localId to items that don't have one and create a map for tracking
+  const ensureLocalIds = useCallback(
+    (data: PortfolioFormData | undefined): PortfolioFormData | undefined => {
+      if (!data) return data;
+
+      return {
+        ...data,
+        services: data.services.map((service: any) => ({
+          ...service,
+          _localId:
+            service._localId || service.id?.toString() || generateLocalId(),
+        })),
+        teams: data.teams.map((team: any) => ({
+          ...team,
+          _localId: team._localId || team.id?.toString() || generateLocalId(),
+        })),
+        images_activities: data.images_activities.map((img: any) =>
+          typeof img === "string"
+            ? { url: img, _localId: img }
+            : {
+                ...img,
+                _localId: img._localId || img.url || generateLocalId(),
+              },
+        ),
+      };
+    },
+    [generateLocalId],
+  );
+
   // Check permissions and redirect if unauthorized
   useEffect(() => {
-    if (!canViewCenterData) {
+    if (user && !canViewCenterData) {
       toastError(t("permissionError"));
       router.push("/dashboard/center");
     }
-  }, [canViewCenterData, router, t]);
+  }, [canViewCenterData, user, router, t]);
 
   // Update local state when query data changes
   useEffect(() => {
     if (!isLoadingData && portfolioData) {
-      setOriginalData(portfolioData);
-      setCurrentData(portfolioData);
+      const dataWithIds = ensureLocalIds(portfolioData);
+      setOriginalData(dataWithIds);
+      setCurrentData(dataWithIds);
       setHasChanges(false);
     }
-  }, [portfolioData, isLoadingData]);
+  }, [portfolioData, isLoadingData, ensureLocalIds]);
 
   // Check if data has changed
   const checkForChanges = (newData: PortfolioFormData) => {
@@ -90,33 +131,229 @@ const ProfileEditor = () => {
     checkForChanges(newData);
   };
 
-  // Get only the changed fields
-  const getDirtyData = () => {
-    if (!currentData || !originalData) return {};
+  // Map each root key to its logical section
+  const SECTION_KEYS: Record<string, string[]> = {
+    hero: [
+      "title_of_hero",
+      "subtitle_of_hero",
+      "description",
+      "background_image",
+    ],
+    branches: ["branches"],
+    philosophy: ["Philosophy_Methodology_Goal"],
+    services: ["services", "service_section_title"],
+    nurseryState: ["nursery_state"],
+    activities: [
+      "images_activities",
+      "activity_section_title",
+      "activity_section_subtitle",
+    ],
+    contact: ["contact_info"],
+    teams: ["teams"],
+    ads: ["ads_images"],
+  };
 
-    const dirtyData: Partial<PortfolioFormData> = {};
+  // Deep diff logic to detect changes and handle removals as null
+  const getDeepData = (
+    original: any,
+    current: any,
+    includeAll: boolean = false,
+  ): any => {
+    // If references are same and we don't need all data, no change
+    if (!includeAll && original === current) return undefined;
 
-    Object.keys(currentData).forEach((key) => {
-      const typedKey = key as keyof PortfolioFormData;
-      if (
-        JSON.stringify(currentData[typedKey]) !==
-        JSON.stringify(originalData[typedKey])
-      ) {
-        (dirtyData as any)[typedKey] = currentData[typedKey];
+    // Handle Files
+    if (current instanceof File || original instanceof File) {
+      if (current === original) return includeAll ? current : undefined;
+      return current === undefined ? null : current;
+    }
+
+    // Handle primitives and nulls
+    if (
+      typeof current !== "object" ||
+      current === null ||
+      typeof original !== "object" ||
+      original === null
+    ) {
+      if (current === original) return includeAll ? current : undefined;
+      return current === undefined ? null : current;
+    }
+
+    // Handle arrays
+    if (Array.isArray(current) || Array.isArray(original)) {
+      const resultArr: any[] = [];
+      let hasArrChanges = false;
+      const maxLen = Math.max(original?.length || 0, current?.length || 0);
+
+      for (let i = 0; i < maxLen; i++) {
+        const itemResult = getDeepData(original?.[i], current?.[i], includeAll);
+        if (itemResult !== undefined || includeAll) {
+          const val =
+            itemResult === undefined && includeAll ? current?.[i] : itemResult;
+          resultArr[i] = val === undefined ? null : val;
+          if (itemResult !== undefined) hasArrChanges = true;
+        }
+      }
+      return hasArrChanges || includeAll ? resultArr : undefined;
+    }
+
+    // Handle objects
+    const resultObj: any = {};
+    let hasObjChanges = false;
+    const allKeys = new Set([
+      ...Object.keys(current || {}),
+      ...Object.keys(original || {}),
+    ]);
+
+    allKeys.forEach((key) => {
+      const valResult = getDeepData(
+        original ? original[key] : undefined,
+        current ? current[key] : undefined,
+        includeAll,
+      );
+      if (valResult !== undefined || includeAll) {
+        resultObj[key] =
+          valResult === undefined && includeAll ? current[key] : valResult;
+        if (valResult !== undefined) hasObjChanges = true;
       }
     });
 
-    return dirtyData;
+    return hasObjChanges || includeAll ? resultObj : undefined;
+  };
+
+  const getDirtyData = () => {
+    if (!currentData || !originalData) return {};
+    return getDeepData(originalData, currentData, false) || {};
+  };
+
+  // Helper to get a full section with nulls for removals
+  const getFullSectionWithNulls = (sectionKeys: string[]) => {
+    if (!currentData || !originalData) return {};
+
+    const sectionPayload: any = {};
+
+    sectionKeys.forEach((key) => {
+      const originalVal = (originalData as any)[key];
+      const currentVal = (currentData as any)[key];
+
+      if (originalVal === undefined) {
+        sectionPayload[key] = currentVal;
+        return;
+      }
+
+      sectionPayload[key] = getDeepData(originalVal, currentVal, true);
+    });
+
+    return sectionPayload;
   };
 
   const handleSavePortfolio = () => {
     if (!hasChanges || !currentData) return;
-    // Always send complete data, not just dirty fields
-    // This ensures arrays like services are sent completely
-    savePortfolio(currentData);
-    // Update original data after save
-    setOriginalData(currentData);
-    setHasChanges(false);
+
+    // Validate: prevent saving service without image
+    const servicesWithoutImage = currentData.services?.some(
+      (service) => !service.image_service,
+    );
+    if (servicesWithoutImage) {
+      toastError(t("services.imageRequired"));
+      return;
+    }
+
+    // Get dirty root keys
+    const dirtyDataRoot = getDirtyData();
+    const changedRootKeys = Object.keys(dirtyDataRoot);
+
+    // Find sections that have changes
+    const dirtySections = Object.entries(SECTION_KEYS)
+      .filter(([_, keys]) => keys.some((key) => changedRootKeys.includes(key)))
+      .map(([sectionId]) => sectionId);
+
+    // Build payload: Send the WHOLE section for any changed field
+    let payload: any = {};
+
+    dirtySections.forEach((sectionId) => {
+      const sectionKeys = SECTION_KEYS[sectionId];
+      const sectionWithNulls = getFullSectionWithNulls(sectionKeys);
+      payload = { ...payload, ...sectionWithNulls };
+    });
+
+    // Also include any other dirty root keys that didn't map to a section
+    changedRootKeys.forEach((key) => {
+      if (!Object.values(SECTION_KEYS).flat().includes(key)) {
+        const val = getDeepData(
+          (originalData as any)[key],
+          (currentData as any)[key],
+          true,
+        );
+        (payload as any)[key] = val;
+      }
+    });
+
+    // Handle Deletions via separate arrays: delete_images_activities, delete_services, delete_teams
+    // Use _localId for matching instead of index-based comparison
+    const listConfig = [
+      { key: "services", deleteKey: "delete_services", idField: "_localId" },
+      { key: "teams", deleteKey: "delete_teams", idField: "_localId" },
+      {
+        key: "images_activities",
+        deleteKey: "delete_images_activities",
+        idField: "_localId",
+      },
+    ];
+
+    listConfig.forEach(({ key, deleteKey, idField }) => {
+      const originalList = (originalData as any)[key] as any[];
+      const currentList = (currentData as any)[key] as any[];
+
+      if (!originalList) return;
+
+      const deletedIndices: number[] = [];
+
+      // Create a Set of current item IDs for O(1) lookup
+      const currentIds = new Set(
+        currentList.map((item) =>
+          typeof item === "object" ? item[idField] : item,
+        ),
+      );
+
+      originalList.forEach((origItem, index) => {
+        // Check if the original item's ID exists in current list
+        const origId =
+          typeof origItem === "object" ? origItem[idField] : origItem;
+        if (!currentIds.has(origId)) {
+          deletedIndices.push(index);
+        }
+      });
+
+      if (deletedIndices.length > 0) {
+        payload[deleteKey] = deletedIndices;
+      }
+
+      // Clean the payload array: remove nulls and strip _localId before sending
+      if (payload[key] && Array.isArray(payload[key])) {
+        payload[key] = payload[key]
+          .filter((item: any) => item !== null && item !== undefined)
+          .map((item: any) => {
+            if (typeof item === "object" && item !== null) {
+              const { _localId, ...rest } = item;
+              // For images_activities, extract just the url or File
+              if (key === "images_activities") {
+                return rest.url !== undefined ? rest.url : rest;
+              }
+              return rest;
+            }
+            return item;
+          });
+      }
+    });
+
+    console.log("💾 Saving portfolio with deletion arrays:", payload);
+    savePortfolio(payload, {
+      onSuccess: () => {
+        setOriginalData(currentData);
+        setHasChanges(false);
+      },
+    });
   };
 
   const sections = [
@@ -126,7 +363,7 @@ const ProfileEditor = () => {
       title: t("sections.branches"),
       component: BranchesSection,
     },
-        { id: "plans", title: t("sections.plans"), component: PlansSection },
+    { id: "plans", title: t("sections.plans"), component: PlansSection },
 
     {
       id: "philosophy",
@@ -231,7 +468,7 @@ const ProfileEditor = () => {
                       value={section.id}
                       className="border border-border rounded-lg overflow-hidden"
                     >
-                      <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 [&[data-state=open]]:border-b border-border">
+                      <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 data-[state=open]:border-b border-border">
                         {section.title}
                       </AccordionTrigger>
                       <AccordionContent className="px-4 sm:px-6 py-4 sm:py-6 bg-muted/20">

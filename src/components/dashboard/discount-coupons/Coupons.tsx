@@ -9,15 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { centerService } from "@/services/dashboardApi";
+import { centerService as promocodeService } from "@/services/promocodeService";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "@/components/common/EmptyState";
 import { toastSuccess, toastError } from "@/lib/toast";
 
 type FilterType = "all" | "active" | "not-started" | "paused" | "expired";
 
-type CouponStatus = "active" | "not-started" | "paused" | "expired";
+interface PromocodeBranch {
+  id: number;
+  name: string;
+  center_id: number;
+}
 
-interface PromocodeApiResponse {
+interface PromocodeItem {
   id: number;
   title: string;
   description: string;
@@ -26,14 +31,13 @@ interface PromocodeApiResponse {
   end_date: string;
   max_number_of_usage: number;
   kind_of_child: string;
-  status: string;
+  status: CouponStatus;
   color: string;
   amount: string;
   center_id: number | null;
   branch_id: number | null;
   paid_enrollments_count: number;
-  centers: Array<{ id: number; name: string }>;
-  branches: Array<{ id: number; name: string; center_id: number }>;
+  branches: PromocodeBranch[];
   is_global: boolean;
   scope_type: string;
   created_at: string;
@@ -49,6 +53,7 @@ interface Coupon {
   endDate: string;
   usageCount: number;
   status: CouponStatus;
+  activatedBranches: string[];
 }
 
 export default function Coupons() {
@@ -64,12 +69,12 @@ export default function Coupons() {
     error,
   } = useQuery({
     queryKey: ["center-promocodes"],
-    queryFn: () => centerService.getPromocodes(),
+    queryFn: () => promocodeService.getPromocodes(),
   });
 
   // Request new promocode mutation
   const requestPromocodeMutation = useMutation({
-    mutationFn: () => centerService.requestNewPromocode(),
+    mutationFn: () => promocodeService.requestNewPromocode(),
     onSuccess: () => {
       toastSuccess(
         t("requestSuccess") || "Request submitted successfully",
@@ -87,29 +92,16 @@ export default function Coupons() {
     },
   });
 
-  // Transform promocodes API data to coupon format
+  // Transform promocode data to coupon format
   const coupons: Coupon[] = useMemo(() => {
     if (!promocodesResponse?.data) return [];
 
-    const promocodes: PromocodeApiResponse[] = promocodesResponse.data;
+    const promocodes: PromocodeItem[] = promocodesResponse.data;
 
-    return promocodes.map((promo) => {
-      // Map API status to component status
-      let status: CouponStatus = "expired";
-      const apiStatus = promo.status.toLowerCase();
-      
-      if (apiStatus === "active") {
-        status = "active";
-      } else if (apiStatus === "not-started" || apiStatus === "not_started") {
-        status = "not-started";
-      } else if (apiStatus === "paused") {
-        status = "paused";
-      } else {
-        status = "expired";
-      }
-
+    return promocodes.map((promocode) => {
       // Format dates
       const formatDate = (dateString: string) => {
+        if (!dateString) return "-";
         const date = new Date(dateString);
         return date.toLocaleDateString(locale === "ar" ? "ar-SA" : "en-US", {
           weekday: "long",
@@ -120,14 +112,15 @@ export default function Coupons() {
       };
 
       return {
-        id: promo.id.toString(),
-        couponName: promo.title,
-        discountPercentage: parseFloat(promo.percentage),
-        discountValue: parseFloat(promo.amount),
-        startDate: formatDate(promo.start_date),
-        endDate: formatDate(promo.end_date),
-        usageCount: promo.paid_enrollments_count,
-        status,
+        id: promocode.id.toString(),
+        couponName: promocode.title,
+        discountPercentage: parseFloat(promocode.percentage),
+        discountValue: parseFloat(promocode.amount),
+        startDate: formatDate(promocode.start_date),
+        endDate: formatDate(promocode.end_date),
+        usageCount: promocode.paid_enrollments_count,
+        status: promocode.status,
+        activatedBranches: promocode.branches.map((b) => b.name),
       };
     });
   }, [promocodesResponse, locale]);
@@ -203,9 +196,7 @@ export default function Coupons() {
     return (
       <div className="space-y-6">
         <div className="py-12 text-center text-red-500">
-          {error instanceof Error
-            ? error.message
-            : "Failed to load promocodes"}
+          {error instanceof Error ? error.message : "Failed to load coupons"}
         </div>
       </div>
     );
@@ -258,6 +249,7 @@ export default function Coupons() {
               endDate={coupon.endDate}
               usageCount={coupon.usageCount}
               status={coupon.status}
+              activatedBranches={coupon.activatedBranches}
             />
           ))
         ) : (

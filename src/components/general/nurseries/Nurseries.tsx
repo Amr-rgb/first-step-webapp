@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import SearchBar from "../search/SearchBar";
 import FilterButtons from "../search/FilterButtons";
@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { RotateCw, AlertCircle } from "lucide-react";
 
-type LocaleKey = 'ar' | 'en';
+type LocaleKey = "ar" | "en";
 
 const Nurseries = ({
   nurseries,
@@ -38,6 +38,7 @@ const Nurseries = ({
 
   const t = useTranslations("nurseries");
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState(query);
   const [selectedFilter, setSelectedFilter] = useState(filter);
 
@@ -48,8 +49,8 @@ const Nurseries = ({
     const params = new URLSearchParams();
     if (debouncedQuery) params.set("query", debouncedQuery);
     if (selectedFilter) params.set("filter", selectedFilter);
-    router.push(`/nurseries?${params.toString()}`, { scroll: false });
-  }, [debouncedQuery, selectedFilter]);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [debouncedQuery, selectedFilter, pathname]);
 
   const handleRetry = () => {
     router.refresh();

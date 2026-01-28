@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import PhoneInput from "../PhoneInput";
 import CheckboxGroup from "../CheckboxGroup";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { CitySelector } from "../CitySelector";
 import { FileUploader } from "../FileUploader";
 import { LocationAutocomplete } from "../LocationAutocomplete";
@@ -22,6 +23,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mapOptions } from "@/lib/utils";
 import { CENTER_TYPE_IDS } from "@/lib/options";
+import { useQuery } from "@tanstack/react-query";
+import { authService } from "@/services/api";
 
 export function Step1BasicInfo({
   isBranch = false,
@@ -49,7 +52,20 @@ export function Step1BasicInfo({
 
   const { control } = useFormContext<Step1FormData>();
 
-  const centerTypes = mapOptions(CENTER_TYPE_IDS, "centerTypes", tOptions);
+  const { data: apiCenterTypes } = useQuery({
+    queryKey: ["centerTypes"],
+    queryFn: () => authService.getCenterTypes(),
+  });
+
+  const nurseryTypes = mapOptions(CENTER_TYPE_IDS, "centerTypes", tOptions);
+
+  const centerTypes =
+    apiCenterTypes && Array.isArray(apiCenterTypes)
+      ? apiCenterTypes.map((type: any) => ({
+          value: type.id.toString(),
+          label: t(`type.options.${type.name}`) || type.name,
+        }))
+      : [];
 
   return (
     <div className="space-y-10">
@@ -294,16 +310,36 @@ export function Step1BasicInfo({
           )}
         />
 
-        {/* Logo field */}
+        {/* Selection Type field (Center / Nursery / Other) */}
+        <FormField
+          control={control}
+          name="types"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("type.label")}</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  options={centerTypes}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  disabled={disabled}
+                  placeholder={t("type.placeholder") || "Select types..."}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Logo field */}
+      <div className="flex flex-col gap-y-3">
+        <p className="form-label">{t("logo.label")}</p>
         <FormField
           control={control}
           name="logo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {t("logo.label")}
-                <span className="text-red-500">*</span>
-              </FormLabel>
               <FormControl>
                 <FileUploader
                   value={field.value}
@@ -318,12 +354,14 @@ export function Step1BasicInfo({
         />
       </div>
 
-      {/* Nursery Type field */}
+      {/* Nursery Type field (Specialties) */}
       <div className="flex flex-col items-center gap-y-4">
-        <p className="form-label">{t("type.label")}</p>
+        <p className="form-label">
+          {t("nursery_type.label") || "Nursery Specialties"}
+        </p>
         <CheckboxGroup
           className="lg:w-3xl"
-          items={centerTypes}
+          items={nurseryTypes}
           name="nursery_type"
           control={control}
           readOnly={disabled}

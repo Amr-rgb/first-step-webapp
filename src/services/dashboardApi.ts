@@ -67,6 +67,11 @@ const prepareCenterFormData = (
       formData.append("nursery_type[]", item);
     });
   }
+  if (payload.types?.length) {
+    payload.types.forEach((item: string) => {
+      formData.append("types[]", item);
+    });
+  }
 
   if (payload.communication_methods?.length) {
     payload.communication_methods.forEach((item: string) => {
@@ -500,7 +505,7 @@ export const parentService = {
 
   getUpcomingEnrollments: async () => {
     try {
-      const response = await apiClient.get("/parent/enrollments/pending");
+      const response = await apiClient.get("/v2/enrollments/pending");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -509,7 +514,7 @@ export const parentService = {
 
   getCurrentEnrollments: async () => {
     try {
-      const response = await apiClient.get("/parent/enrollments/accepted");
+      const response = await apiClient.get("/v2/enrollments/accepted");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -842,7 +847,7 @@ export const centerService = {
     }
   },
 
-  getBlog: async (id: string) => {
+  getBlog: async (id: string | number) => {
     try {
       const response = await apiClient.get(`/blog-centers/${id}`);
       return response.data.data;
@@ -978,108 +983,84 @@ export const centerService = {
     }
   },
 
-  requestNewPromocode: async () => {
-    try {
-      const response = await apiClient.post("/request-new-promocode");
-      return response.data;
-    } catch (error) {
-      throw ApiErrorHandler.handle(error);
-    }
-  },
-
-  getPromocodes: async () => {
-    try {
-      const response = await apiClient.get("/promocodes");
-      return response.data;
-    } catch (error) {
-      throw ApiErrorHandler.handle(error);
-    }
-  },
-
   // Portfolio endpoints
   savePortfolio: async (payload: PortfolioFormData) => {
     try {
-      console.log('📤 Sending portfolio data:', payload);
-      
+      console.log("📤 Sending portfolio data:", payload);
+
       // Convert to FormData to handle file uploads
       const formData = new FormData();
-      
+
       // Helper function to append data recursively
       const appendFormData = (key: string, value: any) => {
-        if (value === null || value === undefined) {
+        if (value === undefined) {
           return;
         }
-        
+
         // Handle image fields specially
-        if (key.includes('image') || key.includes('background')) {
-          // Always skip empty strings
-          if (typeof value === 'string' && value === '') {
-            console.log(`⏭️  Skipping empty image field for ${key}`);
+        if (key.includes("image") || key.includes("background")) {
+          // Skip string values (URLs) for top-level fields to avoid redundant updates
+          // BUT allow them for indexed/nested fields (e.g., services[0][image])
+          // so the backend knows which existing images to keep in a list.
+          if (typeof value === "string" && !key.includes("[")) {
+            console.log(`⏭️  Skipping top-level image URL for ${key}`);
             return;
-          }
-          
-          // For top-level image fields (not in arrays), skip URL strings
-          // Only send File objects for new uploads
-          if (typeof value === 'string' && !key.includes('[')) {
-            console.log(`⏭️  Skipping top-level image URL for ${key}:`, value.substring(0, 50));
-            return;
-          }
-          
-          // For array items (like services[0][image_service]), send URLs to preserve them
-          if (typeof value === 'string' && key.includes('[')) {
-            console.log(`🔗 Sending array item image URL for ${key}:`, value.substring(0, 50));
           }
         }
-        
+
         if (value instanceof File) {
           formData.append(key, value);
           console.log(`📎 Adding file for ${key}:`, value.name);
         } else if (Array.isArray(value)) {
           if (value.length === 0) {
-            return; // Skip empty arrays
+            return;
           }
           value.forEach((item, index) => {
+            if (item === null || item === undefined) return;
+
+            const itemKey = `${key}[${index}]`;
             if (item instanceof File) {
-              formData.append(`${key}[${index}]`, item);
-              console.log(`📎 Adding file for ${key}[${index}]:`, item.name);
-            } else if (typeof item === 'object' && item !== null) {
-              Object.keys(item).forEach(subKey => {
-                appendFormData(`${key}[${index}][${subKey}]`, item[subKey]);
+              formData.append(itemKey, item);
+              console.log(`📎 Adding file for ${itemKey}:`, item.name);
+            } else if (typeof item === "object") {
+              Object.keys(item).forEach((subKey) => {
+                appendFormData(`${itemKey}[${subKey}]`, item[subKey]);
               });
             } else {
-              formData.append(`${key}[${index}]`, item);
+              formData.append(itemKey, String(item));
             }
           });
-        } else if (typeof value === 'object' && !(value instanceof File)) {
-          Object.keys(value).forEach(subKey => {
+        } else if (typeof value === "object" && !(value instanceof File)) {
+          Object.keys(value).forEach((subKey) => {
             appendFormData(`${key}[${subKey}]`, value[subKey]);
           });
         } else {
-          formData.append(key, String(value));
+          // Keep root-level nulls as "null" unless they are part of a deleted item
+          formData.append(key, value === null ? "null" : String(value));
         }
       };
-      
+
       // Append all fields from payload
-      Object.keys(payload).forEach(key => {
+      Object.keys(payload).forEach((key) => {
         appendFormData(key, (payload as any)[key]);
       });
-      
+
       // Log FormData contents
-      console.log('📤 FormData entries:');
+      console.log("📤 FormData entries:");
       for (const pair of formData.entries()) {
         console.log(`  ${pair[0]}:`, pair[1]);
       }
-      
+
       const response = await apiClient.post("/portfolios", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log('✅ Portfolio saved successfully:', response.data);
+      console.log("✅ Portfolio saved successfully:", response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Portfolio save failed:', error);
-      console.error('Error response:', error.response?.data);
+      console.error("❌ Portfolio save failed:", error);
+      console.error("Error response:", error.response?.data);
       throw ApiErrorHandler.handle(error);
     }
   },
@@ -1146,6 +1127,33 @@ export const centerService = {
 };
 
 export const adminService = {
+  createCenterType: async (name: string) => {
+    try {
+      const response = await apiClient.post("/dashboard/types", { name });
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateCenterType: async (id: string, name: string) => {
+    try {
+      const response = await apiClient.put(`/dashboard/types/${id}`, { name });
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterTypes: async () => {
+    try {
+      const response = await apiClient.get("/dashboard/types");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCenters: async () => {
     try {
       const response = await apiClient.get("/dashboard/centers");
@@ -1361,16 +1369,16 @@ export const adminService = {
     }
   },
 
-  getBlogs: async () => {
+  getBlogs: async (page: number = 1) => {
     try {
-      const response = await apiClient.get(`/dashboard/Blogs`);
+      const response = await apiClient.get(`/dashboard/Blogs?page=${page}`);
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
   },
 
-  getBlog: async (blogId: string) => {
+  getBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.get(`/dashboard/Blogs/${blogId}`);
       return response.data.data;
@@ -1412,7 +1420,7 @@ export const adminService = {
   },
 
   updateBlog: async (
-    blogId: string,
+    blogId: string | number,
     payload: {
       titleAr?: string;
       titleEn?: string;
@@ -1452,7 +1460,7 @@ export const adminService = {
     }
   },
 
-  deleteBlog: async (blogId: string) => {
+  deleteBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.delete(`/dashboard/Blogs/${blogId}`);
       return response.data;
@@ -1481,7 +1489,7 @@ export const adminService = {
     }
   },
 
-  getCenterBlog: async (blogId: string) => {
+  getCenterBlog: async (blogId: string | number) => {
     try {
       const response = await apiClient.get(`/dashboard/specific-ad/${blogId}`);
       return response.data;

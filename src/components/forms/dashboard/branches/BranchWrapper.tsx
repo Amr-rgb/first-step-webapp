@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
 import { BranchFormData, createBranchSchema } from "@/lib/schemas";
 import { useBranch } from "@/hooks/useBranches";
+import { useQuery } from "@tanstack/react-query";
+import { authService } from "@/services/api";
 import Branch from "./Branch";
 import BranchFormSkeleton from "./BranchFormSkeleton";
 import { useBranchMutations } from "./hooks/useBranchMutations";
@@ -41,10 +43,27 @@ const BranchWrapper = ({
     }
   }, [fetchedBranch, onBranchData]);
 
+  const { data: apiCenterTypes } = useQuery({
+    queryKey: ["centerTypes"],
+    queryFn: () => authService.getCenterTypes(),
+  });
+
   const transformedInitialValues: BranchFormData | undefined = useMemo(() => {
     if (!fetchedBranch) return undefined;
-    return transformFetchedBranchToFormData(fetchedBranch);
-  }, [fetchedBranch]);
+    const formData = transformFetchedBranchToFormData(fetchedBranch);
+
+    // Map names to IDs if types contains names
+    if (apiCenterTypes && Array.isArray(apiCenterTypes)) {
+      formData.types = formData.types.map((typeVal) => {
+        const matchingType = apiCenterTypes.find(
+          (t: any) => t.name === typeVal || t.id.toString() === typeVal
+        );
+        return matchingType ? matchingType.id.toString() : typeVal;
+      });
+    }
+
+    return formData;
+  }, [fetchedBranch, apiCenterTypes]);
 
   const branchSchema = createBranchSchema(locale as "ar" | "en");
 
@@ -58,6 +77,7 @@ const BranchWrapper = ({
       phone: "",
       neighborhood: "",
       nursery_type: [],
+      types: [],
       city: "",
       location: "",
       services: [],

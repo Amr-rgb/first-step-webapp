@@ -25,7 +25,15 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
     const newIndex = data.teams.length;
     onChange({
       ...data,
-      teams: [...data.teams, { name: "", mission: "", image: "" }],
+      teams: [
+        ...data.teams,
+        {
+          name: "",
+          mission: "",
+          image: "",
+          _localId: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        } as any,
+      ],
     });
     setScrollToIndex(newIndex);
   };
@@ -45,7 +53,7 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
   const updateTeamMember = (
     index: number,
     field: string,
-    value: string | File
+    value: string | File,
   ) => {
     const updatedTeams = [...data.teams];
     updatedTeams[index] = { ...updatedTeams[index], [field]: value };
@@ -98,7 +106,7 @@ export const TeamsSection = ({ data, onChange }: TeamsSectionProps) => {
                   onClick={() => removeTeamMember(index)}
                   variant="outline"
                   size="icon"
-                  className="rounded-full w-9 h-9 !border-destructive text-destructive hover:bg-destructive/10"
+                  className="rounded-full w-9 h-9 border-destructive! text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="w-5 h-5" />
                 </Button>

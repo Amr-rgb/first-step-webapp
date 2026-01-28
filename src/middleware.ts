@@ -8,6 +8,14 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const validLocales = ["ar", "en"];
 
+  // Redirect www to non-www for canonical URLs (fixes Google duplicate content)
+  const hostname = request.headers.get("host") || "";
+  if (hostname.startsWith("www.")) {
+    const url = request.nextUrl.clone();
+    url.host = hostname.replace("www.", "");
+    return NextResponse.redirect(url, 301);
+  }
+
   // 0. Redirect old/legacy URLs for SEO
   const legacyRedirects: Record<string, string> = {
     "/about": "/our-story",
@@ -20,7 +28,7 @@ export default function middleware(request: NextRequest) {
       if (pathname === `/${locale}${oldPath}`) {
         return NextResponse.redirect(
           new URL(`/${locale}${newPath}`, request.url),
-          301
+          301,
         );
       }
     }

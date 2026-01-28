@@ -56,7 +56,14 @@ export function MultiSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between min-h-10 h-auto", className)}
+          className={cn(
+            "w-full justify-between min-h-9 h-auto rounded-md border border-input! bg-white! px-6 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
+            selected.length > 0 ? "py-2" : "py-3",
+            "dark:bg-input/30 dark:border-input/40",
+            "focus-visible:ring-0 focus-visible:border-info focus-visible:text-info text-foreground/70",
+            "disabled:cursor-not-allowed disabled:opacity-70 disabled:bg-muted/50",
+            className
+          )}
           disabled={disabled}
         >
           <div className="flex gap-1 flex-wrap">
@@ -69,7 +76,7 @@ export function MultiSelect({
                     key={item}
                     className={cn(
                       "mr-1 mb-1 pl-3 pr-1 py-1.5 h-7",
-                      "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
+                      "bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
                       "border border-blue-200/60 dark:border-blue-800/40",
                       "text-blue-900 dark:text-blue-100",
                       "hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/40 dark:hover:to-indigo-900/40",
@@ -126,7 +133,7 @@ export function MultiSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="p-4 !pointer-events-auto"
+        className="p-4 pointer-events-auto!"
         align="start"
         style={{ width: triggerRef.current?.offsetWidth }}
       >

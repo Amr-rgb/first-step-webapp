@@ -109,9 +109,12 @@ export function useNotifications() {
         notificationData.enrollment
       ) {
         // If the current user is the one who created the enrollment, skip this notification
+        // BUT only if the enrollment is still 'pending' (meaning it was likely just created by the parent)
+        // If it was 'accepted' or 'rejected', the parent needs to know even if they are the owner
         if (
           user?.role === "parent" &&
-          notificationData.enrollment.user_id === user.id
+          notificationData.enrollment.user_id === user.id &&
+          notificationData.enrollment.status === "pending"
         ) {
           return;
         }

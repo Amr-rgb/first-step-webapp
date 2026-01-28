@@ -24,11 +24,10 @@ export const ActivitiesSection = ({
     });
   };
 
-  
-  const handleDescriptionChange = (value: string) => {
+  const handleSubtitleChange = (value: string) => {
     onChange({
       ...data,
-      activity_section_description: value,
+      activity_section_subtitle: value,
     });
   };
 
@@ -52,20 +51,18 @@ export const ActivitiesSection = ({
           />
         </div> */}
 
-       
-
         <div className="space-y-3">
           <Label
-            htmlFor="activity_section_description"
+            htmlFor="activity_section_subtitle"
             className="text-sm font-medium"
           >
-            {t("sectionDescription")}
+            {t("sectionSubtitle")}
           </Label>
           <Textarea
-            id="activity_section_description"
-            value={data.activity_section_description || ""}
-            onChange={(e) => handleDescriptionChange(e.target.value)}
-            placeholder={t("sectionDescriptionPlaceholder")}
+            id="activity_section_subtitle"
+            value={data.activity_section_subtitle || ""}
+            onChange={(e) => handleSubtitleChange(e.target.value)}
+            placeholder={t("sectionSubtitlePlaceholder")}
             rows={3}
           />
         </div>
@@ -89,13 +86,41 @@ export const ActivitiesSection = ({
           <div className="space-y-3">
             <Label className="text-sm font-medium">{t("addImage")}</Label>
             <ImagesUploader
-              value={data.images_activities || []}
-              onChange={(files) =>
+              value={(data.images_activities || []).map((item: any) =>
+                typeof item === "object" && item.url !== undefined
+                  ? item.url
+                  : item,
+              )}
+              onChange={(files) => {
+                // Map existing items to preserve their _localId, add _localId to new items
+                const existingMap = new Map<string, any>();
+                (data.images_activities || []).forEach((item: any) => {
+                  const key =
+                    typeof item === "object" && item.url !== undefined
+                      ? item.url
+                      : item;
+                  existingMap.set(typeof key === "string" ? key : "file", item);
+                });
+
+                const newImages = files.map((file) => {
+                  if (typeof file === "string") {
+                    // Check if it existed before
+                    const existing = existingMap.get(file);
+                    if (existing) return existing;
+                    return { url: file, _localId: file };
+                  }
+                  // New File - generate _localId
+                  return {
+                    url: file,
+                    _localId: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                  };
+                });
+
                 onChange({
                   ...data,
-                  images_activities: files,
-                })
-              }
+                  images_activities: newImages as any,
+                });
+              }}
               accept="image/*"
               maxSizeMB={5}
             />

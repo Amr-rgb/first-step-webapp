@@ -70,7 +70,7 @@ export default function CouponCard({
           "relative flex items-center justify-center px-1 sm:px-2",
           "min-w-[40px] sm:min-w-[50px] md:min-w-[60px]"
         )}
-        style={{ backgroundColor: config.bgColor }}
+        style={{ backgroundColor: config?.bgColor }}
       >
         {/* Top semi-circle cutout - half on colored side */}
         <div
@@ -85,11 +85,11 @@ export default function CouponCard({
         <span
           className={cn(
             "relative z-10 whitespace-nowrap text-xs sm:text-sm font-bold",
-            config.textColor
+            config?.textColor
           )}
           style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         >
-          {config.label}
+          {config?.label}
         </span>
       </div>
 
@@ -117,9 +117,9 @@ export default function CouponCard({
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+      <div className="flex flex-1 flex-col gap-3 sm:gap-4 p-3 sm:p-4 lg:p-6">
         {/* Small Screen: Two Column Layout (Labels | Values) */}
-        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 sm:gap-y-2 md:hidden">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 sm:gap-y-2 lg:hidden">
           {/* Labels Column */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
             <div className="text-xs sm:text-sm font-bold text-gray-700">
@@ -146,7 +146,7 @@ export default function CouponCard({
           </div>
           {/* Values Column */}
           <div className="flex flex-col gap-1.5 sm:gap-2">
-            <div className="text-xs sm:text-sm text-gray-900 break-words">
+            <div className="text-xs sm:text-sm text-gray-900 wrap-break">
               {couponName}
             </div>
             <div className="text-xs sm:text-sm text-gray-900">
@@ -155,16 +155,16 @@ export default function CouponCard({
             <div className="text-xs sm:text-sm text-gray-900">
               {discountValue} {t("currency")}
             </div>
-            <div className="text-xs sm:text-sm text-gray-900 break-words">
+            <div className="text-xs sm:text-sm text-gray-900 wrap-break">
               {startDate}
             </div>
-            <div className="text-xs sm:text-sm text-gray-900 break-words">
+            <div className="text-xs sm:text-sm text-gray-900 wrap-break">
               {endDate}
             </div>
             <div className="text-xs sm:text-sm text-gray-900">
               {usageCount} {t("times")}
             </div>
-            <div className="text-xs sm:text-sm text-gray-900 break-words">
+            <div className="text-xs sm:text-sm text-gray-900 wrap-break">
               {activatedBranches
                 ? Array.isArray(activatedBranches)
                   ? activatedBranches.join(", ")
@@ -174,68 +174,50 @@ export default function CouponCard({
           </div>
         </div>
 
-        {/* Medium+ Screen: Original Layout */}
-        <div className="hidden md:flex md:flex-row md:justify-between md:items-center w-full">
-          {/* Right Column - Coupon Details */}
-          <div className="flex flex-col gap-2 flex-1">
-            <div className="break-words">
-              <span className="text-sm font-bold text-gray-700">
-                {t("couponName")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">{couponName}</span>
-            </div>
-            <div>
-              <span className="text-sm font-bold text-gray-700">
-                {t("discountPercentage")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">
-                % {discountPercentage}
-              </span>
-            </div>
-            <div>
-              <span className="text-sm font-bold text-gray-700">
-                {t("discountValue")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">
-                {discountValue} {t("currency")}
-              </span>
-            </div>
+        {/* Medium+ Screen: Restructured Grid Layout */}
+        <div className="hidden lg:grid lg:grid-cols-4 lg:gap-x-4 lg:gap-y-3 lg:items-start w-full">
+          {/* First Row */}
+          <div className="text-sm font-bold text-gray-700">
+            {t("couponName")}:
+          </div>
+          <div className="text-sm text-gray-900 wrap-break">{couponName}</div>
+          <div className="text-sm font-bold text-gray-700">
+            {t("startDate")}:
+          </div>
+          <div className="text-sm text-gray-900 wrap-break">{startDate}</div>
+
+          {/* Second Row */}
+          <div className="text-sm font-bold text-gray-700">
+            {t("discountPercentage")}:
+          </div>
+          <div className="text-sm text-gray-900">% {discountPercentage}</div>
+          <div className="text-sm font-bold text-gray-700">{t("endDate")}:</div>
+          <div className="text-sm text-gray-900 wrap-break">{endDate}</div>
+
+          {/* Third Row */}
+          <div className="text-sm font-bold text-gray-700">
+            {t("discountValue")}:
+          </div>
+          <div className="text-sm text-gray-900">
+            {discountValue} {t("currency")}
+          </div>
+          <div className="text-sm font-bold text-gray-700">
+            {t("usageCount")}:
+          </div>
+          <div className="text-sm text-gray-900">
+            {usageCount} {t("times")}
           </div>
 
-          {/* Left Column - Date and Usage */}
-          <div className="flex flex-col gap-2 flex-none min-w-[200px]">
-            <div className="break-words">
-              <span className="text-sm font-bold text-gray-700">
-                {t("startDate")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">{startDate}</span>
-            </div>
-            <div className="break-words">
-              <span className="text-sm font-bold text-gray-700">
-                {t("endDate")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">{endDate}</span>
-            </div>
-            <div>
-              <span className="text-sm font-bold text-gray-700">
-                {t("usageCount")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">
-                {usageCount} {t("times")}
-              </span>
-            </div>
-            <div className="break-words">
-              <span className="text-sm font-bold text-gray-700">
-                {t("activatedBranches")}:{" "}
-              </span>
-              <span className="text-sm text-gray-900">
-                {activatedBranches
-                  ? Array.isArray(activatedBranches)
-                    ? activatedBranches.join(", ")
-                    : activatedBranches
-                  : "-"}
-              </span>
-            </div>
+          {/* Fourth Row - Branches takes full remaining width */}
+          <div className="text-sm font-bold text-gray-700">
+            {t("activatedBranches")}:
+          </div>
+          <div className="lg:col-span-3 text-sm text-gray-900 wrap-break">
+            {activatedBranches
+              ? Array.isArray(activatedBranches)
+                ? activatedBranches.join(", ")
+                : activatedBranches
+              : "-"}
           </div>
         </div>
       </div>

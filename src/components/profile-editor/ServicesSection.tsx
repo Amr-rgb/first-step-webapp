@@ -34,7 +34,12 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
       ...data,
       services: [
         ...data.services,
-        { title: "", description: "", image_service: "" },
+        {
+          title: "",
+          description: "",
+          image_service: "",
+          _localId: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        } as any,
       ],
     });
     setScrollToIndex(newIndex);
@@ -55,7 +60,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
   const updateService = (
     index: number,
     field: string,
-    value: string | File
+    value: string | File,
   ) => {
     const updatedServices = [...data.services];
     updatedServices[index] = { ...updatedServices[index], [field]: value };
@@ -118,7 +123,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                     onClick={() => removeService(index)}
                     variant="outline"
                     size="icon"
-                    className="rounded-full w-9 h-9 !border-destructive text-destructive hover:bg-destructive/10"
+                    className="rounded-full w-9 h-9 border-destructive! text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="w-5 h-5" />
                   </Button>
@@ -127,7 +132,7 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                 <div className="space-y-3">
                   <Label>{t("serviceTitle")}</Label>
                   <Input
-                    value={service.title || ''}
+                    value={service.title || ""}
                     onChange={(e) =>
                       updateService(index, "title", e.target.value)
                     }
@@ -139,11 +144,11 @@ export const ServicesSection = ({ data, onChange }: ServicesSectionProps) => {
                   <div className="flex justify-between items-center">
                     <Label>{t("serviceDescription")}</Label>
                     <span className="text-xs text-muted-foreground">
-                      {(service.description || '').length}/200
+                      {(service.description || "").length}/200
                     </span>
                   </div>
                   <Textarea
-                    value={service.description || ''}
+                    value={service.description || ""}
                     onChange={(e) =>
                       updateService(index, "description", e.target.value)
                     }

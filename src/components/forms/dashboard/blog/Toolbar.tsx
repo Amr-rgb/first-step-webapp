@@ -16,6 +16,8 @@ import {
   // Image as ImageIcon,
   Link as LinkIcon,
   Code,
+  Quote,
+  Minus,
   ChevronDown,
 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
@@ -25,6 +27,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 
 type Props = {
   editor: Editor | null;
@@ -40,23 +50,27 @@ export default function Toolbar({ editor }: Props) {
   //   }
   // };
 
-  const insertLink = () => {
-    const previousUrl = editor.getAttributes("link").href;
-    const url = prompt("رابط", previousUrl);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [open, setOpen] = useState(false);
 
-    // cancelled
-    if (url === null) {
-      return;
+  useEffect(() => {
+    if (open) {
+      setLinkUrl(editor.getAttributes("link").href || "");
     }
+  }, [open, editor]);
 
-    // empty
-    if (url === "") {
+  const handleSetLink = () => {
+    if (linkUrl === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
+    } else {
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange("link")
+        .setLink({ href: linkUrl })
+        .run();
     }
-
-    // update link
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+    setOpen(false);
   };
 
   return (
@@ -201,9 +215,60 @@ export default function Toolbar({ editor }: Props) {
         <Code size={16} />
       </Toggle>
 
-      {/* Link */}
-      <Toggle pressed={editor.isActive("link")} onPressedChange={insertLink}>
-        <LinkIcon size={16} />
+      <Toggle
+        pressed={editor.isActive("blockquote")}
+        onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
+      >
+        <Quote size={16} />
+      </Toggle>
+
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Toggle pressed={editor.isActive("link")}>
+            <LinkIcon size={16} />
+          </Toggle>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 flex flex-col gap-2 p-3">
+          <Input
+            placeholder="https://example.com"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            className="h-8"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSetLink();
+              }
+            }}
+          />
+          <div className="flex justify-end gap-2">
+            {editor.isActive("link") && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-8 rounded-md"
+                onClick={() => {
+                  editor.chain().focus().unsetLink().run();
+                  setOpen(false);
+                }}
+              >
+                إزالة
+              </Button>
+            )}
+            <Button
+              size="sm"
+              className="h-8 rounded-md"
+              onClick={handleSetLink}
+            >
+              حفظ
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <Toggle
+        onPressedChange={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus size={16} />
       </Toggle>
 
       {/* Superscript and Subscript */}

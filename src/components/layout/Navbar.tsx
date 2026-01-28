@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import NavbarButton from "./NavbarButton";
 import { useAuthToken } from "@/store/authStore";
+import { cn } from "@/lib/utils";
 
 // Simple browser detection for old browsers
 const isOldBrowser = () => {
@@ -27,6 +28,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [needsOldBrowserFallback, setNeedsOldBrowserFallback] = useState(true); // Start with true for SSR
   const [buttonsVisible, setButtonsVisible] = useState(false); // New state for button visibility
+  const [openMobileSubmenuId, setOpenMobileSubmenuId] = useState<number | null>(
+    null
+  );
   const pathname = usePathname();
   const locale = useLocale();
   const isRtl = locale === "ar";
@@ -105,6 +109,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   // Force close menu (for old browsers that might not respond to state changes)
   const forceCloseMenu = () => {
     setIsMenuOpen(false);
+    setOpenMobileSubmenuId(null);
     if (menuRef.current && overlayRef.current) {
       menuRef.current.style.transform = isRtl
         ? "translateX(-100%)"
@@ -151,20 +156,55 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     // "centers",
     "coupon-codes",
     "consultations",
-    "blog",
-    "story",
-    "contact",
+    "who-are-we",
   ];
   const links = keys.map((key, index) => {
-    return {
+    const baseLink = {
       id: index,
       title: t(`links.${key}.title`),
       path: t(`links.${key}.path`),
     };
+
+    if (key === "nurseries") {
+      return {
+        ...baseLink,
+        items: [
+          {
+            title: t("links.centers-item.title"),
+            path: t("links.centers-item.path"),
+          },
+          {
+            title: t("links.nurseries-item.title"),
+            path: t("links.nurseries-item.path"),
+          },
+        ],
+      };
+    }
+
+    if (key === "who-are-we") {
+      return {
+        ...baseLink,
+        items: [
+          {
+            title: t("links.blog.title"),
+            path: t("links.blog.path"),
+          },
+          {
+            title: t("links.story.title"),
+            path: t("links.story.path"),
+          },
+          {
+            title: t("links.contact.title"),
+            path: t("links.contact.path"),
+          },
+        ],
+      };
+    }
+    return baseLink;
   });
 
   const hoverEffect =
-    "hover:text-primary hover:font-bold hover:text-xl hover:text-secondary-orange duration-300 ";
+    "group-hover:text-primary group-hover:font-bold group-hover:text-xl group-hover:text-secondary-orange duration-300 ";
 
   return (
     <>
@@ -204,23 +244,56 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
               }`}
             >
               <ul className="flex justify-between items-center gap-x-9">
-                {links.map((link) => (
+                {links.map((link: any) => (
                   <li
                     key={link.id}
-                    className="relative inline-block font-medium text-center h-7"
+                    className="relative inline-block font-medium text-center h-7 group"
                   >
                     <Link
                       href={link.path}
-                      className={`text-base text-gray ${hoverEffect} ${
-                        isActive(link.path)
+                      className={`text-base text-gray flex items-center justify-center gap-1 ${hoverEffect} ${
+                        isActive(link.path) ||
+                        (link.items &&
+                          link.items.some((item: any) => isActive(item.path)))
                           ? "text-xl font-extrabold text-primary"
                           : ""
                       }`}
                     >
                       {link.title}
+                      {link.items && (
+                        <ChevronDown
+                          size={14}
+                          className="transition-transform duration-300 group-hover:rotate-180"
+                        />
+                      )}
                     </Link>
 
-                    <span className="relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0">
+                    {link.items && (
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 hidden group-hover:block transition-all duration-300 animate-in fade-in slide-in-from-top-2">
+                        <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-2 min-w-[200px] overflow-hidden">
+                          {link.items.map((item: any) => (
+                            <Link
+                              key={item.path}
+                              href={item.path}
+                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 rtl:text-right ltr:text-left ${
+                                isActive(item.path)
+                                  ? "bg-emerald-50 text-primary font-bold"
+                                  : ""
+                              }`}
+                            >
+                              {item.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <span
+                      className={cn(
+                        "relative h-0 inset-0 pointer-events-none flex items-center justify-center text-xl font-extrabold opacity-0",
+                        link.items && "ltr:pr-4 rtl:pl-4"
+                      )}
+                    >
                       {link.title}
                     </span>
                   </li>
@@ -357,19 +430,63 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
             {/* Menu items */}
             <div className="flex flex-col h-[calc(100vh-65px)] overflow-y-auto custom-scrollbar">
               <ul className="pt-2 pb-4">
-                {links.map((link) => (
+                {links.map((link: any) => (
                   <li key={link.id}>
-                    <Link
-                      href={link.path}
-                      className={`block px-6 py-4 text-base transition-colors duration-200 ${
-                        isActive(link.path)
-                          ? "font-bold text-emerald-600 bg-emerald-50"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                      onClick={forceCloseMenu}
-                    >
-                      {link.title}
-                    </Link>
+                    {link.items ? (
+                      <button
+                        onClick={() =>
+                          setOpenMobileSubmenuId(
+                            openMobileSubmenuId === link.id ? null : link.id
+                          )
+                        }
+                        className={`w-full px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
+                          isActive(link.path) ||
+                          link.items.some((item: any) => isActive(item.path))
+                            ? "font-bold text-emerald-600 bg-emerald-50"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {link.title}
+                        <ChevronDown
+                          size={14}
+                          className={cn(
+                            "transition-transform duration-300",
+                            openMobileSubmenuId === link.id && "rotate-180"
+                          )}
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        href={link.path}
+                        className={`px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
+                          isActive(link.path)
+                            ? "font-bold text-emerald-600 bg-emerald-50"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                        onClick={forceCloseMenu}
+                      >
+                        {link.title}
+                      </Link>
+                    )}
+                    {link.items && openMobileSubmenuId === link.id && (
+                      <ul className="bg-gray-50/50 animate-in slide-in-from-top-1 duration-200">
+                        {link.items.map((item: any) => (
+                          <li key={item.path}>
+                            <Link
+                              href={item.path}
+                              className={`block ltr:px-12 rtl:px-12 py-3 text-sm transition-colors duration-200 ${
+                                isActive(item.path)
+                                  ? "font-extrabold text-emerald-600"
+                                  : "text-gray-600 hover:bg-gray-100"
+                              }`}
+                              onClick={forceCloseMenu}
+                            >
+                              - {item.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

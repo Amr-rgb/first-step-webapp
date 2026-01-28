@@ -21,13 +21,27 @@ export default async function NurseryPage({
 }) {
   const { name, locale } = await params;
   const t = await getTranslations("nurseryDetails");
-  const readableName = slugToReadableName(name);
+  // Expect URL format: [id]-[slug]
+  // We extract the ID to fetch data reliably
+  const idMatch = name.match(/^(\d+)-(.*)$/);
+  const id = idMatch ? idMatch[1] : null;
+  const slugPart = idMatch ? idMatch[2] : name;
 
-  // Fetch portfolio data for the specific nursery
-  const portfolioResponse = await nurseryService.getNurseryPortfolio(
-    readableName,
-    locale
-  );
+  // Fallback readable name from slug for display purposes
+  const readableName = slugToReadableName(slugPart);
+
+  // Fetch portfolio data using ID if available, otherwise fallback to legacy name search
+  let portfolioResponse;
+
+  if (id) {
+    portfolioResponse = await nurseryService.getNurseryPortfolioById(
+      id,
+      locale
+    );
+  } else {
+    // Legacy support for old URLs without ID
+    portfolioResponse = await nurseryService.getNurseryPortfolio(name, locale);
+  }
 
   // Use API data only
   const portfolio = portfolioResponse?.data;
@@ -77,10 +91,10 @@ export default async function NurseryPage({
       )}
 
       {/* 5. Plans Section */}
-      <Plans nurseryName={readableName} locale={locale} />
+      <Plans centerId={id!} nurseryName={readableName} locale={locale} />
 
       {/* 6. Programs Section */}
-      <Programs programs={[]} nurseryName={readableName} locale={locale} />
+      {/* <Programs programs={[]} nurseryName={readableName} locale={locale} /> */}
 
       {/* 6. Services Section */}
       {portfolio.services &&
@@ -188,7 +202,7 @@ export default async function NurseryPage({
         portfolio.images_activities.length > 0 && (
           <Activities
             title={portfolio.activity_section_title}
-            description={portfolio.activity_section_description}
+            description={portfolio.activity_section_subtitle}
             activities={portfolio.images_activities}
             preview={false}
           />

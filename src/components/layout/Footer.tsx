@@ -80,7 +80,7 @@ const TopLeftSection = () => {
           >
             <div className="relative grow w-full sm:w-auto order-1 sm:order-1 flex bg-white rounded-lg items-center">
               <Input
-                className="!border-0 !shadow-none text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
+                className="border-0! shadow-none! text-[#2A3342] text-xs pl-12 pr-5 py-5 rtl:pr-12 rtl:pl-5"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -96,7 +96,7 @@ const TopLeftSection = () => {
               type="submit"
               size={"sm"}
               variant={"secondary"}
-              className="bg-primary hover:bg-primary-blue-700 text-white border rounded-xl !border-white order-2"
+              className="bg-primary hover:bg-primary-blue-700 text-white border rounded-xl border-white! order-2"
               disabled={!email || subscribeMutation.isPending}
             >
               {subscribeMutation.isPending ? (
@@ -152,7 +152,7 @@ const TopRightSection = () => {
     "home",
     "services",
     "nurseries",
-    // "centers",
+    "centers",
     "blog",
     "story",
     "contact",

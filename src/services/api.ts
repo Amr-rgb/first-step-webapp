@@ -226,7 +226,8 @@ export const websiteService = {
             "Content-Type": "application/json",
             lang: locale,
             "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -258,7 +259,8 @@ export const websiteService = {
             "Content-Type": "application/json",
             lang: locale,
             "X-Authorization": process.env.NEXT_PUBLIC_X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
+            "X-Authorization-Secret":
+              process.env.NEXT_PUBLIC_X_AUTHORIZATION_SECRET || "",
           },
           next: {
             revalidate: 86400,
@@ -763,35 +765,7 @@ export const nurseryService = {
       // Use the nursery.id for the portfolio endpoint
       console.log(`Nursery: ${nursery.nursery_name}, ID: ${nursery.id}`);
 
-      // Fetch the portfolio data using the nursery.id
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${nursery.id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            lang: locale,
-            "X-Authorization": process.env.X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        throw {
-          message: "Failed to fetch portfolio data",
-          errors: {},
-          status: res.status,
-        };
-      }
-
-      const data = await res.json();
-      console.log(`Portfolio Response:`, data);
-
-      // The API returns { "data": { ... } } directly
-      return {
-        message: "Success",
-        data: data.data || data,
-      };
+      return await nurseryService.getNurseryPortfolioById(nursery.id, locale);
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
       return null;
@@ -799,15 +773,15 @@ export const nurseryService = {
   },
 
   getNurseryPortfolioById: async (
-    centerId: number,
+    id: number | string,
     locale: string
   ): Promise<PortfolioResponse | null> => {
     try {
-      console.log(`Fetching portfolio for center ID: ${centerId}`);
+      console.log(`Fetching portfolio for center ID: ${id}`);
 
       // Fetch the portfolio data directly using the center ID
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${centerId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -820,7 +794,7 @@ export const nurseryService = {
 
       if (!res.ok) {
         console.error(
-          `Portfolio API failed for center ID ${centerId}:`,
+          `Portfolio API failed for center ID ${id}:`,
           res.status,
           res.statusText
         );
@@ -832,12 +806,12 @@ export const nurseryService = {
       }
 
       const data = await res.json();
-      console.log(`Portfolio data received for center ID ${centerId}:`, data);
+      console.log(`Portfolio data received for center ID ${id}:`, data);
 
-      // The API returns { "portofilo": { ... } } but we expect { "data": { ... } }
+      // The API returns { "data": { ... } } directly
       return {
         message: "Success",
-        data: data.portofilo || data,
+        data: data.data || data,
       };
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
@@ -1044,6 +1018,15 @@ export const nurseryService = {
 };
 
 export const authService = {
+  getCenterTypes: async () => {
+    try {
+      const response = await apiClient.get("/types-public");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   registerParentv2: async (payload: ParentRegisterPayloadv2) => {
     try {
       const response = await apiClient.post("/v2/register-v2", {
@@ -1098,6 +1081,13 @@ export const authService = {
         formData.append("nursery_type[]", item);
       });
 
+      // Append types array
+      if (payload.types) {
+        payload.types.forEach((item) => {
+          formData.append("types[]", item);
+        });
+      }
+
       // Step 2 fields - files
       payload.logo && formData.append("logo", payload.logo);
       payload.license_path &&
@@ -1117,6 +1107,7 @@ export const authService = {
         location: payload.location,
         neighborhood: payload.neighborhood,
         city: payload.city,
+        types: payload.types,
         nursery_type: payload.nursery_type,
         logo: payload.logo?.name,
         license_path: payload.license_path?.name,
@@ -1379,22 +1370,40 @@ export const enrollmentService = {
 export const parentService = {
   getChildren: async (): Promise<any[]> => {
     try {
-      console.log("[parentService.getChildren] Calling API endpoint: /parent/children");
+      console.log(
+        "[parentService.getChildren] Calling API endpoint: /parent/children"
+      );
       const response = await apiClient.get("/parent/children");
-      console.log("[parentService.getChildren] Response status:", response.status);
-      console.log("[parentService.getChildren] Response data:", JSON.stringify(response.data, null, 2));
-      
+      console.log(
+        "[parentService.getChildren] Response status:",
+        response.status
+      );
+      console.log(
+        "[parentService.getChildren] Response data:",
+        JSON.stringify(response.data, null, 2)
+      );
+
       // Some endpoints return { data: [...] } while others return [] directly
       const data = response.data;
       if (Array.isArray(data)) {
-        console.log("[parentService.getChildren] Data is array, returning:", data.length, "items");
+        console.log(
+          "[parentService.getChildren] Data is array, returning:",
+          data.length,
+          "items"
+        );
         return data;
       }
       if (Array.isArray(data?.data)) {
-        console.log("[parentService.getChildren] Data.data is array, returning:", data.data.length, "items");
+        console.log(
+          "[parentService.getChildren] Data.data is array, returning:",
+          data.data.length,
+          "items"
+        );
         return data.data;
       }
-      console.log("[parentService.getChildren] No array found, returning empty array");
+      console.log(
+        "[parentService.getChildren] No array found, returning empty array"
+      );
       return [];
     } catch (error) {
       console.error("[parentService.getChildren] Error occurred:", error);

@@ -174,6 +174,7 @@ export interface CenterRegisterPayload {
   neighborhood: string;
   city: string;
   nursery_type: string[];
+  types: string[];
   logo: File;
 
   // Step 2 fields
@@ -243,7 +244,7 @@ export interface ChildInfoData {
 
 // ===== Content Types =====
 export interface Blog {
-  id: string;
+  id: string | number;
   title: string | { [key: string]: string };
   description: string | { [key: string]: string };
   image: string;
@@ -382,7 +383,7 @@ export interface PortfolioData {
   nursery_state?: NurseryState;
   images_activities?: string[];
   activity_section_title?: string;
-  activity_section_description?: string;
+  activity_section_subtitle?: string;
   teams?: TeamMember[];
   contact_info?: ContactInfo;
   ads_images?: string[];
@@ -425,7 +426,7 @@ export interface PortfolioFormData {
     team_members: string;
   };
   activity_section_title: string;
-  activity_section_description: string;
+  activity_section_subtitle: string;
   images_activities: (File | string)[];
   contact_info: {
     address: string;
