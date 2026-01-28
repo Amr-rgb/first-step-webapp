@@ -221,17 +221,30 @@
   },
   "auth": {
     "sign-up": {
-      "select-account-description": "Choose the type of account you want to create",
-      "select-account-type": "Create Your Account",
-      "have-account": "Already have an account?",
-      "sign-in": "Sign In",
-      "center": {
-        "title": "Center/Nursery Account",
-        "description": "For nurseries and childcare centers to manage their services"
-      },
+      "greeting": "Welcome 👋 Choose your role so we can prepare a suitable experience for you",
+      "have-account-footer": "Already have an account?",
+      "sign-in-footer": "Log in",
       "parent": {
-        "title": "Parent Account",
-        "description": "For parents looking for quality childcare services"
+        "title": "Parent",
+        "feature": "Child tracking and communication with the center"
+      },
+      "rehab-center": {
+        "title": "Rehabilitation Center",
+        "feature": "Manage services and specialists"
+      },
+      "nursery": {
+        "title": "Nursery or Entertainment Center",
+        "feature": "Childcare and communication with parents"
+      },
+      "mentor": {
+        "title": "Mentor",
+        "feature": "Childcare and communication with parents",
+        "soon": "Soon"
+      },
+      "teacher": {
+        "title": "Teacher",
+        "feature": "Childcare and communication with parents",
+        "soon": "Soon"
       }
     },
     "buttons": {
