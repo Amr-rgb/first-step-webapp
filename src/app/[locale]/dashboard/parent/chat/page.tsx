@@ -8,7 +8,7 @@ import { toastSuccess, toastError } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
-import { chatService } from "@/services/chatService";
+import { chatService, chatUtils } from "@/services/chatService";
 import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
@@ -70,20 +70,44 @@ const ParentChatPage = () => {
       );
       setMessages(chatMessages);
 
-      // Update last message in chats list
+      // Mark all messages in this chat as read (comprehensive marking)
+      await chatService.markChatAsRead(
+        selectedChatId,
+        token,
+        currentUser.id,
+        currentUser.type
+      );
+
+      // Update last message in chats list and reset unread count
       if (chatMessages.length > 0) {
-        const lastMessage = chatMessages[chatMessages.length - 1];
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
+        // Use utility function to get the actual last message by timestamp
+        const lastMessage = chatUtils.getLastMessage(chatMessages);
+        if (lastMessage) {
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
+              chat.id === selectedChatId
+                ? {
+                    ...chat,
+                    lastMessage: lastMessage.content,
+                    timestamp: lastMessage.timestamp,
+                    unreadCount: 0, // Reset unread count since we're viewing the chat
+                  }
+                : chat
+            );
+            // Sort chats by last message timestamp
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
+        }
+      } else {
+        // Even if no messages, reset unread count for this chat
+        setChats((prevChats) => {
+          const updatedChats = prevChats.map((chat) =>
             chat.id === selectedChatId
-              ? {
-                  ...chat,
-                  lastMessage: lastMessage.content,
-                  timestamp: lastMessage.timestamp,
-                }
+              ? { ...chat, unreadCount: 0 }
               : chat
-          )
-        );
+          );
+          return chatUtils.sortChatsByLastMessage(updatedChats);
+        });
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -110,10 +134,10 @@ const ParentChatPage = () => {
     // Set online
     updateStatus(true);
 
-    // Set up interval to keep alive (every 30 seconds)
+    // Set up interval to keep alive (every 2 minutes instead of 30 seconds to avoid rate limiting)
     keepAliveInterval = setInterval(() => {
       updateStatus(true);
-    }, 30000);
+    }, 120000); // 2 minutes
 
     // Set up beforeunload to set offline
     const handleBeforeUnload = () => {
@@ -147,6 +171,31 @@ const ParentChatPage = () => {
     }
   }, [selectedChatId, fetchMessages]);
 
+  // Mark messages as read when user becomes active (tab visibility change)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && selectedChatId && token && currentUser.id) {
+        console.log("📖 Tab became visible - marking recent messages as read");
+        try {
+          await chatService.markRecentMessagesAsRead(selectedChatId, token, currentUser.id, currentUser.type);
+          
+          // Update unread count in the UI
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
+              chat.id === selectedChatId ? { ...chat, unreadCount: 0 } : chat
+            );
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
+        } catch (error) {
+          console.error("Error marking messages as read on visibility change:", error);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [selectedChatId, token, currentUser.id, currentUser.type]);
+
   // Set up Pusher real-time messaging for parent
   useEffect(() => {
     if (!selectedChatId || !currentUser.id) return;
@@ -160,6 +209,18 @@ const ParentChatPage = () => {
 
     // Initialize Pusher
     pusherService.initialize();
+
+    // Set up periodic mark-as-read for the selected chat
+    const markAsReadInterval = setInterval(async () => {
+      if (selectedChatId && token && currentUser.id && !document.hidden) {
+        console.log("🔄 Periodic mark-as-read check for selected chat");
+        try {
+          await chatService.markRecentMessagesAsRead(selectedChatId, token, currentUser.id, currentUser.type);
+        } catch (error) {
+          console.warn("⚠️ Periodic mark-as-read failed:", error);
+        }
+      }
+    }, 30000); // Every 30 seconds for the active chat
 
     // Subscribe to current user's chat list updates
     pusherService.subscribeToChatList(currentUser.id, {
@@ -231,13 +292,23 @@ const ParentChatPage = () => {
           setMessages((prev) => {
             console.log("📨 Previous messages count:", prev.length);
             const newMessages = [...prev, newMessage];
-            console.log("📨 New messages count:", newMessages.length);
-            return newMessages;
+            // Sort messages by timestamp to ensure proper ordering
+            const sortedMessages = chatUtils.sortMessagesByTimestamp(newMessages);
+            console.log("📨 New messages count:", sortedMessages.length);
+            return sortedMessages;
           });
 
+          // If this message is for the currently selected chat, mark it as read immediately
+          if (message.sender_id.toString() === selectedChatId && token) {
+            console.log("📖 Marking real-time message as read since chat is open");
+            chatService.markAsRead(newMessage.id, token, message.sender_id.toString()).catch(error => {
+              console.warn("⚠️ Failed to mark real-time message as read:", error);
+            });
+          }
+
           // Update last message in chats list
-          setChats((prevChats) =>
-            prevChats.map((chat) =>
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
               chat.id === message.sender_id.toString()
                 ? {
                     ...chat,
@@ -247,8 +318,10 @@ const ParentChatPage = () => {
                       chat.id === selectedChatId ? 0 : chat.unreadCount + 1,
                   }
                 : chat
-            )
-          );
+            );
+            // Sort chats by last message timestamp
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
         } else {
           console.log("📨 Message from current user, skipping");
         }
@@ -279,14 +352,32 @@ const ParentChatPage = () => {
         "🔧 Cleaning up Pusher subscriptions for chat:",
         selectedChatId
       );
+      clearInterval(markAsReadInterval);
       pusherService.unsubscribeFromChat(currentUser.id);
       pusherService.unsubscribeFromChatList(currentUser.id);
       pusherService.unsubscribeFromUserStatus();
     };
   }, [selectedChatId, currentUser.id]);
 
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = async (chatId: string) => {
     setSelectedChatId(chatId);
+    
+    // Update UI immediately for instant feedback
+    setChats((prevChats) => {
+      const updatedChats = prevChats.map((chat) =>
+        chat.id === chatId ? { ...chat, unreadCount: 0 } : chat
+      );
+      return chatUtils.sortChatsByLastMessage(updatedChats);
+    });
+
+    // Mark recent messages as read for immediate server-side update
+    if (token && currentUser.id) {
+      // Use the new function that marks only recent messages quickly
+      chatService.markRecentMessagesAsRead(chatId, token, currentUser.id, currentUser.type).catch(error => {
+        console.warn("⚠️ Failed to mark recent messages as read:", error);
+        // Don't show error toast as this is not critical
+      });
+    }
   };
 
   const handleBackToChats = () => {
@@ -314,11 +405,15 @@ const ParentChatPage = () => {
       );
 
       console.log("📤 Message sent successfully:", newMessage);
-      setMessages((prev) => [...prev, newMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev, newMessage];
+        // Sort messages by timestamp to ensure proper ordering
+        return chatUtils.sortMessagesByTimestamp(newMessages);
+      });
 
       // Update last message in chats list
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) =>
           chat.id === selectedChatId
             ? {
                 ...chat,
@@ -327,8 +422,10 @@ const ParentChatPage = () => {
                 unreadCount: 0, // Reset unread count
               }
             : chat
-        )
-      );
+        );
+        // Sort chats by last message timestamp
+        return chatUtils.sortChatsByLastMessage(updatedChats);
+      });
     } catch (error) {
       console.error("❌ Error sending message:", error);
       toastError("Failed to send message");
