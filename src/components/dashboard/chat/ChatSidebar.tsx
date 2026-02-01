@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { dashboardIcons } from "@/components/general/icons";
 import { ChatListItem, User } from "./types";
 import NewChatModal from "./NewChatModal";
+import Avatar from "./Avatar";
 
 interface ChatSidebarProps {
   currentUser: User;
@@ -22,40 +23,46 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onNewChat,
 }) => {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const t = useTranslations("chat.sidebar");
   const tTypes = useTranslations("chat.types");
 
-  const getAvatarContent = (chat: ChatListItem) => {
-    if (chat.type === "admin") {
-      return (
-        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
-          A
-        </div>
-      );
+  // Filter chats based on search term
+  const filteredChats = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return chats;
     }
 
-    if (chat.type === "center") {
-      if (chat.avatar) {
-        return (
-          <img
-            src={chat.avatar}
-            alt="Center Logo"
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shadow-md"
-          />
-        );
-      }
-      return (
-        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary-blue-400 to-primary-blue-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
-          C
-        </div>
-      );
-    }
+    const searchLower = searchTerm.toLowerCase();
+    return chats.filter((chat) => {
+      // Search by name
+      const nameMatch = chat.name.toLowerCase().includes(searchLower);
+      
+      // Search by last message content
+      const messageMatch = chat.lastMessage?.toLowerCase().includes(searchLower);
+      
+      // Search by email if available
+      const emailMatch = chat.email?.toLowerCase().includes(searchLower);
+      
+      return nameMatch || messageMatch || emailMatch;
+    });
+  }, [chats, searchTerm]);
 
-    // Parent type - first two letters of name
-    return (
-      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary-blue-400 to-primary-blue-600 text-white flex items-center justify-center text-xs md:text-sm font-bold shadow-lg">
-        {chat.name.substring(0, 2).toUpperCase()}
-      </div>
+  // Helper function to highlight search terms
+  const highlightSearchTerm = (text: string, searchTerm: string) => {
+    if (!searchTerm.trim()) return text;
+    
+    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      regex.test(part) ? (
+        <span key={index} className="bg-yellow-200 text-yellow-800 px-0.5 rounded">
+          {part}
+        </span>
+      ) : (
+        part
+      )
     );
   };
 
@@ -108,28 +115,61 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <input
               type="text"
               placeholder="Search conversations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                title="Clear search"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
+          
+          {/* Search Results Counter */}
+          {searchTerm && (
+            <div className="mt-2 text-xs text-gray-500">
+              {filteredChats.length === 0 
+                ? "No results found"
+                : `${filteredChats.length} conversation${filteredChats.length === 1 ? '' : 's'} found`
+              }
+            </div>
+          )}
         </div>
 
         {/* Chat List */}
         <div className="flex-1 overflow-y-auto">
-          {chats.length === 0 ? (
+          {filteredChats.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <dashboardIcons.chat className="w-16 h-16 text-gray-300 mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                No conversations yet
+                {searchTerm ? "No conversations found" : "No conversations yet"}
               </h3>
               <p className="text-gray-500 text-sm">
-                {currentUser.type === "admin"
+                {searchTerm 
+                  ? `No conversations match "${searchTerm}"`
+                  : currentUser.type === "admin"
                   ? "All conversations between parents and centers will appear here. You can view any conversation."
                   : "Start a new conversation to begin messaging"}
               </p>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="mt-3 px-4 py-2 text-sm text-primary hover:text-primary-dark transition-colors"
+                >
+                  Clear search
+                </button>
+              )}
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {chats.map((chat) => (
+              {filteredChats.map((chat) => (
                 <div
                   key={chat.id}
                   onClick={() => onChatSelect(chat.id)}
@@ -141,18 +181,20 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 >
                   <div className="flex items-center space-x-3">
                     {/* Avatar with online indicator */}
-                    <div className="relative">
-                      {getAvatarContent(chat)}
-                      {chat.isOnline && (
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                      )}
-                    </div>
+                    <Avatar
+                      name={chat.name}
+                      type={chat.type}
+                      avatar={chat.avatar}
+                      logo={chat.type === "center" ? chat.avatar : undefined}
+                      size="md"
+                      isOnline={chat.isOnline}
+                    />
 
                     {/* Chat Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="text-xs md:text-sm font-semibold text-gray-900 truncate">
-                          {chat.name}
+                          {searchTerm ? highlightSearchTerm(chat.name, searchTerm) : chat.name}
                         </h3>
                         <span className="text-xs text-gray-500 hidden sm:block">
                           {formatTimestamp(chat.timestamp)}
@@ -161,7 +203,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
                       <div className="flex items-center justify-between">
                         <p className="text-xs md:text-sm text-gray-600 truncate">
-                          {chat.lastMessage || "No messages yet"}
+                          {chat.lastMessage 
+                            ? (searchTerm ? highlightSearchTerm(chat.lastMessage, searchTerm) : chat.lastMessage)
+                            : "No messages yet"}
                         </p>
                         {chat.unreadCount > 0 && (
                           <span className="ml-2 px-1.5 md:px-2 py-0.5 md:py-1 text-xs font-medium text-white bg-primary rounded-full min-w-[16px] md:min-w-[20px] text-center">

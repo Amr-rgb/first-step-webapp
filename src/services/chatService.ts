@@ -156,12 +156,15 @@ interface ApiAdminConversationWithMessages extends ApiAdminConversation {
 const mapApiMessageToMessage = (
   apiMessage: ApiMessage,
   currentUserId: string,
-  currentUserType: "center" | "parent" | "admin"
+  currentUserType: "center" | "parent" | "admin",
+  currentUserName?: string
 ): Message => ({
   id: apiMessage.id.toString(),
   content: apiMessage.message,
   senderId: apiMessage.sender_id.toString(),
-  senderName: "User", // This will be set from the contact info
+  senderName: apiMessage.sender_id.toString() === currentUserId 
+    ? (currentUserName || (currentUserType === "admin" ? "Admin" : currentUserType === "center" ? "Center" : "Parent"))
+    : "Unknown User", // This will be updated with actual names when available
   senderType:
     apiMessage.sender_id.toString() === currentUserId
       ? currentUserType
@@ -250,6 +253,33 @@ const getLastMessage = (messages: Message[]): Message | null => {
   );
   
   return sortedMessages[0];
+};
+
+// Helper function to update sender names with proper names
+const updateSenderNames = (messages: Message[], currentUserId: string, currentUserType: "center" | "parent" | "admin", contactName?: string, currentUserName?: string) => {
+  messages.forEach(message => {
+    if (message.senderId === currentUserId) {
+      // Current user's message - use actual user name
+      if (currentUserType === "admin") {
+        message.senderName = "Admin";
+      } else if (currentUserName) {
+        message.senderName = currentUserName;
+      } else {
+        message.senderName = currentUserType === "center" ? "Center" : "Parent";
+      }
+    } else {
+      // Other user's message - use contact name if available
+      if (message.senderType === "admin") {
+        message.senderName = "Admin";
+      } else if (contactName) {
+        message.senderName = contactName;
+      } else if (message.senderType === "center") {
+        message.senderName = "Center";
+      } else {
+        message.senderName = "Parent";
+      }
+    }
+  });
 };
 
 export const chatService = {
@@ -373,7 +403,9 @@ export const chatService = {
     authToken: string,
     currentUserId: string,
     currentUserType: "center" | "parent" | "admin",
-    senderId?: string
+    senderId?: string,
+    contactName?: string,
+    currentUserName?: string
   ): Promise<Message[]> {
     try {
       // For admin users, we need to call the messages endpoint differently
@@ -420,7 +452,7 @@ export const chatService = {
           console.warn("⚠️ [chatService] Rate limited - will retry with delay");
           // Wait a bit longer and retry once
           await new Promise(resolve => setTimeout(resolve, 2000));
-          return this.getMessages(contactId, authToken, currentUserId, currentUserType, senderId);
+          return this.getMessages(contactId, authToken, currentUserId, currentUserType, senderId, undefined, undefined);
         }
         
         throw new Error("Failed to fetch messages");
@@ -430,11 +462,14 @@ export const chatService = {
       console.log("📄 [chatService] Messages count:", data.length);
 
       const mappedMessages = data.map((msg) =>
-        mapApiMessageToMessage(msg, currentUserId, currentUserType)
+        mapApiMessageToMessage(msg, currentUserId, currentUserType, currentUserName)
       );
 
       // Sort messages by timestamp to ensure proper ordering
       mappedMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+      // Update sender names with proper names
+      updateSenderNames(mappedMessages, currentUserId, currentUserType, contactName, currentUserName);
 
       console.log(
         "✅ [chatService] Success - Messages:",
@@ -454,7 +489,8 @@ export const chatService = {
     currentUserId: string,
     currentUserType: "center" | "parent" | "admin",
     image?: File,
-    videoUrl?: string
+    videoUrl?: string,
+    currentUserName?: string
   ): Promise<Message> {
     // For center and parent users, use the new messages endpoint
     if (currentUserType === "center" || currentUserType === "parent") {
@@ -499,7 +535,7 @@ export const chatService = {
               id: Date.now().toString(),
               content: message,
               senderId: currentUserId,
-              senderName: currentUserType === "center" ? "Center" : "Parent",
+              senderName: currentUserName || (currentUserType === "center" ? "Center" : "Parent"),
               senderType: currentUserType,
               timestamp: new Date(),
               chatId: receiverId,
@@ -519,7 +555,8 @@ export const chatService = {
         return mapApiMessageToMessage(
           data.message,
           currentUserId,
-          currentUserType
+          currentUserType,
+          currentUserName
         );
       } catch (error) {
         console.error("❌ [chatService] Error sending message:", error);
@@ -734,7 +771,7 @@ export const chatService = {
       console.log("📖 [chatService] Marking entire chat as read:", chatId);
       
       // Get all messages in the chat
-      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType);
+      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType, undefined, undefined, undefined);
       
       // Filter messages that are not from the current user (only mark received messages as read)
       // Focus on recent unread messages to avoid overwhelming the API
@@ -767,7 +804,7 @@ export const chatService = {
       console.log("📖 [chatService] Marking recent messages as read for immediate feedback:", chatId);
       
       // Get all messages in the chat
-      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType);
+      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType, undefined, undefined, undefined);
       
       // Only mark the last 5 messages that are not from current user
       const messagesToMark = messages

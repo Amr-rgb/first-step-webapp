@@ -62,11 +62,19 @@ const ParentChatPage = () => {
 
     try {
       setIsLoading(true);
+      
+      // Find the selected chat to get contact name
+      const selectedChatData = chats.find(chat => chat.id === selectedChatId);
+      const contactName = selectedChatData?.name;
+      
       const chatMessages = await chatService.getMessages(
         selectedChatId,
         token,
         currentUser.id,
-        currentUser.type
+        currentUser.type,
+        undefined, // senderId (not needed for parent/center)
+        contactName, // contact name for proper sender names
+        currentUser.name // current user name
       );
       setMessages(chatMessages);
 
@@ -115,7 +123,7 @@ const ParentChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedChatId, token, currentUser.id, currentUser.type]);
+  }, [selectedChatId, token, currentUser.id, currentUser.type, currentUser.name, chats]);
 
   // Update online status when component mounts/unmounts
   useEffect(() => {
@@ -275,12 +283,15 @@ const ParentChatPage = () => {
 
         // Only add message if it's not from current user (to avoid duplicates)
         if (message.sender_id.toString() !== currentUser.id) {
+          // Find the contact name for this sender
+          const senderContact = chats.find(chat => chat.id === message.sender_id.toString());
+          const senderName = senderContact ? senderContact.name : "Center";
+          
           const newMessage: Message = {
             id: Date.now().toString(), // Generate temporary ID since message.id doesn't exist
             content: message.message,
             senderId: message.sender_id.toString(),
-
-            senderName: "Center", // Default name since sender_name doesn't exist
+            senderName: senderName,
             senderType: "center",
             timestamp: new Date(message.created_at),
             chatId: selectedChatId,
@@ -401,7 +412,10 @@ const ParentChatPage = () => {
         content,
         token,
         currentUser.id,
-        currentUser.type
+        currentUser.type,
+        undefined, // image
+        undefined, // videoUrl
+        currentUser.name // current user name
       );
 
       console.log("📤 Message sent successfully:", newMessage);
