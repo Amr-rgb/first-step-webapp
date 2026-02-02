@@ -1,3 +1,4 @@
+import NurseryHeader from "./_components/NurseryHeader";
 import Plans from "@/components/general/nurseries/sections/Plans";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
@@ -27,7 +28,7 @@ export default async function NurseryPage({
     portfolioResponse = await nurseryService.getNurseryPortfolio(name, locale);
   }
 
-  const portfolio = portfolioResponse?.data;
+  const portfolio = portfolioResponse?.data as any; // Cast to any to handle user.logo as requested
 
   if (!portfolio) {
     return (
@@ -39,8 +40,22 @@ export default async function NurseryPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plans Section */}
-      <Plans centerId={id!} nurseryName={readableName} locale={locale} />
+      {/* Header Section */}
+      <NurseryHeader
+        name={portfolio.hero_section?.title_of_hero || readableName}
+        tagline={portfolio.hero_section?.subtitle_of_hero || ""}
+        logo={portfolio.user?.logo || ""}
+        rating={4.5}
+      />
+
+      <div className="container mx-auto px-4 py-8 space-y-12">
+        {/* Plans Section */}
+        <Plans
+          centerId={id || String(portfolio.id)}
+          nurseryName={readableName}
+          locale={locale}
+        />
+      </div>
     </div>
   );
 }
