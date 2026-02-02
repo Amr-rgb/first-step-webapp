@@ -32,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Zod schema for plan validation
 // Helper to normalize age for compatibility
 const normalizeAge = (
-  age: number | { type: string; age: number } | null | undefined
+  age: number | { type: string; age: number } | null | undefined,
 ) => {
   if (age === null || age === undefined) {
     return { type: "year", age: 0 };
@@ -83,7 +83,7 @@ const createPlanSchema = (t: any, isEditing: boolean) =>
       {
         message: t("endAgeMustBeGreater"),
         path: ["end_age"],
-      }
+      },
     );
 
 type FormDataState = Omit<PricingFormData, "start_age" | "end_age"> & {
@@ -128,7 +128,7 @@ export const PlansSection = () => {
     queryFn: async () => {
       if (!selectedBranchId) return [];
       const response = await centerService.getBranchPricing(
-        selectedBranchId.toString()
+        selectedBranchId.toString(),
       );
       return response.data || [];
     },
@@ -255,7 +255,7 @@ export const PlansSection = () => {
                   start_age: normalizeAge(p.start_age),
                   end_age: normalizeAge(p.end_age),
                   price_amount: Number(p.price_amount),
-                }
+                },
           )
         : [formData];
 

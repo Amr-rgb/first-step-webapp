@@ -183,11 +183,10 @@ export interface CenterRegisterPayload {
 }
 
 // Extended interface for nursery API response that includes user_id
-export interface NurseryResponse
-  extends Omit<
-    CenterRegisterPayload,
-    "logo" | "license_path" | "commercial_record_path" | "city"
-  > {
+export interface NurseryResponse extends Omit<
+  CenterRegisterPayload,
+  "logo" | "license_path" | "commercial_record_path" | "city"
+> {
   id: number;
   user_id: number;
   center_id?: number;
@@ -396,53 +395,32 @@ export interface PortfolioResponse {
 
 // Profile Editor Types
 export interface PortfolioFormData {
-  title_of_hero: string;
-  subtitle_of_hero: string;
-  description: string;
-  background_image: File | string;
-  branches: {
-    branch_name: string;
+  // Hero Info
+  title_of_hero?: string;
+  subtitle_of_hero?: string;
+  description?: string;
+
+  // Activities
+  images_activities?: (File | string)[];
+
+  // Facilities / Options
+  admin_option_ids?: number[];
+  delete_center_options?: number[];
+
+  // Licenses
+  licenses?: {
+    id?: number;
+    number: string;
+    document?: File | string;
   }[];
-  Philosophy_Methodology_Goal: {
-    philosophy: {
-      content: string;
-    };
-    methodology: {
-      content: string;
-    };
-    goals: {
-      content: string;
-    };
-  };
-  service_section_title: string;
-  services: {
-    title: string;
-    description: string;
-    image_service: File | string;
-  }[];
-  nursery_state: {
-    area: string;
-    class_rooms: string;
-    team_members: string;
-  };
-  activity_section_title: string;
-  activity_section_subtitle: string;
-  images_activities: (File | string)[];
-  contact_info: {
-    address: string;
-    working_hours: string;
-    phone_number: string;
-    email_address: string;
-    facebook: string;
-    instagram: string;
-    whatsapp: string;
-  };
-  ads_images: (File | string)[];
-  teams: {
-    name: string;
-    mission: string;
-    image: File | string;
-  }[];
+  delete_license_ids?: number[];
+
+  // Social links
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+  website?: string;
 }
 
 export interface PricingFormData {

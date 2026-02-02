@@ -1,516 +1,264 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { centerService } from "@/services/dashboardApi";
+import { PortfolioFormData } from "@/types";
+import { toastSuccess, toastError } from "@/lib/toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
-import { HeroSection } from "@/components/profile-editor/HeroSection";
-import { BranchesSection } from "@/components/profile-editor/BranchesSection";
-import { PhilosophySection } from "@/components/profile-editor/PhilosophySection";
-import { ServicesSection } from "@/components/profile-editor/ServicesSection";
-import { NurseryStateSection } from "@/components/profile-editor/NurseryStateSection";
-import { ActivitiesSection } from "@/components/profile-editor/ActivitiesSection";
-import { ContactSection } from "@/components/profile-editor/ContactSection";
-import { AdsSection } from "@/components/profile-editor/AdsSection";
-import { TeamsSection } from "@/components/profile-editor/TeamsSection";
-import { PlansSection } from "@/components/profile-editor/PlansSection";
-import { ProfilePreview } from "@/components/profile-editor/ProfilePreview";
-import { PortfolioData, PortfolioFormData } from "@/types";
-import { usePortfolio } from "@/hooks/usePortfolio";
-import { usePermissions } from "@/hooks/usePermissions";
-import { useAuthUser } from "@/store/authStore";
-import { Edit, Eye } from "lucide-react";
-import { toastError } from "@/lib/toast";
-import { usePageMetadata } from "@/hooks/usePageMetadata";
-import { Skeleton } from "@/components/ui/skeleton";
 
-const ProfileEditor = () => {
+// Section Components
+import { BasicInfoSection } from "./_components/BasicInfoSection";
+import { PlansSection } from "./_components/PlansSection";
+import { ActivitiesSection } from "./_components/ActivitiesSection";
+import { LicensesSection } from "./_components/LicensesSection";
+import { SocialMediaSection } from "./_components/SocialMediaSection";
+
+export default function CenterProfilePage() {
   usePageMetadata();
-
   const t = useTranslations("dashboard.profileEditor");
-  const params = useParams();
-  const locale = params.locale as string;
   const router = useRouter();
-  const { can } = usePermissions();
-  const user = useAuthUser();
-  const canViewCenterData = can("view", "center-data");
-  const [activeSection, setActiveSection] = useState<string>("hero");
-  const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
+  const [activeSection, setActiveSection] = useState<string>("basicInfo");
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
 
-  // Use custom portfolio hook
-  const {
-    data: portfolioData,
-    isLoading: isLoadingData,
-    error: loadError,
-    savePortfolio,
-    isSaving,
-  } = usePortfolio();
+  const [formData, setFormData] = useState<PortfolioFormData>({
+    title_of_hero: "",
+    subtitle_of_hero: "",
+    description: "",
+    images_activities: [],
+    admin_option_ids: [],
+    delete_center_options: [],
+    licenses: [],
+    delete_license_ids: [],
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    linkedin: "",
+    website: "",
+  });
 
-  const [originalData, setOriginalData] = useState<
-    PortfolioFormData | undefined
-  >(portfolioData);
-  const [currentData, setCurrentData] = useState<PortfolioFormData | undefined>(
-    portfolioData,
-  );
-  const [hasChanges, setHasChanges] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
-  // Counter for generating unique local IDs
-  const localIdCounter = useRef(0);
+  // Fetch initial data
+  const { data: initialData, isLoading } = useQuery({
+    queryKey: ["centerPortfolio"],
+    queryFn: () => centerService.getPortfolio(),
+  });
 
-  // Generate a unique local ID for new items
-  const generateLocalId = useCallback(() => {
-    localIdCounter.current += 1;
-    return `local_${Date.now()}_${localIdCounter.current}`;
-  }, []);
-
-  // Add _localId to items that don't have one and create a map for tracking
-  const ensureLocalIds = useCallback(
-    (data: PortfolioFormData | undefined): PortfolioFormData | undefined => {
-      if (!data) return data;
-
-      return {
-        ...data,
-        services: data.services.map((service: any) => ({
-          ...service,
-          _localId:
-            service._localId || service.id?.toString() || generateLocalId(),
-        })),
-        teams: data.teams.map((team: any) => ({
-          ...team,
-          _localId: team._localId || team.id?.toString() || generateLocalId(),
-        })),
-        images_activities: data.images_activities.map((img: any) =>
-          typeof img === "string"
-            ? { url: img, _localId: img }
-            : {
-                ...img,
-                _localId: img._localId || img.url || generateLocalId(),
-              },
-        ),
-      };
-    },
-    [generateLocalId],
-  );
-
-  // Check permissions and redirect if unauthorized
   useEffect(() => {
-    if (user && !canViewCenterData) {
-      toastError(t("permissionError"));
-      router.push("/dashboard/center");
-    }
-  }, [canViewCenterData, user, router, t]);
-
-  // Update local state when query data changes
-  useEffect(() => {
-    if (!isLoadingData && portfolioData) {
-      const dataWithIds = ensureLocalIds(portfolioData);
-      setOriginalData(dataWithIds);
-      setCurrentData(dataWithIds);
-      setHasChanges(false);
-    }
-  }, [portfolioData, isLoadingData, ensureLocalIds]);
-
-  // Check if data has changed
-  const checkForChanges = (newData: PortfolioFormData) => {
-    if (!originalData) return;
-    const hasChanged = JSON.stringify(newData) !== JSON.stringify(originalData);
-    setHasChanges(hasChanged);
-  };
-
-  // Handle data changes
-  const handleDataChange = (newData: PortfolioFormData) => {
-    setCurrentData(newData);
-    checkForChanges(newData);
-  };
-
-  // Map each root key to its logical section
-  const SECTION_KEYS: Record<string, string[]> = {
-    hero: [
-      "title_of_hero",
-      "subtitle_of_hero",
-      "description",
-      "background_image",
-    ],
-    branches: ["branches"],
-    philosophy: ["Philosophy_Methodology_Goal"],
-    services: ["services", "service_section_title"],
-    nurseryState: ["nursery_state"],
-    activities: [
-      "images_activities",
-      "activity_section_title",
-      "activity_section_subtitle",
-    ],
-    contact: ["contact_info"],
-    teams: ["teams"],
-    ads: ["ads_images"],
-  };
-
-  // Deep diff logic to detect changes and handle removals as null
-  const getDeepData = (
-    original: any,
-    current: any,
-    includeAll: boolean = false,
-  ): any => {
-    // If references are same and we don't need all data, no change
-    if (!includeAll && original === current) return undefined;
-
-    // Handle Files
-    if (current instanceof File || original instanceof File) {
-      if (current === original) return includeAll ? current : undefined;
-      return current === undefined ? null : current;
-    }
-
-    // Handle primitives and nulls
-    if (
-      typeof current !== "object" ||
-      current === null ||
-      typeof original !== "object" ||
-      original === null
-    ) {
-      if (current === original) return includeAll ? current : undefined;
-      return current === undefined ? null : current;
-    }
-
-    // Handle arrays
-    if (Array.isArray(current) || Array.isArray(original)) {
-      const resultArr: any[] = [];
-      let hasArrChanges = false;
-      const maxLen = Math.max(original?.length || 0, current?.length || 0);
-
-      for (let i = 0; i < maxLen; i++) {
-        const itemResult = getDeepData(original?.[i], current?.[i], includeAll);
-        if (itemResult !== undefined || includeAll) {
-          const val =
-            itemResult === undefined && includeAll ? current?.[i] : itemResult;
-          resultArr[i] = val === undefined ? null : val;
-          if (itemResult !== undefined) hasArrChanges = true;
-        }
-      }
-      return hasArrChanges || includeAll ? resultArr : undefined;
-    }
-
-    // Handle objects
-    const resultObj: any = {};
-    let hasObjChanges = false;
-    const allKeys = new Set([
-      ...Object.keys(current || {}),
-      ...Object.keys(original || {}),
-    ]);
-
-    allKeys.forEach((key) => {
-      const valResult = getDeepData(
-        original ? original[key] : undefined,
-        current ? current[key] : undefined,
-        includeAll,
-      );
-      if (valResult !== undefined || includeAll) {
-        resultObj[key] =
-          valResult === undefined && includeAll ? current[key] : valResult;
-        if (valResult !== undefined) hasObjChanges = true;
-      }
-    });
-
-    return hasObjChanges || includeAll ? resultObj : undefined;
-  };
-
-  const getDirtyData = () => {
-    if (!currentData || !originalData) return {};
-    return getDeepData(originalData, currentData, false) || {};
-  };
-
-  // Helper to get a full section with nulls for removals
-  const getFullSectionWithNulls = (sectionKeys: string[]) => {
-    if (!currentData || !originalData) return {};
-
-    const sectionPayload: any = {};
-
-    sectionKeys.forEach((key) => {
-      const originalVal = (originalData as any)[key];
-      const currentVal = (currentData as any)[key];
-
-      if (originalVal === undefined) {
-        sectionPayload[key] = currentVal;
-        return;
-      }
-
-      sectionPayload[key] = getDeepData(originalVal, currentVal, true);
-    });
-
-    return sectionPayload;
-  };
-
-  const handleSavePortfolio = () => {
-    if (!hasChanges || !currentData) return;
-
-    // Validate: prevent saving service without image
-    const servicesWithoutImage = currentData.services?.some(
-      (service) => !service.image_service,
-    );
-    if (servicesWithoutImage) {
-      toastError(t("services.imageRequired"));
-      return;
-    }
-
-    // Get dirty root keys
-    const dirtyDataRoot = getDirtyData();
-    const changedRootKeys = Object.keys(dirtyDataRoot);
-
-    // Find sections that have changes
-    const dirtySections = Object.entries(SECTION_KEYS)
-      .filter(([_, keys]) => keys.some((key) => changedRootKeys.includes(key)))
-      .map(([sectionId]) => sectionId);
-
-    // Build payload: Send the WHOLE section for any changed field
-    let payload: any = {};
-
-    dirtySections.forEach((sectionId) => {
-      const sectionKeys = SECTION_KEYS[sectionId];
-      const sectionWithNulls = getFullSectionWithNulls(sectionKeys);
-      payload = { ...payload, ...sectionWithNulls };
-    });
-
-    // Also include any other dirty root keys that didn't map to a section
-    changedRootKeys.forEach((key) => {
-      if (!Object.values(SECTION_KEYS).flat().includes(key)) {
-        const val = getDeepData(
-          (originalData as any)[key],
-          (currentData as any)[key],
-          true,
-        );
-        (payload as any)[key] = val;
-      }
-    });
-
-    // Handle Deletions via separate arrays: delete_images_activities, delete_services, delete_teams
-    // Use _localId for matching instead of index-based comparison
-    const listConfig = [
-      { key: "services", deleteKey: "delete_services", idField: "_localId" },
-      { key: "teams", deleteKey: "delete_teams", idField: "_localId" },
-      {
-        key: "images_activities",
-        deleteKey: "delete_images_activities",
-        idField: "_localId",
-      },
-    ];
-
-    listConfig.forEach(({ key, deleteKey, idField }) => {
-      const originalList = (originalData as any)[key] as any[];
-      const currentList = (currentData as any)[key] as any[];
-
-      if (!originalList) return;
-
-      const deletedIndices: number[] = [];
-
-      // Create a Set of current item IDs for O(1) lookup
-      const currentIds = new Set(
-        currentList.map((item) =>
-          typeof item === "object" ? item[idField] : item,
-        ),
-      );
-
-      originalList.forEach((origItem, index) => {
-        // Check if the original item's ID exists in current list
-        const origId =
-          typeof origItem === "object" ? origItem[idField] : origItem;
-        if (!currentIds.has(origId)) {
-          deletedIndices.push(index);
-        }
+    if (initialData?.data) {
+      const p = initialData.data;
+      setFormData({
+        title_of_hero: p.title_of_hero || "",
+        subtitle_of_hero: p.subtitle_of_hero || "",
+        description: p.description || "",
+        facebook: p.facebook || "",
+        instagram: p.instagram || "",
+        twitter: p.twitter || "",
+        linkedin: p.linkedin || "",
+        website: p.website || "",
+        images_activities: p.images_activities || [],
+        admin_option_ids: p.options?.map((o: any) => o.id) || [],
+        licenses: p.licenses || [],
       });
+      setLogoUrl(p.logo || "");
+    }
+  }, [initialData]);
 
-      if (deletedIndices.length > 0) {
-        payload[deleteKey] = deletedIndices;
+  const updateFormData = (newData: Partial<PortfolioFormData>) => {
+    setFormData((prev) => ({ ...prev, ...newData }));
+
+    // Clear errors for updated fields
+    if (Object.keys(validationErrors).length > 0) {
+      const updatedFields = Object.keys(newData);
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        updatedFields.forEach((field) => {
+          delete newErrors[field];
+        });
+        return newErrors;
+      });
+    }
+  };
+
+  const saveMutation = useMutation({
+    mutationFn: (data: PortfolioFormData) => centerService.savePortfolio(data),
+    onSuccess: () => {
+      setValidationErrors({});
+      toastSuccess(t("title"), t("saveSuccess"));
+      router.refresh();
+    },
+    onError: (error: any) => {
+      if (error.errors && typeof error.errors === "object") {
+        setValidationErrors(error.errors);
+        toastError(t("title"), error.message || t("saveError"));
+      } else {
+        toastError(t("title"), error.message || t("saveError"));
       }
+    },
+  });
 
-      // Clean the payload array: remove nulls and strip _localId before sending
-      if (payload[key] && Array.isArray(payload[key])) {
-        payload[key] = payload[key]
-          .filter((item: any) => item !== null && item !== undefined)
-          .map((item: any) => {
-            if (typeof item === "object" && item !== null) {
-              const { _localId, ...rest } = item;
-              // For images_activities, extract just the url or File
-              if (key === "images_activities") {
-                return rest.url !== undefined ? rest.url : rest;
-              }
-              return rest;
-            }
-            return item;
-          });
+  const logoMutation = useMutation({
+    mutationFn: (file: File) => centerService.updateLogo(file),
+    onSuccess: (response) => {
+      toastSuccess(t("title"), t("saveSuccess"));
+      if (response.data?.logo) {
+        setLogoUrl(response.data.logo);
       }
-    });
+    },
+    onError: (error: any) => {
+      toastError(t("title"), error.message || t("saveError"));
+    },
+  });
 
-    console.log("💾 Saving portfolio with deletion arrays:", payload);
-    savePortfolio(payload, {
-      onSuccess: () => {
-        setOriginalData(currentData);
-        setHasChanges(false);
-      },
-    });
+  const handleSave = () => {
+    saveMutation.mutate(formData);
+  };
+
+  const handleCancel = () => {
+    router.back();
   };
 
   const sections = [
-    { id: "hero", title: t("sections.hero"), component: HeroSection },
     {
-      id: "branches",
-      title: t("sections.branches"),
-      component: BranchesSection,
-    },
-    { id: "plans", title: t("sections.plans"), component: PlansSection },
-
-    {
-      id: "philosophy",
-      title: t("sections.philosophy"),
-      component: PhilosophySection,
+      id: "basicInfo",
+      title: t("sections.basicInfo"),
     },
     {
-      id: "services",
-      title: t("sections.services"),
-      component: ServicesSection,
-    },
-    {
-      id: "nurseryState",
-      title: t("sections.nurseryState"),
-      component: NurseryStateSection,
+      id: "plans",
+      title: t("sections.plans"),
     },
     {
       id: "activities",
       title: t("sections.activities"),
-      component: ActivitiesSection,
     },
-    { id: "contact", title: t("sections.contact"), component: ContactSection },
-    // { id: "ads", title: t("sections.ads"), component: AdsSection },
-    { id: "teams", title: t("sections.teams"), component: TeamsSection },
+    {
+      id: "licenses",
+      title: t("sections.licenses"),
+    },
+    {
+      id: "socialMedia",
+      title: t("sections.socialMedia"),
+    },
   ];
 
-  if (!canViewCenterData) {
-    return null;
-  }
+  const renderSection = (id: string) => {
+    switch (id) {
+      case "basicInfo":
+        return (
+          <BasicInfoSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+            logoUrl={logoUrl}
+            onLogoChange={(file: File) => logoMutation.mutate(file)}
+          />
+        );
+      case "plans":
+        return <PlansSection />;
+      case "activities":
+        return (
+          <ActivitiesSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
+      case "licenses":
+        return (
+          <LicensesSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
+      case "socialMedia":
+        return (
+          <SocialMediaSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-  if (isLoadingData || loadError) {
+  if (isLoading) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader className="pb-4">
-            <Skeleton className="h-8 w-48" />
-          </CardHeader>
-          <CardContent className="pt-0 space-y-6">
-            <div className="space-y-4">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div key={index} className="border rounded-lg p-4 space-y-4">
-                  <Skeleton className="h-6 w-32" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <Card className="max-w-4xl mx-auto shadow-none border-0">
-        <CardHeader className="p-0 pb-6">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl sm:text-2xl lg:text-3xl m-b:8rem">
-              {t("title")}
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={viewMode === "edit" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("edit")}
-                className="flex items-center gap-2"
-              >
-                <Edit className="h-4 w-4" />
-                {t("modes.edit")}
-              </Button>
-              <Button
-                variant={viewMode === "preview" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("preview")}
-                className="flex items-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                {t("modes.preview")}
-              </Button>
-            </div>
-          </div>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Card className="border-none shadow-none bg-transparent">
+        <CardHeader className="px-0 pb-6 flex flex-row items-center justify-between">
+          <CardTitle className="text-3xl font-bold text-primary">
+            {t("title")}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 space-y-6">
-          {viewMode === "edit" ? (
-            <>
-              <Accordion
-                type="single"
-                collapsible
-                value={activeSection}
-                onValueChange={setActiveSection}
-                className="space-y-2"
+        <CardContent className="px-0 space-y-6">
+          <Accordion
+            type="single"
+            collapsible
+            value={activeSection}
+            onValueChange={setActiveSection}
+            className="space-y-4"
+          >
+            {sections.map((section) => (
+              <AccordionItem
+                key={section.id}
+                value={section.id}
+                className="border rounded-2xl bg-white overflow-hidden shadow-sm"
               >
-                {sections.map((section) => {
-                  const Component = section.component;
-                  return (
-                    <AccordionItem
-                      key={section.id}
-                      value={section.id}
-                      className="border border-border rounded-lg overflow-hidden"
-                    >
-                      <AccordionTrigger className="px-4 sm:px-6 py-4 text-base sm:text-lg font-semibold hover:bg-muted/50 data-[state=open]:border-b border-border">
-                        {section.title}
-                      </AccordionTrigger>
-                      <AccordionContent className="px-4 sm:px-6 py-4 sm:py-6 bg-muted/20">
-                        <Component
-                          data={currentData!}
-                          onChange={handleDataChange}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
-              </Accordion>
+                <AccordionTrigger className="px-4 lg:px-6 py-3 lg:py-4 hover:no-underline hover:bg-gray-50 transition-colors data-[state=open]:border-b">
+                  <span className="text-lg sm:text-xl font-bold text-primary">
+                    {section.title}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="p-4 lg:p-8">
+                  {renderSection(section.id)}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
 
-              {/* Save Button - Sticky on mobile for better UX */}
-              <div className="sticky bottom-4 sm:static pt-6 border-t bg-background sm:bg-transparent">
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleSavePortfolio}
-                    disabled={isSaving || !hasChanges}
-                    size="lg"
-                    className="w-full sm:w-auto shadow-lg sm:shadow-md"
-                  >
-                    {isSaving ? t("saving") : t("savePortfolio")}
-                  </Button>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="border rounded-lg overflow-hidden">
-              {currentData && (
-                <ProfilePreview
-                  data={currentData as PortfolioData}
-                  locale={locale}
-                  nurseryName="Preview Nursery"
-                />
-              )}
-            </div>
-          )}
+          <div className="flex flex-col sm:flex-row gap-4 pt-6">
+            <Button
+              size="lg"
+              className="w-full flex-1"
+              onClick={handleSave}
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? t("saving") : t("savePortfolio")}
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full flex-1"
+              onClick={handleCancel}
+            >
+              {t("cancel")}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default ProfileEditor;
+}
