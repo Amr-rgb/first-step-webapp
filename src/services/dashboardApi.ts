@@ -1089,11 +1089,16 @@ export const centerService = {
         formData.append("description", payload.description);
 
       // Social links
-      if (payload.facebook) formData.append("facebook", payload.facebook);
-      if (payload.instagram) formData.append("instagram", payload.instagram);
-      if (payload.twitter) formData.append("twitter", payload.twitter);
-      if (payload.linkedin) formData.append("linkedin", payload.linkedin);
-      if (payload.website) formData.append("website", payload.website);
+      if (payload.contact_info?.facebook)
+        formData.append("facebook", payload.contact_info.facebook);
+      if (payload.contact_info?.instagram)
+        formData.append("instagram", payload.contact_info.instagram);
+      if (payload.contact_info?.twitter)
+        formData.append("twitter", payload.contact_info.twitter);
+      if (payload.contact_info?.linkedin)
+        formData.append("linkedin", payload.contact_info.linkedin);
+      if (payload.contact_info?.website)
+        formData.append("website", payload.contact_info.website);
 
       // Activities
       payload.images_activities?.forEach((img, index) => {

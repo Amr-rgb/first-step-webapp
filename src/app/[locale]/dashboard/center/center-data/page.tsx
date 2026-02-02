@@ -42,11 +42,13 @@ export default function CenterProfilePage() {
     delete_center_options: [],
     licenses: [],
     delete_license_ids: [],
-    facebook: "",
-    instagram: "",
-    twitter: "",
-    linkedin: "",
-    website: "",
+    contact_info: {
+      facebook: "",
+      instagram: "",
+      twitter: "",
+      linkedin: "",
+      website: "",
+    },
   });
 
   const [logoUrl, setLogoUrl] = useState<string>("");
@@ -64,11 +66,13 @@ export default function CenterProfilePage() {
         title_of_hero: p.title_of_hero || "",
         subtitle_of_hero: p.subtitle_of_hero || "",
         description: p.description || "",
-        facebook: p.facebook || "",
-        instagram: p.instagram || "",
-        twitter: p.twitter || "",
-        linkedin: p.linkedin || "",
-        website: p.website || "",
+        contact_info: {
+          facebook: p.facebook || "",
+          instagram: p.instagram || "",
+          twitter: p.twitter || "",
+          linkedin: p.linkedin || "",
+          website: p.website || "",
+        },
         images_activities: p.images_activities || [],
         admin_option_ids: p.options?.map((o: any) => o.id) || [],
         licenses: p.licenses || [],

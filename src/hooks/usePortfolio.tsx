@@ -11,34 +11,14 @@ const transformApiData = (apiData: any): PortfolioFormData => {
     title_of_hero: "",
     subtitle_of_hero: "",
     description: "",
-    background_image: "",
-    branches: [],
-    Philosophy_Methodology_Goal: {
-      philosophy: { content: "" },
-      methodology: { content: "" },
-      goals: { content: "" },
-    },
-    service_section_title: "",
-    services: [],
-    nursery_state: {
-      area: "",
-      class_rooms: "",
-      team_members: "",
-    },
-    activity_section_title: "",
-    activity_section_subtitle: "",
     images_activities: [],
     contact_info: {
-      address: "",
-      working_hours: "",
-      phone_number: "",
-      email_address: "",
       facebook: "",
       instagram: "",
-      whatsapp: "",
+      linkedin: "",
+      twitter: "",
+      website: "",
     },
-    ads_images: [],
-    teams: [],
   };
 
   if (!apiData) return initialData;
@@ -47,41 +27,14 @@ const transformApiData = (apiData: any): PortfolioFormData => {
     title_of_hero: apiData.hero_section?.title_of_hero || "",
     subtitle_of_hero: apiData.hero_section?.subtitle_of_hero || "",
     description: apiData.hero_section?.description || "",
-    background_image: apiData.hero_section?.background_image || "",
-    branches: apiData.branches || [],
-    Philosophy_Methodology_Goal: {
-      philosophy: {
-        content: apiData.Philosophy_Methodology_Goal?.philosophy?.content || "",
-      },
-      methodology: {
-        content:
-          apiData.Philosophy_Methodology_Goal?.methodology?.content || "",
-      },
-      goals: {
-        content: apiData.Philosophy_Methodology_Goal?.goals?.content || "",
-      },
-    },
-    service_section_title: apiData.service_section_title || "",
-    services: apiData.services || [],
-    nursery_state: {
-      area: apiData.nursery_state?.area || "",
-      class_rooms: apiData.nursery_state?.class_rooms?.toString() || "",
-      team_members: apiData.nursery_state?.team_members?.toString() || "",
-    },
-    activity_section_title: apiData.activity_section_title || "",
-    activity_section_subtitle: apiData.activity_section_subtitle || "",
     images_activities: apiData.images_activities || [],
     contact_info: {
-      address: apiData.contact_info?.address || "",
-      working_hours: apiData.contact_info?.working_hours || "",
-      phone_number: apiData.contact_info?.phone_number || "",
-      email_address: apiData.contact_info?.email_address || "",
       facebook: apiData.contact_info?.facebook || "",
       instagram: apiData.contact_info?.instagram || "",
-      whatsapp: apiData.contact_info?.whatsapp || "",
+      linkedin: apiData.contact_info?.linkedin || "",
+      twitter: apiData.contact_info?.twitter || "",
+      website: apiData.contact_info?.website || "",
     },
-    ads_images: apiData.ads_images || [],
-    teams: apiData.teams || [],
   };
 };
 
