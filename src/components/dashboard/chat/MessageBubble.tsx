@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Avatar from "./Avatar";
 import { Message, User } from "./types";
 
 interface MessageBubbleProps {
@@ -8,45 +9,6 @@ interface MessageBubbleProps {
   isCurrentUser: boolean;
   currentUser: User;
 }
-
-const getAvatarContent = (user: {
-  senderName: string;
-  senderType: string;
-  avatar?: string;
-  logo?: string;
-}) => {
-  if (user.senderType === "admin") {
-    return (
-      <div className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">
-        A
-      </div>
-    );
-  }
-
-  if (user.senderType === "center") {
-    if (user.logo) {
-      return (
-        <img
-          src={user.logo}
-          alt="Center Logo"
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      );
-    }
-    return (
-      <div className="w-8 h-8 rounded-full bg-info text-white flex items-center justify-center text-xs font-bold">
-        C
-      </div>
-    );
-  }
-
-  // Parent type - first two letters of name
-  return (
-    <div className="w-8 h-8 rounded-full bg-secondary-burgundy text-white flex items-center justify-center text-xs font-bold">
-      {user.senderName.substring(0, 2).toUpperCase()}
-    </div>
-  );
-};
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
@@ -68,17 +30,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       }`}
     >
       {/* Avatar */}
-      <div className="flex-shrink-0">
-        {getAvatarContent({
-          senderName: message.senderName,
-          senderType: message.senderType,
-          avatar: undefined, // You can add avatar support if needed
-          logo:
-            message.senderType === "center"
-              ? "/assets/logos/contact-logo.png"
-              : undefined,
-        })}
-      </div>
+      <Avatar
+        name={message.senderName}
+        type={message.senderType as "admin" | "center" | "parent"}
+        size="sm"
+      />
 
       {/* Message Content */}
       <div

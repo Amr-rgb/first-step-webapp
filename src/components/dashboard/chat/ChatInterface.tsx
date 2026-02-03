@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { dashboardIcons } from "@/components/general/icons";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
+import Avatar from "./Avatar";
 import { Message, User } from "./types";
 
 interface ChatInterfaceProps {
@@ -83,19 +84,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </button>
           )}
 
-          <div className="flex-shrink-0">
-            {selectedChat.avatar ? (
-              <img
-                src={selectedChat.avatar}
-                alt={selectedChat.name}
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-medium text-xs md:text-sm">
-                {selectedChat.name.substring(0, 2).toUpperCase()}
-              </div>
-            )}
-          </div>
+          <Avatar
+            name={selectedChat.name}
+            type={selectedChat.type}
+            avatar={selectedChat.avatar}
+            logo={selectedChat.type === "center" ? selectedChat.avatar : undefined}
+            size="sm"
+          />
           <div className="ml-3">
             <p className="text-sm md:text-base font-medium text-gray-900 truncate">
               {selectedChat.name}

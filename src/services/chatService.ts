@@ -4,6 +4,63 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "https://development.firststep-app.com/api";
 
+// Rate limiting configuration
+const RATE_LIMIT_CONFIG = {
+  maxRequestsPerSecond: 5, // Limit to 5 requests per second
+  requestQueue: [] as Array<() => Promise<any>>,
+  isProcessing: false,
+  lastRequestTime: 0,
+};
+
+// Rate-limited fetch wrapper
+const rateLimitedFetch = async (url: string, options: RequestInit): Promise<Response> => {
+  return new Promise((resolve, reject) => {
+    const executeRequest = async () => {
+      try {
+        const now = Date.now();
+        const timeSinceLastRequest = now - RATE_LIMIT_CONFIG.lastRequestTime;
+        const minInterval = 1000 / RATE_LIMIT_CONFIG.maxRequestsPerSecond; // 200ms between requests
+
+        if (timeSinceLastRequest < minInterval) {
+          const delay = minInterval - timeSinceLastRequest;
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        RATE_LIMIT_CONFIG.lastRequestTime = Date.now();
+        const response = await fetch(url, options);
+        resolve(response);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    RATE_LIMIT_CONFIG.requestQueue.push(executeRequest);
+    processRequestQueue();
+  });
+};
+
+// Process the request queue
+const processRequestQueue = async () => {
+  if (RATE_LIMIT_CONFIG.isProcessing || RATE_LIMIT_CONFIG.requestQueue.length === 0) {
+    return;
+  }
+
+  RATE_LIMIT_CONFIG.isProcessing = true;
+
+  while (RATE_LIMIT_CONFIG.requestQueue.length > 0) {
+    const request = RATE_LIMIT_CONFIG.requestQueue.shift();
+    if (request) {
+      try {
+        await request();
+      } catch (error) {
+        console.error("Rate-limited request failed:", error);
+      }
+    }
+  }
+
+  RATE_LIMIT_CONFIG.isProcessing = false;
+};
+
 interface ApiResponse<T> {
   data?: T;
   error?: string;
@@ -99,12 +156,15 @@ interface ApiAdminConversationWithMessages extends ApiAdminConversation {
 const mapApiMessageToMessage = (
   apiMessage: ApiMessage,
   currentUserId: string,
-  currentUserType: "center" | "parent" | "admin"
+  currentUserType: "center" | "parent" | "admin",
+  currentUserName?: string
 ): Message => ({
   id: apiMessage.id.toString(),
   content: apiMessage.message,
   senderId: apiMessage.sender_id.toString(),
-  senderName: "User", // This will be set from the contact info
+  senderName: apiMessage.sender_id.toString() === currentUserId 
+    ? (currentUserName || (currentUserType === "admin" ? "Admin" : currentUserType === "center" ? "Center" : "Parent"))
+    : "Unknown User", // This will be updated with actual names when available
   senderType:
     apiMessage.sender_id.toString() === currentUserId
       ? currentUserType
@@ -122,7 +182,29 @@ const mapApiContactToChatListItem = (
   currentUserId: string,
   currentUserType: "center" | "parent" | "admin"
 ): ChatListItem => {
-  // Handle new API format (direct user object)
+  // Handle new API format from /new-chat-contacts endpoint
+  if (apiContact.contact_id && apiContact.contact && apiContact.latest_message) {
+    return {
+      id: apiContact.contact_id.toString(),
+      name: apiContact.contact.name,
+      type:
+        apiContact.contact_id.toString() === currentUserId
+          ? currentUserType
+          : currentUserType === "center"
+          ? "parent"
+          : "center",
+      lastMessage: apiContact.latest_message?.text || "",
+      timestamp: apiContact.latest_message?.created_at 
+        ? new Date(apiContact.latest_message.created_at) 
+        : new Date(),
+      unreadCount: apiContact.unread_count || 0,
+      isOnline: apiContact.is_online === 1,
+      avatar: apiContact.contact.avatar || undefined,
+      email: apiContact.contact.email,
+    };
+  }
+
+  // Handle direct user object format
   if (apiContact.id && apiContact.name && !apiContact.contact) {
     return {
       id: apiContact.id.toString(),
@@ -142,7 +224,7 @@ const mapApiContactToChatListItem = (
     };
   }
 
-  // Handle old API format (with contact property)
+  // Handle old API format (with contact property but no latest_message)
   return {
     id: apiContact.contact.id.toString(),
     name: apiContact.contact.name,
@@ -159,6 +241,45 @@ const mapApiContactToChatListItem = (
     avatar: apiContact.contact.avatar,
     email: apiContact.contact.email,
   };
+};
+
+// Utility function to find the actual last message by timestamp
+const getLastMessage = (messages: Message[]): Message | null => {
+  if (messages.length === 0) return null;
+  
+  // Sort messages by timestamp and return the most recent one
+  const sortedMessages = [...messages].sort((a, b) => 
+    b.timestamp.getTime() - a.timestamp.getTime()
+  );
+  
+  return sortedMessages[0];
+};
+
+// Helper function to update sender names with proper names
+const updateSenderNames = (messages: Message[], currentUserId: string, currentUserType: "center" | "parent" | "admin", contactName?: string, currentUserName?: string) => {
+  messages.forEach(message => {
+    if (message.senderId === currentUserId) {
+      // Current user's message - use actual user name
+      if (currentUserType === "admin") {
+        message.senderName = "Admin";
+      } else if (currentUserName) {
+        message.senderName = currentUserName;
+      } else {
+        message.senderName = currentUserType === "center" ? "Center" : "Parent";
+      }
+    } else {
+      // Other user's message - use contact name if available
+      if (message.senderType === "admin") {
+        message.senderName = "Admin";
+      } else if (contactName) {
+        message.senderName = contactName;
+      } else if (message.senderType === "center") {
+        message.senderName = "Center";
+      } else {
+        message.senderName = "Parent";
+      }
+    }
+  });
 };
 
 export const chatService = {
@@ -223,7 +344,7 @@ export const chatService = {
         type: currentUserType,
       });
 
-      const response = await fetch(`${API_BASE_URL}/new-chat-contacts`, {
+      const response = await rateLimitedFetch(`${API_BASE_URL}/new-chat-contacts`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
@@ -238,6 +359,15 @@ export const chatService = {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("❌ [chatService] Response error:", errorText);
+        
+        // Handle rate limiting specifically
+        if (response.status === 429) {
+          console.warn("⚠️ [chatService] Rate limited - will retry with delay");
+          // Wait a bit longer and retry once
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          return this.getChatContacts(authToken, currentUserId, currentUserType);
+        }
+        
         throw new Error("Failed to fetch chat contacts");
       }
 
@@ -247,6 +377,18 @@ export const chatService = {
       const mappedContacts = data.map((contact) =>
         mapApiContactToChatListItem(contact, currentUserId, currentUserType)
       );
+
+      // Sort contacts by last message timestamp (most recent first)
+      // For now, we'll sort by name since we don't have last message data yet
+      // This will be updated when messages are loaded
+      mappedContacts.sort((a, b) => {
+        // If both have timestamps, sort by timestamp (most recent first)
+        if (a.timestamp && b.timestamp) {
+          return b.timestamp.getTime() - a.timestamp.getTime();
+        }
+        // Otherwise, sort alphabetically by name
+        return a.name.localeCompare(b.name);
+      });
 
       console.log("🔄 [chatService] Mapped contacts:", mappedContacts);
       return mappedContacts;
@@ -261,7 +403,9 @@ export const chatService = {
     authToken: string,
     currentUserId: string,
     currentUserType: "center" | "parent" | "admin",
-    senderId?: string
+    senderId?: string,
+    contactName?: string,
+    currentUserName?: string
   ): Promise<Message[]> {
     try {
       // For admin users, we need to call the messages endpoint differently
@@ -288,7 +432,7 @@ export const chatService = {
       });
       console.log("📞 [chatService] Contact ID:", contactId);
 
-      const response = await fetch(url, {
+      const response = await rateLimitedFetch(url, {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
@@ -302,6 +446,15 @@ export const chatService = {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("❌ [chatService] Error:", errorText);
+        
+        // Handle rate limiting specifically
+        if (response.status === 429) {
+          console.warn("⚠️ [chatService] Rate limited - will retry with delay");
+          // Wait a bit longer and retry once
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          return this.getMessages(contactId, authToken, currentUserId, currentUserType, senderId, undefined, undefined);
+        }
+        
         throw new Error("Failed to fetch messages");
       }
 
@@ -309,8 +462,14 @@ export const chatService = {
       console.log("📄 [chatService] Messages count:", data.length);
 
       const mappedMessages = data.map((msg) =>
-        mapApiMessageToMessage(msg, currentUserId, currentUserType)
+        mapApiMessageToMessage(msg, currentUserId, currentUserType, currentUserName)
       );
+
+      // Sort messages by timestamp to ensure proper ordering
+      mappedMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+      // Update sender names with proper names
+      updateSenderNames(mappedMessages, currentUserId, currentUserType, contactName, currentUserName);
 
       console.log(
         "✅ [chatService] Success - Messages:",
@@ -330,7 +489,8 @@ export const chatService = {
     currentUserId: string,
     currentUserType: "center" | "parent" | "admin",
     image?: File,
-    videoUrl?: string
+    videoUrl?: string,
+    currentUserName?: string
   ): Promise<Message> {
     // For center and parent users, use the new messages endpoint
     if (currentUserType === "center" || currentUserType === "parent") {
@@ -375,7 +535,7 @@ export const chatService = {
               id: Date.now().toString(),
               content: message,
               senderId: currentUserId,
-              senderName: currentUserType === "center" ? "Center" : "Parent",
+              senderName: currentUserName || (currentUserType === "center" ? "Center" : "Parent"),
               senderType: currentUserType,
               timestamp: new Date(),
               chatId: receiverId,
@@ -395,7 +555,8 @@ export const chatService = {
         return mapApiMessageToMessage(
           data.message,
           currentUserId,
-          currentUserType
+          currentUserType,
+          currentUserName
         );
       } catch (error) {
         console.error("❌ [chatService] Error sending message:", error);
@@ -507,9 +668,17 @@ export const chatService = {
     }
   },
 
-  async markAsRead(messageId: string, authToken: string): Promise<void> {
+  async markAsRead(messageId: string, authToken: string, senderId?: string, retryCount: number = 0): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/new-chat/mark-as-read`, {
+      console.log("📖 [chatService] Marking message as read:", messageId, "sender:", senderId);
+      
+      // Prepare request body - include sender_id if provided
+      const requestBody: any = { message_id: messageId };
+      if (senderId) {
+        requestBody.sender_id = senderId;
+      }
+      
+      const response = await rateLimitedFetch(`${API_BASE_URL}/new-chat/mark-as-read`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -517,15 +686,153 @@ export const chatService = {
           "X-Authorization": process.env.X_AUTHORIZATION || "",
           "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
         },
-        body: JSON.stringify({ message_id: messageId }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log("📖 [chatService] Mark as read response status:", response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [chatService] Mark as read error:", errorText);
+        
+        // Handle rate limiting with exponential backoff
+        if (response.status === 429 && retryCount < 2) {
+          const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+          console.warn(`⚠️ [chatService] Rate limited on mark as read - retrying in ${delay}ms (attempt ${retryCount + 1}/3)`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return this.markAsRead(messageId, authToken, senderId, retryCount + 1);
+        }
+        
+        if (response.status === 429) {
+          console.warn("⚠️ [chatService] Rate limited on mark as read - max retries reached, skipping");
+          return; // Skip after max retries
+        }
+        
+        // Handle validation errors (422) - log and skip
+        if (response.status === 422) {
+          console.warn("⚠️ [chatService] Validation error on mark as read - skipping this message:", errorText);
+          return; // Skip validation errors to avoid blocking other messages
+        }
+        
         throw new Error("Failed to mark message as read");
       }
+
+      console.log("✅ [chatService] Message marked as read successfully");
     } catch (error) {
-      console.error("Error marking message as read:", error);
+      console.error("❌ [chatService] Error marking message as read:", error);
       throw error;
+    }
+  },
+
+  // Mark multiple messages as read (for when entering a chat)
+  async markMultipleAsRead(messagesToMark: Array<{id: string, senderId: string}>, authToken: string): Promise<void> {
+    if (messagesToMark.length === 0) {
+      console.log("📖 [chatService] No messages to mark as read");
+      return;
+    }
+
+    try {
+      console.log("📖 [chatService] Marking multiple messages as read:", messagesToMark.length);
+      
+      // Limit concurrent requests to avoid rate limiting
+      const BATCH_SIZE = 3; // Process 3 messages at a time
+      const DELAY_BETWEEN_BATCHES = 1000; // 1 second delay between batches
+
+      for (let i = 0; i < messagesToMark.length; i += BATCH_SIZE) {
+        const batch = messagesToMark.slice(i, i + BATCH_SIZE);
+        console.log(`📖 [chatService] Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(messagesToMark.length / BATCH_SIZE)}`);
+        
+        const promises = batch.map(message => 
+          this.markAsRead(message.id, authToken, message.senderId).catch(error => {
+            console.warn(`⚠️ [chatService] Failed to mark message ${message.id} as read:`, error);
+            // Don't throw here to avoid stopping other messages from being marked
+          })
+        );
+
+        await Promise.all(promises);
+
+        // Add delay between batches to avoid rate limiting
+        if (i + BATCH_SIZE < messagesToMark.length) {
+          console.log(`📖 [chatService] Waiting ${DELAY_BETWEEN_BATCHES}ms before next batch...`);
+          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
+        }
+      }
+
+      console.log("✅ [chatService] All messages processed");
+    } catch (error) {
+      console.error("❌ [chatService] Error marking multiple messages as read:", error);
+      throw error;
+    }
+  },
+
+  // Mark all unread messages in a chat as read (OPTIMIZED VERSION)
+  async markChatAsRead(chatId: string, authToken: string, currentUserId: string, currentUserType: "center" | "parent" | "admin"): Promise<void> {
+    try {
+      console.log("📖 [chatService] Marking entire chat as read:", chatId);
+      
+      // Get all messages in the chat
+      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType, undefined, undefined, undefined);
+      
+      // Filter messages that are not from the current user (only mark received messages as read)
+      // Focus on recent unread messages to avoid overwhelming the API
+      const recentCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24 hours (increased from 7 days)
+      const messagesToMarkAsRead = messages
+        .filter(message => 
+          message.senderId !== currentUserId && 
+          message.timestamp > recentCutoff // Only mark recent messages
+        )
+        .slice(-20) // Increased from 10 to 20 messages to catch more unread messages
+        .map(message => ({ id: message.id, senderId: message.senderId }));
+
+      if (messagesToMarkAsRead.length > 0) {
+        console.log(`📖 [chatService] Marking ${messagesToMarkAsRead.length} recent messages as read`);
+        await this.markMultipleAsRead(messagesToMarkAsRead, authToken);
+        console.log(`✅ [chatService] Marked ${messagesToMarkAsRead.length} messages as read in chat ${chatId}`);
+      } else {
+        console.log("📖 [chatService] No recent messages to mark as read in chat", chatId);
+      }
+    } catch (error) {
+      console.error("❌ [chatService] Error marking chat as read:", error);
+      // Don't throw here as this is not critical functionality
+      console.warn("⚠️ [chatService] Continuing despite mark-as-read error");
+    }
+  },
+
+  // Mark only the most recent unread messages (for immediate feedback)
+  async markRecentMessagesAsRead(chatId: string, authToken: string, currentUserId: string, currentUserType: "center" | "parent" | "admin"): Promise<void> {
+    try {
+      console.log("📖 [chatService] Marking recent messages as read for immediate feedback:", chatId);
+      
+      // Get all messages in the chat
+      const messages = await this.getMessages(chatId, authToken, currentUserId, currentUserType, undefined, undefined, undefined);
+      
+      // Only mark the last 5 messages that are not from current user
+      const messagesToMark = messages
+        .filter(message => message.senderId !== currentUserId)
+        .slice(-5) // Only last 5 messages for immediate feedback
+        .map(message => ({ id: message.id, senderId: message.senderId }));
+
+      if (messagesToMark.length > 0) {
+        console.log(`📖 [chatService] Marking ${messagesToMark.length} most recent messages as read`);
+        // Mark them individually with small delays to avoid rate limiting
+        for (const message of messagesToMark) {
+          try {
+            await this.markAsRead(message.id, authToken, message.senderId);
+            // Small delay between each message
+            await new Promise(resolve => setTimeout(resolve, 300));
+          } catch (error) {
+            console.warn(`⚠️ [chatService] Failed to mark message ${message.id} as read:`, error);
+            // Continue with other messages
+          }
+        }
+        console.log(`✅ [chatService] Marked recent messages as read in chat ${chatId}`);
+      } else {
+        console.log("📖 [chatService] No recent messages to mark as read in chat", chatId);
+      }
+    } catch (error) {
+      console.error("❌ [chatService] Error marking recent messages as read:", error);
+      // Don't throw here as this is not critical functionality
+      console.warn("⚠️ [chatService] Continuing despite mark-as-read error");
     }
   },
 
@@ -542,7 +849,7 @@ export const chatService = {
       );
       console.log(`🔗 [chatService] Endpoint: ${API_BASE_URL}/${endpoint}`);
 
-      const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      const response = await rateLimitedFetch(`${API_BASE_URL}/${endpoint}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -560,19 +867,17 @@ export const chatService = {
         const errorText = await response.text();
         console.error(`❌ [chatService] Online status error: ${errorText}`);
 
-        // Check if it's a Pusher data size error
-        if (
-          errorText.includes("Pusher error") &&
-          errorText.includes("exceeds the allowed maximum")
-        ) {
+        // Handle rate limiting specifically
+        if (response.status === 429) {
           console.warn(
-            `⚠️ [chatService] Pusher data size error - backend issue, not critical`
+            `⚠️ [chatService] Rate limited on online status - will skip this update`
           );
-        } else {
-          console.warn(
-            `⚠️ [chatService] Online status update failed, but continuing...`
-          );
+          return; // Don't retry online status updates
         }
+
+        console.warn(
+          `⚠️ [chatService] Online status update failed, but continuing...`
+        );
         return;
       }
 
@@ -663,6 +968,15 @@ export const chatService = {
         "🔄 [chatService] Mapped admin conversations:",
         mappedConversations.length
       );
+
+      // Sort conversations by last message timestamp (most recent first)
+      mappedConversations.sort((a, b) => {
+        if (a.timestamp && b.timestamp) {
+          return b.timestamp.getTime() - a.timestamp.getTime();
+        }
+        return 0;
+      });
+
       return mappedConversations;
     } catch (error) {
       console.error(
@@ -845,4 +1159,19 @@ export const chatService = {
       throw error;
     }
   },
+};
+// Export utility functions
+export const chatUtils = {
+  getLastMessage,
+  sortMessagesByTimestamp: (messages: Message[]): Message[] => {
+    return [...messages].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  },
+  sortChatsByLastMessage: (chats: ChatListItem[]): ChatListItem[] => {
+    return [...chats].sort((a, b) => {
+      if (a.timestamp && b.timestamp) {
+        return b.timestamp.getTime() - a.timestamp.getTime();
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
 };
