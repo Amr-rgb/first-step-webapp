@@ -10,7 +10,7 @@ import { ApiErrorHandler } from "@/lib/error-handling";
 
 const prepareCenterFormData = (
   formData: FormData,
-  payload: CenterRegisterPayload | any
+  payload: CenterRegisterPayload | any,
 ) => {
   // Append text fields only if they exist
   if (payload.name) formData.append("name", payload.name);
@@ -32,13 +32,13 @@ const prepareCenterFormData = (
   if (payload.time_of_first_period) {
     formData.append(
       "time_of_first_period",
-      formatTime(payload.time_of_first_period)
+      formatTime(payload.time_of_first_period),
     );
   }
   if (payload.time_of_second_period) {
     formData.append(
       "time_of_second_period",
-      formatTime(payload.time_of_second_period)
+      formatTime(payload.time_of_second_period),
     );
   }
 
@@ -170,11 +170,11 @@ export const parentService = {
       formData.append("national_number", payload.childNationalNumber || "");
       formData.append(
         "disease",
-        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0"
+        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0",
       );
       formData.append(
         "allergy",
-        payload.allergies.hasAllergies === "yes" ? "1" : "0"
+        payload.allergies.hasAllergies === "yes" ? "1" : "0",
       );
       formData.append("parent_name", payload.fatherName);
       formData.append("mother_name", payload.motherName);
@@ -201,21 +201,21 @@ export const parentService = {
             if (disease.name && disease.name.trim() !== "") {
               formData.append(
                 `disease_details[${index}][disease_name]`,
-                disease.name
+                disease.name,
               );
               formData.append(
                 `disease_details[${index}][medicament]`,
-                disease.medication || ""
+                disease.medication || "",
               );
               formData.append(
                 `disease_details[${index}][emergency]`,
-                disease.procedures || ""
+                disease.procedures || "",
               );
               if (disease.id) {
                 formData.append(`disease_details[${index}][id]`, disease.id);
               }
             }
-          }
+          },
         );
       }
 
@@ -231,11 +231,11 @@ export const parentService = {
             formData.append(`allergies[${index}][name]`, allergy.allergyTypes);
             formData.append(
               `allergies[${index}][allergy_causes]`,
-              allergy.allergyFoods || ""
+              allergy.allergyFoods || "",
             );
             formData.append(
               `allergies[${index}][allergy_emergency]`,
-              allergy.allergyProcedures || ""
+              allergy.allergyProcedures || "",
             );
             if (allergy.id) {
               formData.append(`allergies[${index}][id]`, allergy.id);
@@ -249,11 +249,11 @@ export const parentService = {
         payload.authorizedPersons.forEach((person: any, index: number) => {
           formData.append(
             `authorized_people[${index}][name]`,
-            person.name || ""
+            person.name || "",
           );
           formData.append(
             `authorized_people[${index}][cin]`,
-            person.idNumber || ""
+            person.idNumber || "",
           );
           if (person.id) {
             formData.append(`authorized_people[${index}][id]`, person.id);
@@ -313,33 +313,33 @@ export const parentService = {
       formData.append("children[0][birthday_date]", formattedDate);
       formData.append(
         "children[0][gender]",
-        payload.gender === "male" ? "boy" : "girl"
+        payload.gender === "male" ? "boy" : "girl",
       );
       formData.append(
         "children[0][national_number]",
-        payload.childNationalNumber || ""
+        payload.childNationalNumber || "",
       );
       formData.append(
         "children[0][disease]",
-        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0"
+        payload.chronicDiseases.hasDiseases === "yes" ? "1" : "0",
       );
       formData.append(
         "children[0][allergy]",
-        payload.allergies.hasAllergies === "yes" ? "1" : "0"
+        payload.allergies.hasAllergies === "yes" ? "1" : "0",
       );
       formData.append("children[0][parent_name]", payload.fatherName);
       formData.append("children[0][mother_name]", payload.motherName);
       formData.append(
         "children[0][recommendations]",
-        payload.recommendations || ""
+        payload.recommendations || "",
       );
       formData.append(
         "children[0][description_3_words]",
-        payload.childDescription || ""
+        payload.childDescription || "",
       );
       formData.append(
         "children[0][things_child_likes]",
-        payload.favoriteThings || ""
+        payload.favoriteThings || "",
       );
       formData.append("children[0][notes]", payload.comments || "");
       formData.append("children[0][kinship]", String(payload.kinship ?? ""));
@@ -361,18 +361,18 @@ export const parentService = {
             if (disease.name && disease.name.trim() !== "") {
               formData.append(
                 `children[0][disease_details][${index}][disease_name]`,
-                disease.name
+                disease.name,
               );
               formData.append(
                 `children[0][disease_details][${index}][medicament]`,
-                disease.medication || ""
+                disease.medication || "",
               );
               formData.append(
                 `children[0][disease_details][${index}][emergency]`,
-                disease.procedures || ""
+                disease.procedures || "",
               );
             }
-          }
+          },
         );
       }
 
@@ -387,15 +387,15 @@ export const parentService = {
           if (allergy.allergyTypes && allergy.allergyTypes.trim() !== "") {
             formData.append(
               `children[0][allergies][${index}][name]`,
-              allergy.allergyTypes
+              allergy.allergyTypes,
             );
             formData.append(
               `children[0][allergies][${index}][allergy_causes]`,
-              allergy.allergyFoods || ""
+              allergy.allergyFoods || "",
             );
             formData.append(
               `children[0][allergies][${index}][allergy_emergency]`,
-              allergy.allergyProcedures || ""
+              allergy.allergyProcedures || "",
             );
           }
         });
@@ -406,11 +406,11 @@ export const parentService = {
         payload.authorizedPersons.forEach((person: any, index: number) => {
           formData.append(
             `children[0][authorized_persons][${index}][name]`,
-            person.name || ""
+            person.name || "",
           );
           formData.append(
             `children[0][authorized_persons][${index}][cin]`,
-            person.idNumber || ""
+            person.idNumber || "",
           );
         });
       }
@@ -477,7 +477,7 @@ export const parentService = {
     try {
       const response = await apiClient.put(
         `/parent/update-profile-parent`,
-        payload
+        payload,
       );
       return response.data;
     } catch (error) {
@@ -583,7 +583,7 @@ export const centerService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       return response.data;
@@ -601,7 +601,7 @@ export const centerService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       return response.data;
@@ -644,7 +644,7 @@ export const centerService = {
     status: string,
     starting_date?: string,
     starting_time?: string,
-    day_string?: string
+    day_string?: string,
   ) => {
     try {
       const payload: any = { status };
@@ -689,7 +689,7 @@ export const centerService = {
   getBranchTeam: async (id: string) => {
     try {
       const response = await apiClient.get(
-        `/branch-team-members?branch_id=${id}`
+        `/branch-team-members?branch_id=${id}`,
       );
       return response.data;
     } catch (error) {
@@ -728,7 +728,7 @@ export const centerService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -773,7 +773,7 @@ export const centerService = {
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -890,7 +890,7 @@ export const centerService = {
       title: string;
       description: string;
       content: string;
-    }
+    },
   ) => {
     try {
       const response = await apiClient.post(`/blog-centers/${id}`, payload, {
@@ -983,10 +983,10 @@ export const centerService = {
     }
   },
 
-  // Portfolio endpoints
-  savePortfolio: async (payload: PortfolioFormData) => {
+  // Legacy Portfolio endpoints
+  legacySavePortfolio: async (payload: PortfolioFormData) => {
     try {
-      console.log("📤 Sending portfolio data:", payload);
+      console.log("📤 Sending legacy portfolio data:", payload);
 
       // Convert to FormData to handle file uploads
       const formData = new FormData();
@@ -999,9 +999,6 @@ export const centerService = {
 
         // Handle image fields specially
         if (key.includes("image") || key.includes("background")) {
-          // Skip string values (URLs) for top-level fields to avoid redundant updates
-          // BUT allow them for indexed/nested fields (e.g., services[0][image])
-          // so the backend knows which existing images to keep in a list.
           if (typeof value === "string" && !key.includes("[")) {
             console.log(`⏭️  Skipping top-level image URL for ${key}`);
             return;
@@ -1010,7 +1007,6 @@ export const centerService = {
 
         if (value instanceof File) {
           formData.append(key, value);
-          console.log(`📎 Adding file for ${key}:`, value.name);
         } else if (Array.isArray(value)) {
           if (value.length === 0) {
             return;
@@ -1021,7 +1017,6 @@ export const centerService = {
             const itemKey = `${key}[${index}]`;
             if (item instanceof File) {
               formData.append(itemKey, item);
-              console.log(`📎 Adding file for ${itemKey}:`, item.name);
             } else if (typeof item === "object") {
               Object.keys(item).forEach((subKey) => {
                 appendFormData(`${itemKey}[${subKey}]`, item[subKey]);
@@ -1035,32 +1030,109 @@ export const centerService = {
             appendFormData(`${key}[${subKey}]`, value[subKey]);
           });
         } else {
-          // Keep root-level nulls as "null" unless they are part of a deleted item
           formData.append(key, value === null ? "null" : String(value));
         }
       };
 
-      // Append all fields from payload
       Object.keys(payload).forEach((key) => {
         appendFormData(key, (payload as any)[key]);
       });
-
-      // Log FormData contents
-      console.log("📤 FormData entries:");
-      for (const pair of formData.entries()) {
-        console.log(`  ${pair[0]}:`, pair[1]);
-      }
 
       const response = await apiClient.post("/portfolios", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("✅ Portfolio saved successfully:", response.data);
       return response.data;
     } catch (error: any) {
-      console.error("❌ Portfolio save failed:", error);
-      console.error("Error response:", error.response?.data);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  legacyGetPortfolio: async () => {
+    try {
+      const response = await apiClient.get("/portfolios/show");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  updateLogo: async (logo: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("logo", logo);
+
+      const response = await apiClient.post("/update-logo", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  // New Portfolio endpoints
+  savePortfolio: async (payload: PortfolioFormData) => {
+    try {
+      console.log("📤 Sending updated portfolio data:", payload);
+      const formData = new FormData();
+
+      // Basic Info (Hero)
+      if (payload.title_of_hero)
+        formData.append("title_of_hero", payload.title_of_hero);
+      if (payload.subtitle_of_hero)
+        formData.append("subtitle_of_hero", payload.subtitle_of_hero);
+      if (payload.description)
+        formData.append("description", payload.description);
+
+      // Social links
+      if (payload.contact_info?.facebook)
+        formData.append("facebook", payload.contact_info.facebook);
+      if (payload.contact_info?.instagram)
+        formData.append("instagram", payload.contact_info.instagram);
+      if (payload.contact_info?.twitter)
+        formData.append("twitter", payload.contact_info.twitter);
+      if (payload.contact_info?.linkedin)
+        formData.append("linkedin", payload.contact_info.linkedin);
+      if (payload.contact_info?.website)
+        formData.append("website", payload.contact_info.website);
+
+      // Activities
+      payload.images_activities?.forEach((img, index) => {
+        if (img instanceof File) {
+          formData.append(`images_activities[${index}]`, img);
+        }
+      });
+
+      // Options (Facilities)
+      payload.admin_option_ids?.forEach((id, index) => {
+        formData.append(`admin_option_ids[${index}]`, String(id));
+      });
+      payload.delete_center_options?.forEach((id, index) => {
+        formData.append(`delete_center_options[${index}]`, String(id));
+      });
+
+      // Licenses
+      payload.licenses?.forEach((license, index) => {
+        if (license.id)
+          formData.append(`licenses[${index}][id]`, String(license.id));
+        formData.append(`licenses[${index}][number]`, license.number);
+        if (license.document instanceof File) {
+          formData.append(`licenses[${index}][document]`, license.document);
+        }
+      });
+      payload.delete_license_ids?.forEach((id, index) => {
+        formData.append(`delete_license_ids[${index}]`, String(id));
+      });
+
+      const response = await apiClient.post("/portfolios", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
       throw ApiErrorHandler.handle(error);
     }
   },
@@ -1079,7 +1151,7 @@ export const centerService = {
     try {
       const response = await apiClient.post(
         "/create-or-update-branch-price",
-        payload
+        payload,
       );
       return response.data;
     } catch (error) {
@@ -1166,7 +1238,7 @@ export const adminService = {
   getBranches: async (centerId: string) => {
     try {
       const response = await apiClient.get(
-        `/dashboard/branches/${centerId}/branches`
+        `/dashboard/branches/${centerId}/branches`,
       );
       return response.data;
     } catch (error) {
@@ -1263,7 +1335,7 @@ export const adminService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -1281,7 +1353,7 @@ export const adminService = {
       image: File;
       publish_date?: string;
       end_date?: string;
-    }
+    },
   ) => {
     try {
       const formData = new FormData();
@@ -1303,7 +1375,7 @@ export const adminService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -1314,7 +1386,7 @@ export const adminService = {
   deleteAdvertisement: async (adId: string) => {
     try {
       const response = await apiClient.delete(
-        `/dashboard/ads-for-admin/${adId}`
+        `/dashboard/ads-for-admin/${adId}`,
       );
       return response.data;
     } catch (error) {
@@ -1334,7 +1406,7 @@ export const adminService = {
   getOneCenterAds: async (centerId: string) => {
     try {
       const response = await apiClient.get(
-        `/dashboard/all-for-specific-center/${centerId}`
+        `/dashboard/all-for-specific-center/${centerId}`,
       );
       return response.data.data;
     } catch (error) {
@@ -1430,7 +1502,7 @@ export const adminService = {
       contentEn?: string;
       mainImage?: File;
       cardImage?: File;
-    }
+    },
   ) => {
     try {
       const formData = new FormData();
@@ -1452,7 +1524,7 @@ export const adminService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -1481,7 +1553,7 @@ export const adminService = {
   getOneCenterBlogs: async (centerId: string) => {
     try {
       const response = await apiClient.get(
-        `/dashboard/all-for-specific-center-blog/${centerId}`
+        `/dashboard/all-for-specific-center-blog/${centerId}`,
       );
       return response.data.data;
     } catch (error) {
@@ -1504,7 +1576,7 @@ export const adminService = {
         `/dashboard/update-status/${blogId}`,
         {
           status: "approved",
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -1518,7 +1590,7 @@ export const adminService = {
         `/dashboard/update-status/${blogId}`,
         {
           status: "rejected",
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -1561,7 +1633,7 @@ export const adminService = {
   acceptCenter: async (centerId: string) => {
     try {
       const response = await apiClient.put(
-        `/dashboard/centers/${centerId}/confirm`
+        `/dashboard/centers/${centerId}/confirm`,
       );
       return response.data;
     } catch (error) {
@@ -1572,7 +1644,7 @@ export const adminService = {
   rejectCenter: async (centerId: string) => {
     try {
       const response = await apiClient.put(
-        `/dashboard/centers/${centerId}/reject`
+        `/dashboard/centers/${centerId}/reject`,
       );
       return response.data;
     } catch (error) {
@@ -1660,7 +1732,7 @@ export const sidebarService = {
 
   updateCenterTask: async (
     taskId: string,
-    payload: { title: string; date: string; done: boolean }
+    payload: { title: string; date: string; done: boolean },
   ) => {
     try {
       const response = await apiClient.put(`/to-do-centers/${taskId}`, payload);
@@ -1708,12 +1780,12 @@ export const sidebarService = {
 
   updateCenterOccasion: async (
     occasionId: string,
-    payload: { title: string; date: string }
+    payload: { title: string; date: string },
   ) => {
     try {
       const response = await apiClient.put(
         `/occassions/${occasionId}`,
-        payload
+        payload,
       );
       return response.data;
     } catch (error) {
@@ -1764,7 +1836,7 @@ export const sidebarService = {
 
   updateTask: async (
     taskId: string,
-    payload: { title: string; date: string; done: boolean }
+    payload: { title: string; date: string; done: boolean },
   ) => {
     try {
       const response = await apiClient.post(`/todos/${taskId}`, payload);
@@ -1812,12 +1884,12 @@ export const sidebarService = {
 
   updateOccasion: async (
     occasionId: string,
-    payload: { title: string; date: string }
+    payload: { title: string; date: string },
   ) => {
     try {
       const response = await apiClient.post(
         `/Occassion-both/${occasionId}`,
-        payload
+        payload,
       );
       return response.data;
     } catch (error) {
@@ -1884,7 +1956,7 @@ export interface ApplyPromoCodeResponse {
 
 export const promoCodeService = {
   applyPromoCode: async (
-    payload: ApplyPromoCodeRequest
+    payload: ApplyPromoCodeRequest,
   ): Promise<ApplyPromoCodeResponse> => {
     try {
       const response = await apiClient.post(`/promo-codes/apply`, payload);
