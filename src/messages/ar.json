@@ -218,17 +218,30 @@
   },
   "auth": {
     "sign-up": {
-      "select-account-description": "اختر نوع الحساب الذي ترغب في إنشائه",
-      "select-account-type": "إنشاء حسابك",
-      "have-account": "لديك حساب بالفعل؟",
-      "sign-in": "تسجيل الدخول",
-      "center": {
-        "title": "حساب مركز/حضانة",
-        "description": "لرياض الأطفال ومراكز الرعاية النهارية لإدارة خدماتهم"
-      },
+      "greeting": "مرحباً بك 👋 اختر دورك علشان نجهزلك تجربة مناسبة",
+      "have-account-footer": "لديك حساب بالفعل؟",
+      "sign-in-footer": "سجل دخولك",
       "parent": {
-        "title": "حساب ولي أمر",
-        "description": "للآباء الذين يبحثون عن خدمات رعاية أطفال عالية الجودة"
+        "title": "ولي أمر",
+        "feature": "متابعة الطفل والتواصل مع المركز"
+      },
+      "rehab-center": {
+        "title": "مركز تأهيلي",
+        "feature": "إدارة الخدمات والمتخصصين"
+      },
+      "nursery": {
+        "title": "حضانة أو مركز ترفيهي",
+        "feature": "رعاية الأطفال والتواصل مع أولياء الأمور"
+      },
+      "mentor": {
+        "title": "مرشد",
+        "feature": "رعاية الأطفال والتواصل مع أولياء الأمور",
+        "soon": "قريباً"
+      },
+      "teacher": {
+        "title": "معلم",
+        "feature": "رعاية الأطفال والتواصل مع أولياء الأمور",
+        "soon": "قريباً"
       }
     },
     "buttons": {
@@ -2036,166 +2049,99 @@
       },
       "loading": "جارٍ تحميل بيانات الملف...",
       "loadError": "فشل في تحميل بيانات الملف",
-      "savePortfolio": "تأكيد",
+      "cancel": "إلغاء",
+      "savePortfolio": "حفظ التغييرات",
       "saving": "جارٍ الحفظ...",
-      "saveSuccess": "تم الحفظ بنجاح!",
-      "saveError": "فشل في الحفظ",
+      "saveSuccess": "تم تحديث الملف الشخصي بنجاح!",
+      "saveError": "فشل في تحديث الملف الشخصي",
       "permissionError": "ليس لديك صلاحية لعرض بيانات المركز",
       "sections": {
-        "hero": "القسم الرئيسي",
-        "branches": "الفروع",
-        "philosophy": "فلسفتنا، منهجيتنا، هدفنا",
-        "services": "خدماتنا",
-        "nurseryState": "بيانات المركز",
+        "basicInfo": "المعلومات الأساسية",
+        "plans": "البرامج",
         "activities": "الأنشطة",
-        "contact": "معلومات التواصل",
-        "ads": "مساحتك الإعلانية",
-        "teams": "فريقنا",
-        "plans": "برامجنا"
+        "facilities": "المرافق والخدمات",
+        "licenses": "التراخيص",
+        "socialMedia": "وسائل التواصل الاجتماعي"
       },
-      "hero": {
-        "title": "اسم المركز",
-        "titlePlaceholder": "مثال: حضانة الورد",
-        "subtitle": "شعار المركز",
-        "subtitlePlaceholder": "مثال: بيتك الثاني",
-        "description": "الوصف",
-        "descriptionPlaceholder": "أدخل الوصف",
-        "ctaTextPlaceholder": "زر اتخاذ القرار",
-        "ctaLink": "زر اتخاذ القرار",
-        "ctaLinkPlaceholder": "URL",
-        "backgroundImage": "صورة الخلفية",
-        "backgroundImagePlaceholder": "حقل اختياري"
-      },
-      "branches": {
-        "sectionTitle": "اسم الفرع",
-        "sectionTitlePlaceholder": "أدخل اسم الفرع",
-        "branchesTitle": "الفروع",
-        "branchNamePlaceholder": "أدخل اسم الفرع",
-        "noBranches": "لا يوجد فروع"
-      },
-      "philosophy": {
-        "philosophy": "فلسفتنا",
-        "philosophyTitle": "فلسفتنا",
-        "philosophyTitlePlaceholder": " أدخل محتوى فلسفتنا",
-        "philosophyContent": "منهجيتنا",
-        "philosophyContentPlaceholder": " أدخل محتوى فلسفتنا",
-        "methodology": "منهجيتنا",
-        "methodologyTitle": "منهجيتنا",
-        "methodologyTitlePlaceholder": " أدخل محتوى منهجيتنا",
-        "methodologyContent": "منهجيتنا",
-        "methodologyContentPlaceholder": " أدخل محتوى منهجيتنا",
-        "goals": "هدفنا",
-        "goalTitle": "هدفنا",
-        "goalTitlePlaceholder": " أدخل محتوى هدفنا",
-        "goalContent": "هدفنا",
-        "goalContentPlaceholder": " أدخل محتوى هدفنا"
-      },
-      "services": {
-        "imageRequired": "يجب أن تحتوي جميع الخدمات على صورة",
-        "sectionTitle": "عنوان خدماتنا",
-        "sectionTitlePlaceholder": "أدخل عنوان خدماتنا",
-        "services": "خدماتنا",
-        "addService": "إضافة",
-        "noServices": "لا يوجد خدمات",
-        "service": "الخدمة",
-        "serviceTitle": "عنوان الخدمة",
-        "serviceTitlePlaceholder": "أدخل عنوان الخدمة",
-        "serviceDescription": "وصف الخدمة",
-        "serviceDescriptionPlaceholder": "أدخل وصف الخدمة",
-        "serviceImage": "صورة الخدمة"
-      },
-      "nurseryState": {
-        "title": "بيانات المركز",
-        "area": "مساحة المركز",
-        "areaPlaceholder": "أدخل مساحة المركز",
-        "classRooms": "عدد الفصول",
-        "classRoomsPlaceholder": "أدخل عدد الفصول",
-        "teamMembers": "عدد الموظفين",
-        "teamMembersPlaceholder": "أدخل عدد الموظفين"
+      "basicInfo": {
+        "nurseryLogo": "شعار الحضانة",
+        "logoHint": "قم بتحميل صورة شعار احترافية. (PNG أو JPG، بحد أقصى 3 ميجابايت)",
+        "nurseryName": "اسم الحضانة",
+        "nurseryNamePlaceholder": "مثال: حضانة عالم التعلم",
+        "nurserySlogan": "شعار الحضانة",
+        "nurserySloganPlaceholder": "مثال: هنا اتخذت أولى خطواتي",
+        "briefDescription": "نبذة مختصرة",
+        "descriptionPlaceholder": "أخبرنا عن حضانتك...",
+        "descriptionLimit": "الحد الأقصى 200 حرف"
       },
       "activities": {
-        "sectionTitle": "الأنشطة",
-        "sectionTitlePlaceholder": "عنوان الأنشطة",
-        "sectionSubtitle": "العنوان الفرعي للقسم",
-        "sectionSubtitlePlaceholder": "أدخل العنوان الفرعي للأنشطة",
-        "activityImages": "صور الأنشطة",
-        "addImage": "إضافة صورة",
-        "noImages": "لا يوجد أنشطة"
+        "title": "ألبومات الصور",
+        "uploadTitle": "تحميل صورة",
+        "uploadHint": "اسحب وأفلت صورك هنا، أو حمل من جهازك",
+        "formatsNote": "الصيغ المدعومة: JPG, PNG (الحجم الأقصى: 10 ميجابايت)",
+        "uploadedTitle": "الصور المحملة ({count})"
       },
-      "contact": {
-        "title": "معلومات التواصل",
-        "address": "العنوان",
-        "addressPlaceholder": "أدخل عنوان الحضانة",
-        "workingHours": "ساعات العمل",
-        "workingHoursPlaceholder": "أدخل ساعات العمل",
-        "phoneNumber": "رقم الهاتف",
-        "phoneNumberPlaceholder": "أدخل رقم الهاتف",
-        "emailAddress": "البريد الإلكتروني",
-        "emailAddressPlaceholder": "أدخل البريد الإلكتروني",
-        "socialMedia": "وسائل التواصل الاجتماعي",
+      "licenses": {
+        "title": "التراخيص",
+        "nurseryLicensed": "مرخص / معتمد",
+        "licensedDescription": "هل تحمل ترخيصًا مهنيًا أو شهادة معتمدة؟",
+        "licenseNumber": "رقم الترخيص",
+        "licenseNumberPlaceholder": "مثال: LPC-12345-TX",
+        "licenseDocument": "جهة إصدار الترخيص / الشهادة",
+        "uploadDocument": "تحميل الملف",
+        "addLicense": "إضافة ترخيص",
+        "deleteLicense": "حذف الترخيص",
+        "formatsNote": "الصيغ المدعومة: PDF, JPG, PNG (الأقصى 5 ميجابايت)"
+      },
+      "socialMedia": {
+        "title": "وسائل التواصل الاجتماعي",
+        "optionalNote": "أضف روابط حساباتك على منصات التواصل الاجتماعي (اختياري)",
         "facebook": "فيسبوك",
-        "facebookPlaceholder": "أدخل رابط فيسبوك",
         "instagram": "إنستغرام",
-        "instagramPlaceholder": "أدخل رابط إنستغرام",
-        "whatsapp": "واتساب",
-        "whatsappPlaceholder": "أدخل رقم واتساب"
-      },
-      "ads": {
-        "title": "مساحتك الإعلانية",
-        "addImage": "إضافة",
-        "noImages": "لا يوجد صور إعلانية"
-      },
-      "teams": {
-        "title": "فريقنا",
-        "addTeamMember": "إضافة فرد",
-        "noTeamMembers": "لا يوجد أعضاء",
-        "teamMember": "عضو الفريق",
-        "memberName": "اسم الشخص",
-        "memberNamePlaceholder": "مثال: ياسر",
-        "memberMission": "مهنة الشخص",
-        "memberMissionPlaceholder": "أدخل مهنة الشخص",
-        "memberImage": "رابط صورة الشخص"
+        "linkedin": "لينكد إن",
+        "twitter": "تويتر",
+        "website": "الموقع الإلكتروني"
       },
       "plans": {
-        "title": "برامجنا",
+        "title": "البرامج والأسعار",
         "loading": "جارٍ التحميل...",
-        "selectBranch": "الفرع",
-        "selectBranchPlaceholder": "نوع الفرع",
-        "plans": "برامجنا",
+        "selectBranch": "اختر الفرع",
+        "selectBranchPlaceholder": "اختر الفرع",
+        "plans": "البرامج",
         "addPlan": "إضافة برنامج",
         "editPlan": "تعديل البرنامج",
-        "noPlansYet": "لا يوجد برامج",
-        "ageRange": "الفئة العمرية",
-        "price": "تسعير البرنامج",
-        "priceAmount": "مثال: 50 رس",
+        "noPlansYet": "لا يوجد برامج حالياً",
+        "ageRange": "العمر: {start} - {end} سنوات",
+        "price": "السعر",
+        "priceAmount": "السعر: {amount} ر.س",
         "enrollmentType": "نوع البرنامج",
-        "selectEnrollmentType": "ساعة",
+        "selectEnrollmentType": "اختر نوع البرنامج",
         "year": "عام",
         "month": "شهر",
         "week": "أسبوع",
         "day": "يوم",
         "hour": "ساعة",
         "planTitle": "عنوان البرنامج",
-        "planTitlePlaceholder": "برنامج الصغار",
-        "startAge": "بداية من سن..",
-        "endAge": "إلى سن..",
+        "planTitlePlaceholder": "مثال: برنامج الصغار",
+        "startAge": "من عمر",
+        "endAge": "إلى عمر",
         "count": "العدد",
         "branches": "الفروع",
         "selectBranchesPlaceholder": "اختر الفروع...",
-        "cancel": "إنهاء",
-        "save": "إضافة برنامج",
+        "cancel": "إلغاء",
+        "save": "حفظ البرنامج",
         "saving": "جارٍ الحفظ...",
         "planSaved": "تم حفظ البرنامج بنجاح!",
         "planSaveError": "فشل في حفظ البرنامج",
         "planDeleted": "تم حذف البرنامج بنجاح!",
         "planDeleteError": "فشل في حذف البرنامج",
-        "selectBranchesError": "اختر الفرع من فضلك",
+        "selectBranchesError": "يرجى اختيار فرع واحد على الأقل",
         "titleRequired": "عنوان البرنامج مطلوب",
-        "titleTooShort": "عنوان البرنامج يجب أن يكون حرفين على الأقل",
+        "titleTooShort": "يجب أن يكون العنوان حرفين على الأقل",
         "startAgeInvalid": "العمر الابتدائي يجب أن يكون 0 أو أكثر",
         "endAgeInvalid": "العمر النهائي يجب أن يكون 0 أو أكثر",
-        "endAgeMustBeGreater": "العمر النهائي يجب أن يكون أكبر من العمر الابتدائي",
-        "enrollmentTypeRequired": "نوع التسجيل مطلوب",
+        "endAgeMustBeGreater": "يجب أن يكون العمر النهائي أكبر من العمر الابتدائي",
+        "enrollmentTypeRequired": "نوع البرنامج مطلوب",
         "countMustBePositive": "العدد يجب أن يكون أكبر من 0",
         "priceMustBePositive": "السعر يجب أن يكون أكبر من 0",
         "units": {
@@ -2637,8 +2583,16 @@
   },
   "nurseryDetails": {
     "header": {
+      "share": "مشاركة",
+      "chat": "محادثة",
       "sloganFallback": "مستقبل طفلك يبدأ من هنا",
       "description": "نقدم أفضل رعاية وتعليم لطفلك."
+    },
+    "about": {
+      "title": "عن المنشأة"
+    },
+    "facilities": {
+      "title": "مرافق المنشأة"
     },
     "waitingPage": {
       "parentTitle": "شيء جميل قادم!",
@@ -2678,15 +2632,28 @@
       "subtitle": "أعط أطفالك الفرصة للاستمتاع معنا."
     },
     "programs": {
-      "title": "برامجنا",
-      "currency": "ريال سعودي",
+      "title": "البرامج",
+      "count": "({count} برنامج)",
+      "filter": "التصفية",
       "bookNow": "احجز الآن",
       "noResults": "لا توجد برامج مطابقة لخيارات التصفية",
+      "currency": "ريال",
       "filters": {
-        "childAge": "عمر الطفل",
         "branch": "الفرع",
         "programType": "نوع البرنامج",
-        "all": "الكل"
+        "age": "الأعمار",
+        "allBranches": "كل الفروع",
+        "allPrograms": "كل البرامج",
+        "allAges": "كل الأعمار",
+        "reset": "إعادة للوضع الافتراضي",
+        "apply": "تصفية",
+        "types": {
+          "hour": "بالساعة",
+          "day": "باليوم",
+          "week": "بالأسبوع",
+          "month": "بالشهر",
+          "year": "بالسنة"
+        }
       }
     },
     "contactForm": {

@@ -134,7 +134,7 @@ apiClient.interceptors.request.use(
       console.error("Request Interceptor Error:", error);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add response interceptor for error handling
@@ -213,7 +213,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(formattedError);
-  }
+  },
 );
 
 export const websiteService = {
@@ -232,7 +232,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -265,7 +265,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -297,7 +297,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -329,7 +329,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -359,7 +359,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -390,7 +390,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -421,7 +421,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -449,7 +449,7 @@ export const websiteService = {
             "X-Authorization": process.env.X_AUTHORIZATION || "",
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -480,7 +480,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -511,7 +511,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -603,7 +603,7 @@ export const blogService = {
           next: {
             revalidate: 1,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -625,7 +625,7 @@ export const blogService = {
 export const nurseryService = {
   getNurseries: async (
     locale: string,
-    params?: { key: string; value: string }[]
+    params?: { key: string; value: string }[],
   ): Promise<NurseryResponse[]> => {
     try {
       const query = params
@@ -633,7 +633,7 @@ export const nurseryService = {
           params
             .map(
               ({ key, value }) =>
-                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
             )
             .join("&")
         : "";
@@ -653,7 +653,7 @@ export const nurseryService = {
             next: {
               revalidate: 1,
             },
-          }
+          },
         );
       } catch (fetchError: any) {
         // Handle network errors (fetch failed, connection refused, timeout, etc.)
@@ -726,7 +726,7 @@ export const nurseryService = {
           data.data.map((nursery: any) => ({
             nursery_name: nursery.nursery_name,
             user_id: nursery.user_id,
-          }))
+          })),
         );
       }
 
@@ -743,7 +743,7 @@ export const nurseryService = {
 
   getNurseryPortfolio: async (
     nurseryName: string,
-    locale: string
+    locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
       // First, get all nurseries to find the center_id for the given nursery name
@@ -774,7 +774,7 @@ export const nurseryService = {
 
   getNurseryPortfolioById: async (
     id: number | string,
-    locale: string
+    locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
       console.log(`Fetching portfolio for center ID: ${id}`);
@@ -789,14 +789,14 @@ export const nurseryService = {
             "X-Authorization": process.env.X_AUTHORIZATION || "",
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
-        }
+        },
       );
 
       if (!res.ok) {
         console.error(
           `Portfolio API failed for center ID ${id}:`,
           res.status,
-          res.statusText
+          res.statusText,
         );
         throw {
           message: "Failed to fetch portfolio data",
@@ -819,124 +819,6 @@ export const nurseryService = {
     }
   },
 
-  getNurseryDetails: async (
-    centerId: number,
-    locale: string
-  ): Promise<PortfolioResponse | null> => {
-    try {
-      console.log(`Fetching nursery details for center ID: ${centerId}`);
-
-      // Fetch the nursery details using the get-center endpoint
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-center/${centerId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            lang: locale,
-            "X-Authorization": process.env.X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        console.error(
-          `Nursery details API failed for center ID ${centerId}:`,
-          res.status,
-          res.statusText
-        );
-        throw {
-          message: "Failed to fetch nursery details",
-          errors: {},
-          status: res.status,
-        };
-      }
-
-      const data = await res.json();
-      console.log(`Nursery details received for center ID ${centerId}:`, data);
-
-      // Transform the data to match our expected format
-      const transformedData = {
-        hero_section: {
-          title_of_hero: data.data.nursery_name,
-          subtitle_of_hero: data.data.additional_service,
-          description: `Located in ${data.data.neighborhood}, ${
-            data.data.city?.name?.en || data.data.city
-          }`,
-          background_image: data.data.logo,
-        },
-        branches:
-          data.data.branches?.map((branch: any) => ({
-            id: branch.id,
-            name: branch.nursery_name,
-            nursery_name_branch: branch.nursery_name,
-          })) || [],
-        Philosophy_Methodology_Goal: {
-          philosophy: {
-            content:
-              data.data.additional_service ||
-              "Our philosophy focuses on providing quality care and education.",
-          },
-          methodology: {
-            content:
-              "We use modern educational methods tailored to each child's needs.",
-          },
-          goals: {
-            content:
-              "Our goal is to help children develop their full potential in a safe and nurturing environment.",
-          },
-        },
-        services:
-          data.data.services?.map((service: string) => ({
-            title: service,
-            description: `We provide ${service} services to support your child's development.`,
-            image_service: null,
-          })) || [],
-        service_section_title: "Our Services",
-        nursery_state: {
-          area: "Varies by branch",
-          class_rooms: `${data.data.branches?.length || 0} branches`,
-          team_members: `${data.data.branches?.reduce(
-            (total: number, branch: any) => total + (branch.teams?.length || 0),
-            0
-          )} team members`,
-        },
-        images_activities: [],
-        activity_section_title: "Our Activities",
-        activity_section_subtitle:
-          "Engaging activities for your child's development",
-        teams:
-          data.data.branches?.flatMap(
-            (branch: any) =>
-              branch.teams?.map((team: any) => ({
-                name: team.name,
-                mission: team.profession,
-                image: team.image,
-              })) || []
-          ) || [],
-        contact_info: {
-          address: data.data.address,
-          working_hours: `${data.data.work_days_from} - ${data.data.work_days_to}, ${data.data.work_hours_from} - ${data.data.work_hours_to}`,
-          phone_number: data.data.phone,
-          email_address: data.data.email,
-          facebook: undefined,
-          instagram: undefined,
-          twitter: undefined,
-          whatsapp: undefined,
-        },
-        ads_images: data.data.ads?.map((ad: any) => ad.image) || [],
-      };
-
-      return {
-        message: "Success",
-        data: transformedData,
-      };
-    } catch (error) {
-      console.error("Error fetching nursery details:", error);
-      return null;
-    }
-  },
-
   getLatestNurseries: async (locale: string): Promise<NurseryResponse[]> => {
     try {
       const res = await fetch(
@@ -951,7 +833,7 @@ export const nurseryService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -972,7 +854,7 @@ export const nurseryService = {
   getBranchesByNursery: async (nurseryName: string): Promise<any[]> => {
     try {
       const response = await apiClient.get(
-        `/branches?nursery_name=${nurseryName}`
+        `/branches?nursery_name=${nurseryName}`,
       );
       return response.data || [];
     } catch (error) {
@@ -984,7 +866,7 @@ export const nurseryService = {
   getBranchesForCenter: async (centerId: string): Promise<{ data: any[] }> => {
     try {
       const response = await apiClient.get(
-        `/get-branches-for-center/${centerId}`
+        `/get-branches-for-center/${centerId}`,
       );
       return response.data || { data: [] };
     } catch (error) {
@@ -995,15 +877,15 @@ export const nurseryService = {
 
   getBranchPricing: async (
     branchId: string,
-    centerId?: string
+    centerId?: string,
   ): Promise<any[]> => {
     try {
       if (centerId) {
         const response = await apiClient.get(
-          `/get-branches-for-center/${centerId}`
+          `/get-branches-for-center/${centerId}`,
         );
         const branch = (response.data?.data || []).find(
-          (b: any) => String(b.id) === String(branchId)
+          (b: any) => String(b.id) === String(branchId),
         );
         return branch?.pricing || [];
       }
@@ -1095,7 +977,7 @@ export const authService = {
       payload.commercial_record_path &&
         formData.append(
           "commercial_record_path",
-          payload.commercial_record_path
+          payload.commercial_record_path,
         );
 
       // Debug: Log the payload being sent
@@ -1121,7 +1003,7 @@ export const authService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data;
     } catch (error: any) {
@@ -1256,11 +1138,11 @@ export const paymentService = {
     try {
       console.log(
         "Payment service - Making request to /payment/subscribe with plan_id:",
-        planId
+        planId,
       );
       console.log(
         "Payment service - API Base URL:",
-        process.env.NEXT_PUBLIC_API_BASE_URL
+        process.env.NEXT_PUBLIC_API_BASE_URL,
       );
       console.log("Payment service - Request headers:", {
         "Content-Type": "application/json",
@@ -1292,7 +1174,7 @@ export const paymentService = {
     try {
       console.log(
         "Payment service - Making request to /payment/subscribe with enrollment_id:",
-        enrollmentId
+        enrollmentId,
       );
 
       const response = await apiClient.post("/payment/subscribe", {
@@ -1301,7 +1183,7 @@ export const paymentService = {
 
       console.log(
         "Payment service - Parent subscription response:",
-        response.data
+        response.data,
       );
       return response.data;
     } catch (error) {
@@ -1371,16 +1253,16 @@ export const parentService = {
   getChildren: async (): Promise<any[]> => {
     try {
       console.log(
-        "[parentService.getChildren] Calling API endpoint: /parent/children"
+        "[parentService.getChildren] Calling API endpoint: /parent/children",
       );
       const response = await apiClient.get("/parent/children");
       console.log(
         "[parentService.getChildren] Response status:",
-        response.status
+        response.status,
       );
       console.log(
         "[parentService.getChildren] Response data:",
-        JSON.stringify(response.data, null, 2)
+        JSON.stringify(response.data, null, 2),
       );
 
       // Some endpoints return { data: [...] } while others return [] directly
@@ -1389,7 +1271,7 @@ export const parentService = {
         console.log(
           "[parentService.getChildren] Data is array, returning:",
           data.length,
-          "items"
+          "items",
         );
         return data;
       }
@@ -1397,12 +1279,12 @@ export const parentService = {
         console.log(
           "[parentService.getChildren] Data.data is array, returning:",
           data.data.length,
-          "items"
+          "items",
         );
         return data.data;
       }
       console.log(
-        "[parentService.getChildren] No array found, returning empty array"
+        "[parentService.getChildren] No array found, returning empty array",
       );
       return [];
     } catch (error) {
@@ -1469,7 +1351,7 @@ export const parentService = {
 
       const response = await apiClient.post(
         "/register-parent-by-center",
-        payload
+        payload,
       );
 
       console.log("Parent registration response:", response.data);

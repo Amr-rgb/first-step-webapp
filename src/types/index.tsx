@@ -183,11 +183,10 @@ export interface CenterRegisterPayload {
 }
 
 // Extended interface for nursery API response that includes user_id
-export interface NurseryResponse
-  extends Omit<
-    CenterRegisterPayload,
-    "logo" | "license_path" | "commercial_record_path" | "city"
-  > {
+export interface NurseryResponse extends Omit<
+  CenterRegisterPayload,
+  "logo" | "license_path" | "commercial_record_path" | "city"
+> {
   id: number;
   user_id: number;
   center_id?: number;
@@ -314,6 +313,12 @@ export interface Message {
   read: boolean; // Tracks if the message has been read
 }
 
+export interface Branch {
+  id: number;
+  name: string;
+  nursery_name_branch: string;
+}
+
 // -----------------------------
 // Portfolio Types for Nursery Details
 // -----------------------------
@@ -322,71 +327,44 @@ export interface HeroSection {
   title_of_hero: string;
   subtitle_of_hero: string;
   description: string;
-  background_image: string;
-}
-
-export interface Branch {
-  id: number;
-  name: string;
-  nursery_name_branch: string;
-}
-
-export interface PhilosophyMethodologyGoal {
-  philosophy?: {
-    content: string;
-  };
-  methodology?: {
-    content: string;
-  };
-  goals?: {
-    content: string;
-  };
-}
-
-export interface PortfolioService {
-  title: string;
-  description: string;
-  image_service?: string;
-}
-
-export interface NurseryState {
-  area?: string;
-  class_rooms?: string;
-  team_members?: string;
-}
-
-export interface TeamMember {
-  name: string;
-  mission: string;
-  image?: string;
 }
 
 export interface ContactInfo {
-  address?: string;
-  working_hours?: string;
-  phone_number?: string;
-  email_address?: string;
   facebook?: string;
   instagram?: string;
   twitter?: string;
-  whatsapp?: string;
+  linkedIn?: string;
+  website?: string;
+}
+
+export interface AdminOption {
+  id: number;
+  title: {
+    ar: string;
+    en: string;
+  };
+  image: string;
+  pivot: {
+    center_id: number;
+    admin_option_id: number;
+  };
+}
+
+export interface License {
+  id: number;
+  number: string;
+  document: string;
 }
 
 export interface PortfolioData {
+  id: number;
+  center_id: number;
   hero_section?: HeroSection;
-  branches?: {
-    branch_name: string;
-  }[];
-  Philosophy_Methodology_Goal?: PhilosophyMethodologyGoal;
-  services?: PortfolioService[];
-  service_section_title?: string;
-  nursery_state?: NurseryState;
   images_activities?: string[];
-  activity_section_title?: string;
-  activity_section_subtitle?: string;
-  teams?: TeamMember[];
   contact_info?: ContactInfo;
   ads_images?: string[];
+  admin_options?: AdminOption[];
+  licenses?: License[];
 }
 
 export interface PortfolioResponse {
@@ -396,53 +374,34 @@ export interface PortfolioResponse {
 
 // Profile Editor Types
 export interface PortfolioFormData {
-  title_of_hero: string;
-  subtitle_of_hero: string;
-  description: string;
-  background_image: File | string;
-  branches: {
-    branch_name: string;
+  // Hero Info
+  title_of_hero?: string;
+  subtitle_of_hero?: string;
+  description?: string;
+
+  // Activities
+  images_activities?: (File | string)[];
+
+  // Facilities / Options
+  admin_option_ids?: number[];
+  delete_center_options?: number[];
+
+  // Licenses
+  licenses?: {
+    id?: number;
+    number: string;
+    document?: File | string;
   }[];
-  Philosophy_Methodology_Goal: {
-    philosophy: {
-      content: string;
-    };
-    methodology: {
-      content: string;
-    };
-    goals: {
-      content: string;
-    };
+  delete_license_ids?: number[];
+
+  // Social links
+  contact_info?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+    website?: string;
   };
-  service_section_title: string;
-  services: {
-    title: string;
-    description: string;
-    image_service: File | string;
-  }[];
-  nursery_state: {
-    area: string;
-    class_rooms: string;
-    team_members: string;
-  };
-  activity_section_title: string;
-  activity_section_subtitle: string;
-  images_activities: (File | string)[];
-  contact_info: {
-    address: string;
-    working_hours: string;
-    phone_number: string;
-    email_address: string;
-    facebook: string;
-    instagram: string;
-    whatsapp: string;
-  };
-  ads_images: (File | string)[];
-  teams: {
-    name: string;
-    mission: string;
-    image: File | string;
-  }[];
 }
 
 export interface PricingFormData {
