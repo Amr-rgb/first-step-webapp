@@ -2632,15 +2632,28 @@
       "subtitle": "أعط أطفالك الفرصة للاستمتاع معنا."
     },
     "programs": {
-      "title": "برامجنا",
-      "currency": "ريال سعودي",
+      "title": "البرامج",
+      "count": "({count} برنامج)",
+      "filter": "التصفية",
       "bookNow": "احجز الآن",
       "noResults": "لا توجد برامج مطابقة لخيارات التصفية",
+      "currency": "ريال",
       "filters": {
-        "childAge": "عمر الطفل",
         "branch": "الفرع",
         "programType": "نوع البرنامج",
-        "all": "الكل"
+        "age": "الأعمار",
+        "allBranches": "كل الفروع",
+        "allPrograms": "كل البرامج",
+        "allAges": "كل الأعمار",
+        "reset": "إعادة للوضع الافتراضي",
+        "apply": "تصفية",
+        "types": {
+          "hour": "بالساعة",
+          "day": "باليوم",
+          "week": "بالأسبوع",
+          "month": "بالشهر",
+          "year": "بالسنة"
+        }
       }
     },
     "contactForm": {

@@ -1,7 +1,7 @@
 import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
-import Plans from "@/components/general/nurseries/sections/Plans";
+import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
 import { nurseryService } from "@/services/api";
@@ -69,11 +69,11 @@ export default async function NurseryPage({
           locale={locale}
         />
 
-        {/* Plans Section */}
-        <div id="plans" className="scroll-mt-20">
-          <Plans
+        {/* Programs Section */}
+        <div id="programs" className="scroll-mt-20">
+          <ProgramsSection
             centerId={centerIdStr}
-            nurseryName={readableName}
+            nurseryName={name}
             locale={locale}
           />
         </div>

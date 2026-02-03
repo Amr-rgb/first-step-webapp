@@ -2632,15 +2632,28 @@
       "subtitle": "Let your childs enjoy, with lots of fields"
     },
     "programs": {
-      "title": "Our Programs",
-      "currency": "SAR",
+      "title": "Programs",
+      "count": "({count} programs)",
+      "filter": "Filtering",
       "bookNow": "Book Now",
       "noResults": "No programs found matching your filters",
+      "currency": "SAR",
       "filters": {
-        "childAge": "Child's Age",
         "branch": "Branch",
         "programType": "Program Type",
-        "all": "All"
+        "age": "Ages",
+        "allBranches": "All Branches",
+        "allPrograms": "All Programs",
+        "allAges": "All Ages",
+        "reset": "Reset to Default",
+        "apply": "Filter",
+        "types": {
+          "hour": "Hourly",
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly",
+          "year": "Yearly"
+        }
       }
     },
     "contact": {
