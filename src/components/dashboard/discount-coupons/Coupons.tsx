@@ -44,8 +44,6 @@ interface PromocodeItem {
   updated_at: string;
 }
 
-type CouponStatus = "active" | "not-started" | "paused" | "expired";
-
 interface Coupon {
   id: string;
   couponName: string;
