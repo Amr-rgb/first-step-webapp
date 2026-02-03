@@ -1,8 +1,11 @@
 import NurseryHeader from "./_components/NurseryHeader";
+import AboutSection from "./_components/AboutSection";
+import FacilitiesSection from "./_components/FacilitiesSection";
 import Plans from "@/components/general/nurseries/sections/Plans";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
 import { nurseryService } from "@/services/api";
+import { getTranslations } from "next-intl/server";
 
 export default async function NurseryPage({
   params,
@@ -10,6 +13,7 @@ export default async function NurseryPage({
   params: Promise<{ name: string; locale: string }>;
 }) {
   const { name, locale } = await params;
+  const t = await getTranslations("nurseryDetails");
 
   // Extract ID from URL (expected format: [id]-[slug])
   const idMatch = name.match(/^(\d+)-(.*)$/);
@@ -28,7 +32,7 @@ export default async function NurseryPage({
     portfolioResponse = await nurseryService.getNurseryPortfolio(name, locale);
   }
 
-  const portfolio = portfolioResponse?.data as any; // Cast to any to handle user.logo as requested
+  const portfolio = portfolioResponse?.data as any;
 
   if (!portfolio) {
     return (
@@ -38,8 +42,10 @@ export default async function NurseryPage({
     );
   }
 
+  const centerIdStr = id || String(portfolio.center_id || portfolio.id);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header Section */}
       <NurseryHeader
         name={portfolio.hero_section?.title_of_hero || readableName}
@@ -48,13 +54,29 @@ export default async function NurseryPage({
         rating={4.5}
       />
 
-      <div className="container mx-auto px-4 py-8 space-y-12">
-        {/* Plans Section */}
-        <Plans
-          centerId={id || String(portfolio.id)}
-          nurseryName={readableName}
+      <div className="container mx-auto px-4 md:px-8 py-12 space-y-20">
+        {/* About Section */}
+        <AboutSection
+          title={t("about.title")}
+          subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
+          description={portfolio.hero_section?.description || ""}
+        />
+
+        {/* Facilities Section */}
+        <FacilitiesSection
+          title={t("facilities.title")}
+          facilities={portfolio.admin_options || []}
           locale={locale}
         />
+
+        {/* Plans Section */}
+        <div id="plans" className="scroll-mt-20">
+          <Plans
+            centerId={centerIdStr}
+            nurseryName={readableName}
+            locale={locale}
+          />
+        </div>
       </div>
     </div>
   );

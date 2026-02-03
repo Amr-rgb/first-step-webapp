@@ -2583,8 +2583,16 @@
   },
   "nurseryDetails": {
     "header": {
+      "share": "مشاركة",
+      "chat": "محادثة",
       "sloganFallback": "مستقبل طفلك يبدأ من هنا",
       "description": "نقدم أفضل رعاية وتعليم لطفلك."
+    },
+    "about": {
+      "title": "عن المنشأة"
+    },
+    "facilities": {
+      "title": "مرافق المنشأة"
     },
     "waitingPage": {
       "parentTitle": "شيء جميل قادم!",

@@ -2583,8 +2583,16 @@
   },
   "nurseryDetails": {
     "header": {
+      "share": "Share",
+      "chat": "Chat",
       "sloganFallback": "Your child's future starts here",
       "description": "We provide the best care and education for your child."
+    },
+    "about": {
+      "title": "About the Center"
+    },
+    "facilities": {
+      "title": "Center Facilities"
     },
     "waitingPage": {
       "parentTitle": "Something Beautiful is Coming!",
