@@ -428,6 +428,34 @@ export const dashboardIcons = {
       />
     </svg>
   ),
+  multiFilter: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+      width={36}
+      height={36}
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M28.5 10.5V3M18 33v-7.5m-10.5-15V3"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.5 33V16.5m-3 0h6m18 16.5V16.5m-3 0h6m-13.5 3V3m-3 16.5h6"
+        opacity={0.4}
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
   files: (props?: React.SVGProps<SVGSVGElement>) => (
     <svg
       width={16}

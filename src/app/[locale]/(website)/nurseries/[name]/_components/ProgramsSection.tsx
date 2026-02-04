@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SlidersHorizontal, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -12,6 +12,7 @@ import {
 import ProgramCard from "./ProgramCard";
 import FilterDialog from "./FilterDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { dashboardIcons } from "@/components/general/icons";
 
 interface ProgramsSectionProps {
   centerId: string;
@@ -162,38 +163,41 @@ const ProgramsSection = ({
     <section id="programs" className="scroll-mt-20">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsFilterOpen(true)}
-          className="w-12 h-12 rounded-xl border-gray-100 shadow-sm hover:bg-gray-50 bg-white"
-        >
-          <SlidersHorizontal className="w-6 h-6 text-gray-400" />
-        </Button>
-
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl md:text-3xl font-bold text-primary">
+          <div className="w-1 h-8 bg-primary rounded-full" />
+          <h2 className="heading-4 font-bold text-primary">
             {t("title")}{" "}
             <span className="text-gray-400 font-medium">
               {t("count", { count: filteredPrograms.length })}
             </span>
           </h2>
-          <div className="w-1.5 h-8 bg-primary rounded-full" />
         </div>
+
+        <button
+          className="cursor-pointer text-primary"
+          onClick={() => setIsFilterOpen(true)}
+        >
+          <dashboardIcons.multiFilter />
+        </button>
       </div>
 
-      <div className="bg-[#F8F9FC] rounded-[40px] p-6 shadow-sm border border-gray-50 flex flex-col gap-6">
+      <div className="bg-white-out rounded-2xl p-4 shadow-sm border border-gray-50 flex flex-col gap-6">
         {/* Programs List - Optimized to show ~5 items with scrollbar */}
         <div className="max-h-[500px] overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-4">
           {loadingPlans || loadingBranches ? (
             Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-[24px] flex justify-between items-center animate-pulse"
+                className="bg-white px-4 py-4 rounded-2xl flex items-center justify-between gap-8 animate-pulse"
               >
-                <Skeleton className="h-8 w-20" />
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-8 w-40" />
+                <Skeleton className="h-6 flex-1" />
+                <div className="flex-1 flex items-center justify-between gap-4">
+                  <Skeleton className="h-5 w-24" />
+                  <div className="flex flex-col items-center gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-4 w-10" />
+                  </div>
+                </div>
               </div>
             ))
           ) : filteredPrograms.length > 0 ? (
@@ -220,9 +224,10 @@ const ProgramsSection = ({
 
         {/* Action Button */}
         <Button
+          size="long"
           onClick={handleBooking}
           disabled={!selectedProgramId}
-          className="w-full h-16 rounded-[20px] bg-[linear-gradient(90deg,#7082FF_0%,#2D3A82_100%)] text-white text-xl font-bold hover:opacity-90 transition-opacity border-none shadow-[0_4px_14px_rgba(45,58,130,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full! max-w-none"
         >
           {t("bookNow")}
         </Button>
