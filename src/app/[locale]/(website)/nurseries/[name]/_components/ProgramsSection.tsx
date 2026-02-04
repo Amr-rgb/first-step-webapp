@@ -160,7 +160,7 @@ const ProgramsSection = ({
   };
 
   return (
-    <section id="programs" className="scroll-mt-20">
+    <section id="programs" className="py-0 scroll-mt-20">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
@@ -181,7 +181,7 @@ const ProgramsSection = ({
         </button>
       </div>
 
-      <div className="bg-white-out rounded-2xl p-4 shadow-sm border border-gray-50 flex flex-col gap-6">
+      <div className="bg-white-out rounded-2xl p-4 flex flex-col gap-6">
         {/* Programs List - Optimized to show ~5 items with scrollbar */}
         <div className="max-h-[500px] overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-4">
           {loadingPlans || loadingBranches ? (

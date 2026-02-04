@@ -52,7 +52,7 @@ const FacilitiesSection = ({
   // if (!facilities || facilities.length === 0) return null;
 
   return (
-    <section id="facilities" className="scroll-mt-20">
+    <section id="facilities" className="py-0 scroll-mt-20">
       <SectionHeader title={title} />
       <div className="bg-white-out p-4 rounded-2xl flex flex-wrap items-center justify-center gap-x-4 gap-y-6">
         {facilities.map((facility) => (

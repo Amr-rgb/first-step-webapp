@@ -12,7 +12,7 @@ const AboutSection = ({ title, subtitle, description }: AboutSectionProps) => {
   if (!subtitle && !description) return null;
 
   return (
-    <section id="about" className="scroll-mt-20">
+    <section id="about" className="py-0 scroll-mt-20">
       <SectionHeader title={title} />
       <div className="bg-white-out rounded-2xl p-3 md:p-4">
         {subtitle && (

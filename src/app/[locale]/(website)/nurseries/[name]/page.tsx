@@ -54,28 +54,33 @@ export default async function NurseryPage({
         rating={4.5}
       />
 
-      <div className="container mx-auto px-4 py-12 space-y-20">
-        {/* About Section */}
-        <AboutSection
-          title={t("about.title")}
-          subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
-          description={portfolio.hero_section?.description || ""}
-        />
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Main Info Column: About & Facilities */}
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-10 lg:gap-10 order-1">
+            {/* About Section */}
+            <AboutSection
+              title={t("about.title")}
+              subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
+              description={portfolio.hero_section?.description || ""}
+            />
 
-        {/* Facilities Section */}
-        <FacilitiesSection
-          title={t("facilities.title")}
-          facilities={portfolio.admin_options || []}
-          locale={locale}
-        />
+            {/* Facilities Section */}
+            <FacilitiesSection
+              title={t("facilities.title")}
+              facilities={portfolio.admin_options || []}
+              locale={locale}
+            />
+          </div>
 
-        {/* Programs Section */}
-        <div id="programs" className="scroll-mt-20">
-          <ProgramsSection
-            centerId={centerIdStr}
-            nurseryName={name}
-            locale={locale}
-          />
+          {/* Sticky Sidebar Column: Programs */}
+          <div className="lg:col-span-5 xl:col-span-4 order-2">
+            <ProgramsSection
+              centerId={centerIdStr}
+              nurseryName={name}
+              locale={locale}
+            />
+          </div>
         </div>
       </div>
     </div>
