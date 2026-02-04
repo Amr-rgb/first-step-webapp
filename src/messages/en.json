@@ -2636,7 +2636,7 @@
       "count": "({count} programs)",
       "filter": "Filtering",
       "bookNow": "Book Now",
-      "noResults": "No programs found matching your filters",
+      "noResults": "No programs available for this search",
       "currency": "SAR",
       "filters": {
         "branch": "Branch",
@@ -2655,6 +2655,11 @@
           "year": "Yearly"
         }
       }
+    },
+    "albums": {
+      "title": "Photo Albums",
+      "count": "({count} photos)",
+      "viewAll": "View All"
     },
     "contact": {
       "title": "Contact Information",

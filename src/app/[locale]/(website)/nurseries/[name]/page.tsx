@@ -1,6 +1,7 @@
 import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
+import AlbumsSection from "./_components/AlbumsSection";
 import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
@@ -71,6 +72,9 @@ export default async function NurseryPage({
               facilities={portfolio.admin_options || []}
               locale={locale}
             />
+
+            {/* Albums Section */}
+            <AlbumsSection images={portfolio.images_activities || []} />
           </div>
 
           {/* Sticky Sidebar Column: Programs */}
