@@ -54,7 +54,7 @@ export default async function NurseryPage({
         rating={4.5}
       />
 
-      <div className="container mx-auto px-4 md:px-8 py-12 space-y-20">
+      <div className="container mx-auto px-4 py-12 space-y-20">
         {/* About Section */}
         <AboutSection
           title={t("about.title")}

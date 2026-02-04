@@ -38,7 +38,7 @@ const FacilitiesSection = ({
                 className="object-contain"
               />
             </div>
-            <h4 className="text-2xl md:text-3xl font-bold text-[#2D3A82] leading-tight">
+            <h4 className="text-2xl md:text-3xl font-bold text-primary leading-tight">
               {typeof facility.title === "string"
                 ? facility.title
                 : facility.title[locale as "en" | "ar"] || facility.title.ar}

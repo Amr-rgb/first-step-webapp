@@ -172,13 +172,13 @@ const ProgramsSection = ({
         </Button>
 
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#2D3A82]">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary">
             {t("title")}{" "}
             <span className="text-gray-400 font-medium">
               {t("count", { count: filteredPrograms.length })}
             </span>
           </h2>
-          <div className="w-1.5 h-8 bg-[#2D3A82] rounded-full" />
+          <div className="w-1.5 h-8 bg-primary rounded-full" />
         </div>
       </div>
 

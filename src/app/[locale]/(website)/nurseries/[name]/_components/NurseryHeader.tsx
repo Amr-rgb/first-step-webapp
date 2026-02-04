@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Star, Share2, MessageCircle } from "lucide-react";
+import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsAuthenticated } from "@/store/authStore";
+import { dashboardIcons } from "@/components/general/icons";
 
 interface NurseryHeaderProps {
   name: string;
@@ -49,11 +50,11 @@ const NurseryHeader = ({
   };
 
   return (
-    <div className="w-full py-8 px-4 md:px-8 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-8">
+    <div className="container mx-auto px-4 py-15 bg-white overflow-hidden">
+      <div className="relative flex flex-col md:flex-row items-center gap-8">
         {/* Logo Section */}
         <div className="relative w-40 h-40 md:w-48 md:h-48 shrink-0">
-          <div className="w-full h-full rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-white relative">
+          <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
             {logo ? (
               <Image
                 src={logo}
@@ -70,44 +71,46 @@ const NurseryHeader = ({
           </div>
         </div>
 
-        {/* Center Section: Title and Tagline */}
-        <div className="flex-1 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#2D3A82] mb-4 leading-tight">
-            {name}
-          </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-            {tagline}
-          </p>
-        </div>
-
-        {/* Rating and Social Buttons Section */}
-        <div className="flex flex-col items-center md:items-start gap-6 min-w-[120px]">
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-gray-500">
-              {rating.toFixed(1)}
-            </span>
-            <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+        <div className="flex-1 flex flex-col gap-y-8 md:flex-row items-center md:items-start justify-center md:justify-between">
+          {/* Center Section: Title and Tagline */}
+          <div className="text-center md:ltr:text-left md:rtl:text-right">
+            <h1 className="text-3xl md:text-3xl font-bold text-primary mb-4 leading-tight">
+              {name}
+            </h1>
+            <p className="text-lg md:text-xl text-mid-gray max-w-2xl font-medium leading-relaxed">
+              {tagline}
+            </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="w-12 h-12 text-mid-gray border-light-gray!"
-              onClick={handleShareClick}
-            >
-              <Share2 className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="w-12 h-12 text-mid-gray border-light-gray!"
-              onClick={handleChatClick}
-            >
-              <MessageCircle className="w-5 h-5" />
-            </Button>
+          {/* Rating and Social Buttons Section */}
+          <div className="flex md:flex-col justify-between items-center md:items-end gap-6 min-w-[120px]">
+            {/* Rating */}
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-gray-500">
+                {rating.toFixed(1)}
+              </span>
+              <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="md:absolute bottom-0 flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                className="w-10 h-10 text-mid-gray border-light-gray!"
+                onClick={handleChatClick}
+              >
+                <dashboardIcons.multiChat />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="w-10 h-10 text-mid-gray border-light-gray!"
+                onClick={handleShareClick}
+              >
+                <dashboardIcons.multiShare />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

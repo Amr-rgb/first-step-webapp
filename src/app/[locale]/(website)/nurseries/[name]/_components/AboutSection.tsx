@@ -16,7 +16,7 @@ const AboutSection = ({ title, subtitle, description }: AboutSectionProps) => {
       <SectionHeader title={title} />
       <div className="bg-[#F8F9FC] rounded-[40px] p-8 md:p-12 shadow-sm border border-gray-50">
         {subtitle && (
-          <h3 className="text-xl md:text-2xl font-bold text-[#2D3A82] mb-6 leading-relaxed">
+          <h3 className="text-xl md:text-2xl font-bold text-primary mb-6 leading-relaxed">
             {subtitle}
           </h3>
         )}

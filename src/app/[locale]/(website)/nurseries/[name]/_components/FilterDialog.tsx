@@ -100,7 +100,7 @@ const FilterDialog = ({
           >
             <X className="w-5 h-5 text-gray-400" />
           </Button>
-          <DialogTitle className="text-3xl font-bold text-[#2D3A82]">
+          <DialogTitle className="text-3xl font-bold text-primary">
             {t("filter")}
           </DialogTitle>
         </DialogHeader>
@@ -179,14 +179,14 @@ const FilterColumn = ({
 }: FilterColumnProps) => {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-end gap-2 text-[#2D3A82]">
+      <div className="flex items-center justify-end gap-2 text-primary">
         <span className="text-xl font-bold">{title}</span>
-        <div className="text-[#2D3A82] opacity-80">{icon}</div>
+        <div className="text-primary opacity-80">{icon}</div>
       </div>
 
       <div className="relative pr-4 min-h-[250px] max-h-[300px] overflow-y-auto custom-scrollbar flex flex-col gap-4">
         {/* Blue Indicator Line (Left in LTR, Right in RTL) */}
-        <div className="absolute right-0 top-0 w-1 h-full bg-[#2D3A82] rounded-full opacity-100" />
+        <div className="absolute right-0 top-0 w-1 h-full bg-primary rounded-full opacity-100" />
 
         {/* "All" Option */}
         <div
@@ -197,7 +197,7 @@ const FilterColumn = ({
             className={cn(
               "text-lg font-medium transition-colors",
               selectedIds.length === 0
-                ? "text-[#2D3A82]"
+                ? "text-primary"
                 : "text-gray-400 group-hover:text-gray-600",
             )}
           >
@@ -207,7 +207,7 @@ const FilterColumn = ({
             className={cn(
               "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
               selectedIds.length === 0
-                ? "bg-[#2D3A82] border-[#2D3A82]"
+                ? "bg-primary border-primary"
                 : "border-gray-200 group-hover:border-gray-300",
             )}
           >
@@ -230,7 +230,7 @@ const FilterColumn = ({
                 className={cn(
                   "text-lg font-medium transition-colors",
                   isSelected
-                    ? "text-[#2D3A82]"
+                    ? "text-primary"
                     : "text-gray-400 group-hover:text-gray-600",
                 )}
               >
@@ -240,7 +240,7 @@ const FilterColumn = ({
                 className={cn(
                   "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
                   isSelected
-                    ? "bg-[#2D3A82] border-[#2D3A82]"
+                    ? "bg-primary border-primary"
                     : "border-gray-200 group-hover:border-gray-300",
                 )}
               >

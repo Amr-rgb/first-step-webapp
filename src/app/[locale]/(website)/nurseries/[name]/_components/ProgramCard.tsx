@@ -32,12 +32,12 @@ const ProgramCard = ({
       <div
         className={cn(
           "absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-12 rounded-l-full transition-opacity",
-          isSelected ? "bg-[#2D3A82] opacity-100" : "bg-gray-200 opacity-0",
+          isSelected ? "bg-primary opacity-100" : "bg-gray-200 opacity-0",
         )}
       />
 
       {/* Title Section (Right in RTL) */}
-      <h4 className="text-xl md:text-2xl font-bold text-[#2D3A82] flex-1 text-right">
+      <h4 className="text-xl md:text-2xl font-bold text-primary flex-1 text-right">
         {title}
       </h4>
 
@@ -48,9 +48,9 @@ const ProgramCard = ({
 
       {/* Price Section (Left in RTL) */}
       <div className="flex flex-col items-end gap-1 flex-1">
-        <span className="text-2xl font-bold text-[#2D3A82]">{price}</span>
+        <span className="text-2xl font-bold text-primary">{price}</span>
         <div className="flex items-center gap-1">
-          <span className="text-xs font-bold text-[#2D3A82]">﷼</span>
+          <span className="text-xs font-bold text-primary">﷼</span>
         </div>
       </div>
     </div>
