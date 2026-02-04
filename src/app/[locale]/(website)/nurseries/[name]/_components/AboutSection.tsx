@@ -14,16 +14,14 @@ const AboutSection = ({ title, subtitle, description }: AboutSectionProps) => {
   return (
     <section id="about" className="scroll-mt-20">
       <SectionHeader title={title} />
-      <div className="bg-[#F8F9FC] rounded-[40px] p-8 md:p-12 shadow-sm border border-gray-50">
+      <div className="bg-white-out rounded-2xl p-3 md:p-4">
         {subtitle && (
-          <h3 className="text-xl md:text-2xl font-bold text-primary mb-6 leading-relaxed">
+          <h3 className="heading-4 font-medium text-primary mb-4 leading-relaxed">
             {subtitle}
           </h3>
         )}
         {description && (
-          <p className="text-gray-400 text-lg md:text-xl leading-[1.8] font-medium">
-            {description}
-          </p>
+          <p className="text-gray leading-[1.8] font-medium">{description}</p>
         )}
       </div>
     </section>
