@@ -54,7 +54,7 @@ export default async function NurseriesPage({
     ]);
     // Filter out nursery with ID 68
     nurseries = (nurseriesData as any[]).filter(
-      (nursery: any) => Number(nursery.id) !== 68
+      (nursery: any) => Number(nursery.id) !== 68 || Number(nursery.id) !== 81,
     );
     if (couponsResponse.success) {
       coupons = couponsResponse.data;
