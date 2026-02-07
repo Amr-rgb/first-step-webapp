@@ -10,46 +10,12 @@ interface FacilitiesSectionProps {
   locale: string;
 }
 
-const dummyFacilities = [
-  {
-    id: 1,
-    title: { ar: "العاب خارجية", en: "Outdoor Games" },
-    image: "/assets/illustrations/center.png",
-  },
-  {
-    id: 2,
-    title: { ar: "مسبح اطفال", en: "Kids Pool" },
-    image: "/assets/illustrations/center.png",
-  },
-  {
-    id: 3,
-    title: { ar: "منطقة انتظار", en: "Waiting Area" },
-    image: "/assets/illustrations/center.png",
-  },
-  {
-    id: 4,
-    title: { ar: "العاب خارجية", en: "Outdoor Games" },
-    image: "/assets/illustrations/center.png",
-  },
-  {
-    id: 5,
-    title: { ar: "مسبح اطفال", en: "Kids Pool" },
-    image: "/assets/illustrations/center.png",
-  },
-  {
-    id: 6,
-    title: { ar: "منطقة انتظار", en: "Waiting Area" },
-    image: "/assets/illustrations/center.png",
-  },
-];
-
 const FacilitiesSection = ({
   title,
-  facilities: _facilities,
+  facilities,
   locale,
 }: FacilitiesSectionProps) => {
-  const facilities = dummyFacilities;
-  // if (!facilities || facilities.length === 0) return null;
+  if (!facilities || facilities.length === 0) return null;
 
   return (
     <section id="facilities" className="py-0 scroll-mt-20">
