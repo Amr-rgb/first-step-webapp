@@ -20,6 +20,7 @@ import { useRouter } from "@/i18n/navigation";
 // Section Components
 import { BasicInfoSection } from "./_components/BasicInfoSection";
 import { PlansSection } from "./_components/PlansSection";
+import { FacilitiesSection } from "./_components/FacilitiesSection";
 import { ActivitiesSection } from "./_components/ActivitiesSection";
 import { LicensesSection } from "./_components/LicensesSection";
 import { SocialMediaSection } from "./_components/SocialMediaSection";
@@ -145,6 +146,10 @@ export default function CenterProfilePage() {
       title: t("sections.plans"),
     },
     {
+      id: "facilities",
+      title: t("sections.facilities"),
+    },
+    {
       id: "activities",
       title: t("sections.activities"),
     },
@@ -172,6 +177,14 @@ export default function CenterProfilePage() {
         );
       case "plans":
         return <PlansSection />;
+      case "facilities":
+        return (
+          <FacilitiesSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
       case "activities":
         return (
           <ActivitiesSection

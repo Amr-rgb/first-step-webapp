@@ -1196,6 +1196,15 @@ export const centerService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getOptions: async () => {
+    try {
+      const response = await apiClient.get("/options");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const adminService = {

@@ -2081,6 +2081,9 @@
         "formatsNote": "الصيغ المدعومة: JPG, PNG (الحجم الأقصى: 10 ميجابايت)",
         "uploadedTitle": "الصور المحملة ({count})"
       },
+      "facilities": {
+        "title": "اختر المرافق المتاحة في حضانتك"
+      },
       "licenses": {
         "title": "التراخيص",
         "nurseryLicensed": "مرخص / معتمد",

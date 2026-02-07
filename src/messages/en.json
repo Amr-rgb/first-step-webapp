@@ -2086,6 +2086,9 @@
         "formatsNote": "Supported formats: JPG, PNG (Max size: 10MB)",
         "uploadedTitle": "Uploaded Photos ({count})"
       },
+      "facilities": {
+        "title": "Choose the facilities available in your nursery"
+      },
       "licenses": {
         "title": "Licenses",
         "nurseryLicensed": "Licensed / Certified",
