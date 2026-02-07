@@ -92,9 +92,9 @@ export const SocialMediaSection = ({ data, onChange, errors = {} }: Props) => {
                 }
                 className="bg-gray-50/50 py-5 sm:py-6 rounded-xl border-transparent focus:bg-white focus:border-primary/30 transition-all text-sm sm:text-base"
               />
-              {errors[link.id] && (
+              {errors[`contact_info.${link.id}`] && (
                 <p className="text-sm text-destructive px-1">
-                  {errors[link.id][0]}
+                  {errors[`contact_info.${link.id}`][0]}
                 </p>
               )}
             </div>

@@ -117,7 +117,14 @@ export default function CenterProfilePage() {
       setValidationErrors((prev) => {
         const newErrors = { ...prev };
         updatedFields.forEach((field) => {
+          // Clear flat key
           delete newErrors[field];
+          // Clear nested keys (e.g., contact_info.facebook)
+          Object.keys(newErrors).forEach((key) => {
+            if (key.startsWith(`${field}.`)) {
+              delete newErrors[key];
+            }
+          });
         });
         return newErrors;
       });
@@ -135,7 +142,15 @@ export default function CenterProfilePage() {
     onError: (error: any) => {
       if (error.errors && typeof error.errors === "object") {
         setValidationErrors(error.errors);
-        toastError(t("title"), error.message || t("saveError"));
+
+        // Extract first actual error message if available
+        const firstErrorKey = Object.keys(error.errors)[0];
+        const firstErrorMessage = error.errors[firstErrorKey]?.[0];
+
+        toastError(
+          t("title"),
+          firstErrorMessage || error.message || t("saveError"),
+        );
       } else {
         toastError(t("title"), error.message || t("saveError"));
       }
@@ -156,6 +171,21 @@ export default function CenterProfilePage() {
   });
 
   const handleSave = () => {
+    // Validate licenses - stop sending if any entry is incomplete
+    if (formData.licenses && formData.licenses.length > 0) {
+      const isIncomplete = formData.licenses.some(
+        (l) => !l.number?.trim() || !l.document,
+      );
+
+      if (isIncomplete) {
+        toastError(
+          t("sections.licenses"),
+          "Please complete all license information (number and document) before saving.",
+        );
+        return; // BLOCK SUBMISSION
+      }
+    }
+
     const dirtyData: Partial<PortfolioFormData> = {};
     dirtyFields.forEach((field) => {
       (dirtyData as any)[field] = (formData as any)[field];
@@ -170,6 +200,17 @@ export default function CenterProfilePage() {
     }
     if (formData.delete_images_activities?.length) {
       dirtyData.delete_images_activities = formData.delete_images_activities;
+    }
+
+    // If nothing dirty left after filtering, don't send
+    if (
+      Object.keys(dirtyData).length === 0 &&
+      !formData.delete_license_ids?.length &&
+      !formData.delete_center_options?.length &&
+      !formData.delete_images_activities?.length
+    ) {
+      setIsDirty(false);
+      return;
     }
 
     saveMutation.mutate(dirtyData as PortfolioFormData);
