@@ -2668,6 +2668,11 @@
       "title": "مساحة إعلانية",
       "placeholder": "انتظروا عروض وأنشطة رائعة"
     },
+    "ratings": {
+      "title": "تقييمات ({count} تقييم)",
+      "placeholder": "ساهم في تحسين الخدمة وكن أول تقييم",
+      "bookNow": "احجز الآن"
+    },
     "suggestedNurseries": {
       "title": "منشآت مقترحة"
     },
