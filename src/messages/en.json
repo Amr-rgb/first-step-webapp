@@ -2664,6 +2664,10 @@
     "blogs": {
       "title": "Important Blogs"
     },
+    "ads": {
+      "title": "Advertising Space",
+      "placeholder": "Stay tuned for great offers and activities"
+    },
     "suggestedNurseries": {
       "title": "Suggested Nurseries"
     },

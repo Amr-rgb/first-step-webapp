@@ -917,6 +917,16 @@ export const nurseryService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getCenterAds: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/ads`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching center ads:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const authService = {

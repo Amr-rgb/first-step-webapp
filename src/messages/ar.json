@@ -2664,6 +2664,10 @@
     "blogs": {
       "title": "مدونات مهمة"
     },
+    "ads": {
+      "title": "مساحة إعلانية",
+      "placeholder": "انتظروا عروض وأنشطة رائعة"
+    },
     "suggestedNurseries": {
       "title": "منشآت مقترحة"
     },

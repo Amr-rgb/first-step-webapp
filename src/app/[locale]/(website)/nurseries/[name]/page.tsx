@@ -1,6 +1,7 @@
 import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
+import AdsSection from "./_components/AdsSection";
 import AlbumsSection from "./_components/AlbumsSection";
 import BlogsSection from "./_components/BlogsSection";
 import CouponsSection from "./_components/CouponsSection";
@@ -75,6 +76,9 @@ export default async function NurseryPage({
               facilities={portfolio.admin_options || []}
               locale={locale}
             />
+
+            {/* Ads Section */}
+            <AdsSection centerId={centerIdStr} />
 
             {/* Albums Section */}
             <AlbumsSection images={portfolio.images_activities || []} />

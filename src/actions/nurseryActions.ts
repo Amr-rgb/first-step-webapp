@@ -35,6 +35,10 @@ export async function getCenterBlogsAction(centerId: string) {
   return result?.data || [];
 }
 
+export async function getCenterAdsAction(centerId: string) {
+  return await nurseryService.getCenterAds(centerId);
+}
+
 export async function createExistingEnrollmentAction(payload: {
   center_branch_id: number | string;
   branch_price_id: number | string;
