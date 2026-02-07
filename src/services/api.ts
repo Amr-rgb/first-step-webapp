@@ -907,6 +907,16 @@ export const nurseryService = {
       throw ApiErrorHandler.handle(error);
     }
   },
+
+  getCenterBlogs: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/blogs-center`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center blogs:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const authService = {

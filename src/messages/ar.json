@@ -2661,6 +2661,9 @@
       "count": "({count} صورة)",
       "viewAll": "عرض الكل"
     },
+    "blogs": {
+      "title": "مدونات مهمة"
+    },
     "coupons": {
       "title": "كوبونات الخصم",
       "validUntil": "متاح حتى يوم {date}",

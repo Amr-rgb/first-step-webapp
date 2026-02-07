@@ -30,6 +30,11 @@ export async function getCenterPromocodesAction(centerId: string) {
   return result?.data || [];
 }
 
+export async function getCenterBlogsAction(centerId: string) {
+  const result = await nurseryService.getCenterBlogs(centerId);
+  return result?.data || [];
+}
+
 export async function createExistingEnrollmentAction(payload: {
   center_branch_id: number | string;
   branch_price_id: number | string;

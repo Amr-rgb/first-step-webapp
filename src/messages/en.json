@@ -2661,6 +2661,9 @@
       "count": "({count} photos)",
       "viewAll": "View All"
     },
+    "blogs": {
+      "title": "Important Blogs"
+    },
     "coupons": {
       "title": "Discount Coupons",
       "validUntil": "Available until {date}",

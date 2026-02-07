@@ -2,6 +2,7 @@ import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
 import AlbumsSection from "./_components/AlbumsSection";
+import BlogsSection from "./_components/BlogsSection";
 import CouponsSection from "./_components/CouponsSection";
 import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
@@ -91,6 +92,9 @@ export default async function NurseryPage({
               centerId={centerIdStr}
               nurseryLogo={portfolio.user?.logo || portfolio.logo}
             />
+
+            {/* Blogs Section */}
+            <BlogsSection centerId={centerIdStr} />
           </div>
         </div>
       </div>
