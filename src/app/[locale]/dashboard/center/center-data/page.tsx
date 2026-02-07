@@ -42,6 +42,7 @@ export default function CenterProfilePage() {
     subtitle_of_hero: "",
     description: "",
     images_activities: [],
+    delete_images_activities: [],
     admin_option_ids: [],
     delete_center_options: [],
     licenses: [],
@@ -83,6 +84,7 @@ export default function CenterProfilePage() {
           website: p.contact_info?.website || p.website || "",
         },
         images_activities: p.images_activities || [],
+        delete_images_activities: [],
         admin_option_ids:
           (p.admin_options || p.options)?.map((o: any) => o.id) || [],
         licenses: p.licenses || [],

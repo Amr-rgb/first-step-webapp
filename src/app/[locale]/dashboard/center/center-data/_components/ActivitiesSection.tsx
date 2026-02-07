@@ -19,6 +19,22 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
   const t = useTranslations("dashboard.profileEditor.activities");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [initialImages, setInitialImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Store the initial images to track original indices if not already stored
+    if (
+      initialImages.length === 0 &&
+      data.images_activities &&
+      data.images_activities.some((img) => typeof img === "string")
+    ) {
+      setInitialImages(
+        data.images_activities.filter(
+          (img): img is string => typeof img === "string",
+        ),
+      );
+    }
+  }, [data.images_activities]);
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -44,9 +60,25 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
   };
 
   const handleRemove = (index: number) => {
-    const updated = [...(data.images_activities || [])];
-    updated.splice(index, 1);
-    onChange({ images_activities: updated });
+    const images = data.images_activities || [];
+    const itemToRemove = images[index];
+
+    const updatedImages = images.filter((_, i) => i !== index);
+    const updates: Partial<PortfolioFormData> = {
+      images_activities: updatedImages,
+    };
+
+    if (typeof itemToRemove === "string") {
+      const originalIndex = initialImages.indexOf(itemToRemove);
+      if (originalIndex !== -1) {
+        updates.delete_images_activities = [
+          ...(data.delete_images_activities || []),
+          originalIndex,
+        ];
+      }
+    }
+
+    onChange(updates);
   };
 
   return (

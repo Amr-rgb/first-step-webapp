@@ -381,6 +381,7 @@ export interface PortfolioFormData {
 
   // Activities
   images_activities?: (File | string)[];
+  delete_images_activities?: number[];
 
   // Facilities / Options
   admin_option_ids?: number[];

@@ -1090,21 +1090,33 @@ export const centerService = {
 
       // Social links
       if (payload.contact_info?.facebook)
-        formData.append("facebook", payload.contact_info.facebook);
+        formData.append(
+          "contact_info[facebook]",
+          payload.contact_info.facebook,
+        );
       if (payload.contact_info?.instagram)
-        formData.append("instagram", payload.contact_info.instagram);
+        formData.append(
+          "contact_info[instagram]",
+          payload.contact_info.instagram,
+        );
       if (payload.contact_info?.twitter)
-        formData.append("twitter", payload.contact_info.twitter);
+        formData.append("contact_info[twitter]", payload.contact_info.twitter);
       if (payload.contact_info?.linkedin)
-        formData.append("linkedin", payload.contact_info.linkedin);
+        formData.append(
+          "contact_info[linkedin]",
+          payload.contact_info.linkedin,
+        );
       if (payload.contact_info?.website)
-        formData.append("website", payload.contact_info.website);
+        formData.append("contact_info[website]", payload.contact_info.website);
 
       // Activities
       payload.images_activities?.forEach((img, index) => {
         if (img instanceof File) {
           formData.append(`images_activities[${index}]`, img);
         }
+      });
+      payload.delete_images_activities?.forEach((index, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(index));
       });
 
       // Options (Facilities)
