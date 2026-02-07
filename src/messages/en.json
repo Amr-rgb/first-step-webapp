@@ -2664,6 +2664,9 @@
     "blogs": {
       "title": "Important Blogs"
     },
+    "suggestedNurseries": {
+      "title": "Suggested Nurseries"
+    },
     "coupons": {
       "title": "Discount Coupons",
       "validUntil": "Available until {date}",

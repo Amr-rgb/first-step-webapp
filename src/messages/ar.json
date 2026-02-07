@@ -2664,6 +2664,9 @@
     "blogs": {
       "title": "مدونات مهمة"
     },
+    "suggestedNurseries": {
+      "title": "منشآت مقترحة"
+    },
     "coupons": {
       "title": "كوبونات الخصم",
       "validUntil": "متاح حتى يوم {date}",
