@@ -2661,6 +2661,12 @@
       "count": "({count} photos)",
       "viewAll": "View All"
     },
+    "coupons": {
+      "title": "Discount Coupons",
+      "validUntil": "Available until {date}",
+      "copyCode": "Copy Code",
+      "copied": "Code Copied"
+    },
     "contact": {
       "title": "Contact Information",
       "info": "Contact Information",
@@ -2883,7 +2889,8 @@
     "card": {
       "validUntil": "Valid until",
       "copySuccess": "Code copied successfully",
-      "viewCenters": "View Participating Centers"
+      "viewCenters": "View Participating Centers",
+      "viewBranches": "View Participating Branches"
     },
     "share": "Share offers and coupons with friends",
     "emptyState": {

@@ -2,6 +2,7 @@ import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
 import AlbumsSection from "./_components/AlbumsSection";
+import CouponsSection from "./_components/CouponsSection";
 import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
@@ -78,11 +79,17 @@ export default async function NurseryPage({
           </div>
 
           {/* Sticky Sidebar Column: Programs */}
-          <div className="lg:col-span-5 xl:col-span-4 order-2">
+          <div className="lg:col-span-5 xl:col-span-4 order-2 flex flex-col gap-10">
             <ProgramsSection
               centerId={centerIdStr}
               nurseryName={name}
               locale={locale}
+            />
+
+            {/* Coupons Section */}
+            <CouponsSection
+              centerId={centerIdStr}
+              nurseryLogo={portfolio.user?.logo || portfolio.logo}
             />
           </div>
         </div>

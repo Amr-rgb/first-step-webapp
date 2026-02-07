@@ -20,9 +20,14 @@ export async function getBranchesForCenterAction(centerId: string) {
 
 export async function getBranchPricingAction(
   branchId: string,
-  centerId?: string
+  centerId?: string,
 ) {
   return await nurseryService.getBranchPricing(branchId, centerId);
+}
+
+export async function getCenterPromocodesAction(centerId: string) {
+  const result = await nurseryService.getCenterPromocodes(centerId);
+  return result?.data || [];
 }
 
 export async function createExistingEnrollmentAction(payload: {
@@ -43,10 +48,16 @@ export async function createEnrollmentAction(payload: {
   starting_time?: string;
   starting_date?: string;
 }) {
-  console.log("[createEnrollmentAction] Starting enrollment creation with payload:", payload);
+  console.log(
+    "[createEnrollmentAction] Starting enrollment creation with payload:",
+    payload,
+  );
   try {
     const result = await enrollmentService.createEnrollment(payload);
-    console.log("[createEnrollmentAction] Enrollment created successfully:", result);
+    console.log(
+      "[createEnrollmentAction] Enrollment created successfully:",
+      result,
+    );
     return result;
   } catch (error) {
     console.error("[createEnrollmentAction] Error creating enrollment:", error);

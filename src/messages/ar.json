@@ -2661,6 +2661,12 @@
       "count": "({count} صورة)",
       "viewAll": "عرض الكل"
     },
+    "coupons": {
+      "title": "كوبونات الخصم",
+      "validUntil": "متاح حتى يوم {date}",
+      "copyCode": "نسخ الكود",
+      "copied": "تم نسخ الكود"
+    },
     "contactForm": {
       "title": "معلومات التواصل",
       "info": "معلومات التواصل",
@@ -2898,7 +2904,8 @@
     "card": {
       "validUntil": "متاح حتى يوم",
       "copySuccess": "تم نسخ الكود بنجاح",
-      "viewCenters": "عرض المراكز المشاركة"
+      "viewCenters": "عرض المراكز المشاركة",
+      "viewBranches": "عرض الفروع المشاركة"
     },
     "share": "شارك العروض والكوبونات مع أصدقاءك",
     "emptyState": {

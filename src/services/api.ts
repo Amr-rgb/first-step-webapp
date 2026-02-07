@@ -897,6 +897,16 @@ export const nurseryService = {
       return [];
     }
   },
+
+  getCenterPromocodes: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/promocodes`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center promocodes:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const authService = {
