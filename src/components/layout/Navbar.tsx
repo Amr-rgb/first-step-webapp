@@ -208,7 +208,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <>
-      <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
+      <div className="fixed top-0 left-0 right-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
         <div
           className={`relative container mx-auto px-4 transition-all duration-300 ${isScrolled ? "py-2" : "py-2.5"
             }`}
@@ -249,10 +249,10 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                     <Link
                       href={link.path}
                       className={`text-base text-gray flex items-center justify-center gap-1 ${hoverEffect} ${isActive(link.path) ||
-                          (link.items &&
-                            link.items.some((item: any) => isActive(item.path)))
-                          ? "text-xl font-extrabold text-primary"
-                          : ""
+                        (link.items &&
+                          link.items.some((item: any) => isActive(item.path)))
+                        ? "text-xl font-extrabold text-primary"
+                        : ""
                         }`}
                     >
                       {link.title}
@@ -272,8 +272,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                               key={item.path}
                               href={item.path}
                               className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 rtl:text-right ltr:text-left ${isActive(item.path)
-                                  ? "bg-emerald-50 text-primary font-bold"
-                                  : ""
+                                ? "bg-emerald-50 text-primary font-bold"
+                                : ""
                                 }`}
                             >
                               {item.title}
@@ -315,6 +315,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </div>
       </div>
+
+      {/* Spacer to prevent content overlap */}
+      <div className="h-[80px] w-full" aria-hidden="true" />
 
       {/* Floating Action Buttons - Fixed to viewport */}
       {/* {!token && (
@@ -394,8 +397,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           <div
             ref={menuRef}
             className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isMenuOpen
-                ? "translate-x-0"
-                : "ltr:translate-x-full rtl:-translate-x-full"
+              ? "translate-x-0"
+              : "ltr:translate-x-full rtl:-translate-x-full"
               }`}
             style={{
               height: "100vh",
@@ -433,9 +436,9 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                           )
                         }
                         className={`w-full px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${isActive(link.path) ||
-                            link.items.some((item: any) => isActive(item.path))
-                            ? "font-bold text-emerald-600 bg-emerald-50"
-                            : "text-gray-700 hover:bg-gray-50"
+                          link.items.some((item: any) => isActive(item.path))
+                          ? "font-bold text-emerald-600 bg-emerald-50"
+                          : "text-gray-700 hover:bg-gray-50"
                           }`}
                       >
                         {link.title}
@@ -451,8 +454,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                       <Link
                         href={link.path}
                         className={`px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${isActive(link.path)
-                            ? "font-bold text-emerald-600 bg-emerald-50"
-                            : "text-gray-700 hover:bg-gray-50"
+                          ? "font-bold text-emerald-600 bg-emerald-50"
+                          : "text-gray-700 hover:bg-gray-50"
                           }`}
                         onClick={forceCloseMenu}
                       >
@@ -466,8 +469,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                             <Link
                               href={item.path}
                               className={`block ltr:px-12 rtl:px-12 py-3 text-sm transition-colors duration-200 ${isActive(item.path)
-                                  ? "font-extrabold text-emerald-600"
-                                  : "text-gray-600 hover:bg-gray-100"
+                                ? "font-extrabold text-emerald-600"
+                                : "text-gray-600 hover:bg-gray-100"
                                 }`}
                               onClick={forceCloseMenu}
                             >
