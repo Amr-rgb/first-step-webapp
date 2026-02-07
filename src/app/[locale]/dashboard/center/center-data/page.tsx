@@ -14,8 +14,9 @@ import {
 import { centerService } from "@/services/dashboardApi";
 import { PortfolioFormData } from "@/types";
 import { toastSuccess, toastError } from "@/lib/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
+import { useAuthUser } from "@/store/authStore";
 
 // Section Components
 import { BasicInfoSection } from "./_components/BasicInfoSection";
@@ -29,6 +30,8 @@ export default function CenterProfilePage() {
   usePageMetadata();
   const t = useTranslations("dashboard.profileEditor");
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const user = useAuthUser();
   const [activeSection, setActiveSection] = useState<string>("basicInfo");
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -61,26 +64,33 @@ export default function CenterProfilePage() {
   });
 
   useEffect(() => {
-    if (initialData?.data) {
-      const p = initialData.data;
+    const p = initialData?.portofilo || initialData?.data;
+    if (p) {
       setFormData({
-        title_of_hero: p.title_of_hero || "",
-        subtitle_of_hero: p.subtitle_of_hero || "",
-        description: p.description || "",
+        title_of_hero: p.hero_section?.title_of_hero || p.title_of_hero || "",
+        subtitle_of_hero:
+          p.hero_section?.subtitle_of_hero || p.subtitle_of_hero || "",
+        description: p.hero_section?.description || p.description || "",
         contact_info: {
-          facebook: p.facebook || "",
-          instagram: p.instagram || "",
-          twitter: p.twitter || "",
-          linkedin: p.linkedin || "",
-          website: p.website || "",
+          facebook: p.contact_info?.facebook || p.facebook || "",
+          instagram: p.contact_info?.instagram || p.instagram || "",
+          twitter: p.contact_info?.twitter || p.twitter || "",
+          linkedin:
+            p.contact_info?.linkedin ||
+            p.contact_info?.linkedIn ||
+            p.linkedin ||
+            "",
+          website: p.contact_info?.website || p.website || "",
         },
         images_activities: p.images_activities || [],
-        admin_option_ids: p.options?.map((o: any) => o.id) || [],
+        admin_option_ids:
+          (p.admin_options || p.options)?.map((o: any) => o.id) || [],
         licenses: p.licenses || [],
       });
-      setLogoUrl(p.logo || "");
+      // The logo might be in the parent object, inside portfolio, or the user object
+      setLogoUrl(p.logo || initialData?.logo || user?.logo || "");
     }
-  }, [initialData]);
+  }, [initialData, user?.logo]);
 
   const updateFormData = (newData: Partial<PortfolioFormData>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
@@ -102,6 +112,7 @@ export default function CenterProfilePage() {
     mutationFn: (data: PortfolioFormData) => centerService.savePortfolio(data),
     onSuccess: () => {
       setValidationErrors({});
+      queryClient.invalidateQueries({ queryKey: ["centerPortfolio"] });
       toastSuccess(t("title"), t("saveSuccess"));
       router.refresh();
     },

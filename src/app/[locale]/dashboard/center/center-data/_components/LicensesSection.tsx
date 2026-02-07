@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toastError } from "@/lib/toast";
 
 interface Props {
@@ -19,9 +19,13 @@ interface Props {
 
 export const LicensesSection = ({ data, onChange, errors = {} }: Props) => {
   const t = useTranslations("dashboard.profileEditor.licenses");
-  const [isToggled, setIsToggled] = useState(
-    (data.licenses && data.licenses.length > 0) || false,
-  );
+  const [isToggled, setIsToggled] = useState(false);
+
+  useEffect(() => {
+    if (data.licenses && data.licenses.length > 0) {
+      setIsToggled(true);
+    }
+  }, [data.licenses]);
 
   const handleAddLicense = () => {
     const newLicenses = [...(data.licenses || []), { number: "" }];

@@ -81,8 +81,15 @@ export const SocialMediaSection = ({ data, onChange, errors = {} }: Props) => {
                     ? "https://yourwebsite.com"
                     : `https://${link.id}.com/username`
                 }
-                value={(data as any)[link.id] || ""}
-                onChange={(e) => onChange({ [link.id]: e.target.value })}
+                value={(data.contact_info as any)?.[link.id] || ""}
+                onChange={(e) =>
+                  onChange({
+                    contact_info: {
+                      ...data.contact_info,
+                      [link.id]: e.target.value,
+                    },
+                  })
+                }
                 className="bg-gray-50/50 py-5 sm:py-6 rounded-xl border-transparent focus:bg-white focus:border-primary/30 transition-all text-sm sm:text-base"
               />
               {errors[link.id] && (
