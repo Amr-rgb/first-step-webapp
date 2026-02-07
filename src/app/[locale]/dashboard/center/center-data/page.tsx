@@ -57,6 +57,10 @@ export default function CenterProfilePage() {
   });
 
   const [logoUrl, setLogoUrl] = useState<string>("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [dirtyFields, setDirtyFields] = useState<Set<keyof PortfolioFormData>>(
+    new Set(),
+  );
 
   // Fetch initial data
   const { data: initialData, isLoading } = useQuery({
@@ -91,11 +95,21 @@ export default function CenterProfilePage() {
       });
       // The logo might be in the parent object, inside portfolio, or the user object
       setLogoUrl(p.logo || initialData?.logo || user?.logo || "");
+      setIsDirty(false);
+      setDirtyFields(new Set());
     }
   }, [initialData, user?.logo]);
 
   const updateFormData = (newData: Partial<PortfolioFormData>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
+    setIsDirty(true);
+
+    const keys = Object.keys(newData) as (keyof PortfolioFormData)[];
+    setDirtyFields((prev) => {
+      const next = new Set(prev);
+      keys.forEach((key) => next.add(key));
+      return next;
+    });
 
     // Clear errors for updated fields
     if (Object.keys(validationErrors).length > 0) {
@@ -142,7 +156,23 @@ export default function CenterProfilePage() {
   });
 
   const handleSave = () => {
-    saveMutation.mutate(formData);
+    const dirtyData: Partial<PortfolioFormData> = {};
+    dirtyFields.forEach((field) => {
+      (dirtyData as any)[field] = (formData as any)[field];
+    });
+
+    // Always include deletion trackers if they have items
+    if (formData.delete_license_ids?.length) {
+      dirtyData.delete_license_ids = formData.delete_license_ids;
+    }
+    if (formData.delete_center_options?.length) {
+      dirtyData.delete_center_options = formData.delete_center_options;
+    }
+    if (formData.delete_images_activities?.length) {
+      dirtyData.delete_images_activities = formData.delete_images_activities;
+    }
+
+    saveMutation.mutate(dirtyData as PortfolioFormData);
   };
 
   const handleCancel = () => {
@@ -274,7 +304,7 @@ export default function CenterProfilePage() {
               size="lg"
               className="w-full flex-1"
               onClick={handleSave}
-              disabled={saveMutation.isPending}
+              disabled={saveMutation.isPending || !isDirty}
             >
               {saveMutation.isPending ? t("saving") : t("savePortfolio")}
             </Button>
