@@ -164,22 +164,30 @@ export interface Pricing {
 }
 
 export interface CenterRegisterPayload {
-  // Step 1 fields
+  // Basic Info
   name: string;
   email: string;
-  password: string;
+  password: string; // optional in some contexts? Schema says required.
   phone: string;
   nursery_name: string;
-  location: string;
-  neighborhood: string;
-  city: string;
-  nursery_type: string[];
-  types: string[];
+  description: string;
   logo: File;
 
-  // Step 2 fields
-  commercial_record_path: File;
-  license_path: File;
+  // Statistics
+  experience_years: string;
+  children_served_count: string;
+  specialists_count: string;
+
+  // Custom Services
+  custom_services: { name: string; description: string }[];
+
+  // Plans
+  plans: {
+    title: string;
+    description: string;
+    price: string;
+    features: string[];
+  }[];
 }
 
 // Extended interface for nursery API response that includes user_id
@@ -409,17 +417,17 @@ export interface PricingFormData {
   enrollment_type: string;
   title: string;
   start_age:
-    | number // old structure support
-    | {
-        type: string;
-        age: number;
-      };
+  | number // old structure support
+  | {
+    type: string;
+    age: number;
+  };
   end_age:
-    | number // old structure support
-    | {
-        type: string;
-        age: number;
-      };
+  | number // old structure support
+  | {
+    type: string;
+    age: number;
+  };
   count: number;
   price_amount: number;
 }
@@ -488,4 +496,22 @@ export interface ProfileSection {
   name: string;
   enabled: boolean;
   data: Record<string, any>;
+}
+
+export interface NurseryPlan {
+  title: string;
+  description: string;
+  price: string;
+}
+
+export interface NurseryRegisterPayload {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  nursery_name: string;
+  description: string;
+  logo: File;
+  album: File[];
+  plans: NurseryPlan[];
 }

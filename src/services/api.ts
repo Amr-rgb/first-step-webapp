@@ -13,6 +13,8 @@ import {
   NurseryResponse,
   PortfolioResponse,
   ParentRegisterPayloadv2,
+  NurseryRegisterPayload,
+  NurseryPlan,
 } from "@/types";
 import axios from "axios";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
@@ -630,12 +632,12 @@ export const nurseryService = {
     try {
       const query = params
         ? "?" +
-          params
-            .map(
-              ({ key, value }) =>
-                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-            )
-            .join("&")
+        params
+          .map(
+            ({ key, value }) =>
+              `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+          )
+          .join("&")
         : "";
 
       let res: Response;
@@ -948,37 +950,45 @@ export const authService = {
     try {
       const formData = new FormData();
 
-      // Step 1 fields
+      // Basic fields
       formData.append("name", payload.name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
       formData.append("nursery_name", payload.nursery_name);
-      formData.append("location", payload.location);
-      formData.append("neighborhood", payload.neighborhood);
-      formData.append("city_id", payload.city);
+      formData.append("description", payload.description);
 
-      // Append nursery_type array
-      payload.nursery_type.forEach((item) => {
-        formData.append("nursery_type[]", item);
-      });
+      if (payload.logo) {
+        formData.append("logo", payload.logo);
+      }
 
-      // Append types array
-      if (payload.types) {
-        payload.types.forEach((item) => {
-          formData.append("types[]", item);
+      // Statistics
+      formData.append("experience_years", payload.experience_years);
+      formData.append("children_served_count", payload.children_served_count);
+      formData.append("specialists_count", payload.specialists_count);
+
+      // Custom Services
+      if (payload.custom_services && payload.custom_services.length > 0) {
+        payload.custom_services.forEach((service, index) => {
+          formData.append(`custom_services[${index}][name]`, service.name);
+          formData.append(`custom_services[${index}][description]`, service.description);
         });
       }
 
-      // Step 2 fields - files
-      payload.logo && formData.append("logo", payload.logo);
-      payload.license_path &&
-        formData.append("license_path", payload.license_path);
-      payload.commercial_record_path &&
-        formData.append(
-          "commercial_record_path",
-          payload.commercial_record_path,
-        );
+      // Plans
+      if (payload.plans && payload.plans.length > 0) {
+        payload.plans.forEach((plan, index) => {
+          formData.append(`plans[${index}][title]`, plan.title);
+          formData.append(`plans[${index}][description]`, plan.description);
+          formData.append(`plans[${index}][price]`, plan.price.toString());
+
+          if (plan.features && plan.features.length > 0) {
+            plan.features.forEach((feature, fIndex) => {
+              formData.append(`plans[${index}][features][${fIndex}]`, feature);
+            });
+          }
+        });
+      }
 
       // Debug: Log the payload being sent
       console.log("Register Center Payload:", {
@@ -986,14 +996,15 @@ export const authService = {
         email: payload.email,
         phone: payload.phone,
         nursery_name: payload.nursery_name,
-        location: payload.location,
-        neighborhood: payload.neighborhood,
-        city: payload.city,
-        types: payload.types,
-        nursery_type: payload.nursery_type,
+        description: payload.description,
+        stats: {
+          exp: payload.experience_years,
+          children: payload.children_served_count,
+          specialists: payload.specialists_count
+        },
+        servicesCount: payload.custom_services?.length,
+        plansCount: payload.plans?.length,
         logo: payload.logo?.name,
-        license_path: payload.license_path?.name,
-        commercial_record_path: payload.commercial_record_path?.name,
       });
 
       const response = await apiClient.post(
@@ -1018,6 +1029,52 @@ export const authService = {
         console.error("Validation Errors:", error.response.data.errors);
       }
 
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  registerNursery: async (payload: NurseryRegisterPayload) => {
+    try {
+      const formData = new FormData();
+
+      formData.append("name", payload.name);
+      formData.append("email", payload.email);
+      formData.append("password", payload.password);
+      formData.append("phone", payload.phone);
+      formData.append("nursery_name", payload.nursery_name);
+      formData.append("description", payload.description);
+
+      if (payload.logo) {
+        formData.append("logo", payload.logo);
+      }
+
+      if (payload.album && payload.album.length > 0) {
+        payload.album.forEach((file: File) => {
+          formData.append("album[]", file);
+        });
+      }
+
+      if (payload.plans && payload.plans.length > 0) {
+        payload.plans.forEach((plan: NurseryPlan, index: number) => {
+          formData.append(`plans[${index}][title]`, plan.title);
+          formData.append(`plans[${index}][description]`, plan.description);
+          formData.append(`plans[${index}][price]`, plan.price.toString());
+        });
+      }
+
+      // Using the same endpoint but it might need to be /register-nursery if backend separates them
+      // For now pointing to register-center-v2 or we can use a new one if specified
+      const response = await apiClient.post(
+        "/v2/register-center-v2",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
   },

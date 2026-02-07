@@ -221,29 +221,49 @@
   },
   "auth": {
     "sign-up": {
-      "greeting": "Welcome 👋 Choose your role so we can prepare a suitable experience for you",
+      "greeting": "Choose your role and enjoy tools that suit you",
       "have-account-footer": "Already have an account?",
       "sign-in-footer": "Log in",
       "parent": {
         "title": "Parent",
-        "feature": "Child tracking and communication with the center"
+        "features": [
+          "Easy service booking",
+          "Secure direct communication",
+          "Track daily child reports"
+        ]
       },
       "rehab-center": {
-        "title": "Rehabilitation Center",
-        "feature": "Manage services and specialists"
+        "title": "Therapy or Rehabilitation Center",
+        "features": [
+          "Manage rehabilitation sessions",
+          "Organize daily appointments",
+          "Comprehensive dashboard"
+        ]
       },
       "nursery": {
         "title": "Nursery or Entertainment Center",
-        "feature": "Childcare and communication with parents"
+        "features": [
+          "Operational and performance reports",
+          "Manage bookings",
+          "Comprehensive dashboard"
+        ]
       },
       "mentor": {
-        "title": "Mentor",
-        "feature": "Childcare and communication with parents",
+        "title": "Consultant",
+        "features": [
+          "Integrated professional profile",
+          "Manage consultations and sessions",
+          "Manage earnings and payments"
+        ],
         "soon": "Soon"
       },
       "teacher": {
         "title": "Teacher",
-        "feature": "Childcare and communication with parents",
+        "features": [
+          "Manage classes and activities",
+          "Plan daily lessons",
+          "Upload educational content"
+        ],
         "soon": "Soon"
       }
     },

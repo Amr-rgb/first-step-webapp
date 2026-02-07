@@ -30,19 +30,22 @@ const NavbarButton = () => {
     <div className="flex gap-4 items-center ltr:ml-2 rtl:mr-2">
       {!token ? (
         <>
-          {!isSignInPage && (
-            <>
-              <Button
-                size={"sm"}
-                className="hidden sm:inline-flex font-semibold"
-                onClick={openSignInModal}
-              >
-                {t("buttons.sign-in")}
-              </Button>
-              <Button asChild size={"sm"} className="sm:hidden font-semibold">
-                <Link href="/sign-in">{t("buttons.sign-in")}</Link>
-              </Button>
-            </>
+          {pathname === "/sign-up" || pathname === "/sign-up/center" || pathname === "/sign-up/nursery" || pathname === "/sign-up/parent" ? (
+            <Button
+              size={"sm"}
+              className="font-semibold px-6"
+              onClick={openSignInModal}
+            >
+              {t("buttons.sign-in")}
+            </Button>
+          ) : (
+            <Button
+              asChild
+              size={"sm"}
+              className="font-semibold px-6"
+            >
+              <Link href="/sign-up">{t("buttons.sign-up")}</Link>
+            </Button>
           )}
         </>
       ) : (

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/api";
-import { SignUpCenterFormData } from "@/lib/schemas";
+import { CenterFormData } from "@/lib/schemas";
 import { CenterRegisterPayload } from "@/types";
 import { SignUp } from "./SignUp";
 import LoadingOverlay from "@/components/forms/LoadingOverlay";
@@ -17,7 +17,7 @@ import { trackSignUp } from "@/lib/snapchatPixel";
 const SignUpWrapper = () => {
   const router = useRouter();
   const locale = useLocale();
-  const formRef = useRef<UseFormReturn<SignUpCenterFormData> | null>(null);
+  const formRef = useRef<UseFormReturn<CenterFormData> | null>(null);
   const currentStepRef = useRef<{
     currentStep: number;
     setCurrentStep: (step: number) => void;
@@ -38,26 +38,25 @@ const SignUpWrapper = () => {
       // Map backend field names to frontend field names and their steps
       const fieldMapping: Record<
         string,
-        { field: keyof SignUpCenterFormData; step: number }
+        { field: keyof CenterFormData; step: number }
       > = {
+        // Step 1
         name: { field: "name", step: 1 },
         email: { field: "email", step: 1 },
         password: { field: "password", step: 1 },
         phone: { field: "phone", step: 1 },
         nursery_name: { field: "nursery_name", step: 1 },
-        location: { field: "location", step: 1 },
-        neighborhood: { field: "neighborhood", step: 1 },
-        city: { field: "city", step: 1 },
-        city_id: { field: "city", step: 1 },
+        description: { field: "description", step: 1 },
         logo: { field: "logo", step: 1 },
-        nursery_type: { field: "nursery_type", step: 1 },
-        types: { field: "types", step: 1 },
-        commercial_record_path: {
-          field: "commercial_record_path",
-          step: 2,
-        },
-        license_path: { field: "license_path", step: 2 },
-        notes: { field: "notes", step: 2 },
+
+        // Step 2
+        experience_years: { field: "experience_years", step: 2 },
+        children_served_count: { field: "children_served_count", step: 2 },
+        specialists_count: { field: "specialists_count", step: 2 },
+        custom_services: { field: "custom_services", step: 2 },
+
+        // Step 3
+        plans: { field: "plans", step: 3 },
       };
 
       let earliestErrorStep = Infinity;
@@ -81,8 +80,10 @@ const SignUpWrapper = () => {
               message: errorMessage,
             });
           } else {
+            // Handle array fields or nested errors specifically if needed
+            // For now fall back to root
             console.warn(
-              `Field ${field} not found in form, showing as root error`
+              `Field ${field} not found directly in form values, showing as root error`
             );
             formRef.current?.setError("root", {
               type: "server",
@@ -111,8 +112,8 @@ const SignUpWrapper = () => {
         toastError(
           locale === "ar" ? "خطأ في التحقق" : "Validation Error",
           locale === "ar"
-            ? "يرجى التحقق من الحقول في الخطوة السابقة"
-            : "Please check the fields in the previous step"
+            ? "يرجى التحقق من الحقول"
+            : "Please check the fields"
         );
       }
     } else {
@@ -143,8 +144,6 @@ const SignUpWrapper = () => {
       // Track Sign Up
       trackSignUp({
         sign_up_method: "Center",
-        // Center sign up might behave differently, check data structure if available, or just generic
-        // Assuming data returned might adhere to similar structure or we just track event
       });
       router.push(`/${locale}/sign-in`);
     },
@@ -155,30 +154,30 @@ const SignUpWrapper = () => {
     router.prefetch(`/${locale}/sign-in`);
   }, [locale, router]);
 
-  const submitHandler = (data: SignUpCenterFormData) => {
+  const submitHandler = (data: CenterFormData) => {
     // Clear any existing errors before submitting
     if (formRef.current) {
       formRef.current.clearErrors();
     }
 
-    const expectedData = {
-      // Step 1 fields
+    const expectedData: CenterRegisterPayload = {
+      // Basic fields
       name: data.name,
       email: data.email,
       password: data.password,
       phone: data.phone,
       nursery_name: data.nursery_name,
-      location: data.location,
-      neighborhood: data.neighborhood,
-      city: data.city,
+      description: data.description,
       logo: data.logo,
-      nursery_type: data.nursery_type,
-      types: data.types,
 
-      // Step 2 fields
-      commercial_record_path: data.commercial_record_path,
-      license_path: data.license_path,
-      notes: data.notes,
+      // Stats
+      experience_years: data.experience_years,
+      children_served_count: data.children_served_count,
+      specialists_count: data.specialists_count,
+
+      // Services & Plans
+      custom_services: data.custom_services,
+      plans: data.plans,
     };
 
     mutation.mutate(expectedData);

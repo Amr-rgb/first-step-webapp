@@ -210,18 +210,16 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
     <>
       <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
         <div
-          className={`relative container mx-auto px-4 transition-all duration-300 ${
-            isScrolled ? "py-2" : "py-2.5"
-          }`}
+          className={`relative container mx-auto px-4 transition-all duration-300 ${isScrolled ? "py-2" : "py-2.5"
+            }`}
         >
           <div className="flex justify-between items-center gap-x-0">
             {/* Left */}
             <div className="flex-1">
               <Link className="inline-block w-fit" href={"/"}>
                 <div
-                  className={`relative transition-all duration-300 ${
-                    isScrolled ? "w-[140px] " : "w-[236px] "
-                  }`}
+                  className={`relative transition-all duration-300 ${isScrolled ? "w-[140px] " : "w-[236px] "
+                    }`}
                   style={{
                     height: isScrolled ? "35px" : "59.9px",
                     aspectRatio: "236/59.9",
@@ -239,9 +237,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
 
             {/* Centered navigation */}
             <div
-              className={`hidden xl:block shrink-0 rounded-full transition-all duration-300 ${
-                isScrolled ? "py-4 px-10" : "py-7 px-14"
-              }`}
+              className={`hidden xl:block shrink-0 rounded-full transition-all duration-300 ${isScrolled ? "py-4 px-10" : "py-7 px-14"
+                }`}
             >
               <ul className="flex justify-between items-center gap-x-9">
                 {links.map((link: any) => (
@@ -251,13 +248,12 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                   >
                     <Link
                       href={link.path}
-                      className={`text-base text-gray flex items-center justify-center gap-1 ${hoverEffect} ${
-                        isActive(link.path) ||
-                        (link.items &&
-                          link.items.some((item: any) => isActive(item.path)))
+                      className={`text-base text-gray flex items-center justify-center gap-1 ${hoverEffect} ${isActive(link.path) ||
+                          (link.items &&
+                            link.items.some((item: any) => isActive(item.path)))
                           ? "text-xl font-extrabold text-primary"
                           : ""
-                      }`}
+                        }`}
                     >
                       {link.title}
                       {link.items && (
@@ -275,11 +271,10 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                             <Link
                               key={item.path}
                               href={item.path}
-                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 rtl:text-right ltr:text-left ${
-                                isActive(item.path)
+                              className={`block px-4 py-3 text-sm text-gray hover:bg-emerald-50 hover:text-primary rounded-lg transition-all duration-200 rtl:text-right ltr:text-left ${isActive(item.path)
                                   ? "bg-emerald-50 text-primary font-bold"
                                   : ""
-                              }`}
+                                }`}
                             >
                               {item.title}
                             </Link>
@@ -322,7 +317,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* Floating Action Buttons - Fixed to viewport */}
-      {!token && (
+      {/* {!token && (
         <div
           className={`z-9999 fixed top-72 ltr:-right-[120px] ltr:md:-right-[90px] rtl:-left-[120px] rtl:md:-left-[90px] -rotate-90 flex items-center gap-x-4 transition-all duration-800 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
             buttonsVisible
@@ -374,7 +369,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
             <Link href={"/sign-up/center"}>{t("buttons.join-center")}</Link>
           </Button>
         </div>
-      )}
+      )} */}
 
       {/* Mobile Menu - Only render on client to avoid flash on reload */}
       {isMounted && (
@@ -382,9 +377,8 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           {/* Mobile Menu Overlay - Fixed to whole viewport */}
           <div
             ref={overlayRef}
-            className={`z-10000 fixed top-0 left-0 w-screen h-screen bg-black/50 transition-opacity duration-300 ${
-              isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+            className={`z-10000 fixed top-0 left-0 w-screen h-screen bg-black/50 transition-opacity duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
             onClick={forceCloseMenu}
             aria-hidden="true"
             style={{
@@ -399,19 +393,18 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
           {/* Enhanced slide-out menu with ref */}
           <div
             ref={menuRef}
-            className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-              isMenuOpen
+            className={`z-10001 fixed top-0 bottom-0 ltr:right-0 rtl:left-0 w-4/5 max-w-xs h-screen bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isMenuOpen
                 ? "translate-x-0"
                 : "ltr:translate-x-full rtl:-translate-x-full"
-            }`}
+              }`}
             style={{
               height: "100vh",
               // Fallback for old browsers
               transform: isMenuOpen
                 ? "translateX(0)"
                 : isRtl
-                ? "translateX(-100%)"
-                : "translateX(100%)",
+                  ? "translateX(-100%)"
+                  : "translateX(100%)",
             }}
           >
             {/* Menu header with enhanced close button */}
@@ -439,12 +432,11 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                             openMobileSubmenuId === link.id ? null : link.id
                           )
                         }
-                        className={`w-full px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
-                          isActive(link.path) ||
-                          link.items.some((item: any) => isActive(item.path))
+                        className={`w-full px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${isActive(link.path) ||
+                            link.items.some((item: any) => isActive(item.path))
                             ? "font-bold text-emerald-600 bg-emerald-50"
                             : "text-gray-700 hover:bg-gray-50"
-                        }`}
+                          }`}
                       >
                         {link.title}
                         <ChevronDown
@@ -458,11 +450,10 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                     ) : (
                       <Link
                         href={link.path}
-                        className={`px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${
-                          isActive(link.path)
+                        className={`px-6 py-4 text-base transition-colors duration-200 flex items-center justify-between ${isActive(link.path)
                             ? "font-bold text-emerald-600 bg-emerald-50"
                             : "text-gray-700 hover:bg-gray-50"
-                        }`}
+                          }`}
                         onClick={forceCloseMenu}
                       >
                         {link.title}
@@ -474,11 +465,10 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
                           <li key={item.path}>
                             <Link
                               href={item.path}
-                              className={`block ltr:px-12 rtl:px-12 py-3 text-sm transition-colors duration-200 ${
-                                isActive(item.path)
+                              className={`block ltr:px-12 rtl:px-12 py-3 text-sm transition-colors duration-200 ${isActive(item.path)
                                   ? "font-extrabold text-emerald-600"
                                   : "text-gray-600 hover:bg-gray-100"
-                              }`}
+                                }`}
                               onClick={forceCloseMenu}
                             >
                               - {item.title}
