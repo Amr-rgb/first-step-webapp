@@ -781,7 +781,7 @@ export const nurseryService = {
 
       // Fetch the portfolio data directly using the center ID
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/get-portfilo-center/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

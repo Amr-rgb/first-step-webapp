@@ -1140,7 +1140,7 @@ export const centerService = {
         formData.append(`delete_license_ids[${index}]`, String(id));
       });
 
-      const response = await apiClient.post("/portfolios", formData, {
+      const response = await apiClient.post("/v2/portfolios", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -1151,7 +1151,7 @@ export const centerService = {
 
   getPortfolio: async () => {
     try {
-      const response = await apiClient.get("/portfolios/show");
+      const response = await apiClient.get("/v2/portfolios/show");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
