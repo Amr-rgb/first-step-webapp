@@ -11,6 +11,7 @@ import {
 } from "@/actions/nurseryActions";
 import ProgramCard from "./ProgramCard";
 import FilterDialog from "./FilterDialog";
+import ReservationDialog from "./ReservationDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboardIcons } from "@/components/general/icons";
 
@@ -32,6 +33,13 @@ const ProgramsSection = ({
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
     null,
   );
+
+  // Reservation dialog state
+  const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const [reservationBranch, setReservationBranch] = useState<string>("");
+  const [reservationPlanId, setReservationPlanId] = useState<
+    number | undefined
+  >(undefined);
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -137,9 +145,11 @@ const ProgramsSection = ({
 
   const handleBooking = () => {
     if (selectedProgram) {
-      // Find which branch this program belongs to (might need improved logic if programs are shared)
+      // Find which branch this program belongs to
       const branchId = filters.branches[0] || activeBranchIds[0];
-      window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${branchId}&plan=${selectedProgram.id}`;
+      setReservationBranch(branchId);
+      setReservationPlanId(selectedProgram.id);
+      setIsReservationOpen(true);
     }
   };
 
@@ -224,6 +234,15 @@ const ProgramsSection = ({
         selectedFilters={filters}
         onApply={setFilters}
         onReset={() => setFilters({ branches: [], programTypes: [], ages: [] })}
+      />
+
+      <ReservationDialog
+        isOpen={isReservationOpen}
+        onClose={() => setIsReservationOpen(false)}
+        nurseryName={nurseryName}
+        selectedBranch={reservationBranch}
+        selectedPlanId={reservationPlanId}
+        locale={locale as "ar" | "en"}
       />
     </section>
   );

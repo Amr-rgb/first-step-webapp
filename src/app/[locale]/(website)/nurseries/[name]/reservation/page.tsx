@@ -45,15 +45,13 @@ export default async function ReservationPage({
   const plan =
     typeof searchParameters.plan === "string" ? searchParameters.plan : "";
 
- 
-
   const t = await getTranslations();
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-[#22336C] mb-2">
+          <h1 className="text-3xl font-bold text-primary mb-2">
             {locale === "ar" ? "تفاصيل الحجز" : "Booking Details"}
           </h1>
           {program && (

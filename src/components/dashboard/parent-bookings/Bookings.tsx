@@ -259,7 +259,7 @@ const Bookings = () => {
         toastError(
           locale === "ar"
             ? "معلومات الفرع غير متوفرة"
-            : "Branch information not available"
+            : "Branch information not available",
         );
         return;
       }
@@ -269,7 +269,7 @@ const Bookings = () => {
         toastError(
           locale === "ar"
             ? "معلومات الخطة غير متوفرة"
-            : "Plan information not available"
+            : "Plan information not available",
         );
         return;
       }
@@ -287,7 +287,7 @@ const Bookings = () => {
         setCouponDiscount(response.discount);
         setAppliedCoupon(response.promo_code);
         toastSuccess(
-          t("coupon.appliedSuccess") || "Coupon applied successfully"
+          t("coupon.appliedSuccess") || "Coupon applied successfully",
         );
       } catch (error: any) {
         let errorMessage = t("coupon.applyError") || "Failed to apply coupon";
@@ -399,7 +399,7 @@ const Bookings = () => {
                     return (
                       <div
                         key={p.id}
-                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-primary text-white border-primary shadow border-dashed outline-dashed outline-2 outline-primary"
                       >
                         <span className="text-lg font-extrabold mb-1 text-white">
                           {p.price}
@@ -416,7 +416,7 @@ const Bookings = () => {
 
             {/* Details Section - Matching ReservationForm style */}
             <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
-              <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+              <h3 className="font-bold text-lg text-primary mb-4 text-center">
                 {t("actions.showDetails")}
               </h3>
               <div className="space-y-2 text-sm text-gray-700 mb-4">
@@ -460,7 +460,7 @@ const Bookings = () => {
               {/* Coupon Section - Matching ReservationForm style */}
               {(isAcceptedStatus || appliedCoupon) && (
                 <div className="border-t pt-4 mt-4 mb-4">
-                  <label className="text-[#22336C] font-bold text-sm mb-3 flex items-center gap-2">
+                  <label className="text-primary font-bold text-sm mb-3 flex items-center gap-2">
                     <Ticket size={16} />
                     {t("coupon.label") || "كوبون الخصم"}:
                   </label>
@@ -571,7 +571,7 @@ const Bookings = () => {
                             "flex-1 h-10 transition-all",
                             couponError
                               ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
-                              : ""
+                              : "",
                           )}
                         />
                         <Button
@@ -579,7 +579,7 @@ const Bookings = () => {
                           disabled={isApplyingCoupon || !couponCode.trim()}
                           className={cn(
                             "px-4 h-10 min-w-[80px]",
-                            isApplyingCoupon ? "bg-opacity-80" : ""
+                            isApplyingCoupon ? "bg-opacity-80" : "",
                           )}
                         >
                           {isApplyingCoupon ? (
@@ -616,7 +616,7 @@ const Bookings = () => {
               <div className="border-t pt-4 mt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[#22336C] text-base">
+                    <span className="font-bold text-primary text-base">
                       {isAcceptedStatus
                         ? t("confirmReservation.required") || "المطلوب"
                         : t("total")}
@@ -656,14 +656,14 @@ const Bookings = () => {
                     </>
                   )}
                   <div className="flex justify-between items-center pt-2 border-t">
-                    <span className="font-bold text-lg text-[#22336C]">
+                    <span className="font-bold text-lg text-primary">
                       {isAcceptedStatus
                         ? t("confirmReservation.finalAmount") ||
                           "المبلغ المطلوب"
                         : t("total")}
                       :
                     </span>
-                    <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                    <span className="font-extrabold text-2xl text-primary">
                       {finalPrice.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
                     </span>
                   </div>
@@ -674,7 +674,7 @@ const Bookings = () => {
             {/* Notes - Only for accepted status */}
             {isAcceptedStatus && onConfirm && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-bold text-[#22336C] mb-2">
+                <h4 className="font-bold text-primary mb-2">
                   {t("confirmReservation.notes") || "ملاحظات"}:
                 </h4>
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
@@ -701,7 +701,7 @@ const Bookings = () => {
               <Button
                 onClick={handleConfirm}
                 disabled={isConfirming}
-                className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
+                className="w-full bg-gradient-to-r from-primary to-primary text-white py-6 text-lg font-bold hover:opacity-90"
               >
                 {isConfirming ? (
                   <Skeleton className="h-4 w-20" />
@@ -762,7 +762,7 @@ const Bookings = () => {
     console.log("Total enrollments returned:", data.data.length);
     console.log(
       "All enrollment IDs:",
-      data.data.map((e: any) => ({ id: e.id, status: e.status }))
+      data.data.map((e: any) => ({ id: e.id, status: e.status })),
     );
   }
 
@@ -881,7 +881,7 @@ const Bookings = () => {
           t("cancelError") +
             " - " +
             "This enrollment is in 'waiting for confirmation' status. " +
-            "Please contact support if you need to cancel this enrollment."
+            "Please contact support if you need to cancel this enrollment.",
         );
       } else {
         toastError(errorMessage);
@@ -969,7 +969,7 @@ const Bookings = () => {
       } else {
         console.error("No payment URL in response:", response);
         toastError(
-          "Payment URL not received. Please contact support or try again."
+          "Payment URL not received. Please contact support or try again.",
         );
       }
     } catch (e: any) {

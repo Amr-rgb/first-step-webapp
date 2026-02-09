@@ -5,16 +5,22 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { UserPlus, X, AlertCircle, CheckCircle2, Ticket } from "lucide-react";
+import {
+  UserPlus,
+  X,
+  AlertCircle,
+  CheckCircle2,
+  Ticket,
+  CalendarCheck,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DatePicker from "@/components/general/DatePicker";
 import { format } from "date-fns";
-import {
-  getBranchPricingAction,
-} from "@/actions/nurseryActions";
+import { ar } from "date-fns/locale";
+import { getBranchPricingAction } from "@/actions/nurseryActions";
 import { parentService as dashboardParentService } from "@/services/dashboardApi";
 import { parentService, enrollmentService } from "@/services/api";
 import { applyPromoCodeAction } from "@/actions/promoCodeActions";
@@ -23,6 +29,8 @@ import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { cn } from "@/lib/utils";
+import ProgramCard from "@/app/[locale]/(website)/nurseries/[name]/_components/ProgramCard";
+import { dashboardIcons } from "@/components/general/icons";
 
 // --- Types & Interfaces ---
 
@@ -89,6 +97,20 @@ const TIME_OPTIONS = [
 
 // --- Sub-Components ---
 
+const NotesSection = ({ locale }: { locale: "ar" | "en" }) => {
+  const t = useTranslations("reservationForm.labels");
+  return (
+    <div className="mt-6 border-t pt-4">
+      <h4 className="text-base font-normal text-primary mb-2">{t("notes")}</h4>
+      <ul className="font-medium text-mid-gray list-disc list-inside">
+        <li>{t("note1")}</li>
+        <li>{t("note2")}</li>
+        <li>{t("note3")}</li>
+      </ul>
+    </div>
+  );
+};
+
 const SuccessView = ({
   locale,
   onClose,
@@ -117,7 +139,7 @@ const SuccessView = ({
           className="mx-auto"
         />
       </div>
-      <h2 className="text-2xl font-bold text-[#22336C] mb-4">
+      <h2 className="text-2xl font-bold text-primary mb-4">
         {tLabels("successTitle")}
       </h2>
       <p className="text-gray-600 mb-6">{tLabels("successDesc")}</p>
@@ -125,14 +147,14 @@ const SuccessView = ({
         <button
           onClick={onClose}
           className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
-            bg-[#4D5EDB] text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
+            bg-primary text-white shadow hover:bg-[#3646a5] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           {tLabels("submitAnother")}
         </button>
         <button
           onClick={onDashboard}
           className="px-6 py-2 font-bold rounded-lg transition w-full sm:w-auto
-            border-2 border-[#4D5EDB] text-[#4D5EDB] bg-white hover:bg-[#f7f8fa] hover:border-[#22336C] hover:text-[#22336C] focus:outline-none focus:ring-2 focus:ring-[#4D5EDB] focus:ring-offset-2"
+            border-2 border-primary text-primary bg-white hover:bg-[#f7f8fa] hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           {tLabels("goToReservations")}
         </button>
@@ -146,17 +168,35 @@ const PlanSelection = ({
   selectedPlanId,
   onSelect,
   showOnlySelected,
+  locale,
 }: {
   plans: Plan[];
   selectedPlanId: string | number;
-  onSelect: (id: number) => void;
+  onSelect: (id: string | number) => void;
   showOnlySelected: boolean;
+  locale: "ar" | "en";
 }) => {
+  const t = useTranslations("reservationForm.labels");
   const visiblePlans = showOnlySelected
     ? plans.filter(
-        (p) => p.id === selectedPlanId || p.planId === selectedPlanId
+        (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
       )
     : plans;
+
+  if (showOnlySelected && visiblePlans.length > 0) {
+    const p = visiblePlans[0];
+    return (
+      <div>
+        <p className="font-bold mb-6 text-primary text-base">{t("program")}</p>
+        <ProgramCard
+          title={p.name}
+          durationLabel={p.name}
+          price={parseFloat(p.price.replace(/[^\d.]/g, "") || "0")}
+          isSelected={true}
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -167,7 +207,7 @@ const PlanSelection = ({
           : "overflow-x-auto pb-2 custom-scrollbar justify-start",
         plans.length <= 4 &&
           !showOnlySelected &&
-          "flex-row justify-center items-center"
+          "flex-row justify-center items-center",
       )}
       style={{
         maxWidth: showOnlySelected || plans.length > 4 ? "100%" : "48rem",
@@ -193,19 +233,19 @@ const PlanSelection = ({
               showOnlySelected
                 ? ""
                 : plans.length > 4
-                ? "min-w-[120px] shrink-0"
-                : "flex-1",
+                  ? "min-w-[120px] shrink-0"
+                  : "flex-1",
               isSelected
-                ? "bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                ? "bg-primary text-white border-primary shadow border-dashed outline-dashed outline-2 outline-primary"
                 : "bg-[#F7F8FA] text-gray-700 border-gray-300 border-solid focus:outline-none",
-              showOnlySelected && "cursor-default"
+              showOnlySelected && "cursor-default",
             )}
             tabIndex={showOnlySelected ? -1 : 0}
           >
             <span
               className={cn(
                 "text-lg font-extrabold mb-1",
-                isSelected ? "text-white" : "text-[#4D5EDB]"
+                isSelected ? "text-white" : "text-primary",
               )}
             >
               {p.price}
@@ -214,7 +254,7 @@ const PlanSelection = ({
             <span
               className={cn(
                 "text-base font-bold",
-                isSelected ? "text-white" : "text-[#22336C]"
+                isSelected ? "text-white" : "text-primary",
               )}
             >
               {p.name}
@@ -262,7 +302,7 @@ const TimeSelection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15, duration: 0.4, type: "spring", stiffness: 60 }}
     >
-      <label className="block font-bold mb-2 text-[#22336C] text-center">
+      <label className="block font-bold mb-2 text-primary text-center">
         {label}
       </label>
       <div className="flex flex-col items-center gap-2 max-w-3xl mx-auto">
@@ -283,11 +323,11 @@ const TimeSelection = ({
                 className={cn(
                   "px-3 py-1 rounded-full border-2 text-sm font-bold transition",
                   isSelected
-                    ? "bg-[#4D5EDB] text-white border-[#4D5EDB]"
+                    ? "bg-primary text-white border-primary"
                     : isInRange
-                    ? "bg-[#E6E9F8] text-[#22336C] border-[#B6BEE6]"
-                    : "bg-white text-[#22336C] border-gray-300",
-                  "focus:outline-none focus:ring-2 focus:ring-[#4D5EDB]"
+                      ? "bg-[#E6E9F8] text-primary border-[#B6BEE6]"
+                      : "bg-white text-primary border-gray-300",
+                  "focus:outline-none focus:ring-2 focus:ring-primary",
                 )}
                 style={{ minWidth: 56 }}
                 disabled
@@ -333,9 +373,7 @@ const ChildSelection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.25, duration: 0.4, type: "spring", stiffness: 60 }}
     >
-      <label className="block font-bold mb-2 text-[#22336C] text-center">
-        {t("selectChildren")}
-      </label>
+      <p className="font-bold mb-6 text-primary">{t("selectChildren")}</p>
       <div
         className="flex gap-4 justify-start overflow-x-auto pb-2 custom-scrollbar max-w-3xl mx-auto"
         style={{
@@ -410,12 +448,12 @@ const ChildSelection = ({
                 className={cn(
                   "flex flex-col items-center p-2 rounded-lg border-2 transition min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 justify-start shrink-0",
                   selectedIds.includes(idStr)
-                    ? "border-[#4D5EDB] shadow bg-white"
+                    ? "border-primary shadow bg-white"
                     : "border-gray-300 bg-white",
-                  "focus:outline-none hover:shadow-lg"
+                  "focus:outline-none hover:shadow-lg",
                 )}
               >
-                <div className="w-16 h-16 flex items-center justify-center mb-2 mt-2 transition-all duration-200">
+                <div className="w-20 h-20 flex items-center justify-center mb-2 mt-2 transition-all duration-200">
                   <Image
                     src={
                       gender === "boy" || gender === "male"
@@ -441,8 +479,8 @@ const ChildSelection = ({
                   className={cn(
                     "font-bold text-sm text-center mt-1 line-clamp-2 w-full",
                     selectedIds.includes(idStr)
-                      ? "text-[#22336C]"
-                      : "text-gray-600"
+                      ? "text-primary"
+                      : "text-gray-600",
                   )}
                 >
                   {displayName}
@@ -460,7 +498,7 @@ const ChildSelection = ({
               height={120}
               className="mb-4 opacity-50"
             />
-            <h3 className="text-lg font-bold text-[#22336C] mb-2">
+            <h3 className="text-lg font-bold text-primary mb-2">
               {t("noChildren")}
             </h3>
             <p className="text-sm text-gray-600 max-w-md">
@@ -471,7 +509,7 @@ const ChildSelection = ({
               onClick={() =>
                 router.push(`/${locale}/dashboard/parent/children`)
               }
-              className="mt-4 bg-[#4D5EDB] hover:bg-[#3646a5] text-white"
+              className="mt-4 bg-primary hover:bg-[#3646a5] text-white"
             >
               {t("addNewChild")}
             </Button>
@@ -509,12 +547,11 @@ const CouponSection = ({
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 60 }}
-      className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4"
+      className="max-w-2xl mx-auto mb-4"
     >
-      <label className="text-[#22336C] font-bold text-sm mb-3 flex items-center gap-2">
-        <Ticket size={16} />
+      <p className="text-primary font-bold mb-3">
         {t("labels.discountCoupon")}:
-      </label>
+      </p>
 
       {promoDetails ? (
         <motion.div
@@ -566,7 +603,7 @@ const CouponSection = ({
                 "flex-1 h-10 transition-all",
                 error
                   ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
-                  : ""
+                  : "",
               )}
             />
             <Button
@@ -575,7 +612,7 @@ const CouponSection = ({
               disabled={isApplying || !couponCode.trim()}
               className={cn(
                 "px-4 h-10 min-w-[100px]",
-                isApplying ? "bg-opacity-80" : ""
+                isApplying ? "bg-opacity-80" : "",
               )}
             >
               {isApplying ? (
@@ -605,7 +642,7 @@ const CouponSection = ({
       <p
         className={cn(
           "text-[10px] text-gray-400 flex items-start gap-1 mt-3 leading-tight",
-          locale === "ar" ? "text-right" : "text-left"
+          locale === "ar" ? "text-right" : "text-left",
         )}
       >
         <AlertCircle size={10} className="mt-0.5 shrink-0" />
@@ -624,6 +661,7 @@ const BookingSummary = ({
   date,
   price,
   promoDetails,
+  couponProps,
 }: {
   locale: "ar" | "en";
   planName: string;
@@ -633,6 +671,14 @@ const BookingSummary = ({
   date: string;
   price: string;
   promoDetails: ApplyPromoCodeResponse | null;
+  couponProps: {
+    couponCode: string;
+    setCouponCode: (code: string) => void;
+    onApply: () => void;
+    onRemove: () => void;
+    isApplying: boolean;
+    error: string | null;
+  };
 }) => {
   const t = useTranslations("reservationForm.summary");
   const tLabels = useTranslations("reservationForm.labels");
@@ -645,76 +691,143 @@ const BookingSummary = ({
   const currency = locale === "ar" ? "ر.س" : "SAR";
 
   return (
-    <motion.div
-      className="max-w-2xl mx-auto bg-white rounded-xl shadow p-6 mb-4"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25, duration: 0.4, type: "spring", stiffness: 60 }}
-    >
-      <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+    <div className="space-y-6">
+      <h3 className="font-bold text-base text-primary mb-4">
         {tLabels("bookingSummary")}
       </h3>
-      <div className="space-y-3 text-sm text-gray-700">
-        <div className="flex justify-between border-b border-gray-50 pb-2">
-          <span className="text-gray-500">{t("plan")}</span>
-          <span className="font-semibold">{planName || "-"}</span>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center text-base">
+          <span className="text-mid-gray font-medium">
+            {tLabels("program")}
+          </span>
+          <span className="text-mid-gray font-medium">{planName || "-"}</span>
         </div>
-        <div className="flex justify-between border-b border-gray-50 pb-2">
-          <span className="text-gray-500">{t("time")}</span>
-          <span className="font-semibold" dir="ltr">
-            {fromTime && toTime ? `${fromTime} - ${toTime}` : "-"}
+        <div className="flex justify-between items-center text-base">
+          <span className="text-mid-gray font-medium">
+            {tLabels("startTime")}
+          </span>
+          <span className="text-mid-gray font-medium" dir="ltr">
+            {date
+              ? format(new Date(date), "EEEE yyyy/MM/dd", {
+                  locale: locale === "ar" ? ar : undefined,
+                })
+              : "-"}{" "}
+            {fromTime}
           </span>
         </div>
-        <div className="flex justify-between border-b border-gray-50 pb-2">
-          <span className="text-gray-500">{t("childrenCount")}</span>
-          <span className="font-semibold">{childrenCount}</span>
+        <div className="flex justify-between items-center text-base">
+          <span className="text-mid-gray font-medium">
+            {tLabels("duration")}
+          </span>
+          <span className="text-mid-gray font-medium">{toTime || "-"}</span>
         </div>
-        <div className="flex justify-between pb-2">
-          <span className="text-gray-500">{t("date")}</span>
-          <span className="font-semibold">{date || "--"}</span>
+        <div className="flex justify-between items-center text-base">
+          <span className="text-mid-gray font-medium">
+            {tLabels("paymentMethod")}
+          </span>
+          <span className="text-mid-gray font-medium">
+            {tLabels("paymentMayser")}
+          </span>
+        </div>
+        <div className="flex justify-between items-center text-base pt-3 border-t border-dashed border-gray-200">
+          <span className="text-mid-gray font-medium">
+            {tLabels("required")}
+          </span>
+          <span className="text-mid-gray font-bold">
+            {subtotal} {currency}
+          </span>
+        </div>
+
+        {/* Coupon Entry Section */}
+        <div className="pb-2">
+          {!promoDetails ? (
+            <>
+              <p className="text-mid-gray font-medium mb-3">
+                {tLabels("discountCoupon")}
+              </p>
+              <div className="flex gap-2 items-center">
+                <Input
+                  value={couponProps.couponCode}
+                  onChange={(e) => couponProps.setCouponCode(e.target.value)}
+                  placeholder={
+                    locale === "ar" ? "مثال: night15" : "Example: night15"
+                  }
+                  className={cn(
+                    "flex-1 h-12 rounded-xl text-center border-gray-200 focus-visible:ring-primary/20",
+                    couponProps.error ? "border-red-300 bg-red-50" : "",
+                  )}
+                />
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={couponProps.onApply}
+                  disabled={
+                    couponProps.isApplying || !couponProps.couponCode.trim()
+                  }
+                >
+                  {couponProps.isApplying ? (
+                    <LoadingSpinner size="sm" />
+                  ) : (
+                    tLabels("tryCoupon")
+                  )}
+                </Button>
+              </div>
+              {couponProps.error && (
+                <p className="text-red-500 text-xs mt-1 text-center">
+                  {couponProps.error}
+                </p>
+              )}
+              <p className="text-[12px] text-info flex items-center justify-center gap-1 mt-4 leading-tight font-medium">
+                <Ticket size={14} className="shrink-0" />
+                {tLabels("paymentNotice")}
+              </p>
+            </>
+          ) : (
+            <div className="flex justify-between items-center text-base">
+              <span className="text-mid-gray font-medium">
+                {tLabels("discountCoupon")}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-info font-bold">
+                  {promoDetails.promo_code}
+                </span>
+                <button
+                  type="button"
+                  onClick={couponProps.onRemove}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="border-t border-dashed border-gray-300 mt-2 pt-4">
-        {childrenCount > 0 && price && (
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">{t("calculation")}</span>
-            <span className="text-sm font-medium">
-              {numericPrice} × {childrenCount}
-            </span>
-          </div>
-        )}
-
+      <div className="border-t border-secondary-mint-green mt-6 pt-4 space-y-4">
         {promoDetails && (
-          <div className="flex justify-between items-center mb-2 text-green-600">
-            <span className="text-sm font-medium">
-              {t("discount")}
-              {promoDetails.discount_type === "percentage" && (
-                <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded ml-1">
-                  {Math.round(
-                    (promoDetails.discount / promoDetails.original_amount) * 100
-                  )}
-                  %
-                </span>
-              )}
+          <div className="flex justify-between items-center text-base">
+            <span className="text-mid-gray font-medium">
+              {tLabels("discount")}
             </span>
-            <span className="text-sm font-bold">
-              -{promoDetails.discount} {currency}
+            <span className="text-mid-gray font-medium">
+              {promoDetails.discount} {currency}
             </span>
           </div>
         )}
 
-        <div className="flex justify-between items-center pt-3 border-t">
-          <span className="font-bold text-[#22336C] text-base">
-            {t("total")}
+        <div className="flex justify-between items-center">
+          <span className="font-bold text-primary">
+            {tLabels("totalAfterDiscount")}
           </span>
-          <span className="font-extrabold text-2xl text-[#4D5EDB]">
-            {finalTotal > 0 ? finalTotal.toFixed(2) : "0.00"}{" "}
+          <span className="font-extrabold text-2xl text-primary">
+            {finalTotal > 0 ? finalTotal.toFixed(0) : "0"}{" "}
             <span className="text-sm font-medium">{currency}</span>
           </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -738,7 +851,7 @@ const ReservationForm = ({
 
   // -- State --
   const [selectedPlanId, setSelectedPlanId] = useState<string | number>(
-    preSelectedPlanId || 4
+    preSelectedPlanId || 4,
   );
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
@@ -755,7 +868,7 @@ const ReservationForm = ({
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const [submitSuccess, setSubmitSuccess] = useState(
-    typeof window !== "undefined" && searchParams?.get("payment") === "success"
+    typeof window !== "undefined" && searchParams?.get("payment") === "success",
   );
 
   // -- Queries --
@@ -843,14 +956,14 @@ const ReservationForm = ({
   const selectedPlanObj = useMemo(
     () =>
       planList.find(
-        (p) => p.id === selectedPlanId || p.planId === selectedPlanId
+        (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
       ),
-    [planList, selectedPlanId]
+    [planList, selectedPlanId],
   );
 
   const selectedApiPlan = useMemo(
     () => apiPlans.find((plan: ApiPlan) => plan.id === selectedPlanId),
-    [apiPlans, selectedPlanId]
+    [apiPlans, selectedPlanId],
   );
 
   const dynamicTimeOptions = useMemo(() => {
@@ -875,17 +988,17 @@ const ReservationForm = ({
       case "day":
         return Array.from(
           { length: 30 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "day")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "day")}`,
         );
       case "week":
         return Array.from(
           { length: 4 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "week")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "week")}`,
         );
       case "month":
         return Array.from(
           { length: 12 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "month")}`
+          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "month")}`,
         );
       default:
         return TIME_OPTIONS;
@@ -905,7 +1018,7 @@ const ReservationForm = ({
           (p) =>
             p.name === val ||
             p.type === val ||
-            p.name.toLowerCase() === val.toLowerCase()
+            p.name.toLowerCase() === val.toLowerCase(),
         );
         return found?.id;
       };
@@ -913,7 +1026,7 @@ const ReservationForm = ({
       if (queryPlanId) {
         const planFromQuery = planList.find(
           (p) =>
-            p.id === Number(queryPlanId) || p.planId === Number(queryPlanId)
+            p.id === Number(queryPlanId) || p.planId === Number(queryPlanId),
         );
         if (planFromQuery) foundPlanId = planFromQuery.id;
       } else if (preSelectedPlanId) {
@@ -1126,10 +1239,11 @@ const ReservationForm = ({
       }
 
       console.log("[ReservationForm] Enrollment payload:", enrollmentPayload);
-      
-      const result = await enrollmentService.createEnrollment(enrollmentPayload);
+
+      const result =
+        await enrollmentService.createEnrollment(enrollmentPayload);
       console.log("[ReservationForm] Enrollment created successfully:", result);
-      
+
       setIsSubmitting(false);
       setSubmitSuccess(true);
       toastSuccess(t("success.bookingSent"));
@@ -1162,7 +1276,7 @@ const ReservationForm = ({
   const handleDashboardRedirect = () => {
     const dashboardReservationsUrl = `/${locale}/dashboard/parent/bookings`;
     const loginUrl = `/${locale}/(website)/(auth)/sign-in?redirect=${encodeURIComponent(
-      dashboardReservationsUrl
+      dashboardReservationsUrl,
     )}`;
 
     if (authUser) {
@@ -1210,175 +1324,147 @@ const ReservationForm = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
       >
-        {/* Plan Selection */}
-        <PlanSelection
-          plans={planList}
-          selectedPlanId={selectedPlanId}
-          onSelect={setSelectedPlanId}
-          showOnlySelected={showOnlySelectedPlan}
-        />
-
-        {/* Time Selection */}
-        <TimeSelection
-          enrollmentType={selectedApiPlan?.enrollment_type}
-          fromTime={fromTime}
-          toTime={toTime}
-          timeOptions={dynamicTimeOptions}
-          locale={locale}
-        />
-
-        {/* Date Selection */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.2,
-            duration: 0.4,
-            type: "spring",
-            stiffness: 60,
-          }}
-        >
-          <label className="block font-bold mb-2 text-[#22336C] text-center">
-            {t("labels.bookingDate")}
-          </label>
-          <div className="relative max-w-3xl mx-auto">
-            <DatePicker
-              standalone
-              allowFuture
-              value={bookingDate ? new Date(bookingDate) : undefined}
-              onChange={(date) =>
-                setBookingDate(date ? format(date, "yyyy-MM-dd") : "")
-              }
-              disabled={(date: Date) =>
-                date < new Date(new Date().setHours(0, 0, 0, 0))
-              }
-            />
-          </div>
-        </motion.div>
-
-        {/* Child Selection */}
-        <ChildSelection
-          children={realChildren}
-          isLoading={isChildrenLoading}
-          error={childrenError}
-          selectedIds={selectedChildren}
-          onSelect={(id) =>
-            setSelectedChildren((prev) =>
-              prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-            )
-          }
-          locale={locale}
-          router={router}
-        />
-
-        {/* Booking Summary */}
-        <BookingSummary
-          locale={locale}
-          planName={selectedPlanObj?.name || ""}
-          fromTime={fromTime}
-          toTime={toTime}
-          childrenCount={selectedChildren.length}
-          date={bookingDate}
-          price={selectedPlanObj?.price || ""}
-          promoDetails={promoDetails}
-        />
-
-        {/* Coupon Section */}
-        <CouponSection
-          couponCode={couponCode}
-          setCouponCode={setCouponCode}
-          onApply={handleApplyCoupon}
-          onRemove={handleRemoveCoupon}
-          isApplying={isApplyingCoupon}
-          promoDetails={promoDetails}
-          error={couponError}
-          locale={locale}
-        />
-
         {/* Notice */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.3,
-            duration: 0.4,
-            type: "spring",
-            stiffness: 60,
-          }}
-          className="text-xs text-gray-400 text-center max-w-lg mx-auto"
-        >
-          {t("labels.termsNotice")}
-        </motion.div>
-
-        {/* Submit Button (Non-Dialog) */}
         {!isDialogMode && (
-          <motion.button
-            type="submit"
-            disabled={
-              isSubmitting || !bookingDate || selectedChildren.length === 0
-            }
-            className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              delay: 0.35,
+              delay: 0.3,
               duration: 0.4,
               type: "spring",
               stiffness: 60,
             }}
+            className="text-xs text-gray-400 text-center max-w-lg mx-auto"
           >
-            {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
-          </motion.button>
+            {t("labels.termsNotice")}
+          </motion.div>
         )}
 
-        {/* Scoped CSS for Scrollbar */}
-        <style jsx global>{`
-          .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #4d5edb #f7f8fa;
-          }
-          .custom-scrollbar::-webkit-scrollbar {
-            height: 6px;
-            background: #f7f8fa;
-            border-radius: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #4d5edb;
-            border-radius: 6px;
-            min-width: 40px;
-            transition: background 0.2s;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #22336c;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f7f8fa;
-            border-radius: 6px;
-          }
-        `}</style>
+        {/* Layout Grid */}
+        <div
+          className={cn(
+            isDialogMode ? "lg:grid lg:grid-cols-12 lg:gap-12" : "",
+          )}
+        >
+          {/* Left Column (Sidebar-like in RTL) */}
+          {isDialogMode && (
+            <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
+              <BookingSummary
+                locale={locale}
+                planName={selectedPlanObj?.name || ""}
+                fromTime={fromTime}
+                toTime={toTime}
+                childrenCount={selectedChildren.length}
+                date={bookingDate}
+                price={selectedPlanObj?.price || ""}
+                promoDetails={promoDetails}
+                couponProps={{
+                  couponCode,
+                  setCouponCode,
+                  onApply: handleApplyCoupon,
+                  onRemove: handleRemoveCoupon,
+                  isApplying: isApplyingCoupon,
+                  error: couponError,
+                }}
+              />
+
+              <NotesSection locale={locale} />
+            </div>
+          )}
+
+          {/* Right Column (Main Form) */}
+          <div
+            className={cn(
+              isDialogMode
+                ? "lg:col-span-6 order-2 lg:order-1 space-y-6"
+                : "space-y-6",
+            )}
+          >
+            <PlanSelection
+              plans={planList}
+              selectedPlanId={selectedPlanId}
+              onSelect={setSelectedPlanId}
+              showOnlySelected={showOnlySelectedPlan}
+              locale={locale}
+            />
+
+            {/* Time Selection - visible if needed or for duration feedback
+            <TimeSelection
+              enrollmentType={selectedApiPlan?.enrollment_type}
+              fromTime={fromTime}
+              toTime={toTime}
+              timeOptions={dynamicTimeOptions}
+              locale={locale}
+            /> */}
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
+              <label className="block mb-2 text-base text-mid-gray">
+                {t("labels.startTime")}
+              </label>
+              <DatePicker
+                standalone
+                allowFuture
+                value={bookingDate ? new Date(bookingDate) : undefined}
+                onChange={(date) =>
+                  setBookingDate(date ? format(date, "yyyy-MM-dd") : "")
+                }
+                disabled={(date: Date) =>
+                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                }
+              />
+            </motion.div>
+
+            <ChildSelection
+              children={realChildren}
+              isLoading={isChildrenLoading}
+              error={childrenError}
+              selectedIds={selectedChildren}
+              onSelect={(id) =>
+                setSelectedChildren((prev) =>
+                  prev.includes(id)
+                    ? prev.filter((c) => c !== id)
+                    : [...prev, id],
+                )
+              }
+              locale={locale}
+              router={router}
+            />
+          </div>
+        </div>
+
+        {/* Submit Button (Non-Dialog) */}
+        {!isDialogMode && (
+          <Button
+            type="submit"
+            size="sm"
+            disabled={
+              isSubmitting || !bookingDate || selectedChildren.length === 0
+            }
+          >
+            {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
+          </Button>
+        )}
       </motion.form>
 
       {/* Submit Button (Dialog Mode) */}
       {isDialogMode && (
-        <div className="sticky bottom-0 bg-white border-t pt-4 mt-4 -mx-6 px-6 pb-4 z-10">
-          <motion.button
+        <div className="sticky bottom-0 bg-white border-t pt-4 mt-8 -mx-6 px-6 pb-4 z-20">
+          <Button
+            size="sm"
             type="submit"
             form="reservation-form"
+            className="w-full"
             disabled={
               isSubmitting || !bookingDate || selectedChildren.length === 0
             }
-            className="w-full bg-[#4D5EDB] hover:bg-[#3646a5] text-white rounded-lg px-6 py-3 font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.35,
-              duration: 0.4,
-              type: "spring",
-              stiffness: 60,
-            }}
           >
             {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
-          </motion.button>
+          </Button>
         </div>
       )}
     </>
