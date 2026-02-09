@@ -33,7 +33,6 @@ const ReservationDialog = ({
             locale={locale}
             selectedBranch={selectedBranch}
             selectedPlan=""
-            isDialogMode={true}
             onClose={onClose}
             preSelectedPlanId={selectedPlanId}
             showOnlySelectedPlan={true}

@@ -5,14 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import {
-  UserPlus,
-  X,
-  AlertCircle,
-  CheckCircle2,
-  Ticket,
-  CalendarCheck,
-} from "lucide-react";
+import { UserPlus, X, AlertCircle, CheckCircle2, Ticket } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +23,6 @@ import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { cn } from "@/lib/utils";
 import ProgramCard from "@/app/[locale]/(website)/nurseries/[name]/_components/ProgramCard";
-import { dashboardIcons } from "@/components/general/icons";
 
 // --- Types & Interfaces ---
 
@@ -40,7 +32,6 @@ interface ReservationFormProps {
   locale: "ar" | "en";
   selectedBranch?: string;
   selectedPlan?: string;
-  isDialogMode?: boolean;
   onClose?: () => void;
   preSelectedPlanId?: number | string;
   showOnlySelectedPlan?: boolean;
@@ -67,33 +58,6 @@ interface ApiPlan {
 }
 
 // --- Constants ---
-
-const TIME_OPTIONS = [
-  "01:00",
-  "02:00",
-  "03:00",
-  "04:00",
-  "05:00",
-  "06:00",
-  "07:00",
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
-  "21:00",
-  "22:00",
-  "23:00",
-  "24:00",
-];
 
 // --- Sub-Components ---
 
@@ -262,88 +226,6 @@ const PlanSelection = ({
           </button>
         );
       })}
-    </motion.div>
-  );
-};
-
-const TimeSelection = ({
-  enrollmentType,
-  fromTime,
-  toTime,
-  timeOptions,
-  locale,
-}: {
-  enrollmentType?: string;
-  fromTime: string;
-  toTime: string;
-  timeOptions: string[];
-  locale: "ar" | "en";
-}) => {
-  const t = useTranslations("reservationForm.labels");
-
-  const label = useMemo(() => {
-    switch (enrollmentType) {
-      case "hour":
-        return t("numberOfHours");
-      case "day":
-        return t("numberOfDays");
-      case "week":
-        return t("numberOfWeeks");
-      case "month":
-        return t("numberOfMonths");
-      default:
-        return t("duration");
-    }
-  }, [enrollmentType, t]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15, duration: 0.4, type: "spring", stiffness: 60 }}
-    >
-      <label className="block font-bold mb-2 text-primary text-center">
-        {label}
-      </label>
-      <div className="flex flex-col items-center gap-2 max-w-3xl mx-auto">
-        <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto px-2 pb-2">
-          {timeOptions.map((t) => {
-            const isSelected = t === fromTime || t === toTime;
-            const isInRange = !!(
-              fromTime &&
-              toTime &&
-              timeOptions.indexOf(t) > timeOptions.indexOf(fromTime) &&
-              timeOptions.indexOf(t) < timeOptions.indexOf(toTime)
-            );
-
-            return (
-              <button
-                key={t}
-                type="button"
-                className={cn(
-                  "px-3 py-1 rounded-full border-2 text-sm font-bold transition",
-                  isSelected
-                    ? "bg-primary text-white border-primary"
-                    : isInRange
-                      ? "bg-[#E6E9F8] text-primary border-[#B6BEE6]"
-                      : "bg-white text-primary border-gray-300",
-                  "focus:outline-none focus:ring-2 focus:ring-primary",
-                )}
-                style={{ minWidth: 56 }}
-                disabled
-                aria-pressed={isSelected || isInRange}
-              >
-                {t}
-              </button>
-            );
-          })}
-        </div>
-        <div className="text-xs text-gray-500 mt-1">
-          {fromTime && toTime
-            ? t("timeRange", { start: fromTime, end: toTime })
-            : t("autoDuration")}
-        </div>
-      </div>
     </motion.div>
   );
 };
@@ -839,7 +721,6 @@ const ReservationForm = ({
   locale,
   selectedBranch,
   selectedPlan,
-  isDialogMode = false,
   onClose,
   preSelectedPlanId,
   showOnlySelectedPlan = false,
@@ -965,45 +846,6 @@ const ReservationForm = ({
     () => apiPlans.find((plan: ApiPlan) => plan.id === selectedPlanId),
     [apiPlans, selectedPlanId],
   );
-
-  const dynamicTimeOptions = useMemo(() => {
-    if (!selectedApiPlan) return TIME_OPTIONS;
-    const { enrollment_type } = selectedApiPlan;
-
-    const getUnitLabel = (count: number, type: string) => {
-      let unitKey = type;
-      if (locale === "ar") {
-        if (count >= 3 && count <= 10) {
-          unitKey = `${type}s`;
-        }
-      } else if (count > 1) {
-        unitKey = `${type}s`;
-      }
-      return t(`units.${unitKey as any}`);
-    };
-
-    switch (enrollment_type) {
-      case "hour":
-        return TIME_OPTIONS;
-      case "day":
-        return Array.from(
-          { length: 30 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "day")}`,
-        );
-      case "week":
-        return Array.from(
-          { length: 4 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "week")}`,
-        );
-      case "month":
-        return Array.from(
-          { length: 12 },
-          (_, i) => `${i + 1} ${getUnitLabel(i + 1, "month")}`,
-        );
-      default:
-        return TIME_OPTIONS;
-    }
-  }, [selectedApiPlan, t, locale]);
 
   // -- Effects --
 
@@ -1248,7 +1090,7 @@ const ReservationForm = ({
       setSubmitSuccess(true);
       toastSuccess(t("success.bookingSent"));
 
-      if (isDialogMode && onClose) {
+      if (onClose) {
         setTimeout(() => onClose(), 1500);
       }
     } catch (err: any) {
@@ -1316,71 +1158,42 @@ const ReservationForm = ({
   return (
     <>
       <motion.form
-        id={isDialogMode ? "reservation-form" : undefined}
+        id="reservation-form"
         onSubmit={handleSubmit}
         dir={dir}
-        className={cn("space-y-8", isDialogMode && "pb-4")}
+        className="space-y-8 pb-4"
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
       >
-        {/* Notice */}
-        {!isDialogMode && (
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.3,
-              duration: 0.4,
-              type: "spring",
-              stiffness: 60,
-            }}
-            className="text-xs text-gray-400 text-center max-w-lg mx-auto"
-          >
-            {t("labels.termsNotice")}
-          </motion.div>
-        )}
-
         {/* Layout Grid */}
-        <div
-          className={cn(
-            isDialogMode ? "lg:grid lg:grid-cols-12 lg:gap-12" : "",
-          )}
-        >
+        <div className="lg:grid lg:grid-cols-12 lg:gap-12">
           {/* Left Column (Sidebar-like in RTL) */}
-          {isDialogMode && (
-            <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
-              <BookingSummary
-                locale={locale}
-                planName={selectedPlanObj?.name || ""}
-                fromTime={fromTime}
-                toTime={toTime}
-                childrenCount={selectedChildren.length}
-                date={bookingDate}
-                price={selectedPlanObj?.price || ""}
-                promoDetails={promoDetails}
-                couponProps={{
-                  couponCode,
-                  setCouponCode,
-                  onApply: handleApplyCoupon,
-                  onRemove: handleRemoveCoupon,
-                  isApplying: isApplyingCoupon,
-                  error: couponError,
-                }}
-              />
+          <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
+            <BookingSummary
+              locale={locale}
+              planName={selectedPlanObj?.name || ""}
+              fromTime={fromTime}
+              toTime={toTime}
+              childrenCount={selectedChildren.length}
+              date={bookingDate}
+              price={selectedPlanObj?.price || ""}
+              promoDetails={promoDetails}
+              couponProps={{
+                couponCode,
+                setCouponCode,
+                onApply: handleApplyCoupon,
+                onRemove: handleRemoveCoupon,
+                isApplying: isApplyingCoupon,
+                error: couponError,
+              }}
+            />
 
-              <NotesSection locale={locale} />
-            </div>
-          )}
+            <NotesSection locale={locale} />
+          </div>
 
           {/* Right Column (Main Form) */}
-          <div
-            className={cn(
-              isDialogMode
-                ? "lg:col-span-6 order-2 lg:order-1 space-y-6"
-                : "space-y-6",
-            )}
-          >
+          <div className="lg:col-span-6 order-2 lg:order-1 space-y-6">
             <PlanSelection
               plans={planList}
               selectedPlanId={selectedPlanId}
@@ -1388,15 +1201,6 @@ const ReservationForm = ({
               showOnlySelected={showOnlySelectedPlan}
               locale={locale}
             />
-
-            {/* Time Selection - visible if needed or for duration feedback
-            <TimeSelection
-              enrollmentType={selectedApiPlan?.enrollment_type}
-              fromTime={fromTime}
-              toTime={toTime}
-              timeOptions={dynamicTimeOptions}
-              locale={locale}
-            /> */}
 
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -1436,37 +1240,22 @@ const ReservationForm = ({
             />
           </div>
         </div>
-
-        {/* Submit Button (Non-Dialog) */}
-        {!isDialogMode && (
-          <Button
-            type="submit"
-            size="sm"
-            disabled={
-              isSubmitting || !bookingDate || selectedChildren.length === 0
-            }
-          >
-            {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
-          </Button>
-        )}
       </motion.form>
 
       {/* Submit Button (Dialog Mode) */}
-      {isDialogMode && (
-        <div className="sticky bottom-0 bg-white border-t pt-4 mt-8 -mx-6 px-6 pb-4 z-20">
-          <Button
-            size="sm"
-            type="submit"
-            form="reservation-form"
-            className="w-full"
-            disabled={
-              isSubmitting || !bookingDate || selectedChildren.length === 0
-            }
-          >
-            {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
-          </Button>
-        </div>
-      )}
+      <div className="sticky bottom-0 bg-white border-t pt-4 mt-8 -mx-6 px-6 pb-4 z-20">
+        <Button
+          size="sm"
+          type="submit"
+          form="reservation-form"
+          className="w-full"
+          disabled={
+            isSubmitting || !bookingDate || selectedChildren.length === 0
+          }
+        >
+          {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
+        </Button>
+      </div>
     </>
   );
 };

@@ -701,7 +701,7 @@ const Bookings = () => {
               <Button
                 onClick={handleConfirm}
                 disabled={isConfirming}
-                className="w-full bg-gradient-to-r from-primary to-primary text-white py-6 text-lg font-bold hover:opacity-90"
+                className="w-full bg-linear-to-r from-primary to-primary text-white py-6 text-lg font-bold hover:opacity-90"
               >
                 {isConfirming ? (
                   <Skeleton className="h-4 w-20" />
@@ -1080,7 +1080,6 @@ const Bookings = () => {
                 selectedBranch={
                   renewBooking.center_branch_id || renewBooking.branch_id
                 }
-                isDialogMode={true}
                 onClose={handleRenewDialogClose}
                 preSelectedPlanId={renewBooking.branch_price_id}
                 showOnlySelectedPlan={true}
