@@ -165,29 +165,13 @@ export interface Pricing {
 
 export interface CenterRegisterPayload {
   // Basic Info
-  name: string;
+  name?: string;
   email: string;
   password: string; // optional in some contexts? Schema says required.
   phone: string;
   nursery_name: string;
   description: string;
   logo: File;
-
-  // Statistics
-  experience_years: string;
-  children_served_count: string;
-  specialists_count: string;
-
-  // Custom Services
-  custom_services: { name: string; description: string }[];
-
-  // Plans
-  plans: {
-    title: string;
-    description: string;
-    price: string;
-    features: string[];
-  }[];
 }
 
 // Extended interface for nursery API response that includes user_id
@@ -505,13 +489,11 @@ export interface NurseryPlan {
 }
 
 export interface NurseryRegisterPayload {
-  name: string;
+  name?: string;
   email: string;
   phone: string;
   password: string;
   nursery_name: string;
   description: string;
   logo: File;
-  album: File[];
-  plans: NurseryPlan[];
 }

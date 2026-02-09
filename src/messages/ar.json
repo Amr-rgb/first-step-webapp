@@ -14,7 +14,7 @@
         "path": "/services"
       },
       "nurseries": {
-        "title": "منشآت تربوية",
+        "title": "منشآت",
         "path": "/nurseries"
       },
       "centers-item": {
@@ -215,6 +215,36 @@
       "disabled": "حضانات الاحتياجات الخاصة"
     },
     "viewAllCoupons": "عرض كل الكوبونات"
+  },
+  "filterSidebar": {
+    "title": "التصفية",
+    "categories": {
+      "title": "تربية وترفيه",
+      "all": "كل المنشآت",
+      "nursery": "حضانات",
+      "center": "مراكز",
+      "rehabilitation": "مركز تأهيلي",
+      "kindergarten": "رياضة أطفال",
+      "entertainment": "مركز ترفيهي"
+    },
+    "cities": {
+      "title": "المدن",
+      "all": "كل المدن"
+    },
+    "ages": {
+      "title": "الأعمار",
+      "all": "كل الأعمار",
+      "infant": "رضيع",
+      "0-6-months": "من 0 الى 6 أشهر",
+      "6-12-months": "من 6 أشهر إلى سنة",
+      "1-3-years": "من سنة إلى 3 سنوات",
+      "3-5-years": "من 3 سنوات إلى 5 سنوات",
+      "5-6-years": "من 5 سنوات إلى 6 سنوات"
+    },
+    "ratings": {
+      "title": "التقييمات",
+      "all": "كل التقييمات"
+    }
   },
   "auth": {
     "sign-up": {

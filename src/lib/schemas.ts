@@ -803,9 +803,6 @@ export type CenterStep4FormData = z.infer<
 export const createCenterSchema = (locale: "ar" | "en" = "ar") =>
   z.object({
     // Basic Info
-    name: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
     email: z.string().email({ message: getErrorMessage("invalid-email", locale) }),
     phone: z
       .string()
@@ -813,6 +810,7 @@ export const createCenterSchema = (locale: "ar" | "en" = "ar") =>
         message: "Please enter a valid phone number",
       }),
     password: getPasswordSchema(locale),
+    confirmPassword: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -822,33 +820,9 @@ export const createCenterSchema = (locale: "ar" | "en" = "ar") =>
     logo: z.instanceof(File, {
       message: getErrorMessage("general-field-required", locale),
     }),
-
-    // Statistics
-    experience_years: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-    children_served_count: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-    specialists_count: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-
-    // Custom Services
-    custom_services: z
-      .array(
-        z.object({
-          name: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          description: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-        })
-      )
-      .min(1, { message: getErrorMessage("general-field-required", locale) }),
-
-    // Plans
-    plans: z
-      .array(
-        z.object({
-          title: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          description: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          price: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          features: z.array(z.string()).min(1, { message: getErrorMessage("general-field-required", locale) }),
-        })
-      )
-      .min(1, { message: getErrorMessage("general-field-required", locale) }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: locale === "ar" ? "كلمة المرور غير متطابقة" : "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
 export type CenterFormData = z.infer<ReturnType<typeof createCenterSchema>>;
@@ -857,9 +831,6 @@ export type CenterFormData = z.infer<ReturnType<typeof createCenterSchema>>;
 // Nursery Signup Schema
 export const createNurserySchema = (locale: "ar" | "en" = "ar") =>
   z.object({
-    name: z
-      .string()
-      .min(2, { message: getErrorMessage("general-field-required", locale) }),
     email: z.string().email({ message: getErrorMessage("invalid-email", locale) }),
     phone: z
       .string()
@@ -867,6 +838,7 @@ export const createNurserySchema = (locale: "ar" | "en" = "ar") =>
         message: "Please enter a valid phone number",
       }),
     password: getPasswordSchema(locale),
+    confirmPassword: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
@@ -876,16 +848,9 @@ export const createNurserySchema = (locale: "ar" | "en" = "ar") =>
     logo: z.instanceof(File, {
       message: getErrorMessage("general-field-required", locale),
     }),
-    album: z.array(z.instanceof(File)).optional(),
-    plans: z
-      .array(
-        z.object({
-          title: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          description: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-          price: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
-        })
-      )
-      .min(1, { message: getErrorMessage("general-field-required", locale) }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: locale === "ar" ? "كلمة المرور غير متطابقة" : "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
 export type NurseryFormData = z.infer<ReturnType<typeof createNurserySchema>>;

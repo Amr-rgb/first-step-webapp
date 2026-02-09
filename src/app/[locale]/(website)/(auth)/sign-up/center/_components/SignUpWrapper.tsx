@@ -18,10 +18,6 @@ const SignUpWrapper = () => {
   const router = useRouter();
   const locale = useLocale();
   const formRef = useRef<UseFormReturn<CenterFormData> | null>(null);
-  const currentStepRef = useRef<{
-    currentStep: number;
-    setCurrentStep: (step: number) => void;
-  } | null>(null);
 
   const onError = (error: ApiError) => {
     console.log("Full API Error:", error);
@@ -41,22 +37,12 @@ const SignUpWrapper = () => {
         { field: keyof CenterFormData; step: number }
       > = {
         // Step 1
-        name: { field: "name", step: 1 },
         email: { field: "email", step: 1 },
         password: { field: "password", step: 1 },
         phone: { field: "phone", step: 1 },
         nursery_name: { field: "nursery_name", step: 1 },
         description: { field: "description", step: 1 },
         logo: { field: "logo", step: 1 },
-
-        // Step 2
-        experience_years: { field: "experience_years", step: 2 },
-        children_served_count: { field: "children_served_count", step: 2 },
-        specialists_count: { field: "specialists_count", step: 2 },
-        custom_services: { field: "custom_services", step: 2 },
-
-        // Step 3
-        plans: { field: "plans", step: 3 },
       };
 
       let earliestErrorStep = Infinity;
@@ -103,12 +89,7 @@ const SignUpWrapper = () => {
       });
 
       // Navigate to the earliest step with errors if we're not already there
-      if (
-        earliestErrorStep !== Infinity &&
-        currentStepRef.current &&
-        currentStepRef.current.currentStep !== earliestErrorStep
-      ) {
-        currentStepRef.current.setCurrentStep(earliestErrorStep);
+      if (earliestErrorStep !== Infinity) {
         toastError(
           locale === "ar" ? "خطأ في التحقق" : "Validation Error",
           locale === "ar"
@@ -162,22 +143,13 @@ const SignUpWrapper = () => {
 
     const expectedData: CenterRegisterPayload = {
       // Basic fields
-      name: data.name,
+      name: data.nursery_name, // Use nursery_name as name since 'name' (owner name) is removed
       email: data.email,
       password: data.password,
       phone: data.phone,
       nursery_name: data.nursery_name,
       description: data.description,
       logo: data.logo,
-
-      // Stats
-      experience_years: data.experience_years,
-      children_served_count: data.children_served_count,
-      specialists_count: data.specialists_count,
-
-      // Services & Plans
-      custom_services: data.custom_services,
-      plans: data.plans,
     };
 
     mutation.mutate(expectedData);
@@ -191,7 +163,6 @@ const SignUpWrapper = () => {
 
       <SignUp
         formRef={formRef}
-        currentStepRef={currentStepRef}
         submitHandler={submitHandler}
         isLoading={mutation.isPending}
       />

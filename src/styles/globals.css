@@ -285,6 +285,14 @@ body[data-scroll-locked] {
   .bg-size-200 {
     background-size: 200% 200%;
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
 }
 
 @layer base {

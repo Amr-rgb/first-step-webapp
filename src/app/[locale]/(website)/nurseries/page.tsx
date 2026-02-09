@@ -1,12 +1,11 @@
 import { Metadata } from "next";
-// import { AdSlide } from "@/types";
-// import Advertisment from "@/components/general/Advertisment";
 import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
 import Contact from "@/components/general/contact/Contact";
 import Nurseries from "@/components/general/nurseries/Nurseries";
 import { nurseryService } from "@/services/api";
 import { websiteService as promocodeWebsiteService } from "@/services/promocodeService";
 import CouponSlider from "@/components/general/nurseries/CouponSlider";
+import { getCitiesAction, City } from "@/actions/getCitiesAction";
 
 export const revalidate = 86400;
 
@@ -45,22 +44,29 @@ export default async function NurseriesPage({
 
   let nurseries: any[] = [];
   let coupons: any[] = [];
+  let cities: { id: string; label: string }[] = [];
   let error = null;
 
   try {
-    const [nurseriesData, couponsResponse] = await Promise.all([
+    const [nurseriesData, couponsResponse, citiesData] = await Promise.all([
       nurseryService.getNurseries(locale),
       promocodeWebsiteService.getPromocodes(),
+      getCitiesAction(),
     ]);
-    // Filter out nursery with ID 68
-    nurseries = (nurseriesData as any[]).filter(
-      (nursery: any) => Number(nursery.id) !== 68
-    );
+
+    // Show all nurseries (combined establishments)
+    nurseries = nurseriesData as any[];
+
     if (couponsResponse.success) {
       coupons = couponsResponse.data;
     }
+
+    // Transform cities for filter sidebar
+    cities = (citiesData || []).map((city: City) => ({
+      id: city.name?.[locale] || city.name?.ar || String(city.id),
+      label: city.name?.[locale] || city.name?.ar || String(city.id),
+    }));
   } catch (err: any) {
-    // Log error for debugging
     console.error("Error fetching data:", err);
     error = err;
   }
@@ -74,6 +80,7 @@ export default async function NurseriesPage({
         filter={filter}
         locale={locale}
         error={error}
+        cities={cities}
       />
       <BlogsWrapper number={4} locale={locale} />
       <Contact />

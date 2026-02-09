@@ -208,7 +208,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
+      <div className="relative w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
         <div
           className={`relative container mx-auto px-4 transition-all duration-300 ${isScrolled ? "py-2" : "py-2.5"
             }`}
@@ -316,8 +316,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
         </div>
       </div>
 
-      {/* Spacer to prevent content overlap */}
-      <div className="h-[80px] w-full" aria-hidden="true" />
+
 
       {/* Floating Action Buttons - Fixed to viewport */}
       {/* {!token && (

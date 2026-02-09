@@ -17,10 +17,7 @@ const SignUpWrapper = () => {
     const router = useRouter();
     const locale = useLocale();
     const formRef = useRef<UseFormReturn<NurseryFormData> | null>(null);
-    const currentStepRef = useRef<{
-        currentStep: number;
-        setCurrentStep: (step: number) => void;
-    } | null>(null);
+
 
     const onError = (error: ApiError) => {
         console.log("Full API Error:", error);
@@ -40,19 +37,12 @@ const SignUpWrapper = () => {
                 { field: keyof NurseryFormData; step: number }
             > = {
                 // Step 1
-                name: { field: "name", step: 1 },
                 email: { field: "email", step: 1 },
                 password: { field: "password", step: 1 },
                 phone: { field: "phone", step: 1 },
                 nursery_name: { field: "nursery_name", step: 1 },
                 description: { field: "description", step: 1 },
                 logo: { field: "logo", step: 1 },
-
-                // Step 2
-                album: { field: "album", step: 2 },
-
-                // Step 3
-                plans: { field: "plans", step: 3 },
             };
 
             let earliestErrorStep = Infinity;
@@ -77,35 +67,15 @@ const SignUpWrapper = () => {
                     }
                 } else {
                     // Handle nested errors or unmapped fields
-                    if (field.startsWith('plans')) {
-                        // Example: plans.0.title
-                        // Track step for plans
-                        if (3 < earliestErrorStep) {
-                            earliestErrorStep = 3;
-                        }
-
-                        // We can try to set error on the specific field if possible
-                        // or just on 'plans' general
-                        formRef.current?.setError("plans", {
-                            type: "server",
-                            message: errorMessage
-                        });
-                    } else {
-                        console.warn(
-                            `Field ${field} not found in form, showing as root error`
-                        );
-                        toastError("Validation Error", `${field}: ${errorMessage}`);
-                    }
+                    console.warn(
+                        `Field ${field} not found in form, showing as root error`
+                    );
+                    toastError("Validation Error", `${field}: ${errorMessage}`);
                 }
             });
 
             // Navigate to the earliest step with errors if we're not already there
-            if (
-                earliestErrorStep !== Infinity &&
-                currentStepRef.current &&
-                currentStepRef.current.currentStep !== earliestErrorStep
-            ) {
-                currentStepRef.current.setCurrentStep(earliestErrorStep);
+            if (earliestErrorStep !== Infinity) {
                 toastError(
                     locale === "ar" ? "خطأ في التحقق" : "Validation Error",
                     locale === "ar"
@@ -160,15 +130,12 @@ const SignUpWrapper = () => {
         }
 
         const expectedData = {
-            name: data.name,
             email: data.email,
             password: data.password,
             phone: data.phone,
             nursery_name: data.nursery_name,
             description: data.description,
             logo: data.logo,
-            album: data.album || [],
-            plans: data.plans,
         };
 
         mutation.mutate(expectedData);
@@ -182,7 +149,6 @@ const SignUpWrapper = () => {
 
             <SignUpForm
                 formRef={formRef}
-                currentStepRef={currentStepRef}
                 submitHandler={submitHandler}
                 isLoading={mutation.isPending}
             />

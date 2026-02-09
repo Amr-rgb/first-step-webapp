@@ -19,8 +19,12 @@ export default async function WebsiteLayout({
 }) {
   return (
     <React.Fragment>
-      <TopBar />
-      <Navbar />
+      <div className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col">
+        <TopBar />
+        <Navbar />
+      </div>
+      {/* Spacer for fixed header */}
+      <div className="h-[135px] xl:h-[160px] w-full" aria-hidden="true" />
       {children}
       <WhatsAppButton />
       <Footer />
