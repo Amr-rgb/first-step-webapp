@@ -2656,6 +2656,12 @@
           "week": "Weekly",
           "month": "Monthly",
           "year": "Yearly"
+        },
+        "ages_list": {
+          "0_6_months": "0 to 6 Months",
+          "6_12_months": "6 to 12 Months",
+          "1_3_years": "1 to 3 Years",
+          "3_5_years": "3 to 5 Years"
         }
       }
     },

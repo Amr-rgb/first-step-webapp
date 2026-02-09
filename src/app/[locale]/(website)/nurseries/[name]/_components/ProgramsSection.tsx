@@ -79,41 +79,6 @@ const ProgramsSection = ({
     enabled: activeBranchIds.length > 0,
   });
 
-  // Derived Filter Options
-  const programTypes = useMemo(() => {
-    const types = new Set<string>();
-    allPlans.forEach((p) => types.add(p.enrollment_type));
-    return Array.from(types).map((type) => ({
-      id: type,
-      label: t(`filters.types.${type}`) || type,
-    }));
-  }, [allPlans, t]);
-
-  const ageOptions = useMemo(() => {
-    const ranges = new Set<string>();
-    allPlans.forEach((p) => {
-      const sAge =
-        typeof p.start_age === "number" ? p.start_age : p.start_age.age;
-      const sType = typeof p.start_age === "number" ? "year" : p.start_age.type;
-      const eAge = typeof p.end_age === "number" ? p.end_age : p.end_age.age;
-      const eType = typeof p.end_age === "number" ? "year" : p.end_age.type;
-      ranges.add(`${sAge}_${sType}_${eAge}_${eType}`);
-    });
-
-    const getUnitLabel = (type: string) => tCommon(`units.${type}`) || type;
-
-    return Array.from(ranges).map((range) => {
-      const [start, startType, end, endType] = range.split("_");
-      return {
-        id: range,
-        label:
-          locale === "ar"
-            ? `من ${start} ${getUnitLabel(startType)} ل ${end} ${getUnitLabel(endType)}`
-            : `From ${start} ${getUnitLabel(startType)} to ${end} ${getUnitLabel(endType)}`,
-      };
-    });
-  }, [allPlans, tCommon, locale]);
-
   // Filtering Logic
   const filteredPrograms = useMemo(() => {
     return allPlans.filter((p) => {
@@ -133,8 +98,27 @@ const ProgramsSection = ({
           typeof p.start_age === "number" ? "year" : p.start_age.type;
         const eAge = typeof p.end_age === "number" ? p.end_age : p.end_age.age;
         const eType = typeof p.end_age === "number" ? "year" : p.end_age.type;
-        const rangeKey = `${sAge}_${sType}_${eAge}_${eType}`;
-        if (!filters.ages.includes(rangeKey)) return false;
+
+        // Convert everything to months for easier comparison
+        const startInMonths = sType === "month" ? sAge : sAge * 12;
+        const endInMonths = eType === "month" ? eAge : eAge * 12;
+
+        const matchesAge = filters.ages.some((filterId) => {
+          switch (filterId) {
+            case "0_6_months":
+              return startInMonths <= 6 && endInMonths >= 0;
+            case "6_12_months":
+              return startInMonths <= 12 && endInMonths >= 6;
+            case "1_3_years":
+              return startInMonths <= 36 && endInMonths >= 12;
+            case "3_5_years":
+              return startInMonths <= 60 && endInMonths >= 36;
+            default:
+              return false;
+          }
+        });
+
+        if (!matchesAge) return false;
       }
 
       return true;
@@ -233,13 +217,10 @@ const ProgramsSection = ({
         </Button>
       </div>
 
-      {/* Filter Modal */}
       <FilterDialog
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         branches={branches}
-        programTypes={programTypes}
-        ages={ageOptions}
         selectedFilters={filters}
         onApply={setFilters}
         onReset={() => setFilters({ branches: [], programTypes: [], ages: [] })}

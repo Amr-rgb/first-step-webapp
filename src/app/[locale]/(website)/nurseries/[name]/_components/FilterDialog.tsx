@@ -23,8 +23,6 @@ interface FilterDialogProps {
   isOpen: boolean;
   onClose: () => void;
   branches: FilterOption[];
-  programTypes: FilterOption[];
-  ages: FilterOption[];
   selectedFilters: {
     branches: string[];
     programTypes: string[];
@@ -42,8 +40,6 @@ const FilterDialog = ({
   isOpen,
   onClose,
   branches,
-  programTypes,
-  ages,
   selectedFilters,
   onApply,
   onReset,
@@ -125,7 +121,13 @@ const FilterDialog = ({
               <FilterColumn
                 title={t("filters.programType")}
                 icon={<dashboardIcons.programType className="w-5 h-5" />}
-                options={programTypes}
+                options={[
+                  { id: "hour", label: t("filters.types.hour") },
+                  { id: "day", label: t("filters.types.day") },
+                  { id: "week", label: t("filters.types.week") },
+                  { id: "month", label: t("filters.types.month") },
+                  { id: "year", label: t("filters.types.year") },
+                ]}
                 selectedIds={localFilters.programTypes}
                 allLabel={t("filters.allPrograms")}
                 onChange={(id) => toggleFilter("programTypes", id)}
@@ -137,7 +139,18 @@ const FilterDialog = ({
               <FilterColumn
                 title={t("filters.age")}
                 icon={<dashboardIcons.ages className="w-5 h-5" />}
-                options={ages}
+                options={[
+                  {
+                    id: "0_6_months",
+                    label: t("filters.ages_list.0_6_months"),
+                  },
+                  {
+                    id: "6_12_months",
+                    label: t("filters.ages_list.6_12_months"),
+                  },
+                  { id: "1_3_years", label: t("filters.ages_list.1_3_years") },
+                  { id: "3_5_years", label: t("filters.ages_list.3_5_years") },
+                ]}
                 selectedIds={localFilters.ages}
                 allLabel={t("filters.allAges")}
                 onChange={(id) => toggleFilter("ages", id)}
