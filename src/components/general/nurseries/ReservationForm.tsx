@@ -210,11 +210,19 @@ const PlanSelection = ({
           >
             <span
               className={cn(
-                "text-lg font-extrabold mb-1",
+                "text-lg font-extrabold mb-1 flex flex-col items-center",
                 isSelected ? "text-white" : "text-primary",
               )}
             >
-              {p.price}
+              {p.price.toString().replace(/[^\d.]/g, "")}
+              <span
+                className={cn(
+                  "sar text-2xl",
+                  isSelected ? "text-white" : "text-primary",
+                )}
+              >
+                $
+              </span>
             </span>
             <span className="w-full h-px bg-[#DADADA] mb-1" />
             <span
@@ -442,7 +450,7 @@ const BookingSummary = ({
 
   // Calculate final total based on whether promo is applied
   const finalTotal = promoDetails ? promoDetails.final_amount : subtotal;
-  const currency = locale === "ar" ? "ر.س" : "SAR";
+  const currencySymbol = <span className="sar text-2xl">$</span>;
 
   return (
     <div className="space-y-6">
@@ -487,8 +495,8 @@ const BookingSummary = ({
           <span className="text-mid-gray font-medium">
             {tLabels("required")}
           </span>
-          <span className="text-mid-gray font-bold">
-            {subtotal} {currency}
+          <span className="text-mid-gray font-bold flex items-center gap-1">
+            {subtotal} {currencySymbol}
           </span>
         </div>
 
@@ -565,8 +573,8 @@ const BookingSummary = ({
             <span className="text-mid-gray font-medium">
               {tLabels("discount")}
             </span>
-            <span className="text-mid-gray font-medium">
-              {promoDetails.discount} {currency}
+            <span className="text-mid-gray font-medium flex items-center gap-1">
+              {promoDetails.discount} {currencySymbol}
             </span>
           </div>
         )}
@@ -575,9 +583,8 @@ const BookingSummary = ({
           <span className="font-bold text-primary">
             {tLabels("totalAfterDiscount")}
           </span>
-          <span className="font-extrabold text-2xl text-primary">
-            {finalTotal > 0 ? finalTotal.toFixed(0) : "0"}{" "}
-            <span className="text-sm font-medium">{currency}</span>
+          <span className="font-extrabold text-2xl text-primary flex items-center gap-1">
+            {finalTotal > 0 ? finalTotal.toFixed(0) : "0"} {currencySymbol}
           </span>
         </div>
       </div>
@@ -659,34 +666,33 @@ const ReservationForm = ({
 
   // -- Derived Data --
   const defaultPlans: Plan[] = useMemo(() => {
-    const currency = locale === "ar" ? "ر.س" : "SAR";
     return [
       {
         id: 1,
         type: "monthly",
         name: t("plans.monthly"),
-        price: `50 ${currency}`,
+        price: "50",
         planId: 1,
       },
       {
         id: 2,
         type: "weekly",
         name: t("plans.weekly"),
-        price: `50 ${currency}`,
+        price: "50",
         planId: 2,
       },
       {
         id: 3,
         type: "daily",
         name: t("plans.daily"),
-        price: `50 ${currency}`,
+        price: "50",
         planId: 3,
       },
       {
         id: 4,
         type: "hourly",
         name: t("plans.hourly"),
-        price: `50 ${currency}`,
+        price: "50",
         planId: 4,
       },
     ];
@@ -698,7 +704,7 @@ const ReservationForm = ({
         id: apiPlan.id,
         type: apiPlan.enrollment_type as PlanType,
         name: apiPlan.title,
-        price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+        price: `${apiPlan.price_amount}`,
         planId: apiPlan.id,
       }));
     }
