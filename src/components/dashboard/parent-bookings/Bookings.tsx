@@ -1036,24 +1036,26 @@ const Bookings = () => {
       {/* Renew Booking Dialog */}
       {renewBooking && (
         <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
-          <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
-            <DialogHeader className="px-6 pt-6 pb-4">
-              <DialogTitle className="text-center w-full">
+          <DialogContent className="w-[95vw] sm:max-w-5xl p-0 overflow-hidden rounded-3xl border-none bg-white max-h-[90vh] flex flex-col">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b">
+              <DialogTitle className="text-center w-full text-xl font-bold text-primary">
                 {t("actions.renew")}
               </DialogTitle>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4 pt-6">
               <ReservationForm
                 nurseryName={
+                  renewBooking.center_name ||
                   renewBooking.originalData?.center_name ||
-                  renewBooking.className ||
+                  renewBooking.branch_name ||
                   "nursery"
                 }
                 selectedProgram={renewBooking.program || ""}
+                selectedPlan={renewBooking.program || ""}
                 locale={locale as "ar" | "en"}
-                selectedBranch={
-                  renewBooking.center_branch_id || renewBooking.branch_id
-                }
+                selectedBranch={String(
+                  renewBooking.center_branch_id || renewBooking.branch_id,
+                )}
                 onClose={handleRenewDialogClose}
                 preSelectedPlanId={renewBooking.branch_price_id}
                 showOnlySelectedPlan={true}
