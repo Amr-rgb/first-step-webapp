@@ -952,10 +952,6 @@ const ReservationForm = ({
       setIsSubmitting(false);
       setSubmitSuccess(true);
       toastSuccess(t("success.bookingSent"));
-
-      if (onClose) {
-        setTimeout(() => onClose(), 1500);
-      }
     } catch (err: any) {
       console.error("[ReservationForm] Booking error:", err);
       console.error("[ReservationForm] Error details:", {
