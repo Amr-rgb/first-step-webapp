@@ -58,6 +58,7 @@ export default async function NurseryPage({
         tagline={portfolio.hero_section?.subtitle_of_hero || ""}
         logo={portfolio.user?.logo || ""}
         rating={4.5}
+        centerId={centerIdStr}
       />
 
       <div className="container mx-auto px-4 py-12">

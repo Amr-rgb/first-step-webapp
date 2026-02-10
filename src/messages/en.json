@@ -2589,7 +2589,8 @@
       "share": "Share",
       "chat": "Chat",
       "sloganFallback": "Your child's future starts here",
-      "description": "We provide the best care and education for your child."
+      "description": "We provide the best care and education for your child.",
+      "branches": "Branches"
     },
     "about": {
       "title": "About the Center"

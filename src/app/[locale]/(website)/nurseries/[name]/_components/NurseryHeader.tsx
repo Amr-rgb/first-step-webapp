@@ -7,12 +7,16 @@ import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsAuthenticated } from "@/store/authStore";
 import { dashboardIcons } from "@/components/general/icons";
+import { useQuery } from "@tanstack/react-query";
+import { getBranchesForCenterAction } from "@/actions/nurseryActions";
+import { useMemo } from "react";
 
 interface NurseryHeaderProps {
   name: string;
   tagline: string;
   logo: string;
   rating?: number;
+  centerId: string | number;
 }
 
 const NurseryHeader = ({
@@ -20,10 +24,24 @@ const NurseryHeader = ({
   tagline,
   logo,
   rating = 4.5,
+  centerId,
 }: NurseryHeaderProps) => {
   const t = useTranslations("nurseryDetails.header");
   const router = useRouter();
   const isAuthenticated = useIsAuthenticated();
+
+  const { data: branchesResponse } = useQuery({
+    queryKey: ["branches-for-center", centerId],
+    queryFn: () => getBranchesForCenterAction(centerId.toString()),
+    enabled: !!centerId,
+  });
+
+  const branchesNames = useMemo(() => {
+    return (branchesResponse?.data || [])
+      .map((b: any) => b.nursery_name || b.name)
+      .filter(Boolean)
+      .join("، ");
+  }, [branchesResponse]);
 
   const handleChatClick = () => {
     if (isAuthenticated) {
@@ -77,9 +95,12 @@ const NurseryHeader = ({
             <h1 className="text-3xl md:text-3xl font-bold text-primary mb-4 leading-tight">
               {name}
             </h1>
-            <p className="text-lg md:text-xl text-mid-gray max-w-2xl font-medium leading-relaxed">
-              {tagline}
-            </p>
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <dashboardIcons.branch className="w-5 h-5 text-primary" />
+              <p className="text-lg md:text-xl text-mid-gray max-w-2xl font-medium leading-relaxed">
+                {t("branches")}: {branchesNames || tagline}
+              </p>
+            </div>
           </div>
 
           {/* Rating and Social Buttons Section */}
