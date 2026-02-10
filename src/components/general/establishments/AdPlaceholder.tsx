@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { toastSuccess, toastError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 interface AdPlaceholderProps {
@@ -11,6 +13,9 @@ interface AdPlaceholderProps {
 
 const AdPlaceholder = ({ variant, className }: AdPlaceholderProps) => {
   const t = useTranslations("adSection");
+  const locale = useLocale();
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuthStore();
 
   const variants = {
     "top-left": {
@@ -37,14 +42,38 @@ const AdPlaceholder = ({ variant, className }: AdPlaceholderProps) => {
 
   const config = variants[variant];
 
+  const handleClick = () => {
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      toastError(t("errors.notSignedIn"));
+      router.push(`/${locale}/sign-in`);
+      return;
+    }
+
+    // Check if user is a center
+    if (user?.role !== "center") {
+      toastError(t("errors.centersOnly"));
+      return;
+    }
+
+    // Redirect to ad request page
+    router.push(`/${locale}/dashboard/center/ad-or-blog-request/ad-request`);
+    
+    toastSuccess(t("success.redirecting"));
+  };
+
   return (
-    <div
+    <button
+      onClick={handleClick}
       className={cn(
-        "rounded-2xl flex items-center justify-center p-4",
-        "bg-[#FBFBFB]",
+        "rounded-2xl flex items-center justify-center p-4 w-full",
+        "bg-[#FBFBFB] hover:bg-gray-100 active:scale-[0.98]",
+        "cursor-pointer border-2 border-transparent hover:border-primary/20",
+        "transition-all duration-200",
         config.minHeight,
         className
       )}
+      aria-label={t(config.textKey)}
     >
       <div className="flex flex-col items-center justify-center gap-4 text-center">
         <p
@@ -55,7 +84,7 @@ const AdPlaceholder = ({ variant, className }: AdPlaceholderProps) => {
           {t(config.textKey)}
         </p>
       </div>
-    </div>
+    </button>
   );
 };
 

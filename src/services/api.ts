@@ -950,65 +950,27 @@ export const authService = {
     try {
       const formData = new FormData();
 
-      // Basic fields
-      formData.append("name", payload.name);
+      // Basic fields - using correct API field names
+      formData.append("name", payload.nursery_name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
-      formData.append("nursery_name", payload.nursery_name);
-      formData.append("description", payload.description);
+      formData.append("location", payload.city_id);
 
       if (payload.logo) {
         formData.append("logo", payload.logo);
       }
 
-      // Statistics
-      formData.append("experience_years", payload.experience_years);
-      formData.append("children_served_count", payload.children_served_count);
-      formData.append("specialists_count", payload.specialists_count);
-
-      // Custom Services
-      if (payload.custom_services && payload.custom_services.length > 0) {
-        payload.custom_services.forEach((service, index) => {
-          formData.append(`custom_services[${index}][name]`, service.name);
-          formData.append(`custom_services[${index}][description]`, service.description);
-        });
-      }
-
-      // Plans
-      if (payload.plans && payload.plans.length > 0) {
-        payload.plans.forEach((plan, index) => {
-          formData.append(`plans[${index}][title]`, plan.title);
-          formData.append(`plans[${index}][description]`, plan.description);
-          formData.append(`plans[${index}][price]`, plan.price.toString());
-
-          if (plan.features && plan.features.length > 0) {
-            plan.features.forEach((feature, fIndex) => {
-              formData.append(`plans[${index}][features][${fIndex}]`, feature);
-            });
-          }
-        });
-      }
-
-      // Debug: Log the payload being sent
       console.log("Register Center Payload:", {
-        name: payload.name,
+        name: payload.nursery_name,
         email: payload.email,
         phone: payload.phone,
-        nursery_name: payload.nursery_name,
-        description: payload.description,
-        stats: {
-          exp: payload.experience_years,
-          children: payload.children_served_count,
-          specialists: payload.specialists_count
-        },
-        servicesCount: payload.custom_services?.length,
-        plansCount: payload.plans?.length,
+        location: payload.city_id,
         logo: payload.logo?.name,
       });
 
       const response = await apiClient.post(
-        "/v2/register-center-v2",
+        "/v3/register-center",
         formData,
         {
           headers: {
@@ -1018,13 +980,10 @@ export const authService = {
       );
       return response.data;
     } catch (error: any) {
-      // Enhanced error logging
       console.error("Register Center Error:", error);
       console.error("Error Response Status:", error.response?.status);
       console.error("Error Response Data:", error.response?.data);
-      console.error("Error Response Headers:", error.response?.headers);
 
-      // Log the full error for debugging
       if (error.response?.data?.errors) {
         console.error("Validation Errors:", error.response.data.errors);
       }
@@ -1037,35 +996,27 @@ export const authService = {
     try {
       const formData = new FormData();
 
-      formData.append("name", payload.name);
+      // Basic fields - using correct API field names
+      formData.append("name", payload.nursery_name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
-      formData.append("nursery_name", payload.nursery_name);
-      formData.append("description", payload.description);
+      formData.append("location", payload.city_id);
 
       if (payload.logo) {
         formData.append("logo", payload.logo);
       }
 
-      if (payload.album && payload.album.length > 0) {
-        payload.album.forEach((file: File) => {
-          formData.append("album[]", file);
-        });
-      }
+      console.log("Register Nursery Payload:", {
+        name: payload.nursery_name,
+        email: payload.email,
+        phone: payload.phone,
+        location: payload.city_id,
+        logo: payload.logo?.name,
+      });
 
-      if (payload.plans && payload.plans.length > 0) {
-        payload.plans.forEach((plan: NurseryPlan, index: number) => {
-          formData.append(`plans[${index}][title]`, plan.title);
-          formData.append(`plans[${index}][description]`, plan.description);
-          formData.append(`plans[${index}][price]`, plan.price.toString());
-        });
-      }
-
-      // Using the same endpoint but it might need to be /register-nursery if backend separates them
-      // For now pointing to register-center-v2 or we can use a new one if specified
       const response = await apiClient.post(
-        "/v2/register-center-v2",
+        "/v3/register-nursery",
         formData,
         {
           headers: {

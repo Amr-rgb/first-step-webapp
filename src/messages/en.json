@@ -55,7 +55,14 @@
   "adSection": {
     "title": "Advertising Space",
     "topPlaceholder": "Take advantage of the advertising space now",
-    "bottomPlaceholder": "Take advantage of the advertising space now"
+    "bottomPlaceholder": "Take advantage of the advertising space now",
+    "errors": {
+      "notSignedIn": "Please sign in first",
+      "centersOnly": "This service is only available for centers"
+    },
+    "success": {
+      "redirecting": "Redirecting to ad request page"
+    }
   },
   "faqs": {
     "title": {
