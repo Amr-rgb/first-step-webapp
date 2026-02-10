@@ -14,10 +14,12 @@ import DatePicker from "@/components/general/DatePicker";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { getBranchPricingAction } from "@/actions/nurseryActions";
-import { parentService as dashboardParentService } from "@/services/dashboardApi";
-import { parentService, enrollmentService } from "@/services/api";
-import { applyPromoCodeAction } from "@/actions/promoCodeActions";
-import { ApplyPromoCodeResponse } from "@/services/dashboardApi";
+import {
+  parentService as dashboardParentService,
+  promoCodeService,
+  ApplyPromoCodeResponse,
+} from "@/services/dashboardApi";
+import { enrollmentService } from "@/services/api";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -398,138 +400,6 @@ const ChildSelection = ({
           </div>
         )}
       </div>
-    </motion.div>
-  );
-};
-
-const CouponSection = ({
-  couponCode,
-  setCouponCode,
-  onApply,
-  onRemove,
-  isApplying,
-  promoDetails,
-  error,
-  locale,
-}: {
-  couponCode: string;
-  setCouponCode: (code: string) => void;
-  onApply: () => void;
-  onRemove: () => void;
-  isApplying: boolean;
-  promoDetails: ApplyPromoCodeResponse | null;
-  error: string | null;
-  locale: "ar" | "en";
-}) => {
-  const t = useTranslations("reservationForm");
-  const tErrors = useTranslations("reservationForm.errors");
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 60 }}
-      className="max-w-2xl mx-auto mb-4"
-    >
-      <p className="text-primary font-bold mb-3">
-        {t("labels.discountCoupon")}:
-      </p>
-
-      {promoDetails ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-purple-50 rounded-lg border border-purple-200 p-3"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="bg-purple-100 p-1.5 rounded-full">
-                <CheckCircle2 size={16} className="text-purple-600" />
-              </div>
-              <div>
-                <span className="text-purple-700 font-bold block leading-none">
-                  {promoDetails.promo_code}
-                </span>
-                <span className="text-purple-600 text-xs mt-0.5 block">
-                  {t("success.couponApplied")}
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onRemove}
-              className="text-gray-400 hover:text-red-500 transition-colors p-1"
-            >
-              <X size={18} />
-            </button>
-          </div>
-          <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
-            <span className="text-purple-800">{t("summary.saved")}</span>
-            <span className="font-bold text-purple-800">
-              {promoDetails.discount} {locale === "ar" ? "ر.س" : "SAR"}
-            </span>
-          </div>
-        </motion.div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2 relative">
-            <Input
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              placeholder={
-                locale === "ar"
-                  ? "أدخل الكود (مثال: SUMMER20)"
-                  : "Enter code (e.g. SUMMER20)"
-              }
-              className={cn(
-                "flex-1 h-10 transition-all",
-                error
-                  ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
-                  : "",
-              )}
-            />
-            <Button
-              type="button"
-              onClick={onApply}
-              disabled={isApplying || !couponCode.trim()}
-              className={cn(
-                "px-4 h-10 min-w-[100px]",
-                isApplying ? "bg-opacity-80" : "",
-              )}
-            >
-              {isApplying ? (
-                <LoadingSpinner size="sm" />
-              ) : (
-                t("labels.tryCoupon")
-              )}
-            </Button>
-          </div>
-
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex items-center gap-1.5 text-red-500 text-xs mt-1 px-1"
-              >
-                <AlertCircle size={12} />
-                <span>{error}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-
-      <p
-        className={cn(
-          "text-[10px] text-gray-400 flex items-start gap-1 mt-3 leading-tight",
-          locale === "ar" ? "text-right" : "text-left",
-        )}
-      >
-        <AlertCircle size={10} className="mt-0.5 shrink-0" />
-        {t("labels.paymentNotice")}
-      </p>
     </motion.div>
   );
 };
@@ -986,7 +856,7 @@ const ReservationForm = ({
 
     setIsApplyingCoupon(true);
     try {
-      const response = await applyPromoCodeAction({
+      const response = await promoCodeService.applyPromoCode({
         branch_price_id: Number(selectedPlanId),
         branch_id: Number(selectedBranch),
         promo_code: couponCode.trim().toUpperCase(),
@@ -1167,31 +1037,7 @@ const ReservationForm = ({
         transition={{ duration: 0.5, type: "spring", stiffness: 60 }}
       >
         {/* Layout Grid */}
-        <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-          {/* Left Column (Sidebar-like in RTL) */}
-          <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
-            <BookingSummary
-              locale={locale}
-              planName={selectedPlanObj?.name || ""}
-              fromTime={fromTime}
-              toTime={toTime}
-              childrenCount={selectedChildren.length}
-              date={bookingDate}
-              price={selectedPlanObj?.price || ""}
-              promoDetails={promoDetails}
-              couponProps={{
-                couponCode,
-                setCouponCode,
-                onApply: handleApplyCoupon,
-                onRemove: handleRemoveCoupon,
-                isApplying: isApplyingCoupon,
-                error: couponError,
-              }}
-            />
-
-            <NotesSection locale={locale} />
-          </div>
-
+        <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-12">
           {/* Right Column (Main Form) */}
           <div className="lg:col-span-6 order-2 lg:order-1 space-y-6">
             <PlanSelection
@@ -1238,6 +1084,30 @@ const ReservationForm = ({
               locale={locale}
               router={router}
             />
+          </div>
+
+          {/* Left Column (Sidebar-like in RTL) */}
+          <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
+            <BookingSummary
+              locale={locale}
+              planName={selectedPlanObj?.name || ""}
+              fromTime={fromTime}
+              toTime={toTime}
+              childrenCount={selectedChildren.length}
+              date={bookingDate}
+              price={selectedPlanObj?.price || ""}
+              promoDetails={promoDetails}
+              couponProps={{
+                couponCode,
+                setCouponCode,
+                onApply: handleApplyCoupon,
+                onRemove: handleRemoveCoupon,
+                isApplying: isApplyingCoupon,
+                error: couponError,
+              }}
+            />
+
+            <NotesSection locale={locale} />
           </div>
         </div>
       </motion.form>

@@ -2952,6 +2952,7 @@
       "startTime": "Start Date & Time",
       "paymentMethod": "Payment Method",
       "paymentMayser": "Mayser",
+      "discount": "Discount",
       "totalAfterDiscount": "Total After Discount",
       "notes": "Notes",
       "note1": "A notification will be sent for payment via email.",

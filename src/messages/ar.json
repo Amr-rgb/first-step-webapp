@@ -2967,6 +2967,7 @@
       "startTime": "تاريخ ووقت البداية",
       "paymentMethod": "طريقة الدفع",
       "paymentMayser": "ميسر",
+      "discount": "الخصم",
       "totalAfterDiscount": "المجموع بعد الخصم",
       "notes": "ملاحظات",
       "note1": "سيتم إرسال إشعار للدفع عبر البريد الإلكتروني.",
