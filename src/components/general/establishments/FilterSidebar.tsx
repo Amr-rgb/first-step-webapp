@@ -90,7 +90,7 @@ const FilterSection = ({
             </button>
 
             {isExpanded && (
-                <div className="flex flex-col gap-3 mt-3 pr-1">
+                <div className="flex flex-col gap-3 mt-3 pr-1 max-h-[241px] overflow-y-auto custom-scrollbar">
                     {/* "All" Option */}
                     <div
                         className="flex items-center gap-3 cursor-pointer group"
@@ -297,15 +297,13 @@ const FilterSidebarContent = ({
     );
 };
 
-const FilterSidebar = (props: FilterSidebarProps) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const t = useTranslations("filterSidebar");
+interface FilterSidebarExportProps extends FilterSidebarProps {
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}
 
-    const totalActiveFilters =
-        props.selectedFilters.categories.length +
-        props.selectedFilters.cities.length +
-        props.selectedFilters.ages.length +
-        props.selectedFilters.ratings.length;
+const FilterSidebar = (props: FilterSidebarExportProps) => {
+    const t = useTranslations("filterSidebar");
 
     return (
         <>
@@ -316,34 +314,22 @@ const FilterSidebar = (props: FilterSidebarProps) => {
                 </div>
             </aside>
 
-            {/* Mobile Filter Button + Sheet */}
-            <div className="lg:hidden fixed bottom-6 left-4 z-40">
-                <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                    <SheetTrigger asChild>
-                        <Button
-                            className="rounded-full w-14 h-14 shadow-lg bg-primary hover:bg-primary/90 relative"
-                        >
-                            <SlidersHorizontal className="w-6 h-6 text-white" />
-                            {totalActiveFilters > 0 && (
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                    {totalActiveFilters}
-                                </span>
-                            )}
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0">
-                        <SheetHeader className="p-5 border-b">
-                            <SheetTitle className="text-xl font-bold text-primary flex items-center gap-2">
-                                <span className="w-1 h-6 bg-primary rounded-full" />
-                                {t("title")}
-                            </SheetTitle>
-                        </SheetHeader>
-                        <div className="p-5 h-[calc(100vh-80px)] overflow-y-auto">
-                            <FilterSidebarContent {...props} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
+            {/* Mobile Sheet - controlled from parent */}
+            <Sheet open={props.isOpen} onOpenChange={props.onOpenChange}>
+                <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0">
+                    {/* Custom close button for RTL - positioned on left */}
+                    <button
+                        onClick={() => props.onOpenChange?.(false)}
+                        className="absolute top-4 left-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        aria-label="Close"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                    <div className="p-5 pt-14 h-full overflow-y-auto">
+                        <FilterSidebarContent {...props} />
+                    </div>
+                </SheetContent>
+            </Sheet>
         </>
     );
 };

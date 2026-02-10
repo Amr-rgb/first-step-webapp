@@ -151,8 +151,7 @@ const TopRightSection = () => {
   const keys = [
     "home",
     "services",
-    "nurseries",
-    "centers",
+    "establishments",
     "blog",
     "story",
     "contact",

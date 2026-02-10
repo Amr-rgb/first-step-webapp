@@ -152,8 +152,7 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
   const keys = [
     "home",
     "services",
-    "nurseries",
-    // "centers",
+    "establishments",
     "coupon-codes",
     "consultations",
     "who-are-we",
@@ -164,22 +163,6 @@ const Navbar = ({ children }: { children?: React.ReactNode }) => {
       title: t(`links.${key}.title`),
       path: t(`links.${key}.path`),
     };
-
-    if (key === "nurseries") {
-      return {
-        ...baseLink,
-        items: [
-          {
-            title: t("links.centers-item.title"),
-            path: t("links.centers-item.path"),
-          },
-          {
-            title: t("links.nurseries-item.title"),
-            path: t("links.nurseries-item.path"),
-          },
-        ],
-      };
-    }
 
     if (key === "who-are-we") {
       return {

@@ -13,17 +13,9 @@
         "title": "Services",
         "path": "/services"
       },
-      "nurseries": {
+      "establishments": {
         "title": "Establishments",
-        "path": "/nurseries"
-      },
-      "centers-item": {
-        "title": "Centers",
-        "path": "/centers"
-      },
-      "nurseries-item": {
-        "title": "Nurseries",
-        "path": "/nurseries"
+        "path": "/establishments"
       },
       "coupon-codes": {
         "title": "Offers & Coupons",
@@ -59,6 +51,11 @@
       "dashboard": "Dashboard",
       "logout": "Logout"
     }
+  },
+  "adSection": {
+    "title": "Advertising Space",
+    "topPlaceholder": "Take advantage of the advertising space now",
+    "bottomPlaceholder": "Take advantage of the advertising space now"
   },
   "faqs": {
     "title": {
@@ -98,13 +95,9 @@
         "title": "Our Services",
         "path": "/services"
       },
-      "nurseries": {
-        "title": "Nurseries",
-        "path": "/nurseries"
-      },
-      "centers": {
-        "title": "Centers",
-        "path": "/centers"
+      "establishments": {
+        "title": "Establishments",
+        "path": "/establishments"
       },
       "blog": {
         "title": "Blog",

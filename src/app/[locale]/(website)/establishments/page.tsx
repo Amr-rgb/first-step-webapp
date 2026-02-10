@@ -1,10 +1,8 @@
 import { Metadata } from "next";
-import BlogsWrapper from "@/components/general/blog/BlogsWrapper";
-import Contact from "@/components/general/contact/Contact";
 import Nurseries from "@/components/general/nurseries/Nurseries";
+import TopAdSection from "@/components/general/establishments/TopAdSection";
+import BottomAdSection from "@/components/general/establishments/BottomAdSection";
 import { nurseryService } from "@/services/api";
-import { websiteService as promocodeWebsiteService } from "@/services/promocodeService";
-import CouponSlider from "@/components/general/nurseries/CouponSlider";
 import { getCitiesAction, City } from "@/actions/getCitiesAction";
 
 export const revalidate = 86400;
@@ -18,16 +16,16 @@ export async function generateMetadata({
   return {
     title:
       params.locale === "ar"
-        ? "First Step دليلك أفضل الحضانات في السعودية | حضانة آمنة ومريحة لطفلك"
-        : "First Step Guide to Best Nurseries in Saudi Arabia | Safe and Comfortable Childcare",
+        ? "First Step | المنشآت التعليمية - حضانات ومراكز في السعودية"
+        : "First Step | Educational Establishments - Nurseries and Centers in Saudi Arabia",
     description:
       params.locale === "ar"
-        ? "منصة First Step تسهل عليك العثور على حضانة مناسبة لطفلك حسب الموقع، الأسعار، والخدمات. اكتشف أفضل الحضانات في الرياض، جدة، وغيرها من المدن السعودية."
-        : "First Step platform makes it easy to find the right nursery for your child based on location, prices, and services. Discover the best nurseries in Riyadh, Jeddah, and other Saudi cities.",
+        ? "اكتشف أفضل المنشآت التعليمية في المملكة العربية السعودية. منصة First Step تسهل عليك العثور على حضانة أو مركز مناسب لطفلك حسب الموقع، الأسعار، والخدمات."
+        : "Discover the best educational establishments in Saudi Arabia. First Step platform makes it easy to find the right nursery or center for your child based on location, prices, and services.",
   };
 }
 
-export default async function NurseriesPage({
+export default async function EstablishmentsPage({
   params,
   searchParams,
 }: {
@@ -43,23 +41,17 @@ export default async function NurseriesPage({
     typeof searchParameters.filter === "string" ? searchParameters.filter : "";
 
   let nurseries: any[] = [];
-  let coupons: any[] = [];
   let cities: { id: string; label: string }[] = [];
   let error = null;
 
   try {
-    const [nurseriesData, couponsResponse, citiesData] = await Promise.all([
+    const [nurseriesData, citiesData] = await Promise.all([
       nurseryService.getNurseries(locale),
-      promocodeWebsiteService.getPromocodes(),
       getCitiesAction(),
     ]);
 
-    // Show all nurseries (combined establishments)
+    // Show all establishments (nurseries and centers combined)
     nurseries = nurseriesData as any[];
-
-    if (couponsResponse.success) {
-      coupons = couponsResponse.data;
-    }
 
     // Transform cities for filter sidebar
     cities = (citiesData || []).map((city: City) => ({
@@ -73,7 +65,10 @@ export default async function NurseriesPage({
 
   return (
     <div>
-      {coupons.length > 0 && <CouponSlider coupons={coupons} />}
+      {/* Top Advertising Space - Two horizontal ads */}
+      <TopAdSection />
+      
+      {/* Main Establishments Content */}
       <Nurseries
         nurseries={nurseries}
         query={query}
@@ -82,8 +77,9 @@ export default async function NurseriesPage({
         error={error}
         cities={cities}
       />
-      <BlogsWrapper number={4} locale={locale} />
-      <Contact />
+      
+      {/* Bottom Advertising Space - Three ads in custom layout */}
+      <BottomAdSection />
     </div>
   );
 }

@@ -13,17 +13,9 @@
         "title": "خدماتنا",
         "path": "/services"
       },
-      "nurseries": {
+      "establishments": {
         "title": "منشآت",
-        "path": "/nurseries"
-      },
-      "centers-item": {
-        "title": "المراكز",
-        "path": "/centers"
-      },
-      "nurseries-item": {
-        "title": "الحضانات",
-        "path": "/nurseries"
+        "path": "/establishments"
       },
       "coupon-codes": {
         "title": "العروض والخصومات",
@@ -60,6 +52,11 @@
       "logout": "تسجيل الخروج"
     }
   },
+  "adSection": {
+    "title": "مساحة إعلانية",
+    "topPlaceholder": "استغل المساحة الإعلانية الآن",
+    "bottomPlaceholder": "استغل المساحة الإعلانية الآن"
+  },
   "faqs": {
     "title": "الأسئلة الشائعة",
     "questions": {
@@ -95,13 +92,9 @@
         "title": "خدماتنا",
         "path": "/services"
       },
-      "nurseries": {
-        "title": "الحضانات",
-        "path": "/nurseries"
-      },
-      "centers": {
-        "title": "المراكز",
-        "path": "/centers"
+      "establishments": {
+        "title": "المنشآت",
+        "path": "/establishments"
       },
       "blog": {
         "title": "المدونة",

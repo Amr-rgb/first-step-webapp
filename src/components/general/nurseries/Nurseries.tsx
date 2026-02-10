@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useEffect, useState, useMemo } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import SearchBar from "../search/SearchBar";
 import NurseryCard from "./NurseryCard";
 import { NurseryResponse } from "@/types";
@@ -44,6 +45,7 @@ const Nurseries = ({
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState(query);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     cities: [],
@@ -52,6 +54,12 @@ const Nurseries = ({
   });
 
   const debouncedQuery = useDebounce(searchQuery, 500);
+
+  const totalActiveFilters =
+    filters.categories.length +
+    filters.cities.length +
+    filters.ages.length +
+    filters.ratings.length;
 
   // Update URL when search changes
   useEffect(() => {
@@ -115,13 +123,28 @@ const Nurseries = ({
 
   return (
     <section className="container mx-auto px-4">
-      {/* Search Bar */}
-      <div className="mb-6">
-        <SearchBar
-          placeholder={t("search")}
-          value={searchQuery}
-          onChange={setSearchQuery}
-        />
+      {/* Search Bar with Mobile Filter Button */}
+      <div className="mb-6 flex gap-3 items-center">
+        <div className="flex-1">
+          <SearchBar
+            placeholder={t("search")}
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+        </div>
+        
+        {/* Mobile Filter Button */}
+        <Button
+          onClick={() => setIsMobileFilterOpen(true)}
+          className="lg:hidden rounded-full w-14 h-14 shadow-lg bg-primary hover:bg-primary/90 relative shrink-0"
+        >
+          <SlidersHorizontal className="w-6 h-6 text-white" />
+          {totalActiveFilters > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              {totalActiveFilters}
+            </span>
+          )}
+        </Button>
       </div>
 
       {/* Main Content with Sidebar */}
@@ -132,6 +155,8 @@ const Nurseries = ({
           selectedFilters={filters}
           onFiltersChange={setFilters}
           locale={locale}
+          isOpen={isMobileFilterOpen}
+          onOpenChange={setIsMobileFilterOpen}
         />
 
         {/* Results Area */}
