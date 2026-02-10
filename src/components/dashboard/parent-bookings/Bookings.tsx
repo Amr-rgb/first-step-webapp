@@ -711,32 +711,6 @@ const Bookings = () => {
               </Button>
             </div>
           )}
-
-          {/* Custom Scrollbar Styles */}
-          <style jsx global>{`
-            .custom-scrollbar {
-              scrollbar-width: thin;
-              scrollbar-color: #4d5edb #f7f8fa;
-            }
-            .custom-scrollbar::-webkit-scrollbar {
-              width: 6px;
-              background: #f7f8fa;
-              border-radius: 6px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-              background: #4d5edb;
-              border-radius: 6px;
-              min-height: 40px;
-              transition: background 0.2s;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-              background: #22336c;
-            }
-            .custom-scrollbar::-webkit-scrollbar-track {
-              background: #f7f8fa;
-              border-radius: 6px;
-            }
-          `}</style>
         </DialogContent>
       </Dialog>
     );
@@ -1085,31 +1059,6 @@ const Bookings = () => {
                 showOnlySelectedPlan={true}
               />
             </div>
-            {/* Custom Scrollbar Styles */}
-            <style jsx global>{`
-              .custom-scrollbar {
-                scrollbar-width: thin;
-                scrollbar-color: #4d5edb #f7f8fa;
-              }
-              .custom-scrollbar::-webkit-scrollbar {
-                width: 6px;
-                background: #f7f8fa;
-                border-radius: 6px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #4d5edb;
-                border-radius: 6px;
-                min-height: 40px;
-                transition: background 0.2s;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #22336c;
-              }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background: #f7f8fa;
-                border-radius: 6px;
-              }
-            `}</style>
           </DialogContent>
         </Dialog>
       )}
