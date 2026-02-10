@@ -2950,6 +2950,7 @@
       "duration": "Duration",
       "program": "Program",
       "startTime": "Start Date & Time",
+      "startDate": "Start Date",
       "paymentMethod": "Payment Method",
       "paymentMayser": "Mayser",
       "discount": "Discount",

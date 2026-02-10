@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { UserPlus, X, AlertCircle, CheckCircle2, Ticket } from "lucide-react";
+import { UserPlus, X, Ticket } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import DatePicker from "@/components/general/DatePicker";
+import DateTimePicker from "@/components/general/DateTimePicker";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { getBranchPricingAction } from "@/actions/nurseryActions";
@@ -414,6 +414,7 @@ const BookingSummary = ({
   price,
   promoDetails,
   couponProps,
+  showTime,
 }: {
   locale: "ar" | "en";
   planName: string;
@@ -431,6 +432,7 @@ const BookingSummary = ({
     isApplying: boolean;
     error: string | null;
   };
+  showTime?: boolean;
 }) => {
   const t = useTranslations("reservationForm.summary");
   const tLabels = useTranslations("reservationForm.labels");
@@ -456,15 +458,15 @@ const BookingSummary = ({
         </div>
         <div className="flex justify-between items-center text-base">
           <span className="text-mid-gray font-medium">
-            {tLabels("startTime")}
+            {showTime ? tLabels("startTime") : tLabels("startDate")}
           </span>
           <span className="text-mid-gray font-medium" dir="ltr">
             {date
               ? format(new Date(date), "EEEE yyyy/MM/dd", {
                   locale: locale === "ar" ? ar : undefined,
                 })
-              : "-"}{" "}
-            {fromTime}
+              : "-"}
+            {showTime && ` ${fromTime}`}
           </span>
         </div>
         <div className="flex justify-between items-center text-base">
@@ -789,20 +791,11 @@ const ReservationForm = ({
           setToTime("16:00");
           break;
         case "day":
-          setFromTime(`1 ${getLabel(1, "day")}`);
-          setToTime(`${count} ${getLabel(count, "day")}`);
-          break;
         case "week":
-          setFromTime(`1 ${getLabel(1, "week")}`);
-          setToTime(`${count} ${getLabel(count, "week")}`);
-          break;
         case "month":
-          setFromTime(`1 ${getLabel(1, "month")}`);
-          setToTime(`${count} ${getLabel(count, "month")}`);
-          break;
         case "year":
-          setFromTime(`1 ${getLabel(1, "year")}`);
-          setToTime(`${count} ${getLabel(count, "year")}`);
+          setFromTime("09:00");
+          setToTime(`${count} ${getLabel(count, enrollment_type)}`);
           break;
         default:
           setFromTime("");
@@ -1056,16 +1049,23 @@ const ReservationForm = ({
               <label className="block mb-2 text-base text-mid-gray">
                 {t("labels.startTime")}
               </label>
-              <DatePicker
+              <DateTimePicker
                 standalone
                 allowFuture
-                value={bookingDate ? new Date(bookingDate) : undefined}
-                onChange={(date) =>
+                dateValue={bookingDate ? new Date(bookingDate) : undefined}
+                timeValue={fromTime}
+                onDateChange={(date) =>
                   setBookingDate(date ? format(date, "yyyy-MM-dd") : "")
+                }
+                onTimeChange={(time) => setFromTime(time)}
+                showTime={
+                  selectedPlanObj?.type === "hourly" ||
+                  selectedApiPlan?.enrollment_type === "hour"
                 }
                 disabled={(date: Date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
+                locale={locale}
               />
             </motion.div>
 
@@ -1105,6 +1105,10 @@ const ReservationForm = ({
                 isApplying: isApplyingCoupon,
                 error: couponError,
               }}
+              showTime={
+                selectedPlanObj?.type === "hourly" ||
+                selectedApiPlan?.enrollment_type === "hour"
+              }
             />
 
             <NotesSection locale={locale} />

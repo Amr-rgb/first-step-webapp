@@ -2965,6 +2965,7 @@
       "duration": "المدة",
       "program": "البرنامج",
       "startTime": "تاريخ ووقت البداية",
+      "startDate": "تاريخ البداية",
       "paymentMethod": "طريقة الدفع",
       "paymentMayser": "ميسر",
       "discount": "الخصم",
