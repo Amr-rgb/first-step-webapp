@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "../../ui/input";
 
 interface SearchBarProps {
@@ -14,7 +14,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   return (
     <div className="h-15 flex rtl:flex-row-reverse items-center w-full rounded-full border px-4 py-2 bg-white shadow-sm">
-      <SlidersHorizontal className="text-gray-400 size-6 mr-2" />
       <Input
         type="text"
         value={value}

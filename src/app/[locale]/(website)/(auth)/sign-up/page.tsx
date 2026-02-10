@@ -16,7 +16,7 @@ export default function SignUpPage() {
     {
       id: "parent",
       title: t("parent.title"),
-      feature: t("parent.feature"),
+      features: t.raw("parent.features") as string[],
       image: "/assets/illustrations/signup/parent.jpg",
       href: "/sign-up/parent",
       color: "border-gray-100",
@@ -24,24 +24,23 @@ export default function SignUpPage() {
     {
       id: "rehab-center",
       title: t("rehab-center.title"),
-      feature: t("rehab-center.feature"),
+      features: t.raw("rehab-center.features") as string[],
       image: "/assets/illustrations/signup/rehabilitation-center.png",
       href: "/sign-up/center",
-      featured: true,
       color: "border-gray-100",
     },
     {
       id: "nursery",
       title: t("nursery.title"),
-      feature: t("nursery.feature"),
+      features: t.raw("nursery.features") as string[],
       image: "/assets/illustrations/signup/nursery.jpg",
-      href: "/sign-up/center", // Assuming both centers use the same signup flow
+      href: "/sign-up/nursery",
       color: "border-gray-100",
     },
     {
       id: "mentor",
       title: t("mentor.title"),
-      feature: t("mentor.feature"),
+      features: t.raw("mentor.features") as string[],
       image: "/assets/illustrations/signup/mentor.jpg",
       href: "#",
       soon: true,
@@ -50,7 +49,7 @@ export default function SignUpPage() {
     {
       id: "teacher",
       title: t("teacher.title"),
-      feature: t("teacher.feature"),
+      features: t.raw("teacher.features") as string[],
       image: "/assets/illustrations/signup/teacher.jpg",
       href: "#",
       soon: true,
@@ -110,10 +109,10 @@ function RoleCard({ role, t }: { role: any; t: any }) {
     <div
       className={cn(
         "relative flex flex-col items-center p-5 bg-white rounded-xl border transition-all duration-300 h-full",
-        role.featured
-          ? "border-none shadow-[0_4px_6px_-1px_rgba(43,57,144,0.24)] bg-linear-to-b from-white to-secondary-mint-green/24 z-10"
-          : "border-gray/10 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.10)]",
-        role.soon && "cursor-default shadow-none",
+        "border-gray/10 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.10)]",
+        // Hover effects
+        !role.soon && "hover:border-transparent hover:shadow-[0_4px_6px_-1px_rgba(43,57,144,0.24)] hover:bg-linear-to-b hover:from-white hover:to-secondary-mint-green/24",
+        role.soon && "cursor-default shadow-none opacity-80"
       )}
     >
       {/* Soon Ribbon */}
@@ -133,29 +132,24 @@ function RoleCard({ role, t }: { role: any; t: any }) {
           width={110}
           height={100}
           className="object-contain"
-          priority={role.featured}
+        // priority={false} // Removed priority to avoid LCP warnings on multiple images if needed
         />
       </div>
 
       {/* Title */}
-      <h3
-        className={cn(
-          "text-2xl font-bold mb-2 mt-4 text-center",
-          role.featured ? "text-primary" : "text-gray",
-        )}
-      >
+      <h3 className="text-2xl font-bold mb-4 mt-2 text-center text-primary">
         {role.title}
       </h3>
 
       {/* Features List */}
-      <div className="space-y-3  mx-auto">
-        {[1].map((i) => (
-          <div key={i} className="flex items-center gap-2 group">
-            <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+      <div className="space-y-3 w-full px-2">
+        {role.features.map((feature: string, i: number) => (
+          <div key={i} className="flex items-start gap-3 group">
+            <div className="shrink-0 w-5 h-5 flex items-center justify-center mt-0.5">
               <Check className="w-4 h-4 text-success stroke-3" />
             </div>
-            <span className="text-gray-400 text-sm font-medium leading-tight text-right">
-              {role.feature}
+            <span className="text-gray-500 text-sm font-medium leading-tight text-start">
+              {feature}
             </span>
           </div>
         ))}

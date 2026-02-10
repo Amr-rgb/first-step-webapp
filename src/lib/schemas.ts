@@ -517,6 +517,20 @@ const createCenterStep1Schema = (locale: "ar" | "en" = "ar") =>
     types: z
       .array(z.string())
       .min(1, { message: getErrorMessage("general-field-required", locale) }),
+    // Statistics
+    experience_years: z.string().optional(),
+    children_served_count: z.string().optional(),
+    specialists_count: z.string().optional(),
+
+    // Custom Services
+    custom_services: z
+      .array(
+        z.object({
+          name: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
+          description: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
+        })
+      )
+      .optional(),
   });
 
 export type CenterStep1FormData = z.infer<
@@ -785,28 +799,61 @@ export type CenterStep4FormData = z.infer<
   ReturnType<typeof createCenterStep4Schema>
 >;
 
-// Sign Up For Centers Schema - Simplified 2 Steps
-export const createSignUpCenterSchema = (locale: "ar" | "en" = "ar") => {
-  const step1Schema = createCenterStep1Schema(locale);
-  const step2Schema = createCenterStep2Schema(locale);
+// Sign Up For Centers Simplified Schema
+export const createCenterSchema = (locale: "ar" | "en" = "ar") =>
+  z.object({
+    // Basic Info
+    email: z.string().email({ message: getErrorMessage("invalid-email", locale) }),
+    phone: z
+      .string()
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: "Please enter a valid phone number",
+      }),
+    password: getPasswordSchema(locale),
+    confirmPassword: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
+    nursery_name: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    description: z
+      .string()
+      .min(10, { message: getErrorMessage("general-field-required", locale) }),
+    logo: z.instanceof(File, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: locale === "ar" ? "كلمة المرور غير متطابقة" : "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-  return step1Schema.merge(step2Schema).refine(
-    (data) => {
-      if (data.password && data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
-    },
-    {
-      message: getErrorMessage("password-match", locale),
-      path: ["confirmPassword"],
-    }
-  );
-};
+export type CenterFormData = z.infer<ReturnType<typeof createCenterSchema>>;
 
-export type SignUpCenterFormData = z.infer<
-  ReturnType<typeof createSignUpCenterSchema>
->;
+
+// Nursery Signup Schema
+export const createNurserySchema = (locale: "ar" | "en" = "ar") =>
+  z.object({
+    email: z.string().email({ message: getErrorMessage("invalid-email", locale) }),
+    phone: z
+      .string()
+      .regex(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/, {
+        message: "Please enter a valid phone number",
+      }),
+    password: getPasswordSchema(locale),
+    confirmPassword: z.string().min(1, { message: getErrorMessage("general-field-required", locale) }),
+    nursery_name: z
+      .string()
+      .min(2, { message: getErrorMessage("general-field-required", locale) }),
+    description: z
+      .string()
+      .min(10, { message: getErrorMessage("general-field-required", locale) }),
+    logo: z.instanceof(File, {
+      message: getErrorMessage("general-field-required", locale),
+    }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: locale === "ar" ? "كلمة المرور غير متطابقة" : "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type NurseryFormData = z.infer<ReturnType<typeof createNurserySchema>>;
 
 // Create Center Branch
 export const createBranchSchema = (locale: "ar" | "en" = "ar") => {
