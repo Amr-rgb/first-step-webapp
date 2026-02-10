@@ -1,7 +1,10 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
 import { dashboardIcons } from "@/components/general/icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +12,15 @@ import Link from "next/link";
 import { createCenterSchema, CenterFormData } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getCitiesAction } from "@/actions/getCitiesAction";
 
 export function SignUp({
   submitHandler,
@@ -35,7 +45,7 @@ export function SignUp({
       confirmPassword: "",
       phone: "",
       nursery_name: "",
-      description: "",
+      city_id: "",
       logo: undefined,
     },
     mode: "onBlur",
@@ -43,6 +53,12 @@ export function SignUp({
   });
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  // Fetch cities
+  const { data: cities = [], isLoading: citiesLoading } = useQuery({
+    queryKey: ["cities"],
+    queryFn: getCitiesAction,
+  });
 
   useEffect(() => {
     return () => {
@@ -135,10 +151,25 @@ export function SignUp({
                 </div>
 
                 <div>
-                  <Label className="block mb-3">{isAr ? "عن المركز" : "About Center"} <span className="text-red-500">*</span></Label>
-                  <Textarea {...methods.register("description")} className="h-12 min-h-[48px] resize-none pt-3 no-scrollbar" placeholder={isAr ? "وصف مختصر..." : "Brief description..."} />
-                  {!!methods.formState.errors.description && <p className="text-red-500 text-xs mt-1">{methods.formState.errors.description.message}</p>}
-                </div >
+                  <Label className="block mb-3">{isAr ? "المدينة" : "City"} <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={methods.watch("city_id")}
+                    onValueChange={(value) => methods.setValue("city_id", value, { shouldValidate: true })}
+                    disabled={citiesLoading}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={citiesLoading ? (isAr ? "جاري التحميل..." : "Loading...") : (isAr ? "اختر المدينة" : "Select City")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cities.map((city) => (
+                        <SelectItem key={city.id} value={city.id.toString()}>
+                          {city.name?.[locale] || city.name?.ar || city.id}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {!!methods.formState.errors.city_id && <p className="text-red-500 text-xs mt-1">{methods.formState.errors.city_id.message}</p>}
+                </div>
 
                 <div>
                   <Label className="block mb-3">{isAr ? "رقم الهاتف" : "Phone Number"} <span className="text-red-500">*</span></Label>
