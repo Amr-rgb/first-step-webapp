@@ -783,7 +783,7 @@ export const nurseryService = {
 
       // Fetch the portfolio data directly using the center ID
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/get-portfilo-center/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -897,6 +897,36 @@ export const nurseryService = {
     } catch (error) {
       console.error("Error fetching branch pricing:", error);
       return [];
+    }
+  },
+
+  getCenterPromocodes: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/promocodes`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center promocodes:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterBlogs: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/blogs-center`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center blogs:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterAds: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/ads`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching center ads:", error);
+      throw ApiErrorHandler.handle(error);
     }
   },
 };

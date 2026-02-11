@@ -18,15 +18,15 @@ const FacilitiesSection = ({
   if (!facilities || facilities.length === 0) return null;
 
   return (
-    <section id="facilities" className="scroll-mt-20">
+    <section id="facilities" className="py-0 scroll-mt-20">
       <SectionHeader title={title} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="bg-white-out p-4 rounded-2xl flex flex-wrap items-center justify-center gap-x-4 gap-y-6">
         {facilities.map((facility) => (
           <div
             key={facility.id}
-            className="group bg-white rounded-[40px] p-8 flex flex-col items-center justify-center gap-6 text-center transition-all hover:shadow-lg hover:-translate-y-1 border border-gray-100"
+            className="bg-white rounded-xl px-4 py-2 flex flex-col gap-2 min-w-[180px] grow"
           >
-            <div className="relative w-28 h-28 md:w-36 md:h-36 transition-transform group-hover:scale-110">
+            <div className="relative w-12 h-12 md:w-15 md:h-15">
               <Image
                 src={facility.image}
                 alt={
@@ -38,7 +38,7 @@ const FacilitiesSection = ({
                 className="object-contain"
               />
             </div>
-            <h4 className="text-2xl md:text-3xl font-bold text-[#2D3A82] leading-tight">
+            <h4 className="heading-4 font-bold text-primary leading-tight">
               {typeof facility.title === "string"
                 ? facility.title
                 : facility.title[locale as "en" | "ar"] || facility.title.ar}

@@ -122,7 +122,7 @@ const SubscriptionSection = () => {
     if (!isAuthenticated) {
       toastWarning(
         "Authentication Required",
-        "Please log in to subscribe to a plan."
+        "Please log in to subscribe to a plan.",
       );
       return;
     }
@@ -131,7 +131,7 @@ const SubscriptionSection = () => {
     if (currentUser?.role === "parent") {
       toastError(
         "Access Denied",
-        "Parent accounts cannot subscribe to center plans. Please use a center account to subscribe."
+        "Parent accounts cannot subscribe to center plans. Please use a center account to subscribe.",
       );
       return;
     }
@@ -140,12 +140,12 @@ const SubscriptionSection = () => {
     const isPlanActive = () => {
       if (currentUser?.subscription_status === "free") {
         const freeTrialEndDate = new Date(
-          currentUser?.free_trail_end_date || 0
+          currentUser?.free_trail_end_date || 0,
         );
         return freeTrialEndDate > new Date();
       } else {
         const subscriptionEndDate = new Date(
-          currentUser?.subscription_end_date || 0
+          currentUser?.subscription_end_date || 0,
         );
         return subscriptionEndDate > new Date();
       }
@@ -181,7 +181,7 @@ const SubscriptionSection = () => {
         console.error("Payment initiation failed - Invalid response:", data);
         toastError(
           "Payment Failed",
-          data.message || "Invalid response from server"
+          data.message || "Invalid response from server",
         );
       }
     } catch (err: any) {
@@ -251,7 +251,7 @@ const SubscriptionSection = () => {
                 height={100}
               />
             </div>
-            <h2 className="text-2xl font-bold text-[#22336C] mb-4">
+            <h2 className="text-2xl font-bold text-primary mb-4">
               {t("success.title") || "Subscription Successful!"}
             </h2>
             <p className="text-gray-600 mb-6">
@@ -260,7 +260,7 @@ const SubscriptionSection = () => {
             </p>
             <Button
               onClick={() => setSubmitSuccess(false)}
-              className="bg-[#4D5EDB] hover:bg-[#3646a5] text-white"
+              className="bg-primary hover:bg-[#3646a5] text-white"
             >
               {t("success.continue") || "Continue"}
             </Button>

@@ -44,6 +44,7 @@ body[data-scroll-locked] {
   /* Black & White */
   --color-black: #000000;
   --color-white: #ffffff;
+  --color-white-out: #fbfbfb;
 
   /* Most used colors */
   --color-primary-blue: #2b3990;
@@ -370,7 +371,8 @@ body[data-scroll-locked] {
   background: white !important;
   border: 1px solid #e5e7eb !important;
   border-radius: 8px !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
   padding: 16px !important;
   font-family: var(--font-primary), sans-serif !important;

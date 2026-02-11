@@ -1090,21 +1090,33 @@ export const centerService = {
 
       // Social links
       if (payload.contact_info?.facebook)
-        formData.append("facebook", payload.contact_info.facebook);
+        formData.append(
+          "contact_info[facebook]",
+          payload.contact_info.facebook,
+        );
       if (payload.contact_info?.instagram)
-        formData.append("instagram", payload.contact_info.instagram);
+        formData.append(
+          "contact_info[instagram]",
+          payload.contact_info.instagram,
+        );
       if (payload.contact_info?.twitter)
-        formData.append("twitter", payload.contact_info.twitter);
+        formData.append("contact_info[twitter]", payload.contact_info.twitter);
       if (payload.contact_info?.linkedin)
-        formData.append("linkedin", payload.contact_info.linkedin);
+        formData.append(
+          "contact_info[linkedin]",
+          payload.contact_info.linkedin,
+        );
       if (payload.contact_info?.website)
-        formData.append("website", payload.contact_info.website);
+        formData.append("contact_info[website]", payload.contact_info.website);
 
       // Activities
       payload.images_activities?.forEach((img, index) => {
         if (img instanceof File) {
           formData.append(`images_activities[${index}]`, img);
         }
+      });
+      payload.delete_images_activities?.forEach((index, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(index));
       });
 
       // Options (Facilities)
@@ -1128,7 +1140,7 @@ export const centerService = {
         formData.append(`delete_license_ids[${index}]`, String(id));
       });
 
-      const response = await apiClient.post("/portfolios", formData, {
+      const response = await apiClient.post("/v2/portfolios", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -1139,7 +1151,7 @@ export const centerService = {
 
   getPortfolio: async () => {
     try {
-      const response = await apiClient.get("/portfolios/show");
+      const response = await apiClient.get("/v2/portfolios/show");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -1192,6 +1204,15 @@ export const centerService = {
     try {
       const response = await apiClient.get("/attendance-all");
       return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getOptions: async () => {
+    try {
+      const response = await apiClient.get("/options");
+      return response.data.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }

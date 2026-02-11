@@ -20,6 +20,35 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Use ref to store initial server images - only set once on mount
+  const initialImagesRef = useRef<string[]>([]);
+  const isInitializedRef = useRef(false);
+  const lastServerImagesCountRef = useRef(0);
+
+  useEffect(() => {
+    if (!data.images_activities) return;
+
+    const serverImages = data.images_activities.filter(
+      (img): img is string => typeof img === "string",
+    );
+
+    // Reset tracking if server image count changed (indicates a successful save/delete)
+    if (
+      serverImages.length !== lastServerImagesCountRef.current &&
+      isInitializedRef.current
+    ) {
+      isInitializedRef.current = false;
+      initialImagesRef.current = [];
+    }
+
+    // Only capture initial images once when component mounts or after reset
+    if (!isInitializedRef.current && serverImages.length > 0) {
+      initialImagesRef.current = serverImages;
+      lastServerImagesCountRef.current = serverImages.length;
+      isInitializedRef.current = true;
+    }
+  }, [data.images_activities]);
+
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
@@ -44,9 +73,26 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
   };
 
   const handleRemove = (index: number) => {
-    const updated = [...(data.images_activities || [])];
-    updated.splice(index, 1);
-    onChange({ images_activities: updated });
+    const images = data.images_activities || [];
+    const itemToRemove = images[index];
+
+    const updatedImages = images.filter((_, i) => i !== index);
+    const updates: Partial<PortfolioFormData> = {
+      images_activities: updatedImages,
+    };
+
+    // If removing a server image (string URL), track its original index for deletion
+    if (typeof itemToRemove === "string") {
+      const originalIndex = initialImagesRef.current.indexOf(itemToRemove);
+      if (originalIndex !== -1) {
+        updates.delete_images_activities = [
+          ...(data.delete_images_activities || []),
+          originalIndex,
+        ];
+      }
+    }
+
+    onChange(updates);
   };
 
   return (

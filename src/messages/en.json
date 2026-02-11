@@ -2136,6 +2136,9 @@
         "formatsNote": "Supported formats: JPG, PNG (Max size: 10MB)",
         "uploadedTitle": "Uploaded Photos ({count})"
       },
+      "facilities": {
+        "title": "Choose the facilities available in your nursery"
+      },
       "licenses": {
         "title": "Licenses",
         "nurseryLicensed": "Licensed / Certified",
@@ -2636,7 +2639,8 @@
       "share": "Share",
       "chat": "Chat",
       "sloganFallback": "Your child's future starts here",
-      "description": "We provide the best care and education for your child."
+      "description": "We provide the best care and education for your child.",
+      "branches": "Branches"
     },
     "about": {
       "title": "About the Center"
@@ -2686,7 +2690,7 @@
       "count": "({count} programs)",
       "filter": "Filtering",
       "bookNow": "Book Now",
-      "noResults": "No programs found matching your filters",
+      "noResults": "No programs available for this search",
       "currency": "SAR",
       "filters": {
         "branch": "Branch",
@@ -2703,8 +2707,40 @@
           "week": "Weekly",
           "month": "Monthly",
           "year": "Yearly"
+        },
+        "ages_list": {
+          "0_6_months": "0 to 6 Months",
+          "6_12_months": "6 to 12 Months",
+          "1_3_years": "1 to 3 Years",
+          "3_5_years": "3 to 5 Years"
         }
       }
+    },
+    "albums": {
+      "title": "Photo Albums",
+      "count": "({count} photos)",
+      "viewAll": "View All"
+    },
+    "blogs": {
+      "title": "Important Blogs"
+    },
+    "ads": {
+      "title": "Advertising Space",
+      "placeholder": "Stay tuned for great offers and activities"
+    },
+    "ratings": {
+      "title": "Ratings ({count} ratings)",
+      "placeholder": "Contribute to improving the service and be the first to rate",
+      "bookNow": "Book Now"
+    },
+    "suggestedNurseries": {
+      "title": "Suggested Nurseries"
+    },
+    "coupons": {
+      "title": "Discount Coupons",
+      "validUntil": "Available until {date}",
+      "copyCode": "Copy Code",
+      "copied": "Code Copied"
     },
     "contact": {
       "title": "Contact Information",
@@ -2928,7 +2964,8 @@
     "card": {
       "validUntil": "Valid until",
       "copySuccess": "Code copied successfully",
-      "viewCenters": "View Participating Centers"
+      "viewCenters": "View Participating Centers",
+      "viewBranches": "View Participating Branches"
     },
     "share": "Share offers and coupons with friends",
     "emptyState": {
@@ -2962,12 +2999,24 @@
       "numberOfWeeks": "Number of Weeks",
       "numberOfMonths": "Number of Months",
       "duration": "Duration",
+      "program": "Program",
+      "startTime": "Start Date & Time",
+      "startDate": "Start Date",
+      "paymentMethod": "Payment Method",
+      "paymentMayser": "Mayser",
+      "discount": "Discount",
+      "totalAfterDiscount": "Total After Discount",
+      "notes": "Notes",
+      "note1": "A notification will be sent for payment via email.",
+      "note2": "The paid amount cannot be refunded for any reason.",
+      "note3": "Please verify the accuracy of information before proceeding with the payment process.",
+      "required": "Required",
       "bookingDate": "Booking Date",
       "selectChildren": "Select One or More Children",
       "noChildren": "No Children Found",
       "noChildrenDesc": "You need to register at least one child before making a reservation. Please go to the children page to add a new child.",
       "addNewChild": "Add New Child",
-      "bookingSummary": "Booking Summary",
+      "bookingSummary": "Booking Details",
       "couponCode": "Coupon Code",
       "discountCoupon": "Discount Coupon",
       "tryCoupon": "Try Coupon",

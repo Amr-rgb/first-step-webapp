@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { X, MapPin, CalendarCheck, Users, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { dashboardIcons } from "@/components/general/icons";
 
 interface FilterOption {
   id: string;
@@ -22,8 +23,6 @@ interface FilterDialogProps {
   isOpen: boolean;
   onClose: () => void;
   branches: FilterOption[];
-  programTypes: FilterOption[];
-  ages: FilterOption[];
   selectedFilters: {
     branches: string[];
     programTypes: string[];
@@ -41,8 +40,6 @@ const FilterDialog = ({
   isOpen,
   onClose,
   branches,
-  programTypes,
-  ages,
   selectedFilters,
   onApply,
   onReset,
@@ -90,67 +87,90 @@ const FilterDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-[32px] border-none bg-white">
-        <DialogHeader className="p-8 pb-0 flex flex-row items-center justify-between">
+      <DialogContent className="w-[95vw] sm:max-w-4xl p-0 overflow-hidden rounded-3xl border-none bg-white max-h-[90vh] flex flex-col">
+        <DialogHeader className="p-4 pb-2 flex flex-row items-center justify-between sticky top-0 bg-white z-10 shrink-0">
+          <DialogTitle className="text-2xl sm:text-4xl font-bold text-primary">
+            {t("filter")}
+          </DialogTitle>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="rounded-full hover:bg-gray-100"
+            className="rounded-full hover:bg-gray-100 sm:hidden"
           >
             <X className="w-5 h-5 text-gray-400" />
           </Button>
-          <DialogTitle className="text-3xl font-bold text-[#2D3A82]">
-            {t("filter")}
-          </DialogTitle>
         </DialogHeader>
 
-        <div className="p-8 pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
             {/* Branch Column */}
-            <FilterColumn
-              title={t("filters.branch")}
-              icon={<MapPin className="w-5 h-5" />}
-              options={branches}
-              selectedIds={localFilters.branches}
-              allLabel={t("filters.allBranches")}
-              onChange={(id) => toggleFilter("branches", id)}
-            />
+            <div className="md:px-4 md:border-r md:border-light-gray/50 md:last:border-r-0 md:rtl:border-r-0 md:rtl:border-l md:rtl:first:border-l-0">
+              <FilterColumn
+                title={t("filters.branch")}
+                icon={<dashboardIcons.branch className="w-5 h-5" />}
+                options={branches}
+                selectedIds={localFilters.branches}
+                allLabel={t("filters.allBranches")}
+                onChange={(id) => toggleFilter("branches", id)}
+              />
+            </div>
 
             {/* Program Type Column */}
-            <FilterColumn
-              title={t("filters.programType")}
-              icon={<CalendarCheck className="w-5 h-5" />}
-              options={programTypes}
-              selectedIds={localFilters.programTypes}
-              allLabel={t("filters.allPrograms")}
-              onChange={(id) => toggleFilter("programTypes", id)}
-            />
+            <div className="md:px-4 md:border-r md:border-light-gray/50 md:last:border-r-0 md:rtl:border-r-0 md:rtl:border-l md:rtl:first:border-l-0 border-t md:border-t-0 border-light-gray/20">
+              <FilterColumn
+                title={t("filters.programType")}
+                icon={<dashboardIcons.programType className="w-5 h-5" />}
+                options={[
+                  { id: "hour", label: t("filters.types.hour") },
+                  { id: "day", label: t("filters.types.day") },
+                  { id: "week", label: t("filters.types.week") },
+                  { id: "month", label: t("filters.types.month") },
+                  { id: "year", label: t("filters.types.year") },
+                ]}
+                selectedIds={localFilters.programTypes}
+                allLabel={t("filters.allPrograms")}
+                onChange={(id) => toggleFilter("programTypes", id)}
+              />
+            </div>
 
             {/* Ages Column */}
-            <FilterColumn
-              title={t("filters.age")}
-              icon={<Users className="w-5 h-5" />}
-              options={ages}
-              selectedIds={localFilters.ages}
-              allLabel={t("filters.allAges")}
-              onChange={(id) => toggleFilter("ages", id)}
-            />
+            <div className="border-t md:border-t-0 border-light-gray/20">
+              <FilterColumn
+                title={t("filters.age")}
+                icon={<dashboardIcons.ages className="w-5 h-5" />}
+                options={[
+                  {
+                    id: "0_6_months",
+                    label: t("filters.ages_list.0_6_months"),
+                  },
+                  {
+                    id: "6_12_months",
+                    label: t("filters.ages_list.6_12_months"),
+                  },
+                  { id: "1_3_years", label: t("filters.ages_list.1_3_years") },
+                  { id: "3_5_years", label: t("filters.ages_list.3_5_years") },
+                ]}
+                selectedIds={localFilters.ages}
+                allLabel={t("filters.allAges")}
+                onChange={(id) => toggleFilter("ages", id)}
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col md:flex-row items-center gap-4 mt-12">
+        {/* Action Buttons */}
+        <div className="p-4 pt-4 sm:pt-0 border-t border-gray-100 bg-white shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <Button
+              size="long"
               variant="outline"
+              className="sm:flex-1 border-light-gray! text-mid-gray!"
               onClick={handleReset}
-              className="w-full md:flex-1 h-14 rounded-2xl text-gray-400 border-gray-200 text-lg font-bold hover:bg-gray-50"
             >
               {t("filters.reset")}
             </Button>
-            <Button
-              onClick={handleApply}
-              className="w-full md:flex-1 h-14 rounded-2xl bg-[linear-gradient(90deg,#7082FF_0%,#2D3A82_100%)] text-white text-lg font-bold hover:opacity-90 transition-opacity border-none shadow-[0_4px_14px_rgba(45,58,130,0.3)]"
-            >
+            <Button size="long" className="sm:flex-1" onClick={handleApply}>
               {t("filters.apply")}
             </Button>
           </div>
@@ -179,42 +199,39 @@ const FilterColumn = ({
 }: FilterColumnProps) => {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-end gap-2 text-[#2D3A82]">
-        <span className="text-xl font-bold">{title}</span>
-        <div className="text-[#2D3A82] opacity-80">{icon}</div>
+      <div className="flex items-center justify-start gap-2 text-primary">
+        <div className="text-primary opacity-80">{icon}</div>
+        <span className="heading-4 font-bold">{title}</span>
       </div>
 
-      <div className="relative pr-4 min-h-[250px] max-h-[300px] overflow-y-auto custom-scrollbar flex flex-col gap-4">
-        {/* Blue Indicator Line (Left in LTR, Right in RTL) */}
-        <div className="absolute right-0 top-0 w-1 h-full bg-[#2D3A82] rounded-full opacity-100" />
-
+      <div className="relative pr-4 max-h-[225px] overflow-y-auto custom-scrollbar flex flex-col gap-2">
         {/* "All" Option */}
         <div
-          className="flex items-center justify-end gap-3 cursor-pointer group"
+          className="flex items-center justify-start gap-3 cursor-pointer group"
           onClick={() => onChange("all")}
         >
-          <span
-            className={cn(
-              "text-lg font-medium transition-colors",
-              selectedIds.length === 0
-                ? "text-[#2D3A82]"
-                : "text-gray-400 group-hover:text-gray-600",
-            )}
-          >
-            {allLabel}
-          </span>
           <div
             className={cn(
-              "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
+              "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
               selectedIds.length === 0
-                ? "bg-[#2D3A82] border-[#2D3A82]"
+                ? "border-primary bg-white shadow-sm"
                 : "border-gray-200 group-hover:border-gray-300",
             )}
           >
             {selectedIds.length === 0 && (
-              <Check className="w-4 h-4 text-white" />
+              <Check className="w-4 h-4 text-primary stroke-[3.5px]" />
             )}
           </div>
+          <span
+            className={cn(
+              "font-medium transition-colors",
+              selectedIds.length === 0
+                ? "text-gray"
+                : "text-mid-gray group-hover:text-gray",
+            )}
+          >
+            {allLabel}
+          </span>
         </div>
 
         {/* Dynamic Options */}
@@ -223,29 +240,31 @@ const FilterColumn = ({
           return (
             <div
               key={option.id}
-              className="flex items-center justify-end gap-3 cursor-pointer group"
+              className="flex items-center justify-start gap-3 cursor-pointer group"
               onClick={() => onChange(option.id)}
             >
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
+                  isSelected
+                    ? "border-primary bg-white"
+                    : "border-gray-200 group-hover:border-gray-300",
+                )}
+              >
+                {isSelected && (
+                  <Check className="w-4 h-4 text-primary stroke-[3.5px]" />
+                )}
+              </div>
               <span
                 className={cn(
-                  "text-lg font-medium transition-colors",
+                  "font-medium transition-colors",
                   isSelected
-                    ? "text-[#2D3A82]"
-                    : "text-gray-400 group-hover:text-gray-600",
+                    ? "text-gray"
+                    : "text-mid-gray group-hover:text-gray",
                 )}
               >
                 {option.label}
               </span>
-              <div
-                className={cn(
-                  "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
-                  isSelected
-                    ? "bg-[#2D3A82] border-[#2D3A82]"
-                    : "border-gray-200 group-hover:border-gray-300",
-                )}
-              >
-                {isSelected && <Check className="w-4 h-4 text-white" />}
-              </div>
             </div>
           );
         })}

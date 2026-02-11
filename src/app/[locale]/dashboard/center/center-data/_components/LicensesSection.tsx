@@ -2,13 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { PortfolioFormData } from "@/types";
-import { Plus, Trash2, FileText, Upload, X } from "lucide-react";
+import { Plus, Trash2, FileText, Upload, X, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toastError } from "@/lib/toast";
 
 interface Props {
@@ -19,9 +19,13 @@ interface Props {
 
 export const LicensesSection = ({ data, onChange, errors = {} }: Props) => {
   const t = useTranslations("dashboard.profileEditor.licenses");
-  const [isToggled, setIsToggled] = useState(
-    (data.licenses && data.licenses.length > 0) || false,
-  );
+  const [isToggled, setIsToggled] = useState(false);
+
+  useEffect(() => {
+    if (data.licenses && data.licenses.length > 0) {
+      setIsToggled(true);
+    }
+  }, [data.licenses]);
 
   const handleAddLicense = () => {
     const newLicenses = [...(data.licenses || []), { number: "" }];
@@ -63,6 +67,15 @@ export const LicensesSection = ({ data, onChange, errors = {} }: Props) => {
     }
 
     updateLicense(index, "document", file);
+  };
+
+  const handleViewDocument = (document: File | string) => {
+    if (typeof document === "string") {
+      window.open(document, "_blank");
+    } else if (document instanceof File) {
+      const url = URL.createObjectURL(document);
+      window.open(url, "_blank");
+    }
   };
 
   return (
@@ -205,17 +218,32 @@ export const LicensesSection = ({ data, onChange, errors = {} }: Props) => {
                           </>
                         )}
                       </div>
-                      {license.document && (
-                        <div
-                          onClick={(e) => {
-                            e.preventDefault();
-                            updateLicense(index, "document", undefined);
-                          }}
-                          className="w-6 h-6 rounded-full hover:bg-red-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-none border-none"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {license.document && (
+                          <>
+                            <div
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleViewDocument(license.document!);
+                              }}
+                              className="w-8 h-8 rounded-xl hover:bg-primary/10 flex items-center justify-center text-gray-400 hover:text-primary transition-all shadow-none border-none"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </div>
+                            <div
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                updateLicense(index, "document", undefined);
+                              }}
+                              className="w-8 h-8 rounded-xl hover:bg-red-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-none border-none"
+                            >
+                              <X className="w-4 h-4" />
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </label>
                   </div>
                   {errors[`licenses.${index}.document`] && (

@@ -14,12 +14,14 @@ import {
 import { centerService } from "@/services/dashboardApi";
 import { PortfolioFormData } from "@/types";
 import { toastSuccess, toastError } from "@/lib/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
+import { useAuthUser } from "@/store/authStore";
 
 // Section Components
 import { BasicInfoSection } from "./_components/BasicInfoSection";
 import { PlansSection } from "./_components/PlansSection";
+import { FacilitiesSection } from "./_components/FacilitiesSection";
 import { ActivitiesSection } from "./_components/ActivitiesSection";
 import { LicensesSection } from "./_components/LicensesSection";
 import { SocialMediaSection } from "./_components/SocialMediaSection";
@@ -28,6 +30,8 @@ export default function CenterProfilePage() {
   usePageMetadata();
   const t = useTranslations("dashboard.profileEditor");
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const user = useAuthUser();
   const [activeSection, setActiveSection] = useState<string>("basicInfo");
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -38,6 +42,7 @@ export default function CenterProfilePage() {
     subtitle_of_hero: "",
     description: "",
     images_activities: [],
+    delete_images_activities: [],
     admin_option_ids: [],
     delete_center_options: [],
     licenses: [],
@@ -52,6 +57,10 @@ export default function CenterProfilePage() {
   });
 
   const [logoUrl, setLogoUrl] = useState<string>("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [dirtyFields, setDirtyFields] = useState<Set<keyof PortfolioFormData>>(
+    new Set(),
+  );
 
   // Fetch initial data
   const { data: initialData, isLoading } = useQuery({
@@ -60,29 +69,47 @@ export default function CenterProfilePage() {
   });
 
   useEffect(() => {
-    if (initialData?.data) {
-      const p = initialData.data;
+    const p = initialData?.portofilo || initialData?.data;
+    if (p) {
       setFormData({
-        title_of_hero: p.title_of_hero || "",
-        subtitle_of_hero: p.subtitle_of_hero || "",
-        description: p.description || "",
+        title_of_hero: p.hero_section?.title_of_hero || p.title_of_hero || "",
+        subtitle_of_hero:
+          p.hero_section?.subtitle_of_hero || p.subtitle_of_hero || "",
+        description: p.hero_section?.description || p.description || "",
         contact_info: {
-          facebook: p.facebook || "",
-          instagram: p.instagram || "",
-          twitter: p.twitter || "",
-          linkedin: p.linkedin || "",
-          website: p.website || "",
+          facebook: p.contact_info?.facebook || p.facebook || "",
+          instagram: p.contact_info?.instagram || p.instagram || "",
+          twitter: p.contact_info?.twitter || p.twitter || "",
+          linkedin:
+            p.contact_info?.linkedin ||
+            p.contact_info?.linkedIn ||
+            p.linkedin ||
+            "",
+          website: p.contact_info?.website || p.website || "",
         },
         images_activities: p.images_activities || [],
-        admin_option_ids: p.options?.map((o: any) => o.id) || [],
+        delete_images_activities: [],
+        admin_option_ids:
+          (p.admin_options || p.options)?.map((o: any) => o.id) || [],
         licenses: p.licenses || [],
       });
-      setLogoUrl(p.logo || "");
+      // The logo might be in the parent object, inside portfolio, or the user object
+      setLogoUrl(p.logo || initialData?.logo || user?.logo || "");
+      setIsDirty(false);
+      setDirtyFields(new Set());
     }
-  }, [initialData]);
+  }, [initialData, user?.logo]);
 
   const updateFormData = (newData: Partial<PortfolioFormData>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
+    setIsDirty(true);
+
+    const keys = Object.keys(newData) as (keyof PortfolioFormData)[];
+    setDirtyFields((prev) => {
+      const next = new Set(prev);
+      keys.forEach((key) => next.add(key));
+      return next;
+    });
 
     // Clear errors for updated fields
     if (Object.keys(validationErrors).length > 0) {
@@ -90,7 +117,14 @@ export default function CenterProfilePage() {
       setValidationErrors((prev) => {
         const newErrors = { ...prev };
         updatedFields.forEach((field) => {
+          // Clear flat key
           delete newErrors[field];
+          // Clear nested keys (e.g., contact_info.facebook)
+          Object.keys(newErrors).forEach((key) => {
+            if (key.startsWith(`${field}.`)) {
+              delete newErrors[key];
+            }
+          });
         });
         return newErrors;
       });
@@ -101,13 +135,22 @@ export default function CenterProfilePage() {
     mutationFn: (data: PortfolioFormData) => centerService.savePortfolio(data),
     onSuccess: () => {
       setValidationErrors({});
+      queryClient.invalidateQueries({ queryKey: ["centerPortfolio"] });
       toastSuccess(t("title"), t("saveSuccess"));
       router.refresh();
     },
     onError: (error: any) => {
       if (error.errors && typeof error.errors === "object") {
         setValidationErrors(error.errors);
-        toastError(t("title"), error.message || t("saveError"));
+
+        // Extract first actual error message if available
+        const firstErrorKey = Object.keys(error.errors)[0];
+        const firstErrorMessage = error.errors[firstErrorKey]?.[0];
+
+        toastError(
+          t("title"),
+          firstErrorMessage || error.message || t("saveError"),
+        );
       } else {
         toastError(t("title"), error.message || t("saveError"));
       }
@@ -128,7 +171,49 @@ export default function CenterProfilePage() {
   });
 
   const handleSave = () => {
-    saveMutation.mutate(formData);
+    // Validate licenses - stop sending if any entry is incomplete
+    if (formData.licenses && formData.licenses.length > 0) {
+      const isIncomplete = formData.licenses.some(
+        (l) => !l.number?.trim() || !l.document,
+      );
+
+      if (isIncomplete) {
+        toastError(
+          t("sections.licenses"),
+          "Please complete all license information (number and document) before saving.",
+        );
+        return; // BLOCK SUBMISSION
+      }
+    }
+
+    const dirtyData: Partial<PortfolioFormData> = {};
+    dirtyFields.forEach((field) => {
+      (dirtyData as any)[field] = (formData as any)[field];
+    });
+
+    // Always include deletion trackers if they have items
+    if (formData.delete_license_ids?.length) {
+      dirtyData.delete_license_ids = formData.delete_license_ids;
+    }
+    if (formData.delete_center_options?.length) {
+      dirtyData.delete_center_options = formData.delete_center_options;
+    }
+    if (formData.delete_images_activities?.length) {
+      dirtyData.delete_images_activities = formData.delete_images_activities;
+    }
+
+    // If nothing dirty left after filtering, don't send
+    if (
+      Object.keys(dirtyData).length === 0 &&
+      !formData.delete_license_ids?.length &&
+      !formData.delete_center_options?.length &&
+      !formData.delete_images_activities?.length
+    ) {
+      setIsDirty(false);
+      return;
+    }
+
+    saveMutation.mutate(dirtyData as PortfolioFormData);
   };
 
   const handleCancel = () => {
@@ -143,6 +228,10 @@ export default function CenterProfilePage() {
     {
       id: "plans",
       title: t("sections.plans"),
+    },
+    {
+      id: "facilities",
+      title: t("sections.facilities"),
     },
     {
       id: "activities",
@@ -172,6 +261,14 @@ export default function CenterProfilePage() {
         );
       case "plans":
         return <PlansSection />;
+      case "facilities":
+        return (
+          <FacilitiesSection
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
       case "activities":
         return (
           <ActivitiesSection
@@ -248,7 +345,7 @@ export default function CenterProfilePage() {
               size="lg"
               className="w-full flex-1"
               onClick={handleSave}
-              disabled={saveMutation.isPending}
+              disabled={saveMutation.isPending || !isDirty}
             >
               {saveMutation.isPending ? t("saving") : t("savePortfolio")}
             </Button>

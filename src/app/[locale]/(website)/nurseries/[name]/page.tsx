@@ -1,6 +1,12 @@
 import NurseryHeader from "./_components/NurseryHeader";
 import AboutSection from "./_components/AboutSection";
 import FacilitiesSection from "./_components/FacilitiesSection";
+import AdsSection from "./_components/AdsSection";
+import RatingsSection from "./_components/RatingsSection";
+import AlbumsSection from "./_components/AlbumsSection";
+import BlogsSection from "./_components/BlogsSection";
+import CouponsSection from "./_components/CouponsSection";
+import SuggestedNurseriesSection from "./_components/SuggestedNurseriesSection";
 import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
@@ -52,30 +58,57 @@ export default async function NurseryPage({
         tagline={portfolio.hero_section?.subtitle_of_hero || ""}
         logo={portfolio.user?.logo || ""}
         rating={4.5}
+        centerId={centerIdStr}
       />
 
-      <div className="container mx-auto px-4 md:px-8 py-12 space-y-20">
-        {/* About Section */}
-        <AboutSection
-          title={t("about.title")}
-          subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
-          description={portfolio.hero_section?.description || ""}
-        />
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Main Info Column: About & Facilities */}
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-10 lg:gap-10 order-1">
+            {/* About Section */}
+            <AboutSection
+              title={t("about.title")}
+              subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
+              description={portfolio.hero_section?.description || ""}
+            />
 
-        {/* Facilities Section */}
-        <FacilitiesSection
-          title={t("facilities.title")}
-          facilities={portfolio.admin_options || []}
-          locale={locale}
-        />
+            {/* Facilities Section */}
+            <FacilitiesSection
+              title={t("facilities.title")}
+              facilities={portfolio.admin_options || []}
+              locale={locale}
+            />
 
-        {/* Programs Section */}
-        <div id="programs" className="scroll-mt-20">
-          <ProgramsSection
-            centerId={centerIdStr}
-            nurseryName={name}
-            locale={locale}
-          />
+            {/* Ads Section */}
+            <AdsSection centerId={centerIdStr} />
+
+            {/* Albums Section */}
+            <AlbumsSection images={portfolio.images_activities || []} />
+          </div>
+
+          {/* Sticky Sidebar Column: Programs */}
+          <div className="lg:col-span-5 xl:col-span-4 order-2 flex flex-col gap-10">
+            <ProgramsSection
+              centerId={centerIdStr}
+              nurseryName={name}
+              locale={locale}
+            />
+
+            {/* Coupons Section */}
+            <CouponsSection
+              centerId={centerIdStr}
+              nurseryLogo={portfolio.user?.logo || portfolio.logo}
+            />
+
+            {/* Ratings Section */}
+            <RatingsSection />
+
+            {/* Blogs Section */}
+            <BlogsSection centerId={centerIdStr} />
+
+            {/* Suggested Nurseries Section */}
+            <SuggestedNurseriesSection currentCenterId={centerIdStr} />
+          </div>
         </div>
       </div>
     </div>
