@@ -170,9 +170,10 @@ export interface CenterRegisterPayload {
   password: string; // optional in some contexts? Schema says required.
   phone: string;
   nursery_name: string;
-  description: string;
+  city_id: string;
   logo: File;
 }
+
 
 // Extended interface for nursery API response that includes user_id
 export interface NurseryResponse extends Omit<
@@ -495,6 +496,6 @@ export interface NurseryRegisterPayload {
   phone: string;
   password: string;
   nursery_name: string;
-  description: string;
+  city_id: string;
   logo: File;
 }

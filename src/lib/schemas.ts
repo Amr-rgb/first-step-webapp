@@ -814,9 +814,9 @@ export const createCenterSchema = (locale: "ar" | "en" = "ar") =>
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    description: z
+    city_id: z
       .string()
-      .min(10, { message: getErrorMessage("general-field-required", locale) }),
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
     logo: z.instanceof(File, {
       message: getErrorMessage("general-field-required", locale),
     }),
@@ -842,9 +842,9 @@ export const createNurserySchema = (locale: "ar" | "en" = "ar") =>
     nursery_name: z
       .string()
       .min(2, { message: getErrorMessage("general-field-required", locale) }),
-    description: z
+    city_id: z
       .string()
-      .min(10, { message: getErrorMessage("general-field-required", locale) }),
+      .min(1, { message: getErrorMessage("general-field-required", locale) }),
     logo: z.instanceof(File, {
       message: getErrorMessage("general-field-required", locale),
     }),

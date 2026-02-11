@@ -1,9 +1,12 @@
+"use client";
+
 import React from "react";
 
 import { useEffect, useState } from "react";
 import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
 import { dashboardIcons } from "@/components/general/icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,8 +14,15 @@ import Link from "next/link";
 import { createNurserySchema, NurseryFormData } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getCitiesAction } from "@/actions/getCitiesAction";
 
 export function SignUpForm({
     submitHandler,
@@ -37,7 +47,7 @@ export function SignUpForm({
             confirmPassword: "",
             phone: "",
             nursery_name: "",
-            description: "",
+            city_id: "",
             logo: undefined,
         },
         mode: "onBlur",
@@ -45,6 +55,12 @@ export function SignUpForm({
     });
 
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+    // Fetch cities
+    const { data: cities = [], isLoading: citiesLoading } = useQuery({
+        queryKey: ["cities"],
+        queryFn: getCitiesAction,
+    });
 
     useEffect(() => {
         return () => {
@@ -133,7 +149,7 @@ export function SignUpForm({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {/* Row 1: Name & About */}
+                                {/* Row 1: Name & City */}
                                 <div>
                                     <Label className="block mb-3">{isAr ? "اسم الحضانة" : "Nursery Name"} <span className="text-red-500">*</span></Label>
                                     <Input {...methods.register("nursery_name")} placeholder={isAr ? "مثال: حضانة النجوم" : "e.g. Stars Nursery"} className="h-12" />
@@ -141,9 +157,24 @@ export function SignUpForm({
                                 </div>
 
                                 <div>
-                                    <Label className="block mb-3">{isAr ? "عن الحضانة" : "About Nursery"} <span className="text-red-500">*</span></Label>
-                                    <Textarea {...methods.register("description")} className="h-12 min-h-[48px] resize-none pt-3 no-scrollbar" placeholder={isAr ? "وصف مختصر..." : "Brief description..."} />
-                                    {!!methods.formState.errors.description && <p className="text-red-500 text-xs mt-1">{methods.formState.errors.description.message}</p>}
+                                    <Label className="block mb-3">{isAr ? "المدينة" : "City"} <span className="text-red-500">*</span></Label>
+                                    <Select
+                                        value={methods.watch("city_id")}
+                                        onValueChange={(value) => methods.setValue("city_id", value, { shouldValidate: true })}
+                                        disabled={citiesLoading}
+                                    >
+                                        <SelectTrigger className="h-12">
+                                            <SelectValue placeholder={citiesLoading ? (isAr ? "جاري التحميل..." : "Loading...") : (isAr ? "اختر المدينة" : "Select City")} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {cities.map((city) => (
+                                                <SelectItem key={city.id} value={city.id.toString()}>
+                                                    {city.name?.[locale] || city.name?.ar || city.id}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {!!methods.formState.errors.city_id && <p className="text-red-500 text-xs mt-1">{methods.formState.errors.city_id.message}</p>}
                                 </div>
 
                                 {/* Row 2: Phone & Email */}

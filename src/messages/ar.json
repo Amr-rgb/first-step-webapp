@@ -55,7 +55,14 @@
   "adSection": {
     "title": "مساحة إعلانية",
     "topPlaceholder": "استغل المساحة الإعلانية الآن",
-    "bottomPlaceholder": "استغل المساحة الإعلانية الآن"
+    "bottomPlaceholder": "استغل المساحة الإعلانية الآن",
+    "errors": {
+      "notSignedIn": "يجب تسجيل الدخول أولاً",
+      "centersOnly": "هذه الخدمة متاحة للمراكز فقط"
+    },
+    "success": {
+      "redirecting": "سيتم توجيهك لصفحة طلب الإعلان"
+    }
   },
   "faqs": {
     "title": "الأسئلة الشائعة",
