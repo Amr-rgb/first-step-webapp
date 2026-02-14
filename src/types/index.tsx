@@ -183,6 +183,7 @@ export interface NurseryResponse extends Omit<
   id: number;
   user_id: number;
   center_id?: number;
+  type?: string; // 'nurseries' | 'centers' | etc.
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
@@ -194,6 +195,7 @@ export interface NurseryResponse extends Omit<
     nursery_name_branch: string;
   }>;
   city: string | { name: { ar: string; en: string } };
+  neighborhood?: string | { ar: string; en: string } | null;
   address?: string;
 }
 

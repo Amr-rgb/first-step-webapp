@@ -245,7 +245,7 @@ export default function EnrollmentModal({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                 <Link
-                  href="/nurseries"
+                  href="/establishments"
                   className="p-6 border-2 border-gray-200 rounded-2xl hover:border-secondary-mint-green transition-colors"
                 >
                   <Image
@@ -326,7 +326,7 @@ export default function EnrollmentModal({
                             ? center.city?.name[locale as "ar"]
                             : center.city}
                           {typeof center.neighborhood === "object" &&
-                          center.neighborhood !== null
+                            center.neighborhood !== null
                             ? ", " + center.neighborhood[locale]
                             : ", " + center.neighborhood}{" "}
                           {center.address ? ", " + center.address : null}
@@ -398,7 +398,7 @@ export default function EnrollmentModal({
                       ? selectedCenter.city?.name[locale as "ar"]
                       : selectedCenter?.city}
                     {typeof selectedCenter?.neighborhood === "object" &&
-                    selectedCenter?.neighborhood !== null
+                      selectedCenter?.neighborhood !== null
                       ? ", " + selectedCenter?.neighborhood[locale]
                       : ", " + selectedCenter?.neighborhood}{" "}
                     {selectedCenter?.address
@@ -417,11 +417,10 @@ export default function EnrollmentModal({
                     <button
                       key={child.id}
                       onClick={() => toggleChildSelection(child.id)}
-                      className={`p-4 border-2 rounded-xl transition-colors ${
-                        selectedChildren.includes(child.id)
+                      className={`p-4 border-2 rounded-xl transition-colors ${selectedChildren.includes(child.id)
                           ? "border-pink-400 bg-pink-50"
                           : "border-gray-200"
-                      }`}
+                        }`}
                     >
                       <div className="w-20 h-20 mx-auto mb-2 bg-gray-100 rounded-full overflow-hidden">
                         {child.image && (
@@ -533,7 +532,7 @@ export default function EnrollmentModal({
                       ? selectedCenter.city?.name[locale as "ar"]
                       : selectedCenter?.city}
                     {typeof selectedCenter?.neighborhood === "object" &&
-                    selectedCenter?.neighborhood !== null
+                      selectedCenter?.neighborhood !== null
                       ? ", " + selectedCenter?.neighborhood[locale]
                       : ", " + selectedCenter?.neighborhood}{" "}
                     {selectedCenter?.address

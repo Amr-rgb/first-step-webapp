@@ -34,6 +34,43 @@ export default function proxy(request: NextRequest) {
     }
   }
 
+  // Legacy redirects for old routes
+  const generalLegacyRedirects: Record<string, string> = {
+    "/nurseries": "/establishments",
+    "/centers": "/establishments",
+  };
+
+  // Extract path without locale for redirect matching
+  // Assuming pathname format: /[locale]/path or /path
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const firstSegment = pathSegments[0] || '';
+  const isFirstSegmentLocale = validLocales.includes(firstSegment);
+  const pathWithoutLocale = isFirstSegmentLocale
+    ? '/' + pathSegments.slice(1).join('/')
+    : pathname;
+  const detectedLocale = isFirstSegmentLocale ? firstSegment : 'ar'; // default to 'ar'
+
+  // Check for general legacy redirects (e.g., /nurseries -> /establishments)
+  if (generalLegacyRedirects[pathWithoutLocale]) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${detectedLocale}${generalLegacyRedirects[pathWithoutLocale]}`;
+    return NextResponse.redirect(url, 301); // Permanent redirect
+  }
+
+  // Handle old /nurseries/[name] and /centers/[name] routes
+  if (pathWithoutLocale.startsWith("/nurseries/") && !pathWithoutLocale.includes("/reservation")) {
+    const slug = pathWithoutLocale.replace("/nurseries/", "");
+    const url = request.nextUrl.clone();
+    url.pathname = `/${detectedLocale}/establishments/nurseries/${slug}`;
+    return NextResponse.redirect(url, 301);
+  }
+  if (pathWithoutLocale.startsWith("/centers/")) {
+    const slug = pathWithoutLocale.replace("/centers/", "");
+    const url = request.nextUrl.clone();
+    url.pathname = `/${detectedLocale}/establishments/centers/${slug}`;
+    return NextResponse.redirect(url, 301);
+  }
+
   // Handle bare legacy redirects (without locale prefix)
   if (legacyRedirects[pathname]) {
     // This will let the locale logic below handle adding the locale after redirecting the path

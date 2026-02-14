@@ -303,11 +303,11 @@ const Plans = ({ centerId, nurseryName, locale, preview }: PlansProps) => {
           label:
             locale === "ar"
               ? `من ${start} ${getEnrollmentTypeLabel(
-                  startType
-                )} ل ${end} ${getEnrollmentTypeLabel(endType)}`
+                startType
+              )} ل ${end} ${getEnrollmentTypeLabel(endType)}`
               : `From ${start} ${getEnrollmentTypeLabel(
-                  startType
-                )} to ${end} ${getEnrollmentTypeLabel(endType)}`,
+                startType
+              )} to ${end} ${getEnrollmentTypeLabel(endType)}`,
         };
       })
       .sort((a, b) => {
@@ -473,7 +473,7 @@ const Plans = ({ centerId, nurseryName, locale, preview }: PlansProps) => {
                       onClick={() => {
                         if (!preview) {
                           // Navigate to booking page with plan details
-                          window.location.href = `/${locale}/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
+                          window.location.href = `/${locale}/establishments/nurseries/${nurseryName}/reservation?branch=${selectedBranch?.id}&plan=${plan.id}`;
                         }
                       }}
                     >

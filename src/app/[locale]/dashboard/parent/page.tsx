@@ -158,7 +158,7 @@ export default function ParentDashboardHome() {
                       variant="outline"
                       className="w-full sm:w-auto gap-2 text-primary border-primary hover:bg-primary/5"
                     >
-                      <Link href="/nurseries">
+                      <Link href="/establishments">
                         {t("bookNow")} <Plus className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -229,7 +229,7 @@ export default function ParentDashboardHome() {
                       variant="outline"
                       className="w-full sm:w-auto gap-2 text-primary border-primary hover:bg-primary/5"
                     >
-                      <Link href="/nurseries">
+                      <Link href="/establishments">
                         {t("bookNow")} <Plus className="h-4 w-4" />
                       </Link>
                     </Button>
