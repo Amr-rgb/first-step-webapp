@@ -515,7 +515,7 @@ const DashboardSideBar = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={subscriptionRequired ? "#" : "/nurseries"}
+                  href={subscriptionRequired ? "#" : "/establishments"}
                   onClick={(e) => {
                     if (subscriptionRequired) {
                       e.preventDefault();

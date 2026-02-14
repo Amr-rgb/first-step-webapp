@@ -96,7 +96,7 @@ const HeroSection = () => {
         {
           label: "slide2.button1",
           variant: "default",
-          link: "/nurseries",
+          link: "/establishments",
         },
         {
           label: "slide2.button2",

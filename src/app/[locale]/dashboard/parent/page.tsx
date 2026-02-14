@@ -170,7 +170,7 @@ export default function ParentDashboardHome() {
                   icon={Rocket}
                   primaryAction={{
                     label: t("bookNow"),
-                    onClick: () => router.push("/nurseries"),
+                    onClick: () => router.push("/establishments"),
                   }}
                 />
               )}
@@ -241,7 +241,7 @@ export default function ParentDashboardHome() {
                   icon={Baby}
                   primaryAction={{
                     label: t("bookNow"),
-                    onClick: () => router.push("/nurseries"),
+                    onClick: () => router.push("/establishments"),
                   }}
                 />
               )}

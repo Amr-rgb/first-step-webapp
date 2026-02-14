@@ -11,9 +11,42 @@ import {
 import FacilitiesSection from "./_components/FacilitiesSection";
 import AlbumsSection from "./_components/AlbumsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
-import { slugToReadableName } from "@/lib/utils";
+import { createSlug, slugToReadableName } from "@/lib/utils";
 import { nurseryService } from "@/services/api";
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+
+type Props = {
+    params: Promise<{ name: string; locale: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { name, locale } = await params;
+    const idMatch = name.match(/^(\d+)-(.*)$/);
+    const id = idMatch ? idMatch[1] : null;
+
+    try {
+        let portfolio;
+        if (id) {
+            const response = await nurseryService.getNurseryPortfolioById(id, locale);
+            portfolio = response?.data as any;
+        } else {
+            const response = await nurseryService.getNurseryPortfolio(name, locale);
+            portfolio = response?.data as any;
+        }
+
+        if (!portfolio) throw new Error();
+
+        return {
+            title: portfolio.hero_section?.title_of_hero || portfolio.nursery_name,
+            description: portfolio.hero_section?.description || "",
+        };
+    } catch {
+        return {
+            title: "Establishment Details",
+        };
+    }
+}
 
 export default async function NurseryPage({
     params,
