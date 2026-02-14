@@ -17,11 +17,10 @@ const NavbarButton = () => {
   let dashboardPath = null;
   if (user && user.role) {
     if (user.role.toLowerCase() === "admin") dashboardPath = "/dashboard/admin";
-    else if (
-      user.role.toLowerCase() === "center" ||
-      user.role === "branch_admin"
-    )
+    else if (user.role.toLowerCase() === "center")
       dashboardPath = "/dashboard/center";
+    else if (user.role === "branch_admin")
+      dashboardPath = user.center_id ? "/dashboard/center" : "/dashboard/nursery";
     else if (user.role.toLowerCase() === "parent")
       dashboardPath = "/dashboard/parent";
   }

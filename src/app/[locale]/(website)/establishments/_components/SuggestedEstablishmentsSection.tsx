@@ -15,13 +15,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { NurseryResponse } from "@/types";
 
-interface SuggestedNurseriesSectionProps {
+interface SuggestedEstablishmentsSectionProps {
   currentCenterId: string;
 }
 
-const SuggestedNurseriesSection = ({
+const SuggestedEstablishmentsSection = ({
   currentCenterId,
-}: SuggestedNurseriesSectionProps) => {
+}: SuggestedEstablishmentsSectionProps) => {
   const t = useTranslations("nurseryDetails.suggestedNurseries");
   const locale = useLocale() as "ar" | "en";
   const isRtl = locale === "ar";
@@ -66,21 +66,21 @@ const SuggestedNurseriesSection = ({
           <CarouselContent className="-ml-4">
             {isLoading
               ? Array.from({ length: 2 }).map((_, i) => (
-                  <CarouselItem
-                    key={i}
-                    className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
-                  >
-                    <Skeleton className="h-[400px] w-full rounded-2xl" />
-                  </CarouselItem>
-                ))
+                <CarouselItem
+                  key={i}
+                  className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
+                >
+                  <Skeleton className="h-[400px] w-full rounded-2xl" />
+                </CarouselItem>
+              ))
               : (nurseries || []).map((nursery: NurseryResponse) => (
-                  <CarouselItem
-                    key={nursery.id}
-                    className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
-                  >
-                    <NurseryCard nursery={nursery} locale={locale} />
-                  </CarouselItem>
-                ))}
+                <CarouselItem
+                  key={nursery.id}
+                  className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
+                >
+                  <NurseryCard nursery={nursery} locale={locale} />
+                </CarouselItem>
+              ))}
           </CarouselContent>
         </div>
       </Carousel>
@@ -88,4 +88,4 @@ const SuggestedNurseriesSection = ({
   );
 };
 
-export default SuggestedNurseriesSection;
+export default SuggestedEstablishmentsSection;

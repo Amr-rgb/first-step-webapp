@@ -57,8 +57,8 @@ const AdPlaceholder = ({ variant, className }: AdPlaceholderProps) => {
     }
 
     // Redirect to ad request page
-    router.push(`/${locale}/dashboard/center/ad-or-blog-request/ad-request`);
-    
+    router.push(`/${locale}/dashboard/nursery/ad-or-blog-request/ad-request`);
+
     toastSuccess(t("success.redirecting"));
   };
 

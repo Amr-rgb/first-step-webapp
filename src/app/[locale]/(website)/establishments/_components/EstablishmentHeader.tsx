@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBranchesForCenterAction } from "@/actions/nurseryActions";
 import { useMemo } from "react";
 
-interface NurseryHeaderProps {
+interface EstablishmentHeaderProps {
   name: string;
   tagline: string;
   logo: string;
@@ -19,13 +19,13 @@ interface NurseryHeaderProps {
   centerId: string | number;
 }
 
-const NurseryHeader = ({
+const EstablishmentHeader = ({
   name,
   tagline,
   logo,
   rating = 4.5,
   centerId,
-}: NurseryHeaderProps) => {
+}: EstablishmentHeaderProps) => {
   const t = useTranslations("nurseryDetails.header");
   const router = useRouter();
   const isAuthenticated = useIsAuthenticated();
@@ -139,4 +139,4 @@ const NurseryHeader = ({
   );
 };
 
-export default NurseryHeader;
+export default EstablishmentHeader;

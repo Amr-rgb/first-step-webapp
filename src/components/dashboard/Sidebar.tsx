@@ -37,70 +37,70 @@ interface NavbarItem {
   icon: (props: any) => React.JSX.Element;
 }
 
-const getCenterNavbar = (t: any): NavbarItem[] => [
+const getCenterNavbar = (t: any, basePath: string = "/dashboard/nursery"): NavbarItem[] => [
   {
     title: t("center.home"),
-    url: "/dashboard/center",
+    url: basePath,
     icon: dashboardIcons.home,
   },
   {
     title: t("center.branches"),
-    url: "/dashboard/center/branches",
+    url: `${basePath}/branches`,
     icon: dashboardIcons.branches,
   },
   {
     title: t("center.children-files"),
-    url: "/dashboard/center/children-files",
+    url: `${basePath}/children-files`,
     icon: dashboardIcons.files,
   },
   {
     title: t("center.bookings"),
-    url: "/dashboard/center/bookings",
+    url: `${basePath}/bookings`,
     icon: dashboardIcons.bookings,
   },
   {
     title: t("center.daily-reports"),
-    url: "/dashboard/center/daily-reports",
+    url: `${basePath}/daily-reports`,
     icon: dashboardIcons.reports,
   },
   {
     title: t("center.center-data"),
-    url: "/dashboard/center/center-data",
+    url: `${basePath}/center-data`,
     icon: dashboardIcons.site,
   },
   {
     title: t("center.gate"),
-    url: "/dashboard/center/gate",
+    url: `${basePath}/gate`,
     icon: dashboardIcons.site,
   },
   {
     title: t("center.wallet"),
-    url: "/dashboard/center/wallet",
+    url: `${basePath}/wallet`,
     icon: dashboardIcons.visa,
   },
   {
     title: t("center.ad-or-blog-request"),
-    url: "/dashboard/center/ad-or-blog-request",
+    url: `${basePath}/ad-or-blog-request`,
     icon: dashboardIcons.request,
   },
   {
     title: t("center.notifications"),
-    url: "/dashboard/center/notifications",
+    url: `${basePath}/notifications`,
     icon: dashboardIcons.notifications,
   },
   {
     title: t("center.team"),
-    url: "/dashboard/center/team",
+    url: `${basePath}/team`,
     icon: dashboardIcons.team,
   },
   {
     title: t("center.chat"),
-    url: "/dashboard/center/chat",
+    url: `${basePath}/chat`,
     icon: dashboardIcons.chat,
   },
   {
     title: t("center.discount-coupons"),
-    url: "/dashboard/center/discount-coupons",
+    url: `${basePath}/discount-coupons`,
     icon: dashboardIcons.coupon,
   },
 ];
@@ -210,11 +210,13 @@ const DashboardSideBar = () => {
     }
   }, [isMobile, state, setOpen]);
 
-  let navbar = pathname.includes("/dashboard/center")
-    ? getCenterNavbar(t)
-    : pathname.includes("dashboard/admin")
-      ? getAdminNavbar(t)
-      : getParentNavbar(t);
+  let navbar = pathname.includes("/dashboard/nursery")
+    ? getCenterNavbar(t, "/dashboard/nursery")
+    : pathname.includes("/dashboard/center")
+      ? getCenterNavbar(t, "/dashboard/center")
+      : pathname.includes("dashboard/admin")
+        ? getAdminNavbar(t)
+        : getParentNavbar(t);
 
   // Filter out specific items for branch_admin (only after hydration)
   if (isHydrated && user?.role === "branch_admin") {
@@ -226,11 +228,13 @@ const DashboardSideBar = () => {
     );
   }
 
-  const basePathname = pathname.includes("/dashboard/center")
-    ? "/dashboard/center"
-    : pathname.includes("dashboard/admin")
-      ? "/dashboard/admin"
-      : "/dashboard/parent";
+  const basePathname = pathname.includes("/dashboard/nursery")
+    ? "/dashboard/nursery"
+    : pathname.includes("/dashboard/center")
+      ? "/dashboard/center"
+      : pathname.includes("dashboard/admin")
+        ? "/dashboard/admin"
+        : "/dashboard/parent";
 
   const handleLinkClick = (
     e: React.MouseEvent,
@@ -362,7 +366,7 @@ const DashboardSideBar = () => {
                             className={cn(
                               "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
                               isLocked &&
-                                "opacity-60 cursor-not-allowed grayscale-[0.5]",
+                              "opacity-60 cursor-not-allowed grayscale-[0.5]",
                               isActive
                                 ? "bg-primary! text-white! font-bold! scale-[0.98] py-6.5"
                                 : "bg-transparent text-mid-gray! hover:bg-gray-100/50 hover:scale-[0.99] py-6.5",
@@ -451,7 +455,7 @@ const DashboardSideBar = () => {
                   className={cn(
                     "w-full transition-all duration-200",
                     subscriptionRequired &&
-                      "cursor-default opacity-60 grayscale-[0.5]",
+                    "cursor-default opacity-60 grayscale-[0.5]",
                     state === "collapsed"
                       ? "h-auto p-0 border-0 bg-transparent hover:bg-transparent"
                       : "border-2 border-solid border-primary bg-transparent hover:bg-primary/5 py-4 h-full",
@@ -531,7 +535,7 @@ const DashboardSideBar = () => {
                     className={cn(
                       "w-full transition-all duration-200 rounded-xl border border-secondary-mint-green flex items-center overflow-hidden relative",
                       subscriptionRequired &&
-                        "opacity-60 grayscale-[0.5] cursor-not-allowed",
+                      "opacity-60 grayscale-[0.5] cursor-not-allowed",
                       state === "collapsed"
                         ? "h-auto p-0 border-0 bg-transparent justify-center"
                         : "bg-white py-4 px-3 gap-3",

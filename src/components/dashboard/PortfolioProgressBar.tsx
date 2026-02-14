@@ -78,14 +78,14 @@ const PortfolioProgressBar = () => {
       title: t("tasks.branches.title"),
       description: t("tasks.branches.description"),
       completed: !!(stats?.total_branches && stats.total_branches > 0),
-      link: "/dashboard/center/branches",
+      link: "/dashboard/nursery/branches",
     },
     {
       id: "children",
       title: t("tasks.children.title"),
       description: t("tasks.children.description"),
       completed: !!(stats?.total_children && stats.total_children > 0),
-      link: "/dashboard/center/children-files",
+      link: "/dashboard/nursery/children-files",
     },
     {
       id: "profile",
@@ -97,7 +97,7 @@ const PortfolioProgressBar = () => {
           portfolioData.subtitle_of_hero ||
           portfolioData.description)
       ),
-      link: "/dashboard/center/center-data",
+      link: "/dashboard/nursery/center-data",
     },
     // {
     //   id: "advertisement",
@@ -106,14 +106,14 @@ const PortfolioProgressBar = () => {
     //   completed: !!(
     //     portfolioData?.ads_images && portfolioData.ads_images.length > 0
     //   ),
-    //   link: "/dashboard/center/ad-or-blog-request",
+    //   link: "/dashboard/nursery/ad-or-blog-request",
     // },
     {
       id: "blog",
       title: t("tasks.blog.title"),
       description: t("tasks.blog.description"),
       completed: false, // This can be enhanced with actual blog data
-      link: "/dashboard/center/ad-or-blog-request",
+      link: "/dashboard/nursery/ad-or-blog-request",
     },
   ];
 
@@ -137,9 +137,8 @@ const PortfolioProgressBar = () => {
       >
         {/* Chevron Button - Top left in Arabic, Top right in English */}
         <div
-          className={`absolute text-[#5B21B6] pointer-events-none ${
-            isRTL ? "top-4 left-4" : "top-4 right-4"
-          }`}
+          className={`absolute text-[#5B21B6] pointer-events-none ${isRTL ? "top-4 left-4" : "top-4 right-4"
+            }`}
           style={{ zIndex: 40 }}
         >
           {isExpanded ? (
@@ -151,16 +150,14 @@ const PortfolioProgressBar = () => {
 
         {/* Header Section */}
         <div
-          className={`flex items-center gap-6 h-full ${
-            isRTL ? "flex-row-reverse" : "flex-row"
-          }`}
+          className={`flex items-center gap-6 h-full ${isRTL ? "flex-row-reverse" : "flex-row"
+            }`}
           dir={isRTL ? "rtl" : "ltr"}
         >
           {/* Percentage - Far left in Arabic, Far right in English */}
           <div
-            className={`flex items-center flex-shrink-0 ${
-              isRTL ? "order-1" : "order-4"
-            }`}
+            className={`flex items-center flex-shrink-0 ${isRTL ? "order-1" : "order-4"
+              }`}
           >
             <span
               className="font-tajawal font-bold text-gray-800 leading-none"
@@ -176,9 +173,8 @@ const PortfolioProgressBar = () => {
 
           {/* Welcome message and question - Middle */}
           <div
-            className={`flex-1 ${
-              isRTL ? "text-right order-2" : "text-left order-2"
-            }`}
+            className={`flex-1 ${isRTL ? "text-right order-2" : "text-left order-2"
+              }`}
           >
             <h2
               className="font-tajawal font-bold text-gray-800 mb-2"
@@ -225,21 +221,19 @@ const PortfolioProgressBar = () => {
               const TaskContent = (
                 <div
                   key={task.id}
-                  className={`flex items-start justify-between gap-4 p-4 rounded-lg transition-all ${
-                    task.completed
+                  className={`flex items-start justify-between gap-4 p-4 rounded-lg transition-all ${task.completed
                       ? "bg-green-50/50"
                       : "bg-transparent hover:bg-white/50"
-                  } ${isRTL ? "flex-row-reverse" : "flex-row"}`}
+                    } ${isRTL ? "flex-row-reverse" : "flex-row"}`}
                   dir={isRTL ? "rtl" : "ltr"}
                 >
                   {/* Radio check cycle next to title */}
                   <div className="flex-shrink-0 mt-1">
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                        task.completed
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${task.completed
                           ? "border-[#2B3990]"
                           : "border-gray-300 bg-white"
-                      }`}
+                        }`}
                       style={{
                         transition: "border-color 0.3s ease, padding 0.3s ease",
                         padding: task.completed ? "4px" : "0px",
@@ -271,9 +265,8 @@ const PortfolioProgressBar = () => {
                   {/* Arrow icon on the other side */}
                   <div className="flex-shrink-0 mt-1">
                     <ChevronRight
-                      className={`w-5 h-5 text-gray-400 transition-colors hover:text-gray-600 ${
-                        isRTL ? "rotate-180" : ""
-                      }`}
+                      className={`w-5 h-5 text-gray-400 transition-colors hover:text-gray-600 ${isRTL ? "rotate-180" : ""
+                        }`}
                     />
                   </div>
                 </div>

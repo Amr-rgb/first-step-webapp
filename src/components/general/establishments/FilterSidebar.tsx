@@ -318,13 +318,7 @@ const FilterSidebar = (props: FilterSidebarExportProps) => {
             <Sheet open={props.isOpen} onOpenChange={props.onOpenChange}>
                 <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0">
                     {/* Custom close button for RTL - positioned on left */}
-                    <button
-                        onClick={() => props.onOpenChange?.(false)}
-                        className="absolute top-4 left-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        aria-label="Close"
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
+                    {/* Default close button provided by SheetContent */}
                     <div className="p-5 pt-14 h-full overflow-y-auto">
                         <FilterSidebarContent {...props} />
                     </div>

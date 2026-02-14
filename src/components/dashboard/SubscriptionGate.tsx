@@ -27,7 +27,7 @@ const SubscriptionGate = () => {
             "لا يتوفر لديك فترة تجريبية. يرجى اختيار خطة اشتراك للمتابعة.",
         })}
       </p>
-      <Link href="/dashboard/center/billing">
+      <Link href="/dashboard/nursery/billing">
         <Button size="long" className="w-full">
           {t("goToBilling", { default: "الذهاب لخطط الاشتراك" })}
         </Button>

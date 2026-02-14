@@ -89,8 +89,14 @@ export default function proxy(request: NextRequest) {
         // Redirect to appropriate dashboard based on role
         if (user.role === "parent") {
           url.pathname = `/${locale}/dashboard/parent`;
-        } else if (user.role === "center" || user.role === "branch_admin") {
+        } else if (user.role === "center") {
           url.pathname = `/${locale}/dashboard/center`;
+        } else if (user.role === "branch_admin") {
+          if (user.center_id) {
+            url.pathname = `/${locale}/dashboard/center`;
+          } else {
+            url.pathname = `/${locale}/dashboard/nursery`;
+          }
         } else if (user.role === "admin") {
           url.pathname = `/${locale}/dashboard/admin`;
         } else {
@@ -136,18 +142,31 @@ export default function proxy(request: NextRequest) {
       const parentDashboard = `/${locale}/dashboard/parent`;
       const adminDashboard = `/${locale}/dashboard/admin`;
       const centerDashboard = `/${locale}/dashboard/center`;
+      const nurseryDashboard = `/${locale}/dashboard/nursery`;
 
       if (role === "parent" && !pathname.startsWith(parentDashboard)) {
         const url = request.nextUrl.clone();
         url.pathname = parentDashboard;
         return NextResponse.redirect(url);
       } else if (
-        (role === "center" || role === "branch_admin") &&
+        role === "center" &&
         !pathname.startsWith(centerDashboard)
       ) {
         const url = request.nextUrl.clone();
         url.pathname = centerDashboard;
         return NextResponse.redirect(url);
+      } else if (
+        role === "branch_admin"
+      ) {
+        if (user.center_id && !pathname.startsWith(centerDashboard)) {
+          const url = request.nextUrl.clone();
+          url.pathname = centerDashboard;
+          return NextResponse.redirect(url);
+        } else if (!user.center_id && !pathname.startsWith(nurseryDashboard)) {
+          const url = request.nextUrl.clone();
+          url.pathname = nurseryDashboard;
+          return NextResponse.redirect(url);
+        }
       } else if (role === "admin" && !pathname.startsWith(adminDashboard)) {
         const url = request.nextUrl.clone();
         url.pathname = adminDashboard;

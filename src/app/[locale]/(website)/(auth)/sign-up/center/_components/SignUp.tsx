@@ -163,7 +163,7 @@ export function SignUp({
                     <SelectContent>
                       {cities.map((city) => (
                         <SelectItem key={city.id} value={city.id.toString()}>
-                          {city.name?.[locale] || city.name?.ar || city.id}
+                          {city.name?.[locale as unknown as "ar" | "en"] || city.name?.ar || city.id}
                         </SelectItem>
                       ))}
                     </SelectContent>
