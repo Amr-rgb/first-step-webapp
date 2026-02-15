@@ -121,12 +121,20 @@ const SignUpWrapper = () => {
     mutationFn: async (data: any) => {
       return await authService.registerCenter(data);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Track Sign Up
       trackSignUp({
         sign_up_method: "Center",
       });
-      router.push(`/${locale}/sign-in`);
+
+      // If API returns token and user, log them in automatically
+      if (data.token && data.user) {
+        useAuthStore.getState().setUserToken(data.user, data.token);
+        router.push(`/${locale}/dashboard/center`);
+      } else {
+        // Otherwise redirect to sign-in
+        router.push(`/${locale}/sign-in`);
+      }
     },
     onError,
   });

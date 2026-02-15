@@ -34,8 +34,8 @@ const Ads = () => {
           ad.status === "approved"
             ? "confirmed"
             : ad.status === "pending"
-            ? "waitingForPayment"
-            : "rejected",
+              ? "waitingForPayment"
+              : "rejected",
       }));
     },
   });
@@ -58,7 +58,7 @@ const Ads = () => {
           label: "Request Ad",
           onClick: () => {
             window.location.href =
-              "/dashboard/center/ad-or-blog-request/ad-request";
+              "/dashboard/nursery/ad-or-blog-request/ad-request";
           },
         }}
         translationKey="dashboard.emptyStates.ads"

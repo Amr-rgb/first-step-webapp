@@ -62,8 +62,16 @@ const NurseryCard = ({
   const shouldShowReadMore =
     truncatedBranches.isTruncated || truncatedAges.isTruncated;
 
+  // Determine establishment type for URL - should be 'centers', 'nurseries', etc. from API
+  // The backend should return type as 'center', 'nursery', etc.
+  // We pluralize it for the URL: 'center' -> 'centers', 'nursery' -> 'nurseries'
+  const typeValue = typeof nursery.type === 'string' ? nursery.type.toLowerCase() : 'nursery';
+  const establishmentType = typeValue.endsWith('y')
+    ? typeValue.slice(0, -1) + 'ies'  // nursery -> nurseries
+    : typeValue + 's';                 // center -> centers
+
   return (
-    <Link href={`/nurseries/${nursery.id}-${slug}`} className="block">
+    <Link href={`/establishments/${establishmentType}/${nursery.id}-${slug}`} className="block">
       <div className="bg-white rounded-lg transition-all duration-300 hover:border hover:border-gray-200 hover:shadow-lg group flex flex-col h-full min-h-80">
         {/* Logo section - takes up half the card */}
         <div className="flex-1 flex flex-col items-center justify-center py-8">
@@ -72,8 +80,8 @@ const NurseryCard = ({
               <Image
                 src={
                   typeof nursery.logo === "string" &&
-                  !nursery.logo.startsWith("/") &&
-                  !nursery.logo.startsWith("http")
+                    !nursery.logo.startsWith("/") &&
+                    !nursery.logo.startsWith("http")
                     ? `/${nursery.logo}`
                     : nursery.logo
                 }
@@ -110,7 +118,7 @@ const NurseryCard = ({
                   ? mainBranch.city.name[locale]
                   : mainBranch.city}
                 {typeof mainBranch.neighborhood === "object" &&
-                mainBranch.neighborhood !== null
+                  mainBranch.neighborhood !== null
                   ? ", " + mainBranch.neighborhood[locale]
                   : ", " + mainBranch.neighborhood}
               </span>

@@ -1,13 +1,15 @@
-import NurseryHeader from "./_components/NurseryHeader";
-import AboutSection from "./_components/AboutSection";
+import {
+  EstablishmentHeader,
+  AboutSection,
+  AdsSection,
+  RatingsSection,
+  BlogsSection,
+  CouponsSection,
+  SuggestedEstablishmentsSection,
+  ProgramsSection,
+} from "../../establishments/_components";
 import FacilitiesSection from "./_components/FacilitiesSection";
-import AdsSection from "./_components/AdsSection";
-import RatingsSection from "./_components/RatingsSection";
 import AlbumsSection from "./_components/AlbumsSection";
-import BlogsSection from "./_components/BlogsSection";
-import CouponsSection from "./_components/CouponsSection";
-import SuggestedNurseriesSection from "./_components/SuggestedNurseriesSection";
-import ProgramsSection from "./_components/ProgramsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { slugToReadableName } from "@/lib/utils";
 import { nurseryService } from "@/services/api";
@@ -53,7 +55,7 @@ export default async function NurseryPage({
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header Section */}
-      <NurseryHeader
+      <EstablishmentHeader
         name={portfolio.hero_section?.title_of_hero || readableName}
         tagline={portfolio.hero_section?.subtitle_of_hero || ""}
         logo={portfolio.user?.logo || ""}
@@ -106,8 +108,8 @@ export default async function NurseryPage({
             {/* Blogs Section */}
             <BlogsSection centerId={centerIdStr} />
 
-            {/* Suggested Nurseries Section */}
-            <SuggestedNurseriesSection currentCenterId={centerIdStr} />
+            {/* Suggested Establishments Section */}
+            <SuggestedEstablishmentsSection currentCenterId={centerIdStr} />
           </div>
         </div>
       </div>

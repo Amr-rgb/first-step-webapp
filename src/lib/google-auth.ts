@@ -40,6 +40,8 @@ const handleGoogleSignIn = async (credential: any) => {
       dashboardPath = "/dashboard/parent";
     } else if (result.user.role === "admin") {
       dashboardPath = "/dashboard/admin";
+    } else if (result.user.role === "branch_admin") {
+      dashboardPath = result.user.center_id ? "/dashboard/center" : "/dashboard/nursery";
     }
 
     window.location.href = dashboardPath;

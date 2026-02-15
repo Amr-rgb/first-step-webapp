@@ -192,7 +192,7 @@ export default function CouponCard({
                     return (
                       <Link
                         key={center.id}
-                        href={`/${locale}/nurseries/${createSlug(
+                        href={`/${locale}/establishments/nurseries/${createSlug(
                           centerName,
                         )}?branch=${center.id}`}
                       >

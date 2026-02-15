@@ -1,9 +1,9 @@
 import { Link } from "@/i18n/navigation";
-import { TeamMember } from "@/app/[locale]/dashboard/center/team/page";
+import { TeamMember } from "@/app/[locale]/dashboard/nursery/team/page";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 
-interface TeamCardProps extends TeamMember {}
+interface TeamCardProps extends TeamMember { }
 
 export const TeamCard = ({
   id,

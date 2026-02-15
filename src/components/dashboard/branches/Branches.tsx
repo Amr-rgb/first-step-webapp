@@ -54,7 +54,7 @@ const Branches = ({
         primaryAction={{
           label: t("add"),
           onClick: () => {
-            window.location.href = "/dashboard/center/branches/add";
+            window.location.href = "/dashboard/nursery/branches/add";
           },
         }}
         translationKey="dashboard.emptyStates.branches"

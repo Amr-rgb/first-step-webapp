@@ -24,7 +24,7 @@ import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { toastSuccess, toastError } from "@/lib/toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { cn } from "@/lib/utils";
-import ProgramCard from "@/app/[locale]/(website)/nurseries/[name]/_components/ProgramCard";
+import ProgramCard from "@/app/[locale]/(website)/establishments/_components/ProgramCard";
 
 // --- Types & Interfaces ---
 
@@ -145,8 +145,8 @@ const PlanSelection = ({
   const t = useTranslations("reservationForm.labels");
   const visiblePlans = showOnlySelected
     ? plans.filter(
-        (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
-      )
+      (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
+    )
     : plans;
 
   if (showOnlySelected && visiblePlans.length > 0) {
@@ -172,8 +172,8 @@ const PlanSelection = ({
           ? "justify-center items-center"
           : "overflow-x-auto pb-2 custom-scrollbar justify-start",
         plans.length <= 4 &&
-          !showOnlySelected &&
-          "flex-row justify-center items-center",
+        !showOnlySelected &&
+        "flex-row justify-center items-center",
       )}
       style={{
         maxWidth: showOnlySelected || plans.length > 4 ? "100%" : "48rem",
@@ -471,8 +471,8 @@ const BookingSummary = ({
           <span className="text-mid-gray font-medium" dir="ltr">
             {date
               ? format(new Date(date), "EEEE yyyy/MM/dd", {
-                  locale: locale === "ar" ? ar : undefined,
-                })
+                locale: locale === "ar" ? ar : undefined,
+              })
               : "-"}
             {showTime && ` ${fromTime}`}
           </span>

@@ -109,6 +109,8 @@ const SignInModalHandler = () => {
 
       if (data.user.role === "center") {
         dashboardPath = "/dashboard/center";
+      } else if (data.user.role === "branch_admin") {
+        dashboardPath = data.user.center_id ? "/dashboard/center" : "/dashboard/nursery";
       } else if (data.user.role === "parent") {
         dashboardPath = "/dashboard/parent";
       } else if (data.user.role === "admin") {

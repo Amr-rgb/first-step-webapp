@@ -101,15 +101,15 @@ const ProfileWaitingPage = ({
             {userRole === "parent"
               ? t("parentTitle")
               : userRole === "center"
-              ? t("centerTitle")
-              : t("adminTitle")}
+                ? t("centerTitle")
+                : t("adminTitle")}
           </h1>
           <p className="text-gray-600 text-lg mb-8">
             {userRole === "parent"
               ? t("parentSubtitle")
               : userRole === "center"
-              ? t("centerSubtitle")
-              : t("adminSubtitle")}
+                ? t("centerSubtitle")
+                : t("adminSubtitle")}
           </p>
 
           {/* Action Buttons */}

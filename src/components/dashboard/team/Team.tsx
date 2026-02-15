@@ -1,4 +1,4 @@
-import { TeamMember } from "@/app/[locale]/dashboard/center/team/page";
+import { TeamMember } from "@/app/[locale]/dashboard/nursery/team/page";
 import { TeamCard } from "./TeamCard";
 import EmptyState from "@/components/common/EmptyState";
 import { useTranslations } from "next-intl";
@@ -15,7 +15,7 @@ const Team = ({ members }: { members: TeamMember[] }) => {
           label: "Add Team Member",
           onClick: () => {
             // This will be handled by the parent component
-            window.location.href = "/dashboard/center/team/add";
+            window.location.href = "/dashboard/nursery/team/add";
           },
         }}
         translationKey="dashboard.emptyStates.team"
