@@ -115,12 +115,16 @@ export const useDashboardSearch = () => {
           category: t("categories.communication"),
           type: "page",
           icon: "bell",
-        }
+        },
       );
     }
 
     // Center Role & Center Branch Admin
-    if (user.role === "center" || (user.role === "branch_admin" && user.center_id)) {
+    if (
+      user.role === "center" ||
+      user.role === "nursery" ||
+      (user.role === "branch_admin" && user.center_id)
+    ) {
       baseContent.push(
         {
           id: "center-dashboard",
@@ -193,7 +197,7 @@ export const useDashboardSearch = () => {
           category: t("categories.communication"),
           type: "page",
           icon: "bell",
-        }
+        },
       );
     }
 
@@ -271,7 +275,7 @@ export const useDashboardSearch = () => {
           category: t("categories.communication"),
           type: "page",
           icon: "bell",
-        }
+        },
       );
     }
 
@@ -303,7 +307,7 @@ export const useDashboardSearch = () => {
           category: t("categories.reports"),
           type: "page",
           icon: "file-text",
-        }
+        },
       );
     }
 
@@ -380,7 +384,7 @@ export const useDashboardSearch = () => {
       setResults(sortedResults);
       setIsSearching(false);
     },
-    [searchableContent, setResults, setIsSearching]
+    [searchableContent, setResults, setIsSearching],
   );
 
   // Handle search input change
@@ -393,7 +397,7 @@ export const useDashboardSearch = () => {
         setResults([]);
       }
     },
-    [setQuery, search, setResults]
+    [setQuery, search, setResults],
   );
 
   // Handle search submit

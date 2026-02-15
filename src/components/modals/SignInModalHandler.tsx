@@ -21,7 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Building2, UserRound, X, ArrowLeft, School, GraduationCap, BookOpen } from "lucide-react";
+import {
+  Building2,
+  UserRound,
+  X,
+  ArrowLeft,
+  School,
+  GraduationCap,
+  BookOpen,
+} from "lucide-react";
 
 type ViewType =
   | "signin"
@@ -37,7 +45,7 @@ let globalModalState = {
     globalModalState.isOpen = open;
     // Trigger re-render for all modal instances
     window.dispatchEvent(
-      new CustomEvent("signInModalToggle", { detail: { isOpen: open } })
+      new CustomEvent("signInModalToggle", { detail: { isOpen: open } }),
     );
   },
 };
@@ -109,8 +117,12 @@ const SignInModalHandler = () => {
 
       if (data.user.role === "center") {
         dashboardPath = "/dashboard/center";
+      } else if (data.user.role === "nursery") {
+        dashboardPath = "/dashboard/nursery";
       } else if (data.user.role === "branch_admin") {
-        dashboardPath = data.user.center_id ? "/dashboard/center" : "/dashboard/nursery";
+        dashboardPath = data.user.center_id
+          ? "/dashboard/center"
+          : "/dashboard/nursery";
       } else if (data.user.role === "parent") {
         dashboardPath = "/dashboard/parent";
       } else if (data.user.role === "admin") {
@@ -172,7 +184,7 @@ const SignInModalHandler = () => {
 
     window.addEventListener(
       "signInModalToggle",
-      handleModalToggle as EventListener
+      handleModalToggle as EventListener,
     );
 
     // Check for direct navigation to sign-in routes
@@ -186,7 +198,7 @@ const SignInModalHandler = () => {
     return () => {
       window.removeEventListener(
         "signInModalToggle",
-        handleModalToggle as EventListener
+        handleModalToggle as EventListener,
       );
     };
   }, [pathname]);
@@ -429,8 +441,9 @@ const SignInModalHandler = () => {
                         >
                           <Button
                             variant="outline"
-                            className={`w-full h-full min-h-[140px] p-4 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all duration-300 relative overflow-hidden group ${role.soon ? "opacity-70 cursor-default" : ""
-                              }`}
+                            className={`w-full h-full min-h-[140px] p-4 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all duration-300 relative overflow-hidden group ${
+                              role.soon ? "opacity-70 cursor-default" : ""
+                            }`}
                             onClick={() => {
                               if (role.soon) return;
                               globalModalState.setIsOpen(false);
@@ -446,7 +459,9 @@ const SignInModalHandler = () => {
                             )}
 
                             {/* Icon Container */}
-                            <div className={`p-3 rounded-full ${role.bgColor} ${role.color} relative z-10 group-hover:scale-110 transition-transform duration-300`}>
+                            <div
+                              className={`p-3 rounded-full ${role.bgColor} ${role.color} relative z-10 group-hover:scale-110 transition-transform duration-300`}
+                            >
                               <role.icon className="h-6 w-6" />
                             </div>
 

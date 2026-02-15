@@ -37,7 +37,10 @@ interface NavbarItem {
   icon: (props: any) => React.JSX.Element;
 }
 
-const getCenterNavbar = (t: any, basePath: string = "/dashboard/nursery"): NavbarItem[] => [
+const getCenterNavbar = (
+  t: any,
+  basePath: string = "/dashboard/nursery",
+): NavbarItem[] => [
   {
     title: t("center.home"),
     url: basePath,
@@ -210,13 +213,14 @@ const DashboardSideBar = () => {
     }
   }, [isMobile, state, setOpen]);
 
-  let navbar = pathname.includes("/dashboard/nursery")
-    ? getCenterNavbar(t, "/dashboard/nursery")
-    : pathname.includes("/dashboard/center")
-      ? getCenterNavbar(t, "/dashboard/center")
-      : pathname.includes("dashboard/admin")
-        ? getAdminNavbar(t)
-        : getParentNavbar(t);
+  let navbar =
+    pathname.includes("/dashboard/nursery") || user?.role === "nursery"
+      ? getCenterNavbar(t, "/dashboard/nursery")
+      : pathname.includes("/dashboard/center") || user?.role === "center"
+        ? getCenterNavbar(t, "/dashboard/center")
+        : pathname.includes("dashboard/admin")
+          ? getAdminNavbar(t)
+          : getParentNavbar(t);
 
   // Filter out specific items for branch_admin (only after hydration)
   if (isHydrated && user?.role === "branch_admin") {
@@ -292,7 +296,7 @@ const DashboardSideBar = () => {
           />
         ) : null}
 
-        {user?.role === "center" ? (
+        {user?.role === "center" || user?.role === "nursery" ? (
           <>
             <div
               className={
@@ -366,7 +370,7 @@ const DashboardSideBar = () => {
                             className={cn(
                               "flex justify-start items-center space-x-2 px-4 w-full rounded-lg transition-all duration-200 ease-in-out transform",
                               isLocked &&
-                              "opacity-60 cursor-not-allowed grayscale-[0.5]",
+                                "opacity-60 cursor-not-allowed grayscale-[0.5]",
                               isActive
                                 ? "bg-primary! text-white! font-bold! scale-[0.98] py-6.5"
                                 : "bg-transparent text-mid-gray! hover:bg-gray-100/50 hover:scale-[0.99] py-6.5",
@@ -427,7 +431,7 @@ const DashboardSideBar = () => {
         )}
       >
         {/* Parent Accounts Button - Only show for center role */}
-        {user?.role === "center" && (
+        {(user?.role === "center" || user?.role === "nursery") && (
           <div
             className={cn(
               "w-full mb-4",
@@ -455,7 +459,7 @@ const DashboardSideBar = () => {
                   className={cn(
                     "w-full transition-all duration-200",
                     subscriptionRequired &&
-                    "cursor-default opacity-60 grayscale-[0.5]",
+                      "cursor-default opacity-60 grayscale-[0.5]",
                     state === "collapsed"
                       ? "h-auto p-0 border-0 bg-transparent hover:bg-transparent"
                       : "border-2 border-solid border-primary bg-transparent hover:bg-primary/5 py-4 h-full",
@@ -535,7 +539,7 @@ const DashboardSideBar = () => {
                     className={cn(
                       "w-full transition-all duration-200 rounded-xl border border-secondary-mint-green flex items-center overflow-hidden relative",
                       subscriptionRequired &&
-                      "opacity-60 grayscale-[0.5] cursor-not-allowed",
+                        "opacity-60 grayscale-[0.5] cursor-not-allowed",
                       state === "collapsed"
                         ? "h-auto p-0 border-0 bg-transparent justify-center"
                         : "bg-white py-4 px-3 gap-3",

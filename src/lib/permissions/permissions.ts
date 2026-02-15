@@ -5,36 +5,36 @@ export const permissions: Permission[] = [
   {
     resource: "dashboard",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin", "parent"],
+    allowedRoles: ["admin", "center", "branch_admin", "parent", "nursery"],
   },
 
   // Branches permissions
   {
     resource: "branches",
     action: "view",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "branches",
     action: "create",
-    allowedRoles: ["center"],
+    allowedRoles: ["center", "nursery"],
   },
   {
     resource: "branches",
     action: "edit",
-    allowedRoles: ["center"],
+    allowedRoles: ["center", "nursery"],
   },
   {
     resource: "branches",
     action: "delete",
-    allowedRoles: ["center"],
+    allowedRoles: ["center", "nursery"],
   },
 
   // Children permissions
   {
     resource: "children",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin", "parent"],
+    allowedRoles: ["admin", "center", "branch_admin", "parent", "nursery"],
     centerSpecific: true,
   },
   {
@@ -57,13 +57,13 @@ export const permissions: Permission[] = [
   {
     resource: "bookings",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin", "parent"],
+    allowedRoles: ["admin", "center", "branch_admin", "parent", "nursery"],
     centerSpecific: true,
   },
   {
     resource: "bookings",
     action: "manage",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center", "branch_admin", "nursery"],
     centerSpecific: true,
   },
 
@@ -71,7 +71,7 @@ export const permissions: Permission[] = [
   {
     resource: "reports",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center", "branch_admin", "nursery"],
     centerSpecific: true,
   },
 
@@ -79,37 +79,37 @@ export const permissions: Permission[] = [
   {
     resource: "notifications",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin", "parent"],
+    allowedRoles: ["admin", "center", "branch_admin", "parent", "nursery"],
   },
   {
     resource: "notifications",
     action: "manage",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center", "branch_admin", "nursery"],
   },
 
   // Team permissions
   {
     resource: "team",
     action: "view",
-    allowedRoles: ["admin", "center", "branch_admin"],
+    allowedRoles: ["admin", "center", "branch_admin", "nursery"],
     centerSpecific: true,
   },
   {
     resource: "team",
     action: "create",
-    allowedRoles: ["center", "branch_admin"],
+    allowedRoles: ["center", "branch_admin", "nursery"],
     branchSpecific: true,
   },
   {
     resource: "team",
     action: "edit",
-    allowedRoles: ["center", "branch_admin"],
+    allowedRoles: ["center", "branch_admin", "nursery"],
     branchSpecific: true,
   },
   {
     resource: "team",
     action: "delete",
-    allowedRoles: ["center", "branch_admin"],
+    allowedRoles: ["center", "branch_admin", "nursery"],
     branchSpecific: true,
   },
 
@@ -117,55 +117,55 @@ export const permissions: Permission[] = [
   {
     resource: "advertisements",
     action: "view",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "advertisements",
     action: "create",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "advertisements",
     action: "edit",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "advertisements",
     action: "delete",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
 
   // Center Data permissions
   {
     resource: "center-data",
     action: "view",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "center-data",
     action: "edit",
-    allowedRoles: ["center"],
+    allowedRoles: ["center", "nursery"],
   },
 
   // Blogs permissions
   {
     resource: "blogs",
     action: "view",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "blogs",
     action: "create",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "blogs",
     action: "edit",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
   {
     resource: "blogs",
     action: "delete",
-    allowedRoles: ["admin", "center"],
+    allowedRoles: ["admin", "center", "nursery"],
   },
 ];

@@ -42,13 +42,13 @@ export default function proxy(request: NextRequest) {
 
   // Extract path without locale for redirect matching
   // Assuming pathname format: /[locale]/path or /path
-  const pathSegments = pathname.split('/').filter(Boolean);
-  const firstSegment = pathSegments[0] || '';
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const firstSegment = pathSegments[0] || "";
   const isFirstSegmentLocale = validLocales.includes(firstSegment);
   const pathWithoutLocale = isFirstSegmentLocale
-    ? '/' + pathSegments.slice(1).join('/')
+    ? "/" + pathSegments.slice(1).join("/")
     : pathname;
-  const detectedLocale = isFirstSegmentLocale ? firstSegment : 'ar'; // default to 'ar'
+  const detectedLocale = isFirstSegmentLocale ? firstSegment : "ar"; // default to 'ar'
 
   // Check for general legacy redirects (e.g., /nurseries -> /establishments)
   if (generalLegacyRedirects[pathWithoutLocale]) {
@@ -58,7 +58,10 @@ export default function proxy(request: NextRequest) {
   }
 
   // Handle old /nurseries/[name] and /centers/[name] routes
-  if (pathWithoutLocale.startsWith("/nurseries/") && !pathWithoutLocale.includes("/reservation")) {
+  if (
+    pathWithoutLocale.startsWith("/nurseries/") &&
+    !pathWithoutLocale.includes("/reservation")
+  ) {
     const slug = pathWithoutLocale.replace("/nurseries/", "");
     const url = request.nextUrl.clone();
     url.pathname = `/${detectedLocale}/establishments/nurseries/${slug}`;
@@ -126,6 +129,8 @@ export default function proxy(request: NextRequest) {
         // Redirect to appropriate dashboard based on role
         if (user.role === "parent") {
           url.pathname = `/${locale}/dashboard/parent`;
+        } else if (user.role === "nursery") {
+          url.pathname = `/${locale}/dashboard/nursery`;
         } else if (user.role === "center") {
           url.pathname = `/${locale}/dashboard/center`;
         } else if (user.role === "branch_admin") {
@@ -168,7 +173,13 @@ export default function proxy(request: NextRequest) {
       }
 
       const role = user.role;
-      const allowedRoles = ["admin", "center", "branch_admin", "parent"];
+      const allowedRoles = [
+        "admin",
+        "nursery",
+        "center",
+        "branch_admin",
+        "parent",
+      ];
 
       if (!allowedRoles.includes(role)) {
         const url = request.nextUrl.clone();
@@ -185,16 +196,11 @@ export default function proxy(request: NextRequest) {
         const url = request.nextUrl.clone();
         url.pathname = parentDashboard;
         return NextResponse.redirect(url);
-      } else if (
-        role === "center" &&
-        !pathname.startsWith(centerDashboard)
-      ) {
+      } else if (role === "center" && !pathname.startsWith(centerDashboard)) {
         const url = request.nextUrl.clone();
         url.pathname = centerDashboard;
         return NextResponse.redirect(url);
-      } else if (
-        role === "branch_admin"
-      ) {
+      } else if (role === "branch_admin") {
         if (user.center_id && !pathname.startsWith(centerDashboard)) {
           const url = request.nextUrl.clone();
           url.pathname = centerDashboard;
