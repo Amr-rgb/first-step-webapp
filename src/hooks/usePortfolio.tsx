@@ -6,8 +6,9 @@ import { useTranslations } from "next-intl";
 import { ApiError } from "@/lib/error-handling";
 
 // Transform API data to match our form structure
-const transformApiData = (apiData: any): PortfolioFormData => {
+const transformApiData = (apiData: any, logo?: string): PortfolioFormData => {
   const initialData: PortfolioFormData = {
+    logo: logo || "",
     title_of_hero: "",
     subtitle_of_hero: "",
     description: "",
@@ -44,6 +45,7 @@ const transformApiData = (apiData: any): PortfolioFormData => {
   if (!apiData) return initialData;
 
   return {
+    logo: logo || apiData.logo || "",
     title_of_hero: apiData.hero_section?.title_of_hero || "",
     subtitle_of_hero: apiData.hero_section?.subtitle_of_hero || "",
     description: apiData.hero_section?.description || "",
@@ -94,7 +96,7 @@ export const usePortfolio = () => {
     queryKey: ["portfolio"],
     queryFn: async () => {
       const response = await centerService.getPortfolio();
-      return transformApiData(response.portofilo);
+      return transformApiData(response.portofilo, response.logo);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -145,5 +147,17 @@ export const usePortfolio = () => {
 
     // Refetch
     refetch: portfolioQuery.refetch,
+
+    // Logo Mutation
+    updateLogo: useMutation({
+      mutationFn: (file: File) => centerService.updateLogo(file),
+      onSuccess: (response: any) => {
+        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+        toastSuccess(t("saveSuccess"));
+      },
+      onError: (error: any) => {
+        toastError(error.message || t("saveError"));
+      },
+    }),
   };
 };

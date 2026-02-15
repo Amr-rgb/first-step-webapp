@@ -183,11 +183,10 @@ export interface CenterRegisterPayload {
 }
 
 // Extended interface for nursery API response that includes user_id
-export interface NurseryResponse
-  extends Omit<
-    CenterRegisterPayload,
-    "logo" | "license_path" | "commercial_record_path" | "city"
-  > {
+export interface NurseryResponse extends Omit<
+  CenterRegisterPayload,
+  "logo" | "license_path" | "commercial_record_path" | "city"
+> {
   id: number;
   user_id: number;
   center_id?: number;
@@ -396,6 +395,7 @@ export interface PortfolioResponse {
 
 // Profile Editor Types
 export interface PortfolioFormData {
+  logo?: string;
   title_of_hero: string;
   subtitle_of_hero: string;
   description: string;

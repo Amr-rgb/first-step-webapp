@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Accordion,
@@ -26,11 +26,14 @@ import { ProfilePreview } from "@/components/profile-editor/ProfilePreview";
 import { PortfolioData, PortfolioFormData } from "@/types";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePermissions } from "@/hooks/usePermissions";
-import { useAuthUser } from "@/store/authStore";
-import { Edit, Eye } from "lucide-react";
-import { toastError } from "@/lib/toast";
+import { useAuthUser, useAuthStore } from "@/store/authStore";
+import { Edit, Eye, Loader2, Camera, User } from "lucide-react";
+import { toastError, toastSuccess } from "@/lib/toast";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { Skeleton } from "@/components/ui/skeleton";
+import { dashboardIcons } from "@/components/general/icons";
+import Image from "next/image";
+import { Label } from "@/components/ui/label";
 
 const ProfileEditor = () => {
   usePageMetadata();
@@ -44,6 +47,7 @@ const ProfileEditor = () => {
   const canViewCenterData = can("view", "center-data");
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use custom portfolio hook
   const {
@@ -52,7 +56,10 @@ const ProfileEditor = () => {
     error: loadError,
     savePortfolio,
     isSaving,
+    updateLogo,
   } = usePortfolio();
+
+  const updateUser = useAuthStore((state) => state.updateUser);
 
   const [originalData, setOriginalData] = useState<
     PortfolioFormData | undefined
@@ -64,7 +71,6 @@ const ProfileEditor = () => {
 
   // Counter for generating unique local IDs
   const localIdCounter = useRef(0);
-
   // Generate a unique local ID for new items
   const generateLocalId = useCallback(() => {
     localIdCounter.current += 1;
@@ -129,6 +135,30 @@ const ProfileEditor = () => {
   const handleDataChange = (newData: PortfolioFormData) => {
     setCurrentData(newData);
     checkForChanges(newData);
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      updateLogo.mutate(file, {
+        onSuccess: (response: any) => {
+          if (response?.logo_url) {
+            const newLogo = response.logo_url;
+            // Update local form state
+            const updatedData = { ...currentData!, logo: newLogo };
+            setCurrentData(updatedData);
+
+            // Update original data so logo change doesn't count as a "dirty" change for main save
+            if (originalData) {
+              setOriginalData({ ...originalData, logo: newLogo });
+            }
+
+            // Update global auth user logo for immediate header feedback
+            updateUser({ logo: newLogo });
+          }
+        },
+      });
+    }
   };
 
   // Map each root key to its logical section
@@ -453,6 +483,54 @@ const ProfileEditor = () => {
         <CardContent className="p-0 space-y-6">
           {viewMode === "edit" ? (
             <>
+              {/* Logo Upload Section */}
+              <div className="flex flex-col items-center sm:flex-row sm:items-end gap-6 lg:gap-8 mb-8">
+                <div className="relative group">
+                  <div className="w-30.5 h-30.5 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center relative">
+                    {user?.logo ? (
+                      <Image
+                        src={user.logo}
+                        alt="Nursery Logo"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <dashboardIcons.userAvatar className="text-primary" />
+                    )}
+
+                    {updateLogo.isPending && (
+                      <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center z-10">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 ltr:right-0 rtl:left-0 cursor-pointer w-9 h-9 p-2 bg-primary hover:bg-primary/90 text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 active:scale-95"
+                    disabled={updateLogo.isPending}
+                  >
+                    <dashboardIcons.camera className="w-5 h-5" />
+                  </button>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleLogoChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div className="space-y-1 text-center sm:text-start pt-2 lg:pt-4 pb-1 lg:pb-2">
+                  <h3 className="text-base sm:text-lg font-bold">
+                    {t("nurseryLogo")}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-mid-gray max-w-xs">
+                    {t("logoHint")}
+                  </p>
+                </div>
+              </div>
+
               <Accordion
                 type="single"
                 collapsible

@@ -2028,6 +2028,8 @@
     },
     "profileEditor": {
       "title": "Center Data",
+      "nurseryLogo": "Nursery Logo",
+      "logoHint": "Upload your nursery logo. Recommended size: 512x512px.",
       "debug": {
         "title": "Network Response Debug",
         "description": "Detailed response from the center data update API."
