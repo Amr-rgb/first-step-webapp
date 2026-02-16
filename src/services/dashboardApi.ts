@@ -1075,7 +1075,7 @@ export const centerService = {
   },
 
   // New Portfolio endpoints
-  savePortfolio: async (payload: PortfolioFormData) => {
+  savePortfolio: async (payload: PortfolioFormData, id?: number | string) => {
     try {
       console.log("📤 Sending updated portfolio data:", payload);
       const formData = new FormData();
@@ -1140,7 +1140,8 @@ export const centerService = {
         formData.append(`delete_license_ids[${index}]`, String(id));
       });
 
-      const response = await apiClient.post("/v2/portfolios", formData, {
+      const url = id ? `/nursery/portfolios/${id}` : "/nursery/portfolios";
+      const response = await apiClient.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -1151,7 +1152,7 @@ export const centerService = {
 
   getPortfolio: async () => {
     try {
-      const response = await apiClient.get("/v2/portfolios/show");
+      const response = await apiClient.get("/nursery/portfolios/show");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

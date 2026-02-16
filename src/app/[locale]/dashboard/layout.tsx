@@ -57,7 +57,9 @@ export default function DashboardLayout({
           />
 
           {/* Warning Bar */}
-          {user?.role === "center" || user?.role === "branch_admin" ? (
+          {user?.role === "center" ||
+          user?.role === "nursery" ||
+          user?.role === "branch_admin" ? (
             <WarningBar />
           ) : null}
 

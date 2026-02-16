@@ -3,7 +3,12 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware"; // Optional: for persistence
 import Cookies from "js-cookie";
 
-export type UserRole = "admin" | "center" | "branch_admin" | "parent";
+export type UserRole =
+  | "admin"
+  | "center"
+  | "branch_admin"
+  | "parent"
+  | "nursery";
 
 interface User {
   id: number;
@@ -79,7 +84,7 @@ export const useAuthStore = create<AuthState>()(
         // ✅ Also update persisted localStorage manually
         localStorage.setItem(
           "auth-storage",
-          JSON.stringify({ state: authData })
+          JSON.stringify({ state: authData }),
         );
       },
 
@@ -100,8 +105,8 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage", // Name for localStorage item
       storage: createJSONStorage(() => localStorage), // Or sessionStorage
-    }
-  )
+    },
+  ),
 );
 
 // Selector hook for convenience (optional but recommended)

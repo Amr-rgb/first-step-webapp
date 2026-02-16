@@ -174,7 +174,6 @@ export interface CenterRegisterPayload {
   logo: File;
 }
 
-
 // Extended interface for nursery API response that includes user_id
 export interface NurseryResponse extends Omit<
   CenterRegisterPayload,
@@ -288,7 +287,7 @@ export interface Value {
 // -----------------------------
 
 // User roles in the system
-export type Role = "parent" | "center" | "admin";
+export type Role = "parent" | "center" | "admin" | "nursery";
 
 // User object for chat participants
 export interface User {
@@ -405,17 +404,17 @@ export interface PricingFormData {
   enrollment_type: string;
   title: string;
   start_age:
-  | number // old structure support
-  | {
-    type: string;
-    age: number;
-  };
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
   end_age:
-  | number // old structure support
-  | {
-    type: string;
-    age: number;
-  };
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
   count: number;
   price_amount: number;
 }

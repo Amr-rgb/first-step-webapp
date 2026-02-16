@@ -25,7 +25,7 @@ export const usePermissions = () => {
       if (!user) return false;
 
       const permission = permissions.find(
-        (p) => p.resource === resource && p.action === action
+        (p) => p.resource === resource && p.action === action,
       );
 
       if (!permission) return false;
@@ -44,13 +44,17 @@ export const usePermissions = () => {
 
       // For center-specific permissions, we only check if the user has the right role
       // since center users can only access their own center's data
-      if (permission.centerSpecific && user.role !== "center") {
+      if (
+        permission.centerSpecific &&
+        user.role !== "center" &&
+        user.role !== "nursery"
+      ) {
         return false;
       }
 
       return true;
     },
-    [user]
+    [user],
   );
 
   return { can };
