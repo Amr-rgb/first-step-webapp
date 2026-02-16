@@ -37,6 +37,7 @@ export default function CenterProfilePage() {
     Record<string, string[]>
   >({});
 
+  const [portfolioId, setPortfolioId] = useState<number | string | null>(null);
   const [formData, setFormData] = useState<PortfolioFormData>({
     title_of_hero: "",
     subtitle_of_hero: "",
@@ -95,6 +96,7 @@ export default function CenterProfilePage() {
       });
       // The logo might be in the parent object, inside portfolio, or the user object
       setLogoUrl(p.logo || initialData?.logo || user?.logo || "");
+      setPortfolioId(p.id || null);
       setIsDirty(false);
       setDirtyFields(new Set());
     }
@@ -132,7 +134,13 @@ export default function CenterProfilePage() {
   };
 
   const saveMutation = useMutation({
-    mutationFn: (data: PortfolioFormData) => centerService.savePortfolio(data),
+    mutationFn: ({
+      data,
+      id,
+    }: {
+      data: PortfolioFormData;
+      id?: number | string;
+    }) => centerService.savePortfolio(data, id),
     onSuccess: () => {
       setValidationErrors({});
       queryClient.invalidateQueries({ queryKey: ["centerPortfolio"] });
@@ -213,7 +221,10 @@ export default function CenterProfilePage() {
       return;
     }
 
-    saveMutation.mutate(dirtyData as PortfolioFormData);
+    saveMutation.mutate({
+      data: dirtyData as PortfolioFormData,
+      id: portfolioId || undefined,
+    });
   };
 
   const handleCancel = () => {
