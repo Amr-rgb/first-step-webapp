@@ -20,7 +20,7 @@ import {
   enrollmentService,
   parentService as apiParentService,
   paymentService,
-  nurseryService,
+  establishmentService,
 } from "@/services/api";
 import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
@@ -338,7 +338,7 @@ const Bookings = () => {
     // Fetch pricing plans for the branch
     const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
       queryKey: ["branch-plans-dialog", branchId],
-      queryFn: () => nurseryService.getBranchPricing(branchId!),
+      queryFn: () => establishmentService.getBranchPricing(branchId!),
       enabled: !!branchId && open,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
@@ -348,12 +348,12 @@ const Bookings = () => {
     const planList =
       apiPlans.length > 0
         ? apiPlans.map((apiPlan: any) => ({
-            id: apiPlan.id,
-            type: apiPlan.enrollment_type,
-            name: apiPlan.title,
-            price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
-            planId: apiPlan.id,
-          }))
+          id: apiPlan.id,
+          type: apiPlan.enrollment_type,
+          name: apiPlan.title,
+          price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+          planId: apiPlan.id,
+        }))
         : [];
 
     // Find the selected plan based on booking's branch_price_id
@@ -512,13 +512,13 @@ const Bookings = () => {
                               </div>
                               {(isCouponExpired ||
                                 appliedCoupon !== originalCoupon) && (
-                                <button
-                                  onClick={handleRemoveCoupon}
-                                  className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                >
-                                  <X size={18} />
-                                </button>
-                              )}
+                                  <button
+                                    onClick={handleRemoveCoupon}
+                                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                  >
+                                    <X size={18} />
+                                  </button>
+                                )}
                             </div>
                             <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
                               <span className="text-purple-800">
@@ -633,9 +633,9 @@ const Bookings = () => {
                         <span className="font-bold">
                           {originalPrice > 0
                             ? `-${(
-                                (discountAmount / originalPrice) *
-                                100
-                              ).toFixed(0)}%`
+                              (discountAmount / originalPrice) *
+                              100
+                            ).toFixed(0)}%`
                             : ""}
                         </span>
                         <span className="font-bold">
@@ -659,7 +659,7 @@ const Bookings = () => {
                     <span className="font-bold text-lg text-primary">
                       {isAcceptedStatus
                         ? t("confirmReservation.finalAmount") ||
-                          "المبلغ المطلوب"
+                        "المبلغ المطلوب"
                         : t("total")}
                       :
                     </span>
@@ -749,9 +749,9 @@ const Bookings = () => {
         const childrenNames =
           booking.children?.length > 0
             ? booking.children
-                .map((child: any) => child.child_name || child.name)
-                .filter(Boolean)
-                .join("، ")
+              .map((child: any) => child.child_name || child.name)
+              .filter(Boolean)
+              .join("، ")
             : "";
 
         // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
@@ -853,9 +853,9 @@ const Bookings = () => {
       ) {
         toastError(
           t("cancelError") +
-            " - " +
-            "This enrollment is in 'waiting for confirmation' status. " +
-            "Please contact support if you need to cancel this enrollment.",
+          " - " +
+          "This enrollment is in 'waiting for confirmation' status. " +
+          "Please contact support if you need to cancel this enrollment.",
         );
       } else {
         toastError(errorMessage);

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Nurseries from "@/components/general/nurseries/Nurseries";
 import TopAdSection from "@/components/general/establishments/TopAdSection";
 import BottomAdSection from "@/components/general/establishments/BottomAdSection";
-import { nurseryService } from "@/services/api";
+import { establishmentService } from "@/services/api";
 import { getCitiesAction, City } from "@/actions/getCitiesAction";
 
 export const revalidate = 86400;
@@ -40,18 +40,18 @@ export default async function EstablishmentsPage({
   const filter =
     typeof searchParameters.filter === "string" ? searchParameters.filter : "";
 
-  let nurseries: any[] = [];
+  let establishments: any[] = [];
   let cities: { id: string; label: string }[] = [];
   let error = null;
 
   try {
-    const [nurseriesData, citiesData] = await Promise.all([
-      nurseryService.getNurseries(locale),
+    const [establishmentsData, citiesData] = await Promise.all([
+      establishmentService.getEstablishments(locale),
       getCitiesAction(),
     ]);
 
     // Show all establishments (nurseries and centers combined)
-    nurseries = nurseriesData as any[];
+    establishments = establishmentsData as any[];
 
     // Transform cities for filter sidebar
     cities = (citiesData || []).map((city: City) => ({
@@ -67,17 +67,17 @@ export default async function EstablishmentsPage({
     <div>
       {/* Top Advertising Space - Two horizontal ads */}
       <TopAdSection />
-      
+
       {/* Main Establishments Content */}
       <Nurseries
-        nurseries={nurseries}
+        nurseries={establishments}
         query={query}
         filter={filter}
         locale={locale}
         error={error}
         cities={cities}
       />
-      
+
       {/* Bottom Advertising Space - Three ads in custom layout */}
       <BottomAdSection />
     </div>

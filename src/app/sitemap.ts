@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
-import { blogService, nurseryService } from "@/services/api";
+import { blogService, establishmentService } from "@/services/api";
 import { createSlug } from "@/lib/utils";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -54,34 +54,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Add dynamic establishment routes (nurseries, centers, etc.)
   try {
     // Fetch establishments (using 'en' to generate consistent slugs)
-    const establishments = await nurseryService.getNurseries("en");
+    const establishments = await establishmentService.getEstablishments("en");
 
     establishments.forEach((establishment) => {
       // Use createSlug to generate the slug from the establishment name
       const slug = createSlug(establishment.nursery_name);
-      // Determine establishment type and pluralize for URL
-      // Backend returns 'center', 'nursery', etc. - we need 'centers', 'nurseries'
-      const typeValue = typeof establishment.type === 'string' ? establishment.type.toLowerCase() : 'nursery';
-      const establishmentType = typeValue.endsWith('y')
-        ? typeValue.slice(0, -1) + 'ies'  // nursery -> nurseries
-        : typeValue + 's';                 // center -> centers
+
+      const routeSegment = (establishment.role === 'center' || establishment.type === 'centers') ? 'centers' : 'nurseries';
 
       routing.locales.forEach((locale) => {
         sitemap.push({
-          url: `${baseUrl}/${locale}/establishments/${establishmentType}/${establishment.id}-${slug}`,
+          url: `${baseUrl}/${locale}/establishments/${routeSegment}/${establishment.id}-${slug}`,
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 0.7,
           alternates: {
             languages: {
-              en: `${baseUrl}/en/establishments/${establishmentType}/${establishment.id}-${slug}`,
-              ar: `${baseUrl}/ar/establishments/${establishmentType}/${establishment.id}-${slug}`,
-              "x-default": `${baseUrl}/ar/establishments/${establishmentType}/${establishment.id}-${slug}`,
+              en: `${baseUrl}/en/establishments/${routeSegment}/${establishment.id}-${slug}`,
+              ar: `${baseUrl}/ar/establishments/${routeSegment}/${establishment.id}-${slug}`,
+              "x-default": `${baseUrl}/ar/establishments/${routeSegment}/${establishment.id}-${slug}`,
             },
           },
         });
       });
     });
+
   } catch (error) {
     console.error("Failed to fetch establishments for sitemap:", error);
   }

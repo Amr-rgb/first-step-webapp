@@ -10,7 +10,7 @@ import {
   ParentRegisterPayload,
   Service,
   Value,
-  NurseryResponse,
+  EstablishmentResponse,
   PortfolioResponse,
   ParentRegisterPayloadv2,
   NurseryRegisterPayload,
@@ -624,11 +624,11 @@ export const blogService = {
   },
 };
 
-export const nurseryService = {
-  getNurseries: async (
+export const establishmentService = {
+  getEstablishments: async (
     locale: string,
     params?: { key: string; value: string }[],
-  ): Promise<NurseryResponse[]> => {
+  ): Promise<EstablishmentResponse[]> => {
     try {
       const query = params
         ? "?" +
@@ -643,7 +643,7 @@ export const nurseryService = {
       let res: Response;
       try {
         res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/establishment${query}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -698,8 +698,8 @@ export const nurseryService = {
           message:
             errorData?.message ||
             (locale === "ar"
-              ? "فشل في جلب بيانات الحضانات"
-              : "Failed to fetch nurseries"),
+              ? "فشل في جلب بيانات المنشآت"
+              : "Failed to fetch establishments"),
           errors: errorData?.errors || {},
           status: res.status,
           data: errorData,
@@ -722,17 +722,51 @@ export const nurseryService = {
         };
       }
 
-      if (Array.isArray(data.data)) {
-        console.log(
-          "nurseries (nursery_name, user_id): ",
-          data.data.map((nursery: any) => ({
-            nursery_name: nursery.nursery_name,
-            user_id: nursery.user_id,
-          })),
-        );
+      // Flatten nurseries and centers into a single array
+      const establishments: EstablishmentResponse[] = [];
+
+      if (data.nurseries && Array.isArray(data.nurseries)) {
+        data.nurseries.forEach((nursery: any) => {
+          establishments.push({
+            ...nursery,
+            // Map nested center object properties to top level if needed, or keep as is
+            // Given the structure 'center' inside 'nursery' seems odd but based on user request:
+            // "nurseries": [{ ..., "center": { "nursery_name": "test", ... } }]
+            // We might need to map some properties if components expect them at top level
+            nursery_name: nursery.center?.nursery_name || nursery.name,
+            logo: nursery.center?.logo,
+            city: nursery.center?.location, // Map location to city for now
+            // Ensure ID is number
+            id: Number(nursery.id),
+            user_id: nursery.id, // Assuming user_id is same as id or needed
+            // Add role if not present, though user said it's in the role field
+            role: nursery.role || 'nursery',
+            type: 'nurseries'
+          });
+        });
       }
 
-      return data.data as NurseryResponse[];
+      if (data.centers && Array.isArray(data.centers)) {
+        data.centers.forEach((center: any) => {
+          establishments.push({
+            ...center,
+            nursery_name: center.center?.nursery_name || center.name,
+            logo: center.center?.logo,
+            city: center.center?.location,
+            id: Number(center.id),
+            user_id: center.id,
+            role: center.role || 'center',
+            type: 'centers'
+          });
+        });
+      }
+
+      console.log(
+        "Mapped establishments (name, role): ",
+        establishments.map((e) => ({ name: e.nursery_name, role: e.role }))
+      );
+
+      return establishments;
     } catch (error: any) {
       // If error is already formatted, pass it through
       if (error.message && error.status !== undefined) {
@@ -743,14 +777,14 @@ export const nurseryService = {
     }
   },
 
-  getNurseryPortfolio: async (
+  getEstablishmentPortfolio: async (
     nurseryName: string,
     locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
-      // First, get all nurseries to find the center_id for the given nursery name
-      const nurseries = await nurseryService.getNurseries(locale);
-      const nursery = nurseries.find((n) => {
+      // First, get all establishments to find the ID for the given name
+      const establishments = await establishmentService.getEstablishments(locale);
+      const establishment = establishments.find((n) => {
         const dbName = n.nursery_name.toLowerCase().trim();
         const searchName = nurseryName.toLowerCase().trim();
         return (
@@ -760,30 +794,35 @@ export const nurseryService = {
         );
       });
 
-      if (!nursery || !nursery.id) {
+      if (!establishment || !establishment.id) {
         return null;
       }
 
-      // Use the nursery.id for the portfolio endpoint
-      console.log(`Nursery: ${nursery.nursery_name}, ID: ${nursery.id}`);
+      // Use the establishment.id for the portfolio endpoint
+      console.log(`Establishment: ${establishment.nursery_name}, ID: ${establishment.id}`);
 
-      return await nurseryService.getNurseryPortfolioById(nursery.id, locale);
+      return await establishmentService.getEstablishmentPortfolioById(establishment.id, locale);
     } catch (error) {
-      console.error("Error fetching nursery portfolio:", error);
+      console.error("Error fetching establishment portfolio:", error);
       return null;
     }
   },
 
-  getNurseryPortfolioById: async (
+  getEstablishmentPortfolioById: async (
     id: number | string,
     locale: string,
+    role?: string,
   ): Promise<PortfolioResponse | null> => {
     try {
-      console.log(`Fetching portfolio for center ID: ${id}`);
+      console.log(`Fetching portfolio for establishment ID: ${id}, Role: ${role}`);
 
-      // Fetch the portfolio data directly using the center ID
+      let endpoint = "get-portfilo-center"; // Default endpoint
+      if (role === "nursery" || role === "nurseries") {
+        endpoint = "get-portfilo-nursery";
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/get-portfilo-center/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/${endpoint}/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -796,7 +835,7 @@ export const nurseryService = {
 
       if (!res.ok) {
         console.error(
-          `Portfolio API failed for center ID ${id}:`,
+          `Portfolio API failed for establishment ID ${id}:`,
           res.status,
           res.statusText,
         );
@@ -808,20 +847,30 @@ export const nurseryService = {
       }
 
       const data = await res.json();
-      console.log(`Portfolio data received for center ID ${id}:`, data);
+      console.log(`Portfolio data received for establishment ID ${id}:`, data);
 
-      // The API returns { "data": { ... } } directly
+      // The API might return { "data": { ... } } or just { ... }
+      // We need to ensure we return the user/portfolio data correctly
+      const portfolioData = data.data || data;
+
+      // Check if we actually have valid portfolio data
+      if (!portfolioData || (!portfolioData.nursery_name && !portfolioData.name)) {
+        console.warn(`Portfolio data for ID ${id} seems empty or invalid structure:`, portfolioData);
+      }
+
       return {
         message: "Success",
-        data: data.data || data,
+        data: portfolioData,
       };
-    } catch (error) {
-      console.error("Error fetching nursery portfolio:", error);
+    } catch (error: any) {
+      console.error("Error fetching establishment portfolio:", error);
+      // Don't return null immediately if it's a 404, maybe we can fallback? 
+      // But for now, returning null triggers the waiting page
       return null;
     }
   },
 
-  getLatestNurseries: async (locale: string): Promise<NurseryResponse[]> => {
+  getLatestEstablishments: async (locale: string): Promise<EstablishmentResponse[]> => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/latest-search`,
@@ -840,14 +889,14 @@ export const nurseryService = {
 
       if (!res.ok) {
         throw {
-          message: "Failed to fetch latest nurseries",
+          message: "Failed to fetch latest establishments",
           errors: {},
           status: res.status,
         };
       }
 
       const data = await res.json();
-      return data.data as NurseryResponse[];
+      return data.data as EstablishmentResponse[];
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }

@@ -12,7 +12,7 @@ import FacilitiesSection from "./_components/FacilitiesSection";
 import AlbumsSection from "./_components/AlbumsSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { createSlug, slugToReadableName } from "@/lib/utils";
-import { nurseryService } from "@/services/api";
+import { establishmentService } from "@/services/api";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 
@@ -28,10 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         let portfolio;
         if (id) {
-            const response = await nurseryService.getNurseryPortfolioById(id, locale);
+            const response = await establishmentService.getEstablishmentPortfolioById(id, locale, "nursery");
             portfolio = response?.data as any;
         } else {
-            const response = await nurseryService.getNurseryPortfolio(name, locale);
+            const response = await establishmentService.getEstablishmentPortfolio(name, locale);
             portfolio = response?.data as any;
         }
 
@@ -65,12 +65,13 @@ export default async function NurseryPage({
     // Fetch basic portfolio data to check existence
     let portfolioResponse;
     if (id) {
-        portfolioResponse = await nurseryService.getNurseryPortfolioById(
+        portfolioResponse = await establishmentService.getEstablishmentPortfolioById(
             id,
             locale,
+            "nursery"
         );
     } else {
-        portfolioResponse = await nurseryService.getNurseryPortfolio(name, locale);
+        portfolioResponse = await establishmentService.getEstablishmentPortfolio(name, locale);
     }
 
     const portfolio = portfolioResponse?.data as any;

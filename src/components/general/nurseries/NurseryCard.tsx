@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createSlug, mapOptions } from "@/lib/utils";
 import { AGE_GROUP_IDS } from "@/lib/options";
 import { useTranslations } from "next-intl";
-import { NurseryResponse } from "@/types";
+import { EstablishmentResponse } from "@/types";
 
 type LocaleKey = "ar" | "en";
 
@@ -12,7 +12,7 @@ const NurseryCard = ({
   nursery,
   locale,
 }: {
-  nursery: NurseryResponse;
+  nursery: EstablishmentResponse;
   locale: LocaleKey;
 }) => {
   const slug = createSlug(nursery.nursery_name, "ar");
@@ -62,16 +62,12 @@ const NurseryCard = ({
   const shouldShowReadMore =
     truncatedBranches.isTruncated || truncatedAges.isTruncated;
 
-  // Determine establishment type for URL - should be 'centers', 'nurseries', etc. from API
-  // The backend should return type as 'center', 'nursery', etc.
-  // We pluralize it for the URL: 'center' -> 'centers', 'nursery' -> 'nurseries'
-  const typeValue = typeof nursery.type === 'string' ? nursery.type.toLowerCase() : 'nursery';
-  const establishmentType = typeValue.endsWith('y')
-    ? typeValue.slice(0, -1) + 'ies'  // nursery -> nurseries
-    : typeValue + 's';                 // center -> centers
+  // Determine establishment route segment
+  // The backend returns role as 'nursery', 'center' or plural
+  const routeSegment = (nursery.role === 'center' || nursery.type === 'centers') ? 'centers' : 'nurseries';
 
   return (
-    <Link href={`/establishments/${establishmentType}/${nursery.id}-${slug}`} className="block">
+    <Link href={`/establishments/${routeSegment}/${nursery.id}-${slug}`} className="block">
       <div className="bg-white rounded-lg transition-all duration-300 hover:border hover:border-gray-200 hover:shadow-lg group flex flex-col h-full min-h-80">
         {/* Logo section - takes up half the card */}
         <div className="flex-1 flex flex-col items-center justify-center py-8">
