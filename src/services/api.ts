@@ -15,6 +15,7 @@ import {
   ParentRegisterPayloadv2,
   NurseryRegisterPayload,
   NurseryPlan,
+  CategoryService,
 } from "@/types";
 import axios from "axios";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
@@ -632,12 +633,12 @@ export const nurseryService = {
     try {
       const query = params
         ? "?" +
-        params
-          .map(
-            ({ key, value }) =>
-              `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-          )
-          .join("&")
+          params
+            .map(
+              ({ key, value }) =>
+                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+            )
+            .join("&")
         : "";
 
       let res: Response;
@@ -932,6 +933,15 @@ export const nurseryService = {
 };
 
 export const authService = {
+  getCategoryServices: async (): Promise<CategoryService[]> => {
+    try {
+      const response = await apiClient.get("/category-services");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCenterTypes: async () => {
     try {
       const response = await apiClient.get("/types-public");
@@ -985,29 +995,34 @@ export const authService = {
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
-      formData.append("location", payload.city_id);
+      formData.append("city_id", payload.city_id);
 
       if (payload.logo) {
         formData.append("logo", payload.logo);
+      }
+
+      if (
+        payload.category_service_ids &&
+        payload.category_service_ids.length > 0
+      ) {
+        payload.category_service_ids.forEach((id) => {
+          formData.append("category_service_ids[]", String(id));
+        });
       }
 
       console.log("Register Center Payload:", {
         name: payload.nursery_name,
         email: payload.email,
         phone: payload.phone,
-        location: payload.city_id,
+        city_id: payload.city_id,
         logo: payload.logo?.name,
       });
 
-      const response = await apiClient.post(
-        "/v3/register-center",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await apiClient.post("/v3/register-center", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       return response.data;
     } catch (error: any) {
       console.error("Register Center Error:", error);
@@ -1031,29 +1046,34 @@ export const authService = {
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
-      formData.append("location", payload.city_id);
+      formData.append("city_id", payload.city_id);
 
       if (payload.logo) {
         formData.append("logo", payload.logo);
+      }
+
+      if (
+        payload.category_service_ids &&
+        payload.category_service_ids.length > 0
+      ) {
+        payload.category_service_ids.forEach((id) => {
+          formData.append("category_service_ids[]", String(id));
+        });
       }
 
       console.log("Register Nursery Payload:", {
         name: payload.nursery_name,
         email: payload.email,
         phone: payload.phone,
-        location: payload.city_id,
+        city_id: payload.city_id,
         logo: payload.logo?.name,
       });
 
-      const response = await apiClient.post(
-        "/v3/register-nursery",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await apiClient.post("/v3/register-nursery", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);

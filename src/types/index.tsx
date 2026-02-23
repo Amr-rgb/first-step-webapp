@@ -172,6 +172,7 @@ export interface CenterRegisterPayload {
   nursery_name: string;
   city_id: string;
   logo: File;
+  category_service_ids?: number[];
 }
 
 // Extended interface for nursery API response that includes user_id
@@ -280,6 +281,16 @@ export interface Value {
   title: string;
   description: string;
   image: string;
+}
+
+export interface CategoryService {
+  id: number;
+  name: {
+    en: string;
+    ar: string;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 // -----------------------------
@@ -499,4 +510,5 @@ export interface NurseryRegisterPayload {
   nursery_name: string;
   city_id: string;
   logo: File;
+  category_service_ids?: number[];
 }
