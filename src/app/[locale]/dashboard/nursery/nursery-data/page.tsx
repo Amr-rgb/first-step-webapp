@@ -81,11 +81,7 @@ export default function CenterProfilePage() {
           facebook: p.contact_info?.facebook || p.facebook || "",
           instagram: p.contact_info?.instagram || p.instagram || "",
           twitter: p.contact_info?.twitter || p.twitter || "",
-          linkedIn:
-            p.contact_info?.linkedIn ||
-            p.contact_info?.linkedin ||
-            p.linkedin ||
-            "",
+          linkedIn: p.contact_info?.linkedIn || p.linkedin || "",
           website: p.contact_info?.website || p.website || "",
         },
         images_activities: p.images_activities || [],

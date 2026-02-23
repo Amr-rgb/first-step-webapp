@@ -405,7 +405,7 @@ export interface PortfolioFormData {
     facebook?: string;
     instagram?: string;
     twitter?: string;
-    linkedin?: string;
+    linkedIn?: string;
     website?: string;
   };
 }

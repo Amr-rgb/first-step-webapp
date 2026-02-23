@@ -1101,10 +1101,10 @@ export const centerService = {
         );
       if (payload.contact_info?.twitter)
         formData.append("contact_info[twitter]", payload.contact_info.twitter);
-      if (payload.contact_info?.linkedin)
+      if (payload.contact_info?.linkedIn)
         formData.append(
-          "contact_info[linkedin]",
-          payload.contact_info.linkedin,
+          "contact_info[linkedIn]",
+          payload.contact_info.linkedIn,
         );
       if (payload.contact_info?.website)
         formData.append("contact_info[website]", payload.contact_info.website);
