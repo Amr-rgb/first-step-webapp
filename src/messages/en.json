@@ -1119,7 +1119,9 @@
         "permissionError": "You do not have permission to view advertisements or blogs",
         "ad": {
           "title": "Request Advertisement",
-          "free-notice": "Your first advertisement for your center/nursery is 100% free on the homepage for one day",
+          "free-notice": "Your first advertisement for your {type} is 100% free on the homepage for one day",
+          "nursery": "nursery",
+          "center": "center",
           "description": "Attract parents with an advertisement that appears at the top of the homepage. You can specify the number of days the advertisement will appear",
           "form": {
             "image": {
