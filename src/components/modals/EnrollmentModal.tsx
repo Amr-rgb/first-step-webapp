@@ -50,7 +50,7 @@ export default function EnrollmentModal({
   const [step, setStep] = useState<ModalStep>("initial");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCenter, setSelectedCenter] = useState<NurseryResponse | null>(
-    null
+    null,
   );
   const [selectedChildren, setSelectedChildren] = useState<number[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
@@ -144,9 +144,9 @@ export default function EnrollmentModal({
           center.nursery_name
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          center.address?.toLowerCase().includes(searchQuery.toLowerCase())
+          center.address?.toLowerCase().includes(searchQuery.toLowerCase()),
       ),
-    [centers, searchQuery]
+    [centers, searchQuery],
   );
 
   const handleBack = () => {
@@ -194,7 +194,7 @@ export default function EnrollmentModal({
     setSelectedChildren((prev) =>
       prev.includes(childId)
         ? prev.filter((id) => id !== childId)
-        : [...prev, childId]
+        : [...prev, childId],
     );
   };
 
@@ -307,7 +307,7 @@ export default function EnrollmentModal({
                       onClick={() => handleCenterSelect(center)}
                       className="w-full p-2 border-b rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-4 text-right cursor-pointer"
                     >
-                      <div className="w-9 h-9 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                      <div className="w-9 h-9 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
                         {center.logo && (
                           <img
                             src={center.logo}
@@ -326,8 +326,8 @@ export default function EnrollmentModal({
                             ? center.city?.name[locale as "ar"]
                             : center.city}
                           {typeof center.neighborhood === "object" &&
-                            center.neighborhood !== null
-                            ? ", " + center.neighborhood[locale]
+                          center.neighborhood !== null
+                            ? ", " + center.neighborhood[locale as "ar"]
                             : ", " + center.neighborhood}{" "}
                           {center.address ? ", " + center.address : null}
                         </span>
@@ -379,7 +379,7 @@ export default function EnrollmentModal({
           {step === "enrollment" && (
             <div className="space-y-6">
               <div className="w-full p-2 border-b rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-4 text-right cursor-pointer">
-                <div className="w-9 h-9 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                <div className="w-9 h-9 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
                   {selectedCenter?.logo && (
                     <img
                       src={selectedCenter.logo}
@@ -398,8 +398,8 @@ export default function EnrollmentModal({
                       ? selectedCenter.city?.name[locale as "ar"]
                       : selectedCenter?.city}
                     {typeof selectedCenter?.neighborhood === "object" &&
-                      selectedCenter?.neighborhood !== null
-                      ? ", " + selectedCenter?.neighborhood[locale]
+                    selectedCenter?.neighborhood !== null
+                      ? ", " + selectedCenter?.neighborhood[locale as "ar"]
                       : ", " + selectedCenter?.neighborhood}{" "}
                     {selectedCenter?.address
                       ? ", " + selectedCenter?.address
@@ -417,10 +417,11 @@ export default function EnrollmentModal({
                     <button
                       key={child.id}
                       onClick={() => toggleChildSelection(child.id)}
-                      className={`p-4 border-2 rounded-xl transition-colors ${selectedChildren.includes(child.id)
+                      className={`p-4 border-2 rounded-xl transition-colors ${
+                        selectedChildren.includes(child.id)
                           ? "border-pink-400 bg-pink-50"
                           : "border-gray-200"
-                        }`}
+                      }`}
                     >
                       <div className="w-20 h-20 mx-auto mb-2 bg-gray-100 rounded-full overflow-hidden">
                         {child.image && (
@@ -512,8 +513,8 @@ export default function EnrollmentModal({
           {/* No Children Step */}
           {step === "no-children" && (
             <div className="text-center space-y-6">
-              <div className="w-full p-2 rounded-xl transition-colors flex items-center gap-4 text-right bg-gradient-to-br from-[#E9F1FF7A] to-[#9FC3FF7A]">
-                <div className="w-9 h-9 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+              <div className="w-full p-2 rounded-xl transition-colors flex items-center gap-4 text-right bg-linear-to-br from-[#E9F1FF7A] to-[#9FC3FF7A]">
+                <div className="w-9 h-9 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
                   {selectedCenter?.logo && (
                     <img
                       src={selectedCenter.logo}
@@ -532,8 +533,8 @@ export default function EnrollmentModal({
                       ? selectedCenter.city?.name[locale as "ar"]
                       : selectedCenter?.city}
                     {typeof selectedCenter?.neighborhood === "object" &&
-                      selectedCenter?.neighborhood !== null
-                      ? ", " + selectedCenter?.neighborhood[locale]
+                    selectedCenter?.neighborhood !== null
+                      ? ", " + selectedCenter?.neighborhood[locale as "ar"]
                       : ", " + selectedCenter?.neighborhood}{" "}
                     {selectedCenter?.address
                       ? ", " + selectedCenter?.address
