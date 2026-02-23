@@ -52,7 +52,7 @@ export default function CenterProfilePage() {
       facebook: "",
       instagram: "",
       twitter: "",
-      linkedin: "",
+      linkedIn: "",
       website: "",
     },
   });
@@ -81,9 +81,9 @@ export default function CenterProfilePage() {
           facebook: p.contact_info?.facebook || p.facebook || "",
           instagram: p.contact_info?.instagram || p.instagram || "",
           twitter: p.contact_info?.twitter || p.twitter || "",
-          linkedin:
-            p.contact_info?.linkedin ||
+          linkedIn:
             p.contact_info?.linkedIn ||
+            p.contact_info?.linkedin ||
             p.linkedin ||
             "",
           website: p.contact_info?.website || p.website || "",
