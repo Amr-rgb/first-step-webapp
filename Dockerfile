@@ -1,5 +1,5 @@
 # -------- Base image --------
-FROM node:18-slim AS base
+FROM node:20-slim AS base
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
