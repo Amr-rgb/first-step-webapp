@@ -20,7 +20,7 @@ import {
   getBranchPricingAction,
   createExistingEnrollmentAction,
 } from "@/actions/nurseryActions";
-import { NurseryResponse } from "@/types";
+import { EstablishmentResponse } from "@/types";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -49,9 +49,8 @@ export default function EnrollmentModal({
   const t = useTranslations("enrollmentModal");
   const [step, setStep] = useState<ModalStep>("initial");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCenter, setSelectedCenter] = useState<NurseryResponse | null>(
-    null,
-  );
+  const [selectedCenter, setSelectedCenter] =
+    useState<EstablishmentResponse | null>(null);
   const [selectedChildren, setSelectedChildren] = useState<number[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [selectedPlan, setSelectedPlan] = useState<string>("");
@@ -102,7 +101,7 @@ export default function EnrollmentModal({
   // Enrollment submission mutation
   const enrollmentMutation = useMutation({
     mutationFn: async (data: {
-      center: NurseryResponse;
+      center: EstablishmentResponse;
       children: number[];
       branch: string;
       plan: string;
@@ -140,7 +139,7 @@ export default function EnrollmentModal({
   const filteredCenters = useMemo(
     () =>
       centers.filter(
-        (center: NurseryResponse) =>
+        (center: EstablishmentResponse) =>
           center.nursery_name
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
@@ -165,7 +164,7 @@ export default function EnrollmentModal({
     }
   };
 
-  const handleCenterSelect = (center: NurseryResponse) => {
+  const handleCenterSelect = (center: EstablishmentResponse) => {
     setSelectedCenter(center);
     // Reset selections when selecting a new center
     setSelectedChildren([]);
@@ -301,7 +300,7 @@ export default function EnrollmentModal({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {filteredCenters.map((center: NurseryResponse) => (
+                  {filteredCenters.map((center: EstablishmentResponse) => (
                     <button
                       key={center.id}
                       onClick={() => handleCenterSelect(center)}
