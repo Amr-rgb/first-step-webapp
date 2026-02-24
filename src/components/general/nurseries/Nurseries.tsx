@@ -33,6 +33,7 @@ const Nurseries = ({
   locale,
   error,
   cities = [],
+  categoryServices = [],
 }: {
   nurseries: EstablishmentResponse[];
   query: string;
@@ -40,20 +41,33 @@ const Nurseries = ({
   locale: LocaleKey;
   error?: any;
   cities?: FilterOption[];
+  categoryServices?: FilterOption[];
 }) => {
   const t = useTranslations("nurseries");
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+
   const [searchQuery, setSearchQuery] = useState(query);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({
-    categories: [],
-    cities: [],
-    ages: [],
-    ratings: [],
+
+  // Initialize filters from URL
+  const [filters, setFilters] = useState<FilterState>(() => {
+    if (!searchParams)
+      return { categories: [], cities: [], ages: [], ratings: [] };
+
+    return {
+      categories: searchParams.getAll("category_service_ids[]"),
+      cities: searchParams.getAll("city_id"),
+      ages: searchParams.getAll("ages"),
+      ratings: searchParams.getAll("ratings"),
+    };
   });
 
-  const debouncedQuery = useDebounce(searchQuery, 500);
+  const debouncedQuery = useDebounce(searchQuery, 1000);
 
   const totalActiveFilters =
     filters.categories.length +
@@ -61,41 +75,38 @@ const Nurseries = ({
     filters.ages.length +
     filters.ratings.length;
 
-  // Update URL when search changes
+  // Update URL when search or filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedQuery) params.set("query", debouncedQuery);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [debouncedQuery, pathname]);
+
+    filters.cities.forEach((id) => params.append("city_id", id));
+    filters.categories.forEach((id) =>
+      params.append("category_service_ids[]", id),
+    );
+    filters.ages.forEach((id) => params.append("ages", id));
+    filters.ratings.forEach((id) => params.append("ratings", id));
+
+    const queryString = params.toString();
+    const currentQueryString = window.location.search.replace(/^\?/, "");
+
+    if (queryString !== currentQueryString) {
+      router.push(`${pathname}?${queryString}`, { scroll: false });
+    }
+  }, [debouncedQuery, filters, pathname, router]);
+
+  // Sync searchQuery with query prop (e.g. when navigating back)
+  useEffect(() => {
+    setSearchQuery(query);
+  }, [query]);
 
   const handleRetry = () => {
     router.refresh();
   };
 
-  // Advanced filtering logic
+  // Client-side filtering for ages and ratings (since server doesn't handle them yet)
   const filteredNurseries = useMemo(() => {
     return nurseries.filter((nursery) => {
-      // Search query filter
-      const matchesQuery = nursery.nursery_name
-        .toLocaleLowerCase()
-        .includes(debouncedQuery.toLocaleLowerCase());
-
-      if (!matchesQuery) return false;
-
-      // City filter
-      if (filters.cities.length > 0) {
-        const nurseryCity =
-          typeof nursery.city === "string"
-            ? nursery.city
-            : nursery.city?.name?.[locale] || "";
-        const matchesCity = filters.cities.some(
-          (cityId) =>
-            nurseryCity.toLowerCase().includes(cityId.toLowerCase()) ||
-            cityId.toLowerCase().includes(nurseryCity.toLowerCase()),
-        );
-        if (!matchesCity) return false;
-      }
-
       // Age filter
       if (filters.ages.length > 0 && nursery.accepted_ages) {
         const matchesAge = filters.ages.some((ageFilter) => {
@@ -114,12 +125,14 @@ const Nurseries = ({
         if (!matchesAge) return false;
       }
 
-      // Category filter (placeholder - would need category data from API)
-      // For now, we pass all nurseries through category filter
+      // Ratings filter (placeholder - needs rating data in EstablishmentResponse)
+      // if (filters.ratings.length > 0) {
+      //   ...
+      // }
 
       return true;
     });
-  }, [nurseries, debouncedQuery, filters, locale]);
+  }, [nurseries, filters.ages, filters.ratings]);
 
   return (
     <section className="container mx-auto px-4">
@@ -152,6 +165,7 @@ const Nurseries = ({
         {/* Filter Sidebar */}
         <FilterSidebar
           cities={cities}
+          categoryServices={categoryServices}
           selectedFilters={filters}
           onFiltersChange={setFilters}
           locale={locale}
