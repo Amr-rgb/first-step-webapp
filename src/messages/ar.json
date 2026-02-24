@@ -2792,6 +2792,175 @@
       }
     }
   },
+  "centerDetails": {
+    "header": {
+      "share": "مشاركة",
+      "chat": "محادثة",
+      "sloganFallback": "مستقبل طفلك يبدأ من هنا",
+      "description": "نقدم أفضل رعاية وتعليم لطفلك.",
+      "branches": "الفروع"
+    },
+    "about": {
+      "title": "عن المركز"
+    },
+    "facilities": {
+      "title": "مرافق المركز"
+    },
+    "waitingPage": {
+      "parentTitle": "شيء جميل قادم!",
+      "parentSubtitle": "الأشياء الجميلة تحتاج وقتاً لأنها تُصنع بالحب والعناية.",
+      "centerTitle": "نحن نحضّر شيئاً مميزاً!",
+      "centerSubtitle": "الملفات المميزة تحتاج وقتاً لتُنشأ بدقة وخبرة.",
+      "adminTitle": "نحن نراجع بعناية!",
+      "adminSubtitle": "نضمن أعلى جودة لجميع الملفات المعروضة على المنصة.",
+      "browseNurseries": "تصفح المراكز",
+      "completeProfile": "أكمل الملف الشخصي",
+      "goToDashboard": "الانتقال إلى لوحة التحكم",
+      "goToAdminDashboard": "الانتقال إلى لوحة تحكم المدير"
+    },
+    "goals": {
+      "title": "أهدافنا"
+    },
+    "philosophy": {
+      "title": "فلسفتنا"
+    },
+    "methodology": {
+      "title": "منهجيتنا"
+    },
+    "stats": {
+      "title": "إحصائيات المركز",
+      "area": "المساحة (م²)",
+      "classrooms": "الفصول الدراسية",
+      "teamMembers": "أعضاء الفريق"
+    },
+    "team": {
+      "title": "فريقنا"
+    },
+    "services": {
+      "title": "خدماتنا"
+    },
+    "activities": {
+      "title": "نشاطاتنا",
+      "subtitle": "أعط أطفالك الفرصة للاستمتاع معنا."
+    },
+    "programs": {
+      "title": "البرامج",
+      "count": "({count} برنامج)",
+      "filter": "التصفية",
+      "bookNow": "احجز الآن",
+      "noResults": "لا توجد برامج مطابقة لخيارات التصفية",
+      "currency": "ريال",
+      "filters": {
+        "branch": "الفرع",
+        "programType": "نوع البرنامج",
+        "age": "الأعمار",
+        "allBranches": "كل الفروع",
+        "allPrograms": "كل البرامج",
+        "allAges": "كل الأعمار",
+        "reset": "إعادة للوضع الافتراضي",
+        "apply": "تصفية",
+        "types": {
+          "hour": "بالساعة",
+          "day": "باليوم",
+          "week": "بالأسبوع",
+          "month": "بالشهر",
+          "year": "بالسنة"
+        },
+        "ages_list": {
+          "0_6_months": "من 0 إلى 6 أشهر",
+          "6_12_months": "من 6 أشهر إلى سنة",
+          "1_3_years": "من سنة إلى 3 سنوات",
+          "3_5_years": "من 3 سنوات ل 5 سنوات"
+        }
+      }
+    },
+    "albums": {
+      "title": "ألبومات الصور",
+      "count": "({count} صورة)",
+      "viewAll": "عرض الكل"
+    },
+    "sections": {
+      "successStories": "قصص النجاح",
+      "ourTeam": "فريقنا"
+    },
+    "ourNumbers": {
+      "title": "أرقامنا",
+      "certifiedSpecialists": "أخصائي معتمد",
+      "sessionsProvided": "عدد الجلسات المقدمة",
+      "childrenHelped": "طفل تم مساعدتهم",
+      "yearsExperience": "سنة خبرة"
+    },
+    "blogs": {
+      "title": "مدونات مهمة"
+    },
+    "ads": {
+      "title": "مساحة إعلانية",
+      "placeholder": "انتظروا عروض وأنشطة رائعة"
+    },
+    "ratings": {
+      "title": "تقييمات ({count} تقييم)",
+      "placeholder": "ساهم في تحسين الخدمة وكن أول تقييم",
+      "bookNow": "احجز الآن"
+    },
+    "suggestedNurseries": {
+      "title": "منشآت مقترحة"
+    },
+    "coupons": {
+      "title": "كوبونات الخصم",
+      "validUntil": "متاح حتى يوم {date}",
+      "copyCode": "نسخ الكود",
+      "copied": "تم نسخ الكود"
+    },
+    "contactForm": {
+      "title": "معلومات التواصل",
+      "info": "معلومات التواصل",
+      "address": "العنوان",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "workingHours": "ساعات العمل",
+      "social": "وسائل التواصل الاجتماعي"
+    },
+    "branches": {
+      "title": "فروع المركز",
+      "qassim": "القصيم",
+      "gharnata": "غرناطة",
+      "madina": "المدينة المنورة",
+      "makkah": "مكة المكرمة",
+      "riyadh": "الرياض",
+      "cta": "احجز الآن",
+      "stats": {
+        "area": "المساحة (م²)",
+        "children": "عدد الأطفال",
+        "teachers": "عدد المعلمين",
+        "programs": "عدد البرامج"
+      }
+    },
+    "plans": {
+      "title": "البرامج",
+      "subtitle": "",
+      "selectBranch": "اختر الفرع",
+      "selectAge": "عمر الطفل",
+      "selectEnrollmentType": "نوع البرنامج",
+      "noPrograms": "لا توجد برامج متاحة",
+      "noProgramsMessage": "سيتم إضافة البرامج قريباً. يرجى التحقق لاحقاً.",
+      "bookNow": "احجز الآن",
+      "ageRange": "الفئة العمرية",
+      "duration": "المدة",
+      "price": "السعر",
+      "units": {
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "day": "يوم",
+        "days": "أيام",
+        "week": "أسبوع",
+        "weeks": "أسابيع",
+        "month": "شهر",
+        "months": "شهور",
+        "year": "سنة",
+        "years": "سنوات"
+      }
+    }
+  },
   "branches": {
     "title": "فروع الحضانة",
     "qassim": "القصيم",

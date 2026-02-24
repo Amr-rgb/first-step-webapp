@@ -17,12 +17,14 @@ import { EstablishmentResponse } from "@/types";
 
 interface SuggestedEstablishmentsSectionProps {
   currentCenterId: string;
+  tNamespace?: string;
 }
 
 const SuggestedEstablishmentsSection = ({
   currentCenterId,
+  tNamespace = "nurseryDetails",
 }: SuggestedEstablishmentsSectionProps) => {
-  const t = useTranslations("nurseryDetails.suggestedNurseries");
+  const t = useTranslations(`${tNamespace}.suggestedNurseries` as any);
   const locale = useLocale() as "ar" | "en";
   const isRtl = locale === "ar";
 

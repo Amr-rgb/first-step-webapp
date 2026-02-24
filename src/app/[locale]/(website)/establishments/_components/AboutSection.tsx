@@ -9,7 +9,6 @@ interface AboutSectionProps {
 }
 
 const AboutSection = ({ title, subtitle, description }: AboutSectionProps) => {
-  if (!subtitle && !description) return null;
 
   return (
     <section id="about" className="py-0 scroll-mt-20">
