@@ -730,17 +730,16 @@ export const establishmentService = {
         data.nurseries.forEach((nursery: any) => {
           establishments.push({
             ...nursery,
-            // Map nested center object properties to top level if needed, or keep as is
-            // Given the structure 'center' inside 'nursery' seems odd but based on user request:
-            // "nurseries": [{ ..., "center": { "nursery_name": "test", ... } }]
-            // We might need to map some properties if components expect them at top level
-            nursery_name: nursery.center?.nursery_name || nursery.name,
-            logo: nursery.center?.logo,
-            city: nursery.center?.location, // Map location to city for now
+            // Map nested nursery object properties to top level if needed
+            nursery_name:
+              nursery.nursery?.nursery_name ||
+              nursery.nursery_name ||
+              nursery.name,
+            logo: nursery.nursery?.logo || nursery.logo,
+            city: nursery.nursery?.city || nursery.city,
             // Ensure ID is number
             id: Number(nursery.id),
-            user_id: nursery.id, // Assuming user_id is same as id or needed
-            // Add role if not present, though user said it's in the role field
+            user_id: nursery.id,
             role: nursery.role || "nursery",
             type: "nurseries",
           });
@@ -751,9 +750,10 @@ export const establishmentService = {
         data.centers.forEach((center: any) => {
           establishments.push({
             ...center,
-            nursery_name: center.center?.nursery_name || center.name,
-            logo: center.center?.logo,
-            city: center.center?.location,
+            nursery_name:
+              center.center?.nursery_name || center.nursery_name || center.name,
+            logo: center.center?.logo || center.logo,
+            city: center.center?.city || center.city,
             id: Number(center.id),
             user_id: center.id,
             role: center.role || "center",
@@ -825,13 +825,13 @@ export const establishmentService = {
         `Fetching portfolio for establishment ID: ${id}, Role: ${role}`,
       );
 
-      let endpoint = "get-portfilo-center"; // Default endpoint
+      let endpoint = "v2/get-portfilo-center"; // Default endpoint
       if (role === "nursery" || role === "nurseries") {
         endpoint = "get-portfilo-nursery";
       }
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/${endpoint}/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

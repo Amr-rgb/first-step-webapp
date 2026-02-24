@@ -63,6 +63,8 @@ export default async function EstablishmentsPage({
     error = err;
   }
 
+  console.log(establishments);
+
   return (
     <div>
       {/* Top Advertising Space - Two horizontal ads */}

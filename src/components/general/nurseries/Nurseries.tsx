@@ -91,7 +91,7 @@ const Nurseries = ({
         const matchesCity = filters.cities.some(
           (cityId) =>
             nurseryCity.toLowerCase().includes(cityId.toLowerCase()) ||
-            cityId.toLowerCase().includes(nurseryCity.toLowerCase())
+            cityId.toLowerCase().includes(nurseryCity.toLowerCase()),
         );
         if (!matchesCity) return false;
       }
@@ -184,9 +184,9 @@ const Nurseries = ({
                       ? "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى"
                       : "Please check your internet connection and try again"
                     : error.message ||
-                    (locale === "ar"
-                      ? "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى"
-                      : "An unexpected error occurred. Please try again")}
+                      (locale === "ar"
+                        ? "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى"
+                        : "An unexpected error occurred. Please try again")}
                 </p>
               </div>
               <Button onClick={handleRetry} className="gap-2">
@@ -211,7 +211,13 @@ const Nurseries = ({
           {!error && filteredNurseries.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredNurseries.map((nursery, index) => (
-                <NurseryCard nursery={nursery} locale={locale} key={index} />
+                <NurseryCard
+                  nursery={{
+                    ...nursery,
+                  }}
+                  locale={locale}
+                  key={index}
+                />
               ))}
             </div>
           )}

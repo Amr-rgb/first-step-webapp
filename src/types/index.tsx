@@ -198,6 +198,18 @@ export interface EstablishmentResponse extends Omit<
   city: string | { name: { ar: string; en: string } };
   neighborhood?: string | { ar: string; en: string } | null;
   address?: string;
+  nursery?: {
+    center_id: number;
+    nursery_name: string;
+    logo?: string;
+    [key: string]: any;
+  };
+  center?: {
+    center_id: number;
+    nursery_name: string;
+    logo?: string;
+    [key: string]: any;
+  };
 }
 
 // ===== Child Info Form Types =====
@@ -416,17 +428,17 @@ export interface PricingFormData {
   enrollment_type: string;
   title: string;
   start_age:
-  | number // old structure support
-  | {
-    type: string;
-    age: number;
-  };
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
   end_age:
-  | number // old structure support
-  | {
-    type: string;
-    age: number;
-  };
+    | number // old structure support
+    | {
+        type: string;
+        age: number;
+      };
   count: number;
   price_amount: number;
 }
