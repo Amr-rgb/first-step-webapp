@@ -66,7 +66,7 @@ export default function CenterProfilePage() {
   // Fetch initial data
   const { data: initialData, isLoading } = useQuery({
     queryKey: ["centerPortfolio"],
-    queryFn: () => centerService.getPortfolio(),
+    queryFn: () => centerService.getCenterPortfolio(),
   });
 
   useEffect(() => {
@@ -140,7 +140,7 @@ export default function CenterProfilePage() {
     }: {
       data: PortfolioFormData;
       id?: number | string;
-    }) => centerService.savePortfolio(data, id),
+    }) => centerService.saveCenterPortfolio(data, id),
     onSuccess: () => {
       setValidationErrors({});
       queryClient.invalidateQueries({ queryKey: ["centerPortfolio"] });

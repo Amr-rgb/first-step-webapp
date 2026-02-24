@@ -1159,6 +1159,94 @@ export const centerService = {
     }
   },
 
+  // Center-specific Portfolio endpoints
+  saveCenterPortfolio: async (
+    payload: PortfolioFormData,
+    id?: number | string,
+  ) => {
+    try {
+      console.log("📤 Sending center portfolio data:", payload);
+      const formData = new FormData();
+
+      // Basic Info (Hero)
+      if (payload.title_of_hero)
+        formData.append("title_of_hero", payload.title_of_hero);
+      if (payload.subtitle_of_hero)
+        formData.append("subtitle_of_hero", payload.subtitle_of_hero);
+      if (payload.description)
+        formData.append("description", payload.description);
+
+      // Social links
+      if (payload.contact_info?.facebook)
+        formData.append(
+          "contact_info[facebook]",
+          payload.contact_info.facebook,
+        );
+      if (payload.contact_info?.instagram)
+        formData.append(
+          "contact_info[instagram]",
+          payload.contact_info.instagram,
+        );
+      if (payload.contact_info?.twitter)
+        formData.append("contact_info[twitter]", payload.contact_info.twitter);
+      if (payload.contact_info?.linkedIn)
+        formData.append(
+          "contact_info[linkedIn]",
+          payload.contact_info.linkedIn,
+        );
+      if (payload.contact_info?.website)
+        formData.append("contact_info[website]", payload.contact_info.website);
+
+      // Activities
+      payload.images_activities?.forEach((img, index) => {
+        if (img instanceof File) {
+          formData.append(`images_activities[${index}]`, img);
+        }
+      });
+      payload.delete_images_activities?.forEach((index, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(index));
+      });
+
+      // Options (Facilities)
+      payload.admin_option_ids?.forEach((id, index) => {
+        formData.append(`admin_option_ids[${index}]`, String(id));
+      });
+      payload.delete_center_options?.forEach((id, index) => {
+        formData.append(`delete_center_options[${index}]`, String(id));
+      });
+
+      // Licenses
+      payload.licenses?.forEach((license, index) => {
+        if (license.id)
+          formData.append(`licenses[${index}][id]`, String(license.id));
+        formData.append(`licenses[${index}][number]`, license.number);
+        if (license.document instanceof File) {
+          formData.append(`licenses[${index}][document]`, license.document);
+        }
+      });
+      payload.delete_license_ids?.forEach((id, index) => {
+        formData.append(`delete_license_ids[${index}]`, String(id));
+      });
+
+      const url = "/center/portfolios";
+      const response = await apiClient.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterPortfolio: async () => {
+    try {
+      const response = await apiClient.get("/center/portfolios/show");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   // Pricing endpoints
   savePricing: async (payload: BranchPricingData[]) => {
     try {
