@@ -114,11 +114,11 @@ export default async function CenterPage({
           {/* Right Column (Main): About → Services → Plans → Success Stories → Advertisement */}
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-10 order-1">
             {/* About Section */}
-            <AboutSection
+            {/* <AboutSection
               title={t("about.title")}
               subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
               description={portfolio.hero_section?.description || ""}
-            />
+            /> */}
 
             {/* Services Section */}
             <ServicesSection
@@ -136,7 +136,9 @@ export default async function CenterPage({
             />
 
             {/* Success Stories Section */}
-            <SuccessStoriesSection />
+            <SuccessStoriesSection
+              stories={portfolio.images_activities || []}
+            />
 
             {/* Advertisement Section */}
             <section id="advertisement" className="py-0 scroll-mt-20">
