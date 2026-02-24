@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
-import { blogService, nurseryService } from "@/services/api";
+import { blogService, establishmentService } from "@/services/api";
 import { createSlug } from "@/lib/utils";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -10,18 +10,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/services",
-    "/nurseries",
+    "/establishments",
     "/our-story",
     "/contact",
     "/blog",
     "/sign-up",
     "/sign-up/center",
+    "/sign-up/nursery",
     "/sign-up/parent",
     "/sign-in",
     "/forgot-password",
     "/privacy-policy",
     "/terms-conditions",
-    "/coupon-codes",
+    "/offers-and-coupons",
+    "/consultations",
     "/faqs",
   ];
 
@@ -49,33 +51,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  // 2. Add dynamic nursery routes
+  // 2. Add dynamic establishment routes (nurseries, centers, etc.)
   try {
-    // Fetch nurseries (using 'en' to generate consistent slugs)
-    const nurseries = await nurseryService.getNurseries("en");
+    // Fetch establishments (using 'en' to generate consistent slugs)
+    const establishments = await establishmentService.getEstablishments("en");
 
-    nurseries.forEach((nursery) => {
-      // Use createSlug to generate the slug from the nursery name
-      const slug = createSlug(nursery.nursery_name);
+    establishments.forEach((establishment) => {
+      // Use createSlug to generate the slug from the establishment name
+      const slug = createSlug(establishment.nursery_name);
+
+      const routeSegment = (establishment.role === 'center' || establishment.type === 'centers') ? 'centers' : 'nurseries';
 
       routing.locales.forEach((locale) => {
         sitemap.push({
-          url: `${baseUrl}/${locale}/nurseries/${slug}`,
+          url: `${baseUrl}/${locale}/establishments/${routeSegment}/${establishment.id}-${slug}`,
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 0.7,
           alternates: {
             languages: {
-              en: `${baseUrl}/en/nurseries/${slug}`,
-              ar: `${baseUrl}/ar/nurseries/${slug}`,
-              "x-default": `${baseUrl}/ar/nurseries/${slug}`,
+              en: `${baseUrl}/en/establishments/${routeSegment}/${establishment.id}-${slug}`,
+              ar: `${baseUrl}/ar/establishments/${routeSegment}/${establishment.id}-${slug}`,
+              "x-default": `${baseUrl}/ar/establishments/${routeSegment}/${establishment.id}-${slug}`,
             },
           },
         });
       });
     });
+
   } catch (error) {
-    console.error("Failed to fetch nurseries for sitemap:", error);
+    console.error("Failed to fetch establishments for sitemap:", error);
   }
 
   // 3. Add dynamic blog routes

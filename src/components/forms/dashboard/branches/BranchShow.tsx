@@ -116,7 +116,7 @@ const BranchShow = ({ branchId }: { branchId: string }) => {
               </Button>
             ) : (
               <Button asChild size="sm" variant="outline">
-                <Link href="/dashboard/center/branches">
+                <Link href="/dashboard/nursery/branches">
                   {locale === "ar" ? "العودة" : "Back"}
                 </Link>
               </Button>

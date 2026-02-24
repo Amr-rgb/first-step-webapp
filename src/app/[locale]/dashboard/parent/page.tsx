@@ -158,7 +158,7 @@ export default function ParentDashboardHome() {
                       variant="outline"
                       className="w-full sm:w-auto gap-2 text-primary border-primary hover:bg-primary/5"
                     >
-                      <Link href="/nurseries">
+                      <Link href="/establishments">
                         {t("bookNow")} <Plus className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -170,7 +170,7 @@ export default function ParentDashboardHome() {
                   icon={Rocket}
                   primaryAction={{
                     label: t("bookNow"),
-                    onClick: () => router.push("/nurseries"),
+                    onClick: () => router.push("/establishments"),
                   }}
                 />
               )}
@@ -229,7 +229,7 @@ export default function ParentDashboardHome() {
                       variant="outline"
                       className="w-full sm:w-auto gap-2 text-primary border-primary hover:bg-primary/5"
                     >
-                      <Link href="/nurseries">
+                      <Link href="/establishments">
                         {t("bookNow")} <Plus className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -241,7 +241,7 @@ export default function ParentDashboardHome() {
                   icon={Baby}
                   primaryAction={{
                     label: t("bookNow"),
-                    onClick: () => router.push("/nurseries"),
+                    onClick: () => router.push("/establishments"),
                   }}
                 />
               )}

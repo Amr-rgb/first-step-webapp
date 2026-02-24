@@ -4,7 +4,7 @@ import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,43 +56,47 @@ function Carousel({
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
     },
-    plugins
+    plugins,
   );
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return;
-    
+
     try {
       queueMicrotask(() => {
-        if (api && typeof api.canScrollPrev === 'function' && typeof api.canScrollNext === 'function') {
+        if (
+          api &&
+          typeof api.canScrollPrev === "function" &&
+          typeof api.canScrollNext === "function"
+        ) {
           setCanScrollPrev(api.canScrollPrev());
           setCanScrollNext(api.canScrollNext());
         }
       });
     } catch (error) {
-      console.warn('Carousel onSelect error:', error);
+      console.warn("Carousel onSelect error:", error);
     }
   }, []);
 
   const scrollPrev = React.useCallback(() => {
     try {
-      if (api && typeof api.scrollPrev === 'function') {
+      if (api && typeof api.scrollPrev === "function") {
         api.scrollPrev();
       }
     } catch (error) {
-      console.warn('Carousel scrollPrev error:', error);
+      console.warn("Carousel scrollPrev error:", error);
     }
   }, [api]);
 
   const scrollNext = React.useCallback(() => {
     try {
-      if (api && typeof api.scrollNext === 'function') {
+      if (api && typeof api.scrollNext === "function") {
         api.scrollNext();
       }
     } catch (error) {
-      console.warn('Carousel scrollNext error:', error);
+      console.warn("Carousel scrollNext error:", error);
     }
   }, [api]);
 
@@ -106,7 +110,7 @@ function Carousel({
         scrollNext();
       }
     },
-    [scrollPrev, scrollNext]
+    [scrollPrev, scrollNext],
   );
 
   React.useEffect(() => {
@@ -116,11 +120,11 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return;
-    
+
     // Delay to ensure API is fully initialized in React 19
     const timer = setTimeout(() => {
       onSelect(api);
-      if (api && typeof api.on === 'function') {
+      if (api && typeof api.on === "function") {
         api.on("reInit", onSelect);
         api.on("select", onSelect);
       }
@@ -128,7 +132,7 @@ function Carousel({
 
     return () => {
       clearTimeout(timer);
-      if (api && typeof api.off === 'function') {
+      if (api && typeof api.off === "function") {
         api.off("select", onSelect);
         api.off("reInit", onSelect);
       }
@@ -176,7 +180,7 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
         className={cn(
           "flex",
           orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
-          className
+          className,
         )}
         {...props}
       />
@@ -195,7 +199,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "min-w-0 shrink-0 grow-0 basis-full",
         orientation === "horizontal" ? "pl-4" : "pt-4",
-        className
+        className,
       )}
       {...props}
     />
@@ -206,9 +210,19 @@ function CarouselPrevious({
   className,
   variant = "outline",
   size = "icon",
+  useChevron = false,
   ...props
-}: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+}: React.ComponentProps<typeof Button> & { useChevron?: boolean }) {
+  const { orientation, scrollPrev, canScrollPrev, opts } = useCarousel();
+  const isRtl = opts?.direction === "rtl";
+
+  const Icon = isRtl
+    ? useChevron
+      ? ChevronRight
+      : ArrowRight
+    : useChevron
+      ? ChevronLeft
+      : ArrowLeft;
 
   return (
     <Button
@@ -220,13 +234,13 @@ function CarouselPrevious({
         orientation === "horizontal"
           ? "top-1/2 left-0 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        className
+        className,
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft />
+      <Icon />
       <span className="sr-only">Previous slide</span>
     </Button>
   );
@@ -236,9 +250,19 @@ function CarouselNext({
   className,
   variant = "outline",
   size = "icon",
+  useChevron = false,
   ...props
-}: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollNext, canScrollNext } = useCarousel();
+}: React.ComponentProps<typeof Button> & { useChevron?: boolean }) {
+  const { orientation, scrollNext, canScrollNext, opts } = useCarousel();
+  const isRtl = opts?.direction === "rtl";
+
+  const Icon = isRtl
+    ? useChevron
+      ? ChevronLeft
+      : ArrowLeft
+    : useChevron
+      ? ChevronRight
+      : ArrowRight;
 
   return (
     <Button
@@ -250,13 +274,13 @@ function CarouselNext({
         orientation === "horizontal"
           ? "top-1/2 right-0 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        className
+        className,
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight />
+      <Icon />
       <span className="sr-only">Next slide</span>
     </Button>
   );

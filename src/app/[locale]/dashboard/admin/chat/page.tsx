@@ -8,7 +8,7 @@ import { toastError } from "@/lib/toast";
 import ChatSidebar from "@/components/dashboard/chat/ChatSidebar";
 import ChatInterface from "@/components/dashboard/chat/ChatInterface";
 import { User, Message, ChatListItem } from "@/components/dashboard/chat/types";
-import { chatService } from "@/services/chatService";
+import { chatService, chatUtils } from "@/services/chatService";
 import { pusherService } from "@/services/pusherService";
 import { useAuthStore } from "@/store/authStore";
 
@@ -93,23 +93,40 @@ const AdminChatPage = () => {
 
       setMessages(conversationMessages);
 
-      // Update last message in conversations list
+      // For admin, we don't mark messages as read since admin is just viewing
+      // But we can still reset unread count in the UI for better UX
+      
+      // Update last message in conversations list and reset unread count
       if (conversationMessages.length > 0) {
-        const lastMessage =
-          conversationMessages[conversationMessages.length - 1];
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.id === selectedChatId
-              ? {
-                  ...chat,
-                  lastMessage: lastMessage.content,
-                  timestamp: lastMessage.timestamp,
-                }
-              : chat
-          )
-        );
+        // Use utility function to get the actual last message by timestamp
+        const lastMessage = chatUtils.getLastMessage(conversationMessages);
+        if (lastMessage) {
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
+              chat.id === selectedChatId
+                ? {
+                    ...chat,
+                    lastMessage: lastMessage.content,
+                    timestamp: lastMessage.timestamp,
+                    unreadCount: 0, // Reset unread count for admin view
+                  }
+                : chat
+            );
+            // Sort chats by last message timestamp
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
+        }
       } else {
         console.log("📭 [AdminChat] No messages found");
+        // Even if no messages, reset unread count for this conversation
+        setChats((prevChats) => {
+          const updatedChats = prevChats.map((chat) =>
+            chat.id === selectedChatId
+              ? { ...chat, unreadCount: 0 }
+              : chat
+          );
+          return chatUtils.sortChatsByLastMessage(updatedChats);
+        });
       }
     } catch (error) {
       console.error("❌ Error fetching messages:", error);
@@ -136,10 +153,10 @@ const AdminChatPage = () => {
     // Set online
     updateStatus(true);
 
-    // Set up interval to keep alive (every 30 seconds)
+    // Set up interval to keep alive (every 2 minutes instead of 30 seconds to avoid rate limiting)
     keepAliveInterval = setInterval(() => {
       updateStatus(true);
-    }, 30000);
+    }, 120000); // 2 minutes
 
     // Set up beforeunload to set offline
     const handleBeforeUnload = () => {
@@ -220,12 +237,16 @@ const AdminChatPage = () => {
           selectedChatId === conversationId1 ||
           selectedChatId === conversationId2
         ) {
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            const newMessages = [...prev, newMessage];
+            // Sort messages by timestamp to ensure proper ordering
+            return chatUtils.sortMessagesByTimestamp(newMessages);
+          });
         }
 
         // Update last message in conversations list for both possible conversation IDs
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
+        setChats((prevChats) => {
+          const updatedChats = prevChats.map((chat) =>
             chat.id === conversationId1 || chat.id === conversationId2
               ? {
                   ...chat,
@@ -233,8 +254,10 @@ const AdminChatPage = () => {
                   timestamp: newMessage.timestamp,
                 }
               : chat
-          )
-        );
+          );
+          // Sort chats by last message timestamp
+          return chatUtils.sortChatsByLastMessage(updatedChats);
+        });
       },
       onConversationUpdate: (conversationData) => {
         console.log("📋 Admin conversations update:", conversationData);
@@ -265,11 +288,15 @@ const AdminChatPage = () => {
             videoUrl: message.video_url,
           };
 
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            const newMessages = [...prev, newMessage];
+            // Sort messages by timestamp to ensure proper ordering
+            return chatUtils.sortMessagesByTimestamp(newMessages);
+          });
 
           // Update last message in conversations list
-          setChats((prevChats) =>
-            prevChats.map((chat) =>
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
               chat.id === selectedChatId
                 ? {
                     ...chat,
@@ -277,8 +304,10 @@ const AdminChatPage = () => {
                     timestamp: newMessage.timestamp,
                   }
                 : chat
-            )
-          );
+            );
+            // Sort chats by last message timestamp
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
         },
       });
 
@@ -298,11 +327,15 @@ const AdminChatPage = () => {
             videoUrl: message.video_url,
           };
 
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            const newMessages = [...prev, newMessage];
+            // Sort messages by timestamp to ensure proper ordering
+            return chatUtils.sortMessagesByTimestamp(newMessages);
+          });
 
           // Update last message in conversations list
-          setChats((prevChats) =>
-            prevChats.map((chat) =>
+          setChats((prevChats) => {
+            const updatedChats = prevChats.map((chat) =>
               chat.id === selectedChatId
                 ? {
                     ...chat,
@@ -310,8 +343,10 @@ const AdminChatPage = () => {
                     timestamp: newMessage.timestamp,
                   }
                 : chat
-            )
-          );
+            );
+            // Sort chats by last message timestamp
+            return chatUtils.sortChatsByLastMessage(updatedChats);
+          });
         },
       });
     }
@@ -358,6 +393,14 @@ const AdminChatPage = () => {
 
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
+    
+    // For admin, just reset the unread count in the UI (admin doesn't mark messages as read)
+    setChats((prevChats) => {
+      const updatedChats = prevChats.map((chat) =>
+        chat.id === chatId ? { ...chat, unreadCount: 0 } : chat
+      );
+      return chatUtils.sortChatsByLastMessage(updatedChats);
+    });
   };
 
   const handleBackToChats = () => {
@@ -389,7 +432,8 @@ const AdminChatPage = () => {
       setMessages((prev) => {
         const updated = [...prev, newMessage];
         console.log("📤 Messages after adding:", updated.length);
-        return updated;
+        // Sort messages by timestamp to ensure proper ordering
+        return chatUtils.sortMessagesByTimestamp(updated);
       });
 
       // Verify the message was actually saved by fetching messages again
@@ -422,8 +466,8 @@ const AdminChatPage = () => {
       }
 
       // Update last message in conversations list
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) =>
           chat.id === selectedChatId
             ? {
                 ...chat,
@@ -431,8 +475,10 @@ const AdminChatPage = () => {
                 timestamp: newMessage.timestamp,
               }
             : chat
-        )
-      );
+        );
+        // Sort chats by last message timestamp
+        return chatUtils.sortChatsByLastMessage(updatedChats);
+      });
 
       console.log("📤 Message added to UI successfully");
     } catch (error) {

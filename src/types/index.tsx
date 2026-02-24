@@ -164,32 +164,27 @@ export interface Pricing {
 }
 
 export interface CenterRegisterPayload {
-  // Step 1 fields
-  name: string;
+  // Basic Info
+  name?: string;
   email: string;
-  password: string;
+  password: string; // optional in some contexts? Schema says required.
   phone: string;
   nursery_name: string;
-  location: string;
-  neighborhood: string;
-  city: string;
-  nursery_type: string[];
-  types: string[];
+  city_id: string;
   logo: File;
-
-  // Step 2 fields
-  commercial_record_path: File;
-  license_path: File;
+  category_service_ids?: number[];
 }
 
-// Extended interface for nursery API response that includes user_id
-export interface NurseryResponse extends Omit<
+// Extended interface for establishment API response that includes user_id
+export interface EstablishmentResponse extends Omit<
   CenterRegisterPayload,
   "logo" | "license_path" | "commercial_record_path" | "city"
 > {
   id: number;
   user_id: number;
   center_id?: number;
+  type?: string; // 'nurseries' | 'centers' | etc.
+  role?: string; // 'nursery' | 'center'
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
@@ -201,7 +196,20 @@ export interface NurseryResponse extends Omit<
     nursery_name_branch: string;
   }>;
   city: string | { name: { ar: string; en: string } };
+  neighborhood?: string | { ar: string; en: string } | null;
   address?: string;
+  nursery?: {
+    center_id: number;
+    nursery_name: string;
+    logo?: string;
+    [key: string]: any;
+  };
+  center?: {
+    center_id: number;
+    nursery_name: string;
+    logo?: string;
+    [key: string]: any;
+  };
 }
 
 // ===== Child Info Form Types =====
@@ -288,12 +296,22 @@ export interface Value {
   image: string;
 }
 
+export interface CategoryService {
+  id: number;
+  name: {
+    en: string;
+    ar: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
 // -----------------------------
 // Chat Feature Types
 // -----------------------------
 
 // User roles in the system
-export type Role = "parent" | "center" | "admin";
+export type Role = "parent" | "center" | "admin" | "nursery";
 
 // User object for chat participants
 export interface User {
@@ -313,6 +331,12 @@ export interface Message {
   read: boolean; // Tracks if the message has been read
 }
 
+export interface Branch {
+  id: number;
+  name: string;
+  nursery_name_branch: string;
+}
+
 // -----------------------------
 // Portfolio Types for Nursery Details
 // -----------------------------
@@ -321,71 +345,68 @@ export interface HeroSection {
   title_of_hero: string;
   subtitle_of_hero: string;
   description: string;
-  background_image: string;
-}
-
-export interface Branch {
-  id: number;
-  name: string;
-  nursery_name_branch: string;
-}
-
-export interface PhilosophyMethodologyGoal {
-  philosophy?: {
-    content: string;
-  };
-  methodology?: {
-    content: string;
-  };
-  goals?: {
-    content: string;
-  };
-}
-
-export interface PortfolioService {
-  title: string;
-  description: string;
-  image_service?: string;
-}
-
-export interface NurseryState {
-  area?: string;
-  class_rooms?: string;
-  team_members?: string;
-}
-
-export interface TeamMember {
-  name: string;
-  mission: string;
-  image?: string;
 }
 
 export interface ContactInfo {
-  address?: string;
-  working_hours?: string;
-  phone_number?: string;
-  email_address?: string;
   facebook?: string;
   instagram?: string;
   twitter?: string;
-  whatsapp?: string;
+  linkedIn?: string;
+  website?: string;
+}
+
+export interface AdminOption {
+  id: number;
+  title: {
+    ar: string;
+    en: string;
+  };
+  image: string;
+  pivot: {
+    center_id: number;
+    admin_option_id: number;
+  };
+}
+
+export interface License {
+  id: number;
+  number: string;
+  document: string;
 }
 
 export interface PortfolioData {
+  id: number;
+  center_id: number;
   hero_section?: HeroSection;
-  branches?: {
-    branch_name: string;
+  images_activities?: {
+    id: number;
+    image: string;
+    summary: string;
+    kind: string;
   }[];
-  Philosophy_Methodology_Goal?: PhilosophyMethodologyGoal;
-  services?: PortfolioService[];
-  service_section_title?: string;
-  nursery_state?: NurseryState;
-  images_activities?: string[];
-  activity_section_title?: string;
-  activity_section_subtitle?: string;
-  teams?: TeamMember[];
   contact_info?: ContactInfo;
   ads_images?: string[];
+  admin_options?: AdminOption[];
+  licenses?: License[];
+  services?: {
+    id: number;
+    title: string;
+    description: string;
+    image_service: string;
+    price: string;
+  }[];
+  teams?: {
+    id: number;
+    name: string;
+    mission: string;
+    image: string;
+  }[];
+  statistics?: {
+    id: number;
+    address: string;
+    value: string;
+  }[];
+  name?: string;
 }
 
 export interface PortfolioResponse {
@@ -395,54 +416,67 @@ export interface PortfolioResponse {
 
 // Profile Editor Types
 export interface PortfolioFormData {
-  logo?: string;
-  title_of_hero: string;
-  subtitle_of_hero: string;
-  description: string;
-  background_image: File | string;
-  branches: {
-    branch_name: string;
+  // Hero Info
+  name?: string;
+  title_of_hero?: string;
+  subtitle_of_hero?: string;
+  description?: string;
+
+  // Activities (Success Stories)
+  images_activities?: {
+    id?: number;
+    image?: File | string;
+    summary?: string;
+    kind?: string;
   }[];
-  Philosophy_Methodology_Goal: {
-    philosophy: {
-      content: string;
-    };
-    methodology: {
-      content: string;
-    };
-    goals: {
-      content: string;
-    };
-  };
-  service_section_title: string;
-  services: {
+  delete_images_activities?: number[];
+
+  // Services
+  services?: {
+    id?: number;
     title: string;
     description: string;
-    image_service: File | string;
+    image_service?: File | string;
+    price: string;
   }[];
-  nursery_state: {
-    area: string;
-    class_rooms: string;
-    team_members: string;
-  };
-  activity_section_title: string;
-  activity_section_subtitle: string;
-  images_activities: (File | string)[];
-  contact_info: {
-    address: string;
-    working_hours: string;
-    phone_number: string;
-    email_address: string;
-    facebook: string;
-    instagram: string;
-    whatsapp: string;
-  };
-  ads_images: (File | string)[];
-  teams: {
+  delete_service_ids?: number[];
+
+  // Teams
+  teams?: {
+    id?: number;
     name: string;
     mission: string;
-    image: File | string;
+    image?: File | string;
   }[];
+  delete_team_ids?: number[];
+
+  // Statistics
+  statistics?: {
+    id?: number;
+    address: string;
+    value: string;
+  }[];
+
+  // Facilities / Options
+  admin_option_ids?: number[];
+  delete_center_options?: number[];
+
+  // Licenses
+  licenses?: {
+    id?: number;
+    number: string;
+    document?: File | string;
+  }[];
+  delete_license_ids?: number[];
+
+  // Social links
+  contact_info?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    linkedIn?: string;
+    website?: string;
+  };
 }
 
 export interface PricingFormData {
@@ -529,4 +563,21 @@ export interface ProfileSection {
   name: string;
   enabled: boolean;
   data: Record<string, any>;
+}
+
+export interface NurseryPlan {
+  title: string;
+  description: string;
+  price: string;
+}
+
+export interface NurseryRegisterPayload {
+  name?: string;
+  email: string;
+  phone: string;
+  password: string;
+  nursery_name: string;
+  city_id: string;
+  logo: File;
+  category_service_ids?: number[];
 }

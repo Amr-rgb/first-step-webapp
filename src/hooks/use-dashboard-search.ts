@@ -115,11 +115,16 @@ export const useDashboardSearch = () => {
           category: t("categories.communication"),
           type: "page",
           icon: "bell",
-        }
+        },
       );
     }
 
-    if (user.role === "center" || user.role === "branch_admin") {
+    // Center Role & Center Branch Admin
+    if (
+      user.role === "center" ||
+      user.role === "nursery" ||
+      (user.role === "branch_admin" && user.center_id)
+    ) {
       baseContent.push(
         {
           id: "center-dashboard",
@@ -192,7 +197,85 @@ export const useDashboardSearch = () => {
           category: t("categories.communication"),
           type: "page",
           icon: "bell",
-        }
+        },
+      );
+    }
+
+    // Nursery Branch Admin (No Center ID)
+    if (user.role === "branch_admin" && !user.center_id) {
+      baseContent.push(
+        {
+          id: "nursery-dashboard",
+          title: sidebarT("center.home"), // Assuming same translation key provided it works
+          description: t("center.dashboard.description"),
+          url: "/dashboard/nursery",
+          category: t("categories.dashboard"),
+          type: "page",
+          icon: "home",
+        },
+        {
+          id: "nursery-branches",
+          title: sidebarT("center.branches"),
+          description: t("center.branches.description"),
+          url: "/dashboard/nursery/branches",
+          category: t("categories.management"),
+          type: "page",
+          icon: "building",
+        },
+        {
+          id: "nursery-children-files",
+          title: sidebarT("center.children-files"),
+          description: t("center.childrenFiles.description"),
+          url: "/dashboard/nursery/children-files",
+          category: t("categories.management"),
+          type: "page",
+          icon: "files",
+        },
+        {
+          id: "nursery-bookings",
+          title: sidebarT("center.bookings"),
+          description: t("center.bookings.description"),
+          url: "/dashboard/nursery/bookings",
+          category: t("categories.bookings"),
+          type: "page",
+          icon: "calendar",
+        },
+        {
+          id: "nursery-daily-reports",
+          title: sidebarT("center.daily-reports"),
+          description: t("center.dailyReports.description"),
+          url: "/dashboard/nursery/daily-reports",
+          category: t("categories.reports"),
+          type: "page",
+          icon: "file-text",
+        },
+        {
+          id: "nursery-ad-blog-request",
+          title: sidebarT("center.ad-or-blog-request"),
+          description: t("center.adBlogRequest.description"),
+          url: "/dashboard/nursery/ad-or-blog-request",
+          category: t("categories.content"),
+          type: "page",
+          icon: "megaphone",
+        },
+        {
+          id: "nursery-team",
+          title: sidebarT("center.team"),
+          description: t("center.team.description"),
+          url: "/dashboard/nursery/team",
+          category: t("categories.management"),
+          type: "page",
+          icon: "users",
+        },
+        {
+          id: "nursery-notifications",
+          title: sidebarT("center.notifications"),
+          description: t("center.notifications.description"),
+          url: "/dashboard/nursery/notifications",
+          category: t("categories.communication"),
+          type: "page",
+          icon: "bell",
+        },
       );
     }
 
@@ -224,7 +307,7 @@ export const useDashboardSearch = () => {
           category: t("categories.reports"),
           type: "page",
           icon: "file-text",
-        }
+        },
       );
     }
 
@@ -301,7 +384,7 @@ export const useDashboardSearch = () => {
       setResults(sortedResults);
       setIsSearching(false);
     },
-    [searchableContent, setResults, setIsSearching]
+    [searchableContent, setResults, setIsSearching],
   );
 
   // Handle search input change
@@ -314,7 +397,7 @@ export const useDashboardSearch = () => {
         setResults([]);
       }
     },
-    [setQuery, search, setResults]
+    [setQuery, search, setResults],
   );
 
   // Handle search submit

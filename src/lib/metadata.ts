@@ -45,7 +45,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "نظرة عامة ورؤى للمسؤولين.",
     },
   },
-  "dashboard/center": {
+  "dashboard/nursery": {
     en: {
       title: "Center Dashboard",
       description: "Manage center operations, bookings, and teams.",
@@ -237,35 +237,35 @@ export const dashboardMetadata: DashboardMetaMap = {
   },
 
   // Center
-  "dashboard/center/bookings": {
+  "dashboard/nursery/bookings": {
     en: {
       title: "Center • Bookings",
       description: "Manage bookings and schedules.",
     },
     ar: { title: "المركز • الحجوزات", description: "إدارة الحجوزات والجداول." },
   },
-  "dashboard/center/branches": {
+  "dashboard/nursery/branches": {
     en: {
       title: "Center • Branches",
       description: "Create and manage center branches.",
     },
     ar: { title: "المركز • الفروع", description: "إنشاء وإدارة فروع المركز." },
   },
-  "dashboard/center/branches/add": {
+  "dashboard/nursery/branches/add": {
     en: {
       title: "Center • Add Branch",
       description: "Create a new branch for your center.",
     },
     ar: { title: "المركز • إضافة فرع", description: "إنشاء فرع جديد للمركز." },
   },
-  "dashboard/center/branches/edit": {
+  "dashboard/nursery/branches/edit": {
     en: {
       title: "Center • Edit Branch",
       description: "Edit branch information.",
     },
     ar: { title: "المركز • تعديل الفرع", description: "تعديل معلومات الفرع." },
   },
-  "dashboard/center/chat": {
+  "dashboard/nursery/chat": {
     en: {
       title: "Center • Chat",
       description: "Chat with parents and admins.",
@@ -275,7 +275,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "التواصل مع أولياء الأمور والمسؤولين.",
     },
   },
-  "dashboard/center/notifications": {
+  "dashboard/nursery/notifications": {
     en: {
       title: "Center • Notifications",
       description: "Manage notifications to parents.",
@@ -285,7 +285,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إدارة الإشعارات الموجهة للأهالي.",
     },
   },
-  "dashboard/center/all-notifications": {
+  "dashboard/nursery/all-notifications": {
     en: {
       title: "Center • All Notifications",
       description: "View all center notifications.",
@@ -295,7 +295,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "عرض جميع إشعارات المركز.",
     },
   },
-  "dashboard/center/account": {
+  "dashboard/nursery/account": {
     en: {
       title: "Center • Account",
       description: "Manage account settings and profile.",
@@ -305,7 +305,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إدارة إعدادات الحساب والملف الشخصي.",
     },
   },
-  "dashboard/center/center-data": {
+  "dashboard/nursery/center-data": {
     en: {
       title: "Center • Center Data",
       description: "Edit and preview center profile.",
@@ -315,7 +315,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "تعديل ومعاينة ملف المركز.",
     },
   },
-  "dashboard/center/team": {
+  "dashboard/nursery/team": {
     en: {
       title: "Center • Team",
       description: "Manage staff members and roles.",
@@ -325,7 +325,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إدارة أعضاء الفريق والأدوار.",
     },
   },
-  "dashboard/center/team/add": {
+  "dashboard/nursery/team/add": {
     en: {
       title: "Center • Add Team Member",
       description: "Invite or add a new team member.",
@@ -335,7 +335,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "دعوة أو إضافة عضو جديد للفريق.",
     },
   },
-  "dashboard/center/children-files": {
+  "dashboard/nursery/children-files": {
     en: {
       title: "Center • Children Files",
       description: "Upload and manage children documents.",
@@ -345,7 +345,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "رفع وإدارة مستندات الأطفال.",
     },
   },
-  "dashboard/center/daily-reports": {
+  "dashboard/nursery/daily-reports": {
     en: {
       title: "Center • Daily Reports",
       description: "Create and review daily reports.",
@@ -355,7 +355,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إنشاء ومراجعة التقارير اليومية.",
     },
   },
-  "dashboard/center/daily-reports/send": {
+  "dashboard/nursery/daily-reports/send": {
     en: {
       title: "Center • Send Report",
       description: "Send a new daily report.",
@@ -365,7 +365,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إرسال تقرير يومي جديد.",
     },
   },
-  "dashboard/center/ad-or-blog-request": {
+  "dashboard/nursery/ad-or-blog-request": {
     en: {
       title: "Center • Ad/Blog Requests",
       description: "Submit or manage ad/blog requests.",
@@ -375,21 +375,21 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إرسال أو إدارة طلبات الإعلان والمدونة.",
     },
   },
-  "dashboard/center/ad-or-blog-request/ad-request": {
+  "dashboard/nursery/ad-or-blog-request/ad-request": {
     en: {
       title: "Center • Ad Request",
       description: "Submit an advertisement request.",
     },
     ar: { title: "المركز • طلب إعلان", description: "إرسال طلب إعلان." },
   },
-  "dashboard/center/ad-or-blog-request/blog-request": {
+  "dashboard/nursery/ad-or-blog-request/blog-request": {
     en: {
       title: "Center • Blog Request",
       description: "Submit a blog post request.",
     },
     ar: { title: "المركز • طلب تدوينة", description: "إرسال طلب تدوينة." },
   },
-  "dashboard/center/ad-or-blog-request/edit-blog": {
+  "dashboard/nursery/ad-or-blog-request/edit-blog": {
     en: {
       title: "Center • Edit Blog",
       description: "Edit submitted blog post.",
@@ -399,7 +399,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "تعديل التدوينة المرسلة.",
     },
   },
-  "dashboard/center/discount-coupons": {
+  "dashboard/nursery/discount-coupons": {
     en: {
       title: "Center • Discount Coupons",
       description: "Manage discount coupons for your center.",
@@ -409,7 +409,7 @@ export const dashboardMetadata: DashboardMetaMap = {
       description: "إدارة كوبونات الخصم لمركزك.",
     },
   },
-  "dashboard/center/billing": {
+  "dashboard/nursery/billing": {
     en: {
       title: "Center • Billing",
       description: "Invoices, payments, and subscriptions.",

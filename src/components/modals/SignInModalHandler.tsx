@@ -21,7 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Building2, UserRound, X, ArrowLeft } from "lucide-react";
+import {
+  Building2,
+  UserRound,
+  X,
+  ArrowLeft,
+  School,
+  GraduationCap,
+  BookOpen,
+} from "lucide-react";
 
 type ViewType =
   | "signin"
@@ -37,7 +45,7 @@ let globalModalState = {
     globalModalState.isOpen = open;
     // Trigger re-render for all modal instances
     window.dispatchEvent(
-      new CustomEvent("signInModalToggle", { detail: { isOpen: open } })
+      new CustomEvent("signInModalToggle", { detail: { isOpen: open } }),
     );
   },
 };
@@ -109,6 +117,12 @@ const SignInModalHandler = () => {
 
       if (data.user.role === "center") {
         dashboardPath = "/dashboard/center";
+      } else if (data.user.role === "nursery") {
+        dashboardPath = "/dashboard/nursery";
+      } else if (data.user.role === "branch_admin") {
+        dashboardPath = data.user.center_id
+          ? "/dashboard/center"
+          : "/dashboard/nursery";
       } else if (data.user.role === "parent") {
         dashboardPath = "/dashboard/parent";
       } else if (data.user.role === "admin") {
@@ -170,7 +184,7 @@ const SignInModalHandler = () => {
 
     window.addEventListener(
       "signInModalToggle",
-      handleModalToggle as EventListener
+      handleModalToggle as EventListener,
     );
 
     // Check for direct navigation to sign-in routes
@@ -184,7 +198,7 @@ const SignInModalHandler = () => {
     return () => {
       window.removeEventListener(
         "signInModalToggle",
-        handleModalToggle as EventListener
+        handleModalToggle as EventListener,
       );
     };
   }, [pathname]);
@@ -357,173 +371,119 @@ const SignInModalHandler = () => {
                 </>
               ) : currentView === "account-type" ? (
                 <>
-                  <DialogHeader className="relative">
+                  <DialogHeader className="relative pb-2">
                     <DialogTitle className="text-center text-2xl font-bold text-foreground">
                       {t("sign-up.select-account-type")}
                     </DialogTitle>
-                    <p className="text-sm text-muted-foreground text-center mt-2">
+                    <p className="text-sm text-muted-foreground text-center mt-2 max-w-[80%] mx-auto">
                       {t("sign-up.select-account-description")}
                     </p>
                   </DialogHeader>
 
-                  <div className="mt-6 space-y-4">
-                    {/* Center Account Button */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                    >
+                  <div className="mt-6 grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto px-1 pb-1">
+                    {/* Roles List */}
+                    {[
+                      {
+                        id: "parent",
+                        title: t("sign-up.parent.title"),
+                        icon: UserRound,
+                        href: "/sign-up/parent",
+                        color: "text-primary",
+                        bgColor: "bg-primary/10",
+                      },
+                      {
+                        id: "nursery",
+                        title: t("sign-up.nursery.title"),
+                        icon: School,
+                        href: "/sign-up/nursery",
+                        color: "text-secondary-orange",
+                        bgColor: "bg-secondary-orange/10",
+                      },
+                      {
+                        id: "rehab-center",
+                        title: t("sign-up.rehab-center.title"),
+                        icon: Building2,
+                        href: "/sign-up/center",
+                        color: "text-secondary-purple",
+                        bgColor: "bg-secondary-purple/10",
+                      },
+                      {
+                        id: "mentor",
+                        title: t("sign-up.mentor.title"),
+                        icon: GraduationCap,
+                        href: "#",
+                        soon: true,
+                        color: "text-blue-500",
+                        bgColor: "bg-blue-500/10",
+                      },
+                      {
+                        id: "teacher",
+                        title: t("sign-up.teacher.title"),
+                        icon: BookOpen,
+                        href: "#",
+                        soon: true,
+                        color: "text-green-500",
+                        bgColor: "bg-green-500/10",
+                      },
+                    ].map((role, index) => (
                       <motion.div
-                        className="relative overflow-hidden rounded-lg"
-                        whileHover="hover"
-                        whileTap={{ scale: 0.98 }}
-                        initial="initial"
+                        key={role.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.2, delay: index * 0.05 }}
+                        className={index === 2 ? "col-span-2" : ""} // Make center full width if odd count? Nah, let's keep grid. Maybe span 2 for the 3rd item if we want symmetry with 5 items. Let's try to keep it simple first. Actually, 5 items in 2 cols leaves one hanging. Let's make the 3rd item (Rehab) span 2 cols to emphasize it? Or maybe the list order. Parent/Nursery (top), Center (middle), Mentor/Teacher (bottom). Layout: 2, 1, 2.
                       >
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          className="w-full h-auto p-6 flex items-start space-x-4 hover:border-primary/50 transition-all duration-300 relative overflow-visible hover:!bg-transparent"
-                          onClick={() => {
-                            // Close modal and navigate to center signup
-                            globalModalState.setIsOpen(false);
-                            sessionStorage.removeItem("previousPath"); // Clear stored path since we're navigating away
-                            router.push("/sign-up/center");
-                          }}
+                        <motion.div
+                          className="relative h-full"
+                          whileHover={!role.soon ? "hover" : undefined}
+                          whileTap={!role.soon ? { scale: 0.98 } : undefined}
+                          initial="initial"
                         >
-                          <motion.div
-                            className="absolute inset-0 bg-primary/10 m-0"
-                            variants={{
-                              initial: {
-                                clipPath: "circle(24px at 42px 50%)",
-                                opacity: 0,
-                              },
-                              hover: {
-                                clipPath: "circle(120% at 50% 50%)",
-                                opacity: 1,
-                              },
+                          <Button
+                            variant="outline"
+                            className={`w-full h-full min-h-[140px] p-4 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all duration-300 relative overflow-hidden group ${
+                              role.soon ? "opacity-70 cursor-default" : ""
+                            }`}
+                            onClick={() => {
+                              if (role.soon) return;
+                              globalModalState.setIsOpen(false);
+                              sessionStorage.removeItem("previousPath");
+                              router.push(role.href);
                             }}
-                            transition={{
-                              duration: 0.5,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          />
-
-                          <motion.div
-                            className="p-2 rounded-lg text-primary relative z-10"
-                            variants={{
-                              initial: { x: 0 },
-                              hover: { x: 5 },
-                            }}
-                            transition={{ type: "spring", stiffness: 300 }}
                           >
-                            <Building2 className="h-6 w-6" />
-                          </motion.div>
+                            {/* Background Hover Effect */}
+                            {!role.soon && (
+                              <motion.div
+                                className={`absolute inset-0 ${role.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                              />
+                            )}
 
-                          <div className="text-left flex-1 relative z-10">
-                            <motion.h3
-                              className="text-lg font-semibold text-foreground"
-                              variants={{
-                                initial: { x: 0 },
-                                hover: { x: 3 },
-                              }}
-                              transition={{ type: "spring", stiffness: 300 }}
+                            {/* Icon Container */}
+                            <div
+                              className={`p-3 rounded-full ${role.bgColor} ${role.color} relative z-10 group-hover:scale-110 transition-transform duration-300`}
                             >
-                              {t("sign-up.center.title")}
-                            </motion.h3>
-                          </div>
+                              <role.icon className="h-6 w-6" />
+                            </div>
 
-                          <motion.div
-                            className="relative z-10"
-                            variants={{
-                              initial: { x: 0 },
-                              hover: { x: 5 },
-                            }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            <ArrowLeft className="h-5 w-5 text-mid-gray ml-2 ltr:rotate-180" />
-                          </motion.div>
-                        </Button>
+                            {/* Text */}
+                            <div className="flex flex-col items-center gap-1 relative z-10">
+                              <span className="font-semibold text-foreground text-center text-sm break-words whitespace-normal leading-tight">
+                                {role.title}
+                              </span>
+                            </div>
+
+                            {/* Soon Badge */}
+                            {role.soon && (
+                              <div className="absolute top-2 right-2">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 uppercase tracking-wide">
+                                  {t("sign-up.mentor.soon")}
+                                </span>
+                              </div>
+                            )}
+                          </Button>
+                        </motion.div>
                       </motion.div>
-                    </motion.div>
-
-                    {/* Parent Account Button */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.2 }}
-                    >
-                      <motion.div
-                        className="relative overflow-hidden rounded-lg"
-                        whileHover="hover"
-                        whileTap={{ scale: 0.98 }}
-                        initial="initial"
-                      >
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          className="w-full h-auto p-6 flex items-start space-x-4 hover:border-primary/50 transition-all duration-300 relative overflow-visible hover:!bg-transparent"
-                          onClick={() => {
-                            // Close modal and navigate to parent signup
-                            globalModalState.setIsOpen(false);
-                            sessionStorage.removeItem("previousPath"); // Clear stored path since we're navigating away
-                            router.push("/sign-up/parent");
-                          }}
-                        >
-                          <motion.div
-                            className="absolute inset-0 bg-primary/10 m-0"
-                            variants={{
-                              initial: {
-                                clipPath: "circle(24px at 42px 50%)",
-                                opacity: 0,
-                              },
-                              hover: {
-                                clipPath: "circle(120% at 50% 50%)",
-                                opacity: 1,
-                              },
-                            }}
-                            transition={{
-                              duration: 0.5,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                          />
-
-                          <motion.div
-                            className="p-2 rounded-lg text-primary relative z-10"
-                            variants={{
-                              initial: { x: 0 },
-                              hover: { x: 5 },
-                            }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            <UserRound className="h-6 w-6" />
-                          </motion.div>
-
-                          <div className="text-left flex-1 relative z-10">
-                            <motion.h3
-                              className="text-lg font-semibold text-foreground"
-                              variants={{
-                                initial: { x: 0 },
-                                hover: { x: 3 },
-                              }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                            >
-                              {t("sign-up.parent.title")}
-                            </motion.h3>
-                          </div>
-
-                          <motion.div
-                            className="relative z-10"
-                            variants={{
-                              initial: { x: 0 },
-                              hover: { x: 5 },
-                            }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            <ArrowLeft className="h-5 w-5 text-mid-gray ml-2 ltr:rotate-180" />
-                          </motion.div>
-                        </Button>
-                      </motion.div>
-                    </motion.div>
+                    ))}
                   </div>
 
                   <div className="mt-6 pt-4 border-t text-center text-sm">

@@ -12,7 +12,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
   return (
     <Link
       href={`/blog/${blog.id}`}
-      className="bg-white shadow-card min-w-60 p-2 pb-4 flex flex-col items-start gap-y-2 rounded-2xl text-left rtl:text-right hover:shadow-sm transition-shadow duration-300 cursor-pointer"
+      className="bg-white shadow-card p-2 pb-4 flex flex-col items-start gap-y-2 rounded-2xl text-left rtl:text-right hover:shadow-sm transition-shadow duration-300 cursor-pointer w-full"
     >
       <div className="w-full h-40 rounded-xl overflow-hidden relative">
         <Image

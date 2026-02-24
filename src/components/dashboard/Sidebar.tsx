@@ -37,70 +37,75 @@ interface NavbarItem {
   icon: (props: any) => React.JSX.Element;
 }
 
-const getCenterNavbar = (t: any): NavbarItem[] => [
+const getCenterNavbar = (
+  t: any,
+  basePath: string = "/dashboard/nursery",
+): NavbarItem[] => [
   {
     title: t("center.home"),
-    url: "/dashboard/center",
+    url: basePath,
     icon: dashboardIcons.home,
   },
   {
     title: t("center.branches"),
-    url: "/dashboard/center/branches",
+    url: `${basePath}/branches`,
     icon: dashboardIcons.branches,
   },
   {
     title: t("center.children-files"),
-    url: "/dashboard/center/children-files",
+    url: `${basePath}/children-files`,
     icon: dashboardIcons.files,
   },
   {
     title: t("center.bookings"),
-    url: "/dashboard/center/bookings",
+    url: `${basePath}/bookings`,
     icon: dashboardIcons.bookings,
   },
   {
     title: t("center.daily-reports"),
-    url: "/dashboard/center/daily-reports",
+    url: `${basePath}/daily-reports`,
     icon: dashboardIcons.reports,
   },
   {
-    title: t("center.center-data"),
-    url: "/dashboard/center/center-data",
+    title: basePath.includes("nursery")
+      ? t("center.nursery-data")
+      : t("center.center-data"),
+    url: `${basePath}/${basePath.includes("nursery") ? "nursery-data" : "center-data"}`,
     icon: dashboardIcons.site,
   },
   {
     title: t("center.gate"),
-    url: "/dashboard/center/gate",
+    url: `${basePath}/gate`,
     icon: dashboardIcons.site,
   },
   {
     title: t("center.wallet"),
-    url: "/dashboard/center/wallet",
+    url: `${basePath}/wallet`,
     icon: dashboardIcons.visa,
   },
   {
     title: t("center.ad-or-blog-request"),
-    url: "/dashboard/center/ad-or-blog-request",
+    url: `${basePath}/ad-or-blog-request`,
     icon: dashboardIcons.request,
   },
   {
     title: t("center.notifications"),
-    url: "/dashboard/center/notifications",
+    url: `${basePath}/notifications`,
     icon: dashboardIcons.notifications,
   },
   {
     title: t("center.team"),
-    url: "/dashboard/center/team",
+    url: `${basePath}/team`,
     icon: dashboardIcons.team,
   },
   {
     title: t("center.chat"),
-    url: "/dashboard/center/chat",
+    url: `${basePath}/chat`,
     icon: dashboardIcons.chat,
   },
   {
     title: t("center.discount-coupons"),
-    url: "/dashboard/center/discount-coupons",
+    url: `${basePath}/discount-coupons`,
     icon: dashboardIcons.coupon,
   },
 ];
@@ -210,11 +215,14 @@ const DashboardSideBar = () => {
     }
   }, [isMobile, state, setOpen]);
 
-  let navbar = pathname.includes("/dashboard/center")
-    ? getCenterNavbar(t)
-    : pathname.includes("dashboard/admin")
-      ? getAdminNavbar(t)
-      : getParentNavbar(t);
+  let navbar =
+    pathname.includes("/dashboard/nursery") || user?.role === "nursery"
+      ? getCenterNavbar(t, "/dashboard/nursery")
+      : pathname.includes("/dashboard/center") || user?.role === "center"
+        ? getCenterNavbar(t, "/dashboard/center")
+        : pathname.includes("dashboard/admin")
+          ? getAdminNavbar(t)
+          : getParentNavbar(t);
 
   // Filter out specific items for branch_admin (only after hydration)
   if (isHydrated && user?.role === "branch_admin") {
@@ -226,11 +234,13 @@ const DashboardSideBar = () => {
     );
   }
 
-  const basePathname = pathname.includes("/dashboard/center")
-    ? "/dashboard/center"
-    : pathname.includes("dashboard/admin")
-      ? "/dashboard/admin"
-      : "/dashboard/parent";
+  const basePathname = pathname.includes("/dashboard/nursery")
+    ? "/dashboard/nursery"
+    : pathname.includes("/dashboard/center")
+      ? "/dashboard/center"
+      : pathname.includes("dashboard/admin")
+        ? "/dashboard/admin"
+        : "/dashboard/parent";
 
   const handleLinkClick = (
     e: React.MouseEvent,
@@ -288,7 +298,7 @@ const DashboardSideBar = () => {
           />
         ) : null}
 
-        {user?.role === "center" ? (
+        {user?.role === "center" || user?.role === "nursery" ? (
           <>
             <div
               className={
@@ -423,7 +433,7 @@ const DashboardSideBar = () => {
         )}
       >
         {/* Parent Accounts Button - Only show for center role */}
-        {user?.role === "center" && (
+        {(user?.role === "center" || user?.role === "nursery") && (
           <div
             className={cn(
               "w-full mb-4",
@@ -511,7 +521,7 @@ const DashboardSideBar = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={subscriptionRequired ? "#" : "/nurseries"}
+                  href={subscriptionRequired ? "#" : "/establishments"}
                   onClick={(e) => {
                     if (subscriptionRequired) {
                       e.preventDefault();

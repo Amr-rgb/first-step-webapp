@@ -25,7 +25,7 @@ const PortfolioProgressBar = () => {
   const user = useAuthUser();
   const { data: portfolioData, isLoading: isLoadingPortfolio } = usePortfolio();
   const { stats, isLoading: isLoadingStats } = useCenterStats(
-    isCenter ? "center" : "branch"
+    isCenter ? "center" : "branch",
   );
   const isRTL = locale === "ar";
 
@@ -47,7 +47,7 @@ const PortfolioProgressBar = () => {
     }
 
     // Task 2: Register children (center's children)
-    if (stats.total_children && stats.total_children > 0) {
+    if (stats?.total_children && stats?.total_children > 0) {
       completedTasks++;
     }
 
@@ -55,19 +55,12 @@ const PortfolioProgressBar = () => {
     const hasProfileData =
       portfolioData.title_of_hero ||
       portfolioData.subtitle_of_hero ||
-      portfolioData.description ||
-      (portfolioData.services && portfolioData.services.length > 0) ||
-      (portfolioData.Philosophy_Methodology_Goal?.philosophy?.content &&
-        portfolioData.Philosophy_Methodology_Goal.philosophy.content.length >
-          0);
+      portfolioData.description;
     if (hasProfileData) {
       completedTasks++;
     }
 
     // Task 4: Free advertisement (ads_images)
-    if (portfolioData.ads_images && portfolioData.ads_images.length > 0) {
-      completedTasks++;
-    }
 
     // Task 5: Write blog (we'll check if there's a blog request or published blog)
     // For now, we'll consider it incomplete as we don't have direct blog data
@@ -85,14 +78,14 @@ const PortfolioProgressBar = () => {
       title: t("tasks.branches.title"),
       description: t("tasks.branches.description"),
       completed: !!(stats?.total_branches && stats.total_branches > 0),
-      link: "/dashboard/center/branches",
+      link: "/dashboard/nursery/branches",
     },
     {
       id: "children",
       title: t("tasks.children.title"),
       description: t("tasks.children.description"),
-      completed: !!(stats?.total_children && stats.total_children > 0),
-      link: "/dashboard/center/children-files",
+      completed: !!(stats?.total_children && stats?.total_children > 0),
+      link: "/dashboard/nursery/children-files",
     },
     {
       id: "profile",
@@ -102,29 +95,25 @@ const PortfolioProgressBar = () => {
         portfolioData &&
         (portfolioData.title_of_hero ||
           portfolioData.subtitle_of_hero ||
-          portfolioData.description ||
-          (portfolioData.services && portfolioData.services.length > 0) ||
-          (portfolioData.Philosophy_Methodology_Goal?.philosophy?.content &&
-            portfolioData.Philosophy_Methodology_Goal.philosophy.content
-              .length > 0))
+          portfolioData.description)
       ),
-      link: "/dashboard/center/center-data",
+      link: "/dashboard/nursery/center-data",
     },
-    {
-      id: "advertisement",
-      title: t("tasks.advertisement.title"),
-      description: t("tasks.advertisement.description"),
-      completed: !!(
-        portfolioData?.ads_images && portfolioData.ads_images.length > 0
-      ),
-      link: "/dashboard/center/ad-or-blog-request",
-    },
+    // {
+    //   id: "advertisement",
+    //   title: t("tasks.advertisement.title"),
+    //   description: t("tasks.advertisement.description"),
+    //   completed: !!(
+    //     portfolioData?.ads_images && portfolioData.ads_images.length > 0
+    //   ),
+    //   link: "/dashboard/nursery/ad-or-blog-request",
+    // },
     {
       id: "blog",
       title: t("tasks.blog.title"),
       description: t("tasks.blog.description"),
       completed: false, // This can be enhanced with actual blog data
-      link: "/dashboard/center/ad-or-blog-request",
+      link: "/dashboard/nursery/ad-or-blog-request",
     },
   ];
 
@@ -270,7 +259,9 @@ const PortfolioProgressBar = () => {
                   </div>
 
                   {/* Title and description */}
-                  <div className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>
+                  <div
+                    className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                  >
                     <h3 className="text-lg font-bold text-gray-800 mb-1">
                       {task.title}
                     </h3>
@@ -279,7 +270,7 @@ const PortfolioProgressBar = () => {
 
                   {/* Arrow icon on the other side */}
                   <div className="flex-shrink-0 mt-1">
-                    <ChevronRight 
+                    <ChevronRight
                       className={`w-5 h-5 text-gray-400 transition-colors hover:text-gray-600 ${
                         isRTL ? "rotate-180" : ""
                       }`}

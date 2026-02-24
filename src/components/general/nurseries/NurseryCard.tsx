@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createSlug, mapOptions } from "@/lib/utils";
 import { AGE_GROUP_IDS } from "@/lib/options";
 import { useTranslations } from "next-intl";
-import { NurseryResponse } from "@/types";
+import { EstablishmentResponse } from "@/types";
 
 type LocaleKey = "ar" | "en";
 
@@ -12,7 +12,7 @@ const NurseryCard = ({
   nursery,
   locale,
 }: {
-  nursery: NurseryResponse;
+  nursery: EstablishmentResponse;
   locale: LocaleKey;
 }) => {
   const slug = createSlug(nursery.nursery_name, "ar");
@@ -24,7 +24,7 @@ const NurseryCard = ({
   // Helper function to get translation by ID
   const getTranslationById = (
     id: string,
-    options: { id: string; label: string }[]
+    options: { id: string; label: string }[],
   ) => {
     return options.find((option) => option.id === id)?.label || id;
   };
@@ -35,7 +35,7 @@ const NurseryCard = ({
       ?.map((branch: any) =>
         branch.nursery_name === "Main Branch"
           ? "الفرع الرئيسي"
-          : branch.nursery_name
+          : branch.nursery_name,
       )
       .join("، ") || "الفرع الرئيسي";
 
@@ -62,8 +62,29 @@ const NurseryCard = ({
   const shouldShowReadMore =
     truncatedBranches.isTruncated || truncatedAges.isTruncated;
 
+  // Determine establishment route segment
+  // The backend returns role as 'nursery', 'center' or plural
+  const routeSegment =
+    nursery.role === "center" || nursery.type === "centers"
+      ? "centers"
+      : "nurseries";
+
+  // Get center_id from nested objects based on the establishment type
+  const centerId =
+    nursery.role === "center" || nursery.type === "centers"
+      ? nursery.center?.center_id
+      : nursery.nursery?.center_id;
+
+  // Use center_id if available, otherwise fallback to nursery.id
+  const displayId = centerId || nursery.id;
+
+  // console.log(nursery);
+
   return (
-    <Link href={`/nurseries/${nursery.id}-${slug}`} className="block">
+    <Link
+      href={`/establishments/${routeSegment}/${displayId}-${slug}`}
+      className="block"
+    >
       <div className="bg-white rounded-lg transition-all duration-300 hover:border hover:border-gray-200 hover:shadow-lg group flex flex-col h-full min-h-80">
         {/* Logo section - takes up half the card */}
         <div className="flex-1 flex flex-col items-center justify-center py-8">

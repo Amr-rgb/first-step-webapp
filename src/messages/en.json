@@ -13,17 +13,9 @@
         "title": "Services",
         "path": "/services"
       },
-      "nurseries": {
-        "title": "Educational facilities",
-        "path": "/nurseries"
-      },
-      "centers-item": {
-        "title": "Centers",
-        "path": "/centers"
-      },
-      "nurseries-item": {
-        "title": "Nurseries",
-        "path": "/nurseries"
+      "establishments": {
+        "title": "Establishments",
+        "path": "/establishments"
       },
       "coupon-codes": {
         "title": "Offers & Coupons",
@@ -58,6 +50,18 @@
       "join-center": "Join as Center",
       "dashboard": "Dashboard",
       "logout": "Logout"
+    }
+  },
+  "adSection": {
+    "title": "Advertising Space",
+    "topPlaceholder": "Take advantage of the advertising space now",
+    "bottomPlaceholder": "Take advantage of the advertising space now",
+    "errors": {
+      "notSignedIn": "Please sign in first",
+      "centersOnly": "This service is only available for centers"
+    },
+    "success": {
+      "redirecting": "Redirecting to ad request page"
     }
   },
   "faqs": {
@@ -98,13 +102,9 @@
         "title": "Our Services",
         "path": "/services"
       },
-      "nurseries": {
-        "title": "Nurseries",
-        "path": "/nurseries"
-      },
-      "centers": {
-        "title": "Centers",
-        "path": "/centers"
+      "establishments": {
+        "title": "Establishments",
+        "path": "/establishments"
       },
       "blog": {
         "title": "Blog",
@@ -219,19 +219,82 @@
     },
     "viewAllCoupons": "View All Coupons"
   },
+  "filterSidebar": {
+    "title": "Filter",
+    "categories": {
+      "title": "Education & Entertainment",
+      "all": "All Establishments",
+      "nursery": "Nurseries",
+      "center": "Centers",
+      "rehabilitation": "Rehabilitation Center",
+      "kindergarten": "Kindergarten Sports",
+      "entertainment": "Entertainment Center"
+    },
+    "cities": {
+      "title": "Cities",
+      "all": "All Cities"
+    },
+    "ages": {
+      "title": "Ages",
+      "all": "All Ages",
+      "infant": "Infant",
+      "0-6-months": "0 to 6 Months",
+      "6-12-months": "6 Months to 1 Year",
+      "1-3-years": "1 to 3 Years",
+      "3-5-years": "3 to 5 Years",
+      "5-6-years": "5 to 6 Years"
+    },
+    "ratings": {
+      "title": "Ratings",
+      "all": "All Ratings"
+    }
+  },
   "auth": {
     "sign-up": {
-      "select-account-description": "Choose the type of account you want to create",
-      "select-account-type": "Create Your Account",
-      "have-account": "Already have an account?",
-      "sign-in": "Sign In",
-      "center": {
-        "title": "Center/Nursery Account",
-        "description": "For nurseries and childcare centers to manage their services"
-      },
+      "greeting": "Choose your role and enjoy tools that suit you",
+      "have-account-footer": "Already have an account?",
+      "sign-in-footer": "Log in",
       "parent": {
-        "title": "Parent Account",
-        "description": "For parents looking for quality childcare services"
+        "title": "Parent",
+        "features": [
+          "Easy service booking",
+          "Secure direct communication",
+          "Track daily child reports"
+        ]
+      },
+      "rehab-center": {
+        "title": "Therapy or Rehabilitation Center",
+        "features": [
+          "Manage rehabilitation sessions",
+          "Organize daily appointments",
+          "Comprehensive dashboard"
+        ]
+      },
+      "nursery": {
+        "title": "Nursery or Entertainment Center",
+        "features": [
+          "Operational and performance reports",
+          "Manage bookings",
+          "Comprehensive dashboard"
+        ]
+      },
+      "mentor": {
+        "title": "Consultant",
+        "features": [
+          "Integrated professional profile",
+          "Manage consultations and sessions",
+          "Manage earnings and payments"
+        ],
+        "soon": "Soon"
+      },
+      "teacher": {
+        "title": "Teacher",
+        "features": [
+          "Manage classes and activities",
+          "Plan daily lessons",
+          "Upload educational content"
+        ],
+        "soon": "Soon"
       }
     },
     "buttons": {
@@ -951,6 +1014,7 @@
         "bookings": "Bookings",
         "daily-reports": "Daily Reports",
         "center-data": "Center Data",
+        "nursery-data": "Nursery Data",
         "gate": "First Step Gate",
         "wallet": "Wallet",
         "ad-or-blog-request": "Ad or Blog Request",
@@ -1055,7 +1119,9 @@
         "permissionError": "You do not have permission to view advertisements or blogs",
         "ad": {
           "title": "Request Advertisement",
-          "free-notice": "Your first advertisement for your center/nursery is 100% free on the homepage for one day",
+          "free-notice": "Your first advertisement for your {type} is 100% free on the homepage for one day",
+          "nursery": "nursery",
+          "center": "center",
           "description": "Attract parents with an advertisement that appears at the top of the homepage. You can specify the number of days the advertisement will appear",
           "form": {
             "image": {
@@ -2043,134 +2109,115 @@
       },
       "loading": "Loading portfolio data...",
       "loadError": "Failed to load portfolio data",
-      "savePortfolio": "Save Portfolio",
+      "cancel": "Cancel",
+      "savePortfolio": "Save Changes",
       "saving": "Saving...",
-      "saveSuccess": "Portfolio saved successfully!",
-      "saveError": "Failed to save portfolio",
+      "saveSuccess": "Profile updated successfully!",
+      "saveError": "Failed to update profile",
       "permissionError": "You do not have permission to view center data",
       "sections": {
-        "hero": "Hero Section",
-        "branches": "Branches",
-        "philosophy": "Philosophy & Goals",
+        "basicInfo": "Basic Information",
         "services": "Services",
-        "nurseryState": "Nursery State",
-        "activities": "Activities",
-        "contact": "Contact Information",
-        "ads": "Advertisement Images",
-        "teams": "Team Members",
-        "plans": "Plans & Pricing"
+        "activities": "Success Stories",
+        "teams": "Work Team",
+        "statistics": "Statistics",
+        "licenses": "Licenses",
+        "socialMedia": "Social Media"
       },
-      "hero": {
-        "title": "Title",
-        "titlePlaceholder": "Enter hero title",
-        "subtitle": "Subtitle",
-        "subtitlePlaceholder": "Enter hero subtitle",
-        "description": "Description",
-        "descriptionPlaceholder": "Enter hero description",
-        "ctaTextPlaceholder": "Enter CTA text",
-        "ctaLink": "Call to Action Link",
-        "ctaLinkPlaceholder": "Enter CTA link",
-        "backgroundImage": "Background Image"
-      },
-      "branches": {
-        "sectionTitle": "Section Title",
-        "sectionTitlePlaceholder": "Enter branches section title",
-        "branchesTitle": "Branches",
-        "branchNamePlaceholder": "Enter branch name",
-        "noBranches": "No branches added yet"
-      },
-      "philosophy": {
-        "philosophy": "Philosophy",
-        "philosophyTitle": "Philosophy Title",
-        "philosophyTitlePlaceholder": "Enter philosophy title",
-        "philosophyContent": "Philosophy Content",
-        "philosophyContentPlaceholder": "Enter philosophy content",
-        "methodology": "Methodology",
-        "methodologyTitle": "Methodology Title",
-        "methodologyTitlePlaceholder": "Enter methodology title",
-        "methodologyContent": "Methodology Content",
-        "methodologyContentPlaceholder": "Enter methodology content",
-        "goals": "Goals",
-        "goalTitle": "Goal Title",
-        "goalTitlePlaceholder": "Enter goal title",
-        "goalContent": "Goal Content",
-        "goalContentPlaceholder": "Enter goal content"
-      },
-      "services": {
-        "imageRequired": "All services must have an image",
-        "sectionTitle": "Section Title",
-        "sectionTitlePlaceholder": "Enter services section title",
-        "services": "Services",
-        "addService": "Add Service",
-        "noServices": "No services added yet",
-        "service": "Service",
-        "serviceTitle": "Service Title",
-        "serviceTitlePlaceholder": "Enter service title",
-        "serviceDescription": "Service Description",
-        "serviceDescriptionPlaceholder": "Enter service description",
-        "serviceImage": "Service Image"
-      },
-      "nurseryState": {
-        "title": "Nursery State",
-        "area": "Area",
-        "areaPlaceholder": "Enter area size",
-        "classRooms": "Class Rooms",
-        "classRoomsPlaceholder": "Enter number of class rooms",
-        "teamMembers": "Team Members",
-        "teamMembersPlaceholder": "Enter number of team members"
+      "basicInfo": {
+        "nurseryLogo": "Center Logo",
+        "logoHint": "Upload a clear logo image (PNG or JPG, max 3MB)",
+        "centerName": "Center Name",
+        "centerNamePlaceholder": "Enter center name",
+        "nurseryName": "Nursery Name",
+        "nurseryNamePlaceholder": "e.g., World of Learning Nursery",
+        "nurserySlogan": "Nursery Slogan",
+        "nurserySloganPlaceholder": "e.g., Here we take the first step...",
+        "briefDescription": "Brief Description",
+        "descriptionPlaceholder": "Tell us more about your nursery...",
+        "descriptionLimit": "Maximum 200 characters"
       },
       "activities": {
-        "sectionTitle": "Section Title",
-        "sectionTitlePlaceholder": "Enter activities section title",
-        "sectionSubtitle": "Section Subtitle",
-        "sectionSubtitlePlaceholder": "Enter activities section subtitle",
-        "activityImages": "Activity Images",
-        "addImage": "Add Image",
-        "noImages": "No images added yet"
+        "title": "Success Stories",
+        "description": "Share success and improvement stories for children at your center",
+        "storyImage": "Case Image",
+        "caseType": "Case Type",
+        "caseTypePlaceholder": "e.g., Speech Delay / Autism",
+        "improvementSummary": "Improvement Summary",
+        "improvementPlaceholder": "Talk about the level of improvement the child has reached...",
+        "addStory": "Add Success Story",
+        "imageHint": "Upload a photo illustrating the activity or case",
+        "uploadTitle": "Upload Photo",
+        "uploadHint": "Drag and drop your photos here, or upload from your device",
+        "formatsNote": "Supported formats: JPG, PNG (Max size: 10MB)",
+        "uploadedTitle": "Uploaded Photos ({count})"
       },
-      "contact": {
-        "title": "Contact Information",
-        "address": "Address",
-        "addressPlaceholder": "Enter nursery address",
-        "workingHours": "Working Hours",
-        "workingHoursPlaceholder": "Enter working hours",
-        "phoneNumber": "Phone Number",
-        "phoneNumberPlaceholder": "Enter phone number",
-        "emailAddress": "Email Address",
-        "emailAddressPlaceholder": "Enter email address",
-        "socialMedia": "Social Media",
-        "facebook": "Facebook",
-        "facebookPlaceholder": "Enter Facebook URL",
-        "instagram": "Instagram",
-        "instagramPlaceholder": "Enter Instagram URL",
-        "whatsapp": "WhatsApp",
-        "whatsappPlaceholder": "Enter WhatsApp number"
-      },
-      "ads": {
-        "title": "Advertisement Images",
-        "addImage": "Add Image",
-        "noImages": "No advertisement images added yet"
+      "services": {
+        "title": "Services",
+        "description": "Add services provided by the center with their prices",
+        "serviceName": "Service Name",
+        "serviceNamePlaceholder": "e.g., Speech Session",
+        "serviceDescription": "Service Description",
+        "serviceDescriptionPlaceholder": "Briefly describe the service...",
+        "serviceImage": "Service Image",
+        "price": "Price",
+        "addService": "Add Service",
+        "imageHint": "Upload an image representing the service"
       },
       "teams": {
-        "title": "Team Members",
-        "addTeamMember": "Add Team Member",
-        "noTeamMembers": "No team members added yet",
-        "teamMember": "Team Member",
+        "title": "Work Team",
+        "description": "Definition of specialists and the distinguished work team",
         "memberName": "Member Name",
-        "memberNamePlaceholder": "Enter member name",
-        "memberMission": "Member Mission",
-        "memberMissionPlaceholder": "Enter member mission",
-        "memberImage": "Member Image"
+        "memberNamePlaceholder": "Enter specialist's name",
+        "memberSpecialization": "Specialization",
+        "memberSpecializationPlaceholder": "e.g., Speech Specialist",
+        "memberImage": "Member Photo",
+        "addMember": "Add Member",
+        "imageHint": "Upload a profile photo"
+      },
+      "statistics": {
+        "title": "Statistics",
+        "description": "Numbers reflecting the center's achievements",
+        "labels": {
+          "YearsofExperience": "Years of Experience",
+          "ChildrenHelped": "Children Helped",
+          "SessionsProvided": "Sessions Provided",
+          "CertifiedSpecialist": "Certified Specialist"
+        }
+      },
+      "facilities": {
+        "title": "Choose the facilities available in your nursery"
+      },
+      "licenses": {
+        "title": "Licenses",
+        "nurseryLicensed": "Licensed / Certified",
+        "licensedDescription": "Do you hold professional licenses or certified certificates?",
+        "licenseNumber": "License Number",
+        "licenseNumberPlaceholder": "e.g., LPC-12345-TX",
+        "licenseDocument": "License Document",
+        "uploadDocument": "Upload Document",
+        "addLicense": "Add License",
+        "deleteLicense": "Delete License",
+        "formatsNote": "Supported formats: PDF, JPG, PNG (Max 5MB)"
+      },
+      "socialMedia": {
+        "title": "Social Media",
+        "optionalNote": "Add links to your social media profiles (optional)",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter",
+        "website": "Website"
       },
       "plans": {
-        "title": "Plans & Pricing",
+        "title": "Programs & Pricing",
         "loading": "Loading...",
         "selectBranch": "Select Branch",
         "selectBranchPlaceholder": "Choose a branch",
-        "plans": "Plans",
-        "addPlan": "Add Plan",
-        "editPlan": "Edit Plan",
-        "noPlansYet": "No Plans Yet",
+        "plans": "Programs",
+        "addPlan": "Add Program",
+        "editPlan": "Edit Program",
+        "noPlansYet": "No Programs Yet",
         "ageRange": "Age: {start} - {end} years",
         "price": "Price",
         "priceAmount": "Price: ${amount}",
@@ -2181,40 +2228,40 @@
         "week": "Week",
         "day": "Day",
         "hour": "Hour",
-        "planTitle": "Plan Title",
-        "planTitlePlaceholder": "Enter plan title",
-        "startAge": "Start Age",
-        "endAge": "End Age",
+        "planTitle": "Program title",
+        "planTitlePlaceholder": "Toddler program",
+        "startAge": "From age..",
+        "endAge": "To age..",
         "count": "Count",
         "branches": "Branches",
         "selectBranchesPlaceholder": "Select branches...",
         "cancel": "Cancel",
-        "save": "Save",
+        "save": "Add program",
         "saving": "Saving...",
-        "planSaved": "Plan saved successfully!",
-        "planSaveError": "Failed to save plan",
-        "planDeleted": "Plan deleted successfully!",
-        "planDeleteError": "Failed to delete plan",
+        "planSaved": "Program saved successfully!",
+        "planSaveError": "Failed to save program",
+        "planDeleted": "Program deleted successfully!",
+        "planDeleteError": "Failed to delete program",
         "selectBranchesError": "Please select a branch",
-        "titleRequired": "Plan title is required",
-        "titleTooShort": "Plan title must be at least 2 characters",
-        "startAgeInvalid": "Start age must be 0 or greater",
-        "endAgeInvalid": "End age must be 0 or greater",
+        "titleRequired": "Program title is required",
+        "titleTooShort": "Program title must be at least 2 characters",
+        "startAgeInvalid": "Start age must be 0 or more",
+        "endAgeInvalid": "End age must be 0 or more",
         "endAgeMustBeGreater": "End age must be greater than start age",
         "enrollmentTypeRequired": "Enrollment type is required",
         "countMustBePositive": "Count must be greater than 0",
         "priceMustBePositive": "Price must be greater than 0",
         "units": {
-          "hour": "Hour",
-          "hours": "Hours",
-          "day": "Day",
-          "days": "Days",
-          "week": "Week",
-          "weeks": "Weeks",
-          "month": "Month",
-          "months": "Months",
-          "year": "Year",
-          "years": "Years"
+          "hour": "hour",
+          "hours": "hours",
+          "day": "day",
+          "days": "days",
+          "week": "week",
+          "weeks": "weeks",
+          "month": "month",
+          "months": "months",
+          "year": "year",
+          "years": "years"
         }
       }
     },
@@ -2638,8 +2685,17 @@
   },
   "nurseryDetails": {
     "header": {
+      "share": "Share",
+      "chat": "Chat",
       "sloganFallback": "Your child's future starts here",
-      "description": "We provide the best care and education for your child."
+      "description": "We provide the best care and education for your child.",
+      "branches": "Branches"
+    },
+    "about": {
+      "title": "About the Center"
+    },
+    "facilities": {
+      "title": "Center Facilities"
     },
     "waitingPage": {
       "parentTitle": "Something Beautiful is Coming!",
@@ -2679,16 +2735,61 @@
       "subtitle": "Let your childs enjoy, with lots of fields"
     },
     "programs": {
-      "title": "Our Programs",
-      "currency": "SAR",
+      "title": "Programs",
+      "count": "({count} programs)",
+      "filter": "Filtering",
       "bookNow": "Book Now",
-      "noResults": "No programs found matching your filters",
+      "noResults": "No programs available for this search",
+      "currency": "SAR",
       "filters": {
-        "childAge": "Child's Age",
         "branch": "Branch",
         "programType": "Program Type",
-        "all": "All"
+        "age": "Ages",
+        "allBranches": "All Branches",
+        "allPrograms": "All Programs",
+        "allAges": "All Ages",
+        "reset": "Reset to Default",
+        "apply": "Filter",
+        "types": {
+          "hour": "Hourly",
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly",
+          "year": "Yearly"
+        },
+        "ages_list": {
+          "0_6_months": "0 to 6 Months",
+          "6_12_months": "6 to 12 Months",
+          "1_3_years": "1 to 3 Years",
+          "3_5_years": "3 to 5 Years"
+        }
       }
+    },
+    "albums": {
+      "title": "Photo Albums",
+      "count": "({count} photos)",
+      "viewAll": "View All"
+    },
+    "blogs": {
+      "title": "Important Blogs"
+    },
+    "ads": {
+      "title": "Advertising Space",
+      "placeholder": "Stay tuned for great offers and activities"
+    },
+    "ratings": {
+      "title": "Ratings ({count} ratings)",
+      "placeholder": "Contribute to improving the service and be the first to rate",
+      "bookNow": "Book Now"
+    },
+    "suggestedNurseries": {
+      "title": "Suggested Nurseries"
+    },
+    "coupons": {
+      "title": "Discount Coupons",
+      "validUntil": "Available until {date}",
+      "copyCode": "Copy Code",
+      "copied": "Code Copied"
     },
     "contact": {
       "title": "Contact Information",
@@ -2701,6 +2802,175 @@
     },
     "branches": {
       "title": "Branches",
+      "qassim": "Qassim",
+      "gharnata": "Gharnata",
+      "madina": "Madinah",
+      "makkah": "Makkah",
+      "riyadh": "Riyadh",
+      "cta": "Book Now",
+      "stats": {
+        "area": "Area (m²)",
+        "children": "Number of Children",
+        "teachers": "Number of Teachers",
+        "programs": "Number of Programs"
+      }
+    },
+    "plans": {
+      "title": "Programs",
+      "subtitle": "",
+      "selectBranch": "Select Branch",
+      "selectAge": "Child Age",
+      "selectEnrollmentType": "Program Type",
+      "noPrograms": "No Programs Available",
+      "noProgramsMessage": "Programs will be added soon. Please check back later.",
+      "bookNow": "Book Now",
+      "ageRange": "Age Range",
+      "duration": "Duration",
+      "price": "Price",
+      "units": {
+        "hour": "Hour",
+        "hours": "Hours",
+        "day": "Day",
+        "days": "Days",
+        "week": "Week",
+        "weeks": "Weeks",
+        "month": "Month",
+        "months": "Months",
+        "year": "Year",
+        "years": "Years"
+      }
+    }
+  },
+  "centerDetails": {
+    "header": {
+      "share": "Share",
+      "chat": "Chat",
+      "sloganFallback": "Your child's future starts here",
+      "description": "We provide the best care and education for your child.",
+      "branches": "Branches"
+    },
+    "about": {
+      "title": "About the Center"
+    },
+    "facilities": {
+      "title": "Center Facilities"
+    },
+    "waitingPage": {
+      "parentTitle": "Something Beautiful is Coming!",
+      "parentSubtitle": "Beautiful things take time because they are made with love and care.",
+      "centerTitle": "We're Preparing Something Special!",
+      "centerSubtitle": "Outstanding profiles need time to be created with precision and expertise.",
+      "adminTitle": "We're Reviewing Carefully!",
+      "adminSubtitle": "We ensure high quality for all profiles displayed on the platform.",
+      "browseNurseries": "Browse Centers",
+      "completeProfile": "Complete Profile",
+      "goToDashboard": "Go to Dashboard",
+      "goToAdminDashboard": "Go to Admin Dashboard"
+    },
+    "goals": {
+      "title": "Our Goals"
+    },
+    "philosophy": {
+      "title": "Our Philosophy"
+    },
+    "methodology": {
+      "title": "Our Methodology"
+    },
+    "stats": {
+      "title": "Center Statistics",
+      "area": "Area (m²)",
+      "classrooms": "Classrooms",
+      "teamMembers": "Team Members"
+    },
+    "team": {
+      "title": "Our Team"
+    },
+    "services": {
+      "title": "Our Services"
+    },
+    "activities": {
+      "title": "Our Activities",
+      "subtitle": "Let your children enjoy, with lots of fields"
+    },
+    "programs": {
+      "title": "Programs",
+      "count": "({count} programs)",
+      "filter": "Filtering",
+      "bookNow": "Book Now",
+      "noResults": "No programs available for this search",
+      "currency": "SAR",
+      "filters": {
+        "branch": "Branch",
+        "programType": "Program Type",
+        "age": "Ages",
+        "allBranches": "All Branches",
+        "allPrograms": "All Programs",
+        "allAges": "All Ages",
+        "reset": "Reset to Default",
+        "apply": "Filter",
+        "types": {
+          "hour": "Hourly",
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly",
+          "year": "Yearly"
+        },
+        "ages_list": {
+          "0_6_months": "0 to 6 Months",
+          "6_12_months": "6 to 12 Months",
+          "1_3_years": "1 to 3 Years",
+          "3_5_years": "3 to 5 Years"
+        }
+      }
+    },
+    "albums": {
+      "title": "Photo Albums",
+      "count": "({count} photos)",
+      "viewAll": "View All"
+    },
+    "sections": {
+      "successStories": "Success Stories",
+      "ourTeam": "Our Team"
+    },
+    "ourNumbers": {
+      "title": "Our Numbers",
+      "certifiedSpecialists": "Certified Specialists",
+      "sessionsProvided": "Sessions Provided",
+      "childrenHelped": "Children Helped",
+      "yearsExperience": "Years of Experience"
+    },
+    "blogs": {
+      "title": "Important Blogs"
+    },
+    "ads": {
+      "title": "Advertising Space",
+      "placeholder": "Stay tuned for great offers and activities"
+    },
+    "ratings": {
+      "title": "Ratings ({count} ratings)",
+      "placeholder": "Contribute to improving the service and be the first to rate",
+      "bookNow": "Book Now"
+    },
+    "suggestedNurseries": {
+      "title": "Suggested Establishments"
+    },
+    "coupons": {
+      "title": "Discount Coupons",
+      "validUntil": "Available until {date}",
+      "copyCode": "Copy Code",
+      "copied": "Code Copied"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "info": "Contact Information",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "workingHours": "Working Hours",
+      "social": "Social Media"
+    },
+    "branches": {
+      "title": "Center Branches",
       "qassim": "Qassim",
       "gharnata": "Gharnata",
       "madina": "Madinah",
@@ -2912,7 +3182,8 @@
     "card": {
       "validUntil": "Valid until",
       "copySuccess": "Code copied successfully",
-      "viewCenters": "View Participating Centers"
+      "viewCenters": "View Participating Centers",
+      "viewBranches": "View Participating Branches"
     },
     "share": "Share offers and coupons with friends",
     "emptyState": {
@@ -2946,12 +3217,24 @@
       "numberOfWeeks": "Number of Weeks",
       "numberOfMonths": "Number of Months",
       "duration": "Duration",
+      "program": "Program",
+      "startTime": "Start Date & Time",
+      "startDate": "Start Date",
+      "paymentMethod": "Payment Method",
+      "paymentMayser": "Mayser",
+      "discount": "Discount",
+      "totalAfterDiscount": "Total After Discount",
+      "notes": "Notes",
+      "note1": "A notification will be sent for payment via email.",
+      "note2": "The paid amount cannot be refunded for any reason.",
+      "note3": "Please verify the accuracy of information before proceeding with the payment process.",
+      "required": "Required",
       "bookingDate": "Booking Date",
       "selectChildren": "Select One or More Children",
       "noChildren": "No Children Found",
       "noChildrenDesc": "You need to register at least one child before making a reservation. Please go to the children page to add a new child.",
       "addNewChild": "Add New Child",
-      "bookingSummary": "Booking Summary",
+      "bookingSummary": "Booking Details",
       "couponCode": "Coupon Code",
       "discountCoupon": "Discount Coupon",
       "tryCoupon": "Try Coupon",

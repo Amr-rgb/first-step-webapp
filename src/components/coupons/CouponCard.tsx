@@ -21,6 +21,7 @@ interface CouponCardProps {
   percentage: number;
   code: string;
   color: string;
+  viewType?: "centers" | "branches";
   centers: {
     id: number;
     logo: string;
@@ -42,6 +43,7 @@ export default function CouponCard({
   percentage,
   code,
   color,
+  viewType = "centers",
   centers,
 }: CouponCardProps) {
   const t = useTranslations("couponCodes.card");
@@ -52,6 +54,10 @@ export default function CouponCard({
     toast.success(t("copySuccess"));
   };
 
+  const dialogLabel = t(
+    viewType === "branches" ? "viewBranches" : "viewCenters",
+  );
+
   return (
     <div className="group hover:-translate-y-1 transition-transform duration-300">
       <div className="relative flex overflow-hidden h-56 group">
@@ -59,14 +65,14 @@ export default function CouponCard({
         <div
           className={cn(
             "w-[35%] relative flex flex-col items-center justify-center text-white overflow-hidden",
-            "rtl:rounded-l-3xl ltr:rounded-r-3xl"
+            "rtl:rounded-l-3xl ltr:rounded-r-3xl",
           )}
           style={{ backgroundColor: color }}
         >
           <div
             className={cn(
               "absolute inset-y-1/2 -translate-y-1/2 size-8 md:size-12 bg-white rounded-full z-20",
-              "rtl:right-0 ltr:left-0 rtl:translate-x-1/2 ltr:-translate-x-1/2"
+              "rtl:right-0 ltr:left-0 rtl:translate-x-1/2 ltr:-translate-x-1/2",
             )}
           />
 
@@ -97,20 +103,20 @@ export default function CouponCard({
         <div
           className={cn(
             "flex-1 p-6 flex flex-col justify-center items-center text-center relative z-10 bg-white",
-            "border border-primary-blue rtl:rounded-r-3xl ltr:rounded-l-3xl"
+            "border border-primary-blue rtl:rounded-r-3xl ltr:rounded-l-3xl",
           )}
         >
           <div
             className={cn(
               "absolute inset-y-1/2 -translate-y-1/2 size-8 md:size-12 bg-white rounded-full border border-primary-blue z-10",
-              "rtl:left-0 ltr:right-0 rtl:-translate-x-1/2 ltr:translate-x-1/2"
+              "rtl:left-0 ltr:right-0 rtl:-translate-x-1/2 ltr:translate-x-1/2",
             )}
           />
 
           <Image
             className={cn(
               "pointer-events-none select-none opacity-20 absolute",
-              "ltr:-bottom-1/5 ltr:-right-[12%] rtl:-bottom-1/5 rtl:-left-[12%]"
+              "ltr:-bottom-1/5 ltr:-right-[12%] rtl:-bottom-1/5 rtl:-left-[12%]",
             )}
             src="/assets/logos/logo.svg"
             alt="Firststep"
@@ -123,16 +129,16 @@ export default function CouponCard({
               "pointer-events-none select-none z-20 absolute top-1/2 -translate-y-1/2",
               "ltr:left-0 ltr:-translate-x-1/2 rtl:right-0 rtl:translate-x-1/2",
               "ltr:rotate-y-180",
-              "size-24 sm:size-[125px]"
+              "size-24 sm:size-[125px]",
             )}
             src={
               color === COLORS[0]
                 ? `/assets/illustrations/coupon1.png`
                 : color === COLORS[1]
-                ? `/assets/illustrations/coupon2.png`
-                : color === COLORS[2]
-                ? `/assets/illustrations/coupon3.png`
-                : `/assets/illustrations/coupon4.png`
+                  ? `/assets/illustrations/coupon2.png`
+                  : color === COLORS[2]
+                    ? `/assets/illustrations/coupon3.png`
+                    : `/assets/illustrations/coupon4.png`
             }
             alt="coupon"
             width={125}
@@ -151,26 +157,21 @@ export default function CouponCard({
               <DialogTrigger asChild>
                 <button className="flex items-center gap-2 mt-4 text-xs font-semibold text-[#2B3990] hover:underline z-20 relative">
                   <MapPin className="w-4 h-4" />
-                  {t("viewCenters")}
+                  {dialogLabel}
                 </button>
               </DialogTrigger>
               <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>{t("viewCenters")}</DialogTitle>
+                  <DialogTitle>{dialogLabel}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 mt-4">
                   {centers.map((center) => {
                     const centerName =
                       center.nursery_name_for_center || center.name;
-                    return (
-                      <Link
-                        key={center.id}
-                        href={`/${locale}/nurseries/${createSlug(
-                          centerName
-                        )}?branch=${center.id}`}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden border bg-white flex-shrink-0">
+
+                    const content = (
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-full">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden border bg-white shrink-0">
                           <Image
                             src={center.logo}
                             alt={center.name}
@@ -178,9 +179,24 @@ export default function CouponCard({
                             className="object-cover"
                           />
                         </div>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 text-right">
                           {center.name}
                         </span>
+                      </div>
+                    );
+
+                    if (viewType === "branches") {
+                      return <div key={center.id}>{content}</div>;
+                    }
+
+                    return (
+                      <Link
+                        key={center.id}
+                        href={`/${locale}/establishments/nurseries/${createSlug(
+                          centerName,
+                        )}?branch=${center.id}`}
+                      >
+                        {content}
                       </Link>
                     );
                   })}

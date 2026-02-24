@@ -38,7 +38,7 @@ export default function ParentBookingsPage() {
             element.classList.remove(
               "ring-2",
               "ring-blue-500",
-              "ring-offset-2"
+              "ring-offset-2",
             );
           }, 3000);
         }
@@ -66,7 +66,7 @@ export default function ParentBookingsPage() {
               element.classList.remove(
                 "ring-2",
                 "ring-green-500",
-                "ring-offset-2"
+                "ring-offset-2",
               );
             }, 5000);
           }
@@ -110,7 +110,7 @@ export default function ParentBookingsPage() {
               />
             </div>
             <div className="space-y-3 mb-6">
-              <h3 className="text-2xl font-bold text-[#22336C]">
+              <h3 className="text-2xl font-bold text-primary">
                 {locale === "ar"
                   ? "تم تأكيد الحجز بنجاح!"
                   : "Reservation Confirmed Successfully!"}
@@ -123,7 +123,7 @@ export default function ParentBookingsPage() {
             </div>
             <Button
               onClick={handleCloseSuccessDialog}
-              className="bg-[#4D5EDB] hover:bg-[#3646a5] text-white min-w-[200px]"
+              className="bg-primary hover:bg-[#3646a5] text-white min-w-[200px]"
             >
               {locale === "ar" ? "حسناً" : "OK"}
             </Button>

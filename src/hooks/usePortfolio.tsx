@@ -6,84 +6,35 @@ import { useTranslations } from "next-intl";
 import { ApiError } from "@/lib/error-handling";
 
 // Transform API data to match our form structure
-const transformApiData = (apiData: any, logo?: string): PortfolioFormData => {
+const transformApiData = (apiData: any): PortfolioFormData => {
   const initialData: PortfolioFormData = {
-    logo: logo || "",
     title_of_hero: "",
     subtitle_of_hero: "",
     description: "",
-    background_image: "",
-    branches: [],
-    Philosophy_Methodology_Goal: {
-      philosophy: { content: "" },
-      methodology: { content: "" },
-      goals: { content: "" },
-    },
-    service_section_title: "",
-    services: [],
-    nursery_state: {
-      area: "",
-      class_rooms: "",
-      team_members: "",
-    },
-    activity_section_title: "",
-    activity_section_subtitle: "",
     images_activities: [],
     contact_info: {
-      address: "",
-      working_hours: "",
-      phone_number: "",
-      email_address: "",
       facebook: "",
       instagram: "",
-      whatsapp: "",
+      linkedIn: "",
+      twitter: "",
+      website: "",
     },
-    ads_images: [],
-    teams: [],
   };
 
   if (!apiData) return initialData;
 
   return {
-    logo: logo || apiData.logo || "",
     title_of_hero: apiData.hero_section?.title_of_hero || "",
     subtitle_of_hero: apiData.hero_section?.subtitle_of_hero || "",
     description: apiData.hero_section?.description || "",
-    background_image: apiData.hero_section?.background_image || "",
-    branches: apiData.branches || [],
-    Philosophy_Methodology_Goal: {
-      philosophy: {
-        content: apiData.Philosophy_Methodology_Goal?.philosophy?.content || "",
-      },
-      methodology: {
-        content:
-          apiData.Philosophy_Methodology_Goal?.methodology?.content || "",
-      },
-      goals: {
-        content: apiData.Philosophy_Methodology_Goal?.goals?.content || "",
-      },
-    },
-    service_section_title: apiData.service_section_title || "",
-    services: apiData.services || [],
-    nursery_state: {
-      area: apiData.nursery_state?.area || "",
-      class_rooms: apiData.nursery_state?.class_rooms?.toString() || "",
-      team_members: apiData.nursery_state?.team_members?.toString() || "",
-    },
-    activity_section_title: apiData.activity_section_title || "",
-    activity_section_subtitle: apiData.activity_section_subtitle || "",
     images_activities: apiData.images_activities || [],
     contact_info: {
-      address: apiData.contact_info?.address || "",
-      working_hours: apiData.contact_info?.working_hours || "",
-      phone_number: apiData.contact_info?.phone_number || "",
-      email_address: apiData.contact_info?.email_address || "",
       facebook: apiData.contact_info?.facebook || "",
       instagram: apiData.contact_info?.instagram || "",
-      whatsapp: apiData.contact_info?.whatsapp || "",
+      linkedIn: apiData.contact_info?.linkedIn || "",
+      twitter: apiData.contact_info?.twitter || "",
+      website: apiData.contact_info?.website || "",
     },
-    ads_images: apiData.ads_images || [],
-    teams: apiData.teams || [],
   };
 };
 
@@ -96,7 +47,7 @@ export const usePortfolio = () => {
     queryKey: ["portfolio"],
     queryFn: async () => {
       const response = await centerService.getPortfolio();
-      return transformApiData(response.portofilo, response.logo);
+      return transformApiData(response.portofilo);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -147,17 +98,5 @@ export const usePortfolio = () => {
 
     // Refetch
     refetch: portfolioQuery.refetch,
-
-    // Logo Mutation
-    updateLogo: useMutation({
-      mutationFn: (file: File) => centerService.updateLogo(file),
-      onSuccess: (response: any) => {
-        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-        toastSuccess(t("saveSuccess"));
-      },
-      onError: (error: any) => {
-        toastError(error.message || t("saveError"));
-      },
-    }),
   };
 };

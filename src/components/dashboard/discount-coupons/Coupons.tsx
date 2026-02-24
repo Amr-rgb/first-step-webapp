@@ -15,6 +15,7 @@ import EmptyState from "@/components/common/EmptyState";
 import { toastSuccess, toastError } from "@/lib/toast";
 
 type FilterType = "all" | "active" | "not-started" | "paused" | "expired";
+type CouponStatus = "active" | "not-started" | "paused" | "expired";
 
 interface PromocodeBranch {
   id: number;
@@ -43,8 +44,6 @@ interface PromocodeItem {
   created_at: string;
   updated_at: string;
 }
-
-type CouponStatus = "active" | "not-started" | "paused" | "expired";
 
 interface Coupon {
   id: string;
@@ -81,15 +80,15 @@ export default function Coupons() {
       toastSuccess(
         t("requestSuccess") || "Request submitted successfully",
         t("requestSuccessDescription") ||
-          "Your request for a new promocode has been submitted. We will review it shortly."
+        "Your request for a new promocode has been submitted. We will review it shortly."
       );
     },
     onError: (error: any) => {
       toastError(
         t("requestError") || "Request failed",
         error?.message ||
-          t("requestErrorDescription") ||
-          "Failed to submit your request. Please try again later."
+        t("requestErrorDescription") ||
+        "Failed to submit your request. Please try again later."
       );
     },
   });

@@ -58,6 +58,12 @@ const SignIn = () => {
 
       if (data.user.role === "center") {
         dashboardPath = "/dashboard/center";
+      } else if (data.user.role === "nursery") {
+        dashboardPath = "/dashboard/nursery";
+      } else if (data.user.role === "branch_admin") {
+        dashboardPath = data.user.center_id
+          ? "/dashboard/center"
+          : "/dashboard/nursery";
       } else if (data.user.role === "parent") {
         dashboardPath = "/dashboard/parent";
       } else if (data.user.role === "admin") {
@@ -102,35 +108,16 @@ const SignIn = () => {
             />
           </div>
 
-          <div className="mt-12 flex flex-col gap-y-4">
-            <p className="text-mid-gray text-center">
-              {t("options.dont-have")}
+          <div className="mt-12 flex flex-col items-center gap-y-4">
+            <p className="text-mid-gray text-center text-lg">
+              {t("sign-in.no-account")}{" "}
+              <Link
+                href={"/sign-up"}
+                className="text-primary font-bold hover:underline transition-all duration-300"
+              >
+                {t("buttons.sign-up")}
+              </Link>
             </p>
-
-            <div className="w-full flex flex-row gap-x-4">
-              <Button
-                variant={"outline"}
-                size={"lg"}
-                type="button"
-                className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs flex-1 font-bold text-mid-gray !border-light-gray"
-                disabled={mutation.isPending || mutation.isSuccess}
-              >
-                <Link href={"/sign-up/center"}>
-                  {t("buttons.sign-up-center")}
-                </Link>
-              </Button>
-              <Button
-                variant={"outline"}
-                size={"lg"}
-                type="button"
-                className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs flex-1 font-bold"
-                disabled={mutation.isPending || mutation.isSuccess}
-              >
-                <Link href={"/sign-up/parent"}>
-                  {t("buttons.sign-up-parent")}
-                </Link>
-              </Button>
-            </div>
           </div>
         </div>
       </div>

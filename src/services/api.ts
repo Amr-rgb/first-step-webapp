@@ -10,9 +10,12 @@ import {
   ParentRegisterPayload,
   Service,
   Value,
-  NurseryResponse,
+  EstablishmentResponse,
   PortfolioResponse,
   ParentRegisterPayloadv2,
+  NurseryRegisterPayload,
+  NurseryPlan,
+  CategoryService,
 } from "@/types";
 import axios from "axios";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
@@ -134,7 +137,7 @@ apiClient.interceptors.request.use(
       console.error("Request Interceptor Error:", error);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add response interceptor for error handling
@@ -213,7 +216,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(formattedError);
-  }
+  },
 );
 
 export const websiteService = {
@@ -232,7 +235,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -265,7 +268,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -297,7 +300,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -329,7 +332,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -359,7 +362,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -390,7 +393,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -421,7 +424,7 @@ export const websiteService = {
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
           body: JSON.stringify({ email }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -449,7 +452,7 @@ export const websiteService = {
             "X-Authorization": process.env.X_AUTHORIZATION || "",
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -480,7 +483,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -511,7 +514,7 @@ export const websiteService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -603,7 +606,7 @@ export const blogService = {
           next: {
             revalidate: 1,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -622,18 +625,18 @@ export const blogService = {
   },
 };
 
-export const nurseryService = {
-  getNurseries: async (
+export const establishmentService = {
+  getEstablishments: async (
     locale: string,
-    params?: { key: string; value: string }[]
-  ): Promise<NurseryResponse[]> => {
+    params?: { key: string; value: string }[],
+  ): Promise<EstablishmentResponse[]> => {
     try {
       const query = params
         ? "?" +
           params
             .map(
               ({ key, value }) =>
-                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
             )
             .join("&")
         : "";
@@ -641,7 +644,7 @@ export const nurseryService = {
       let res: Response;
       try {
         res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/center-filter${query}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/establishment${query}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -653,7 +656,7 @@ export const nurseryService = {
             next: {
               revalidate: 1,
             },
-          }
+          },
         );
       } catch (fetchError: any) {
         // Handle network errors (fetch failed, connection refused, timeout, etc.)
@@ -696,8 +699,8 @@ export const nurseryService = {
           message:
             errorData?.message ||
             (locale === "ar"
-              ? "فشل في جلب بيانات الحضانات"
-              : "Failed to fetch nurseries"),
+              ? "فشل في جلب بيانات المنشآت"
+              : "Failed to fetch establishments"),
           errors: errorData?.errors || {},
           status: res.status,
           data: errorData,
@@ -720,17 +723,51 @@ export const nurseryService = {
         };
       }
 
-      if (Array.isArray(data.data)) {
-        console.log(
-          "nurseries (nursery_name, user_id): ",
-          data.data.map((nursery: any) => ({
-            nursery_name: nursery.nursery_name,
-            user_id: nursery.user_id,
-          }))
-        );
+      // Flatten nurseries and centers into a single array
+      const establishments: EstablishmentResponse[] = [];
+
+      if (data.nurseries && Array.isArray(data.nurseries)) {
+        data.nurseries.forEach((nursery: any) => {
+          establishments.push({
+            ...nursery,
+            // Map nested nursery object properties to top level if needed
+            nursery_name:
+              nursery.nursery?.nursery_name ||
+              nursery.nursery_name ||
+              nursery.name,
+            logo: nursery.nursery?.logo || nursery.logo,
+            city: nursery.nursery?.city || nursery.city,
+            // Ensure ID is number
+            id: Number(nursery.id),
+            user_id: nursery.id,
+            role: nursery.role || "nursery",
+            type: "nurseries",
+          });
+        });
       }
 
-      return data.data as NurseryResponse[];
+      if (data.centers && Array.isArray(data.centers)) {
+        data.centers.forEach((center: any) => {
+          establishments.push({
+            ...center,
+            nursery_name:
+              center.center?.nursery_name || center.nursery_name || center.name,
+            logo: center.center?.logo || center.logo,
+            city: center.center?.city || center.city,
+            id: Number(center.id),
+            user_id: center.id,
+            role: center.role || "center",
+            type: "centers",
+          });
+        });
+      }
+
+      console.log(
+        "Mapped establishments (name, role): ",
+        establishments.map((e) => ({ name: e.nursery_name, role: e.role })),
+      );
+
+      return establishments;
     } catch (error: any) {
       // If error is already formatted, pass it through
       if (error.message && error.status !== undefined) {
@@ -741,14 +778,15 @@ export const nurseryService = {
     }
   },
 
-  getNurseryPortfolio: async (
+  getEstablishmentPortfolio: async (
     nurseryName: string,
-    locale: string
+    locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
-      // First, get all nurseries to find the center_id for the given nursery name
-      const nurseries = await nurseryService.getNurseries(locale);
-      const nursery = nurseries.find((n) => {
+      // First, get all establishments to find the ID for the given name
+      const establishments =
+        await establishmentService.getEstablishments(locale);
+      const establishment = establishments.find((n) => {
         const dbName = n.nursery_name.toLowerCase().trim();
         const searchName = nurseryName.toLowerCase().trim();
         return (
@@ -758,30 +796,42 @@ export const nurseryService = {
         );
       });
 
-      if (!nursery || !nursery.id) {
+      if (!establishment || !establishment.id) {
         return null;
       }
 
-      // Use the nursery.id for the portfolio endpoint
-      console.log(`Nursery: ${nursery.nursery_name}, ID: ${nursery.id}`);
+      // Use the establishment.id for the portfolio endpoint
+      console.log(
+        `Establishment: ${establishment.nursery_name}, ID: ${establishment.id}`,
+      );
 
-      return await nurseryService.getNurseryPortfolioById(nursery.id, locale);
+      return await establishmentService.getEstablishmentPortfolioById(
+        establishment.id,
+        locale,
+      );
     } catch (error) {
-      console.error("Error fetching nursery portfolio:", error);
+      console.error("Error fetching establishment portfolio:", error);
       return null;
     }
   },
 
-  getNurseryPortfolioById: async (
+  getEstablishmentPortfolioById: async (
     id: number | string,
-    locale: string
+    locale: string,
+    role?: string,
   ): Promise<PortfolioResponse | null> => {
     try {
-      console.log(`Fetching portfolio for center ID: ${id}`);
+      console.log(
+        `Fetching portfolio for establishment ID: ${id}, Role: ${role}`,
+      );
 
-      // Fetch the portfolio data directly using the center ID
+      let endpoint = "v2/get-portfilo-center"; // Default endpoint
+      if (role === "nursery" || role === "nurseries") {
+        endpoint = "get-portfilo-nursery";
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-center/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -789,14 +839,14 @@ export const nurseryService = {
             "X-Authorization": process.env.X_AUTHORIZATION || "",
             "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
           },
-        }
+        },
       );
 
       if (!res.ok) {
         console.error(
-          `Portfolio API failed for center ID ${id}:`,
+          `Portfolio API failed for establishment ID ${id}:`,
           res.status,
-          res.statusText
+          res.statusText,
         );
         throw {
           message: "Failed to fetch portfolio data",
@@ -806,138 +856,38 @@ export const nurseryService = {
       }
 
       const data = await res.json();
-      console.log(`Portfolio data received for center ID ${id}:`, data);
+      console.log(`Portfolio data received for establishment ID ${id}:`, data);
 
-      // The API returns { "data": { ... } } directly
-      return {
-        message: "Success",
-        data: data.data || data,
-      };
-    } catch (error) {
-      console.error("Error fetching nursery portfolio:", error);
-      return null;
-    }
-  },
+      // The API might return { "data": { ... } } or just { ... }
+      // We need to ensure we return the user/portfolio data correctly
+      const portfolioData = data.data || data;
 
-  getNurseryDetails: async (
-    centerId: number,
-    locale: string
-  ): Promise<PortfolioResponse | null> => {
-    try {
-      console.log(`Fetching nursery details for center ID: ${centerId}`);
-
-      // Fetch the nursery details using the get-center endpoint
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-center/${centerId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            lang: locale,
-            "X-Authorization": process.env.X_AUTHORIZATION || "",
-            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        console.error(
-          `Nursery details API failed for center ID ${centerId}:`,
-          res.status,
-          res.statusText
+      // Check if we actually have valid portfolio data
+      if (
+        !portfolioData ||
+        (!portfolioData.nursery_name && !portfolioData.name)
+      ) {
+        console.warn(
+          `Portfolio data for ID ${id} seems empty or invalid structure:`,
+          portfolioData,
         );
-        throw {
-          message: "Failed to fetch nursery details",
-          errors: {},
-          status: res.status,
-        };
       }
 
-      const data = await res.json();
-      console.log(`Nursery details received for center ID ${centerId}:`, data);
-
-      // Transform the data to match our expected format
-      const transformedData = {
-        hero_section: {
-          title_of_hero: data.data.nursery_name,
-          subtitle_of_hero: data.data.additional_service,
-          description: `Located in ${data.data.neighborhood}, ${
-            data.data.city?.name?.en || data.data.city
-          }`,
-          background_image: data.data.logo,
-        },
-        branches:
-          data.data.branches?.map((branch: any) => ({
-            id: branch.id,
-            name: branch.nursery_name,
-            nursery_name_branch: branch.nursery_name,
-          })) || [],
-        Philosophy_Methodology_Goal: {
-          philosophy: {
-            content:
-              data.data.additional_service ||
-              "Our philosophy focuses on providing quality care and education.",
-          },
-          methodology: {
-            content:
-              "We use modern educational methods tailored to each child's needs.",
-          },
-          goals: {
-            content:
-              "Our goal is to help children develop their full potential in a safe and nurturing environment.",
-          },
-        },
-        services:
-          data.data.services?.map((service: string) => ({
-            title: service,
-            description: `We provide ${service} services to support your child's development.`,
-            image_service: null,
-          })) || [],
-        service_section_title: "Our Services",
-        nursery_state: {
-          area: "Varies by branch",
-          class_rooms: `${data.data.branches?.length || 0} branches`,
-          team_members: `${data.data.branches?.reduce(
-            (total: number, branch: any) => total + (branch.teams?.length || 0),
-            0
-          )} team members`,
-        },
-        images_activities: [],
-        activity_section_title: "Our Activities",
-        activity_section_subtitle:
-          "Engaging activities for your child's development",
-        teams:
-          data.data.branches?.flatMap(
-            (branch: any) =>
-              branch.teams?.map((team: any) => ({
-                name: team.name,
-                mission: team.profession,
-                image: team.image,
-              })) || []
-          ) || [],
-        contact_info: {
-          address: data.data.address,
-          working_hours: `${data.data.work_days_from} - ${data.data.work_days_to}, ${data.data.work_hours_from} - ${data.data.work_hours_to}`,
-          phone_number: data.data.phone,
-          email_address: data.data.email,
-          facebook: undefined,
-          instagram: undefined,
-          twitter: undefined,
-          whatsapp: undefined,
-        },
-        ads_images: data.data.ads?.map((ad: any) => ad.image) || [],
-      };
-
       return {
         message: "Success",
-        data: transformedData,
+        data: portfolioData,
       };
-    } catch (error) {
-      console.error("Error fetching nursery details:", error);
+    } catch (error: any) {
+      console.error("Error fetching establishment portfolio:", error);
+      // Don't return null immediately if it's a 404, maybe we can fallback?
+      // But for now, returning null triggers the waiting page
       return null;
     }
   },
 
-  getLatestNurseries: async (locale: string): Promise<NurseryResponse[]> => {
+  getLatestEstablishments: async (
+    locale: string,
+  ): Promise<EstablishmentResponse[]> => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/latest-search`,
@@ -951,19 +901,19 @@ export const nurseryService = {
           next: {
             revalidate: 86400,
           },
-        }
+        },
       );
 
       if (!res.ok) {
         throw {
-          message: "Failed to fetch latest nurseries",
+          message: "Failed to fetch latest establishments",
           errors: {},
           status: res.status,
         };
       }
 
       const data = await res.json();
-      return data.data as NurseryResponse[];
+      return data.data as EstablishmentResponse[];
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
@@ -972,7 +922,7 @@ export const nurseryService = {
   getBranchesByNursery: async (nurseryName: string): Promise<any[]> => {
     try {
       const response = await apiClient.get(
-        `/branches?nursery_name=${nurseryName}`
+        `/branches?nursery_name=${nurseryName}`,
       );
       return response.data || [];
     } catch (error) {
@@ -984,7 +934,7 @@ export const nurseryService = {
   getBranchesForCenter: async (centerId: string): Promise<{ data: any[] }> => {
     try {
       const response = await apiClient.get(
-        `/get-branches-for-center/${centerId}`
+        `/get-branches-for-center/${centerId}`,
       );
       return response.data || { data: [] };
     } catch (error) {
@@ -995,15 +945,15 @@ export const nurseryService = {
 
   getBranchPricing: async (
     branchId: string,
-    centerId?: string
+    centerId?: string,
   ): Promise<any[]> => {
     try {
       if (centerId) {
         const response = await apiClient.get(
-          `/get-branches-for-center/${centerId}`
+          `/get-branches-for-center/${centerId}`,
         );
         const branch = (response.data?.data || []).find(
-          (b: any) => String(b.id) === String(branchId)
+          (b: any) => String(b.id) === String(branchId),
         );
         return branch?.pricing || [];
       }
@@ -1015,9 +965,48 @@ export const nurseryService = {
       return [];
     }
   },
+
+  getCenterPromocodes: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/promocodes`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center promocodes:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterBlogs: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/blogs-center`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching center blogs:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterAds: async (centerId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/centers/${centerId}/ads`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching center ads:", error);
+      throw ApiErrorHandler.handle(error);
+    }
+  },
 };
 
 export const authService = {
+  getCategoryServices: async (): Promise<CategoryService[]> => {
+    try {
+      const response = await apiClient.get("/category-services");
+      return response.data.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   getCenterTypes: async () => {
     try {
       const response = await apiClient.get("/types-public");
@@ -1066,76 +1055,92 @@ export const authService = {
     try {
       const formData = new FormData();
 
-      // Step 1 fields
-      formData.append("name", payload.name);
+      // Basic fields - using correct API field names
+      formData.append("name", payload.nursery_name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
       formData.append("phone", payload.phone);
-      formData.append("nursery_name", payload.nursery_name);
-      formData.append("location", payload.location);
-      formData.append("neighborhood", payload.neighborhood);
-      formData.append("city_id", payload.city);
+      formData.append("city_id", payload.city_id);
 
-      // Append nursery_type array
-      payload.nursery_type.forEach((item) => {
-        formData.append("nursery_type[]", item);
-      });
+      if (payload.logo) {
+        formData.append("logo", payload.logo);
+      }
 
-      // Append types array
-      if (payload.types) {
-        payload.types.forEach((item) => {
-          formData.append("types[]", item);
+      if (
+        payload.category_service_ids &&
+        payload.category_service_ids.length > 0
+      ) {
+        payload.category_service_ids.forEach((id) => {
+          formData.append("category_service_ids[]", String(id));
         });
       }
 
-      // Step 2 fields - files
-      payload.logo && formData.append("logo", payload.logo);
-      payload.license_path &&
-        formData.append("license_path", payload.license_path);
-      payload.commercial_record_path &&
-        formData.append(
-          "commercial_record_path",
-          payload.commercial_record_path
-        );
-
-      // Debug: Log the payload being sent
       console.log("Register Center Payload:", {
-        name: payload.name,
+        name: payload.nursery_name,
         email: payload.email,
         phone: payload.phone,
-        nursery_name: payload.nursery_name,
-        location: payload.location,
-        neighborhood: payload.neighborhood,
-        city: payload.city,
-        types: payload.types,
-        nursery_type: payload.nursery_type,
+        city_id: payload.city_id,
         logo: payload.logo?.name,
-        license_path: payload.license_path?.name,
-        commercial_record_path: payload.commercial_record_path?.name,
       });
 
-      const response = await apiClient.post(
-        "/v2/register-center-v2",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await apiClient.post("/v3/register-center", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error: any) {
-      // Enhanced error logging
       console.error("Register Center Error:", error);
       console.error("Error Response Status:", error.response?.status);
       console.error("Error Response Data:", error.response?.data);
-      console.error("Error Response Headers:", error.response?.headers);
 
-      // Log the full error for debugging
       if (error.response?.data?.errors) {
         console.error("Validation Errors:", error.response.data.errors);
       }
 
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  registerNursery: async (payload: NurseryRegisterPayload) => {
+    try {
+      const formData = new FormData();
+
+      // Basic fields - using correct API field names
+      formData.append("name", payload.nursery_name);
+      formData.append("email", payload.email);
+      formData.append("password", payload.password);
+      formData.append("phone", payload.phone);
+      formData.append("city_id", payload.city_id);
+
+      if (payload.logo) {
+        formData.append("logo", payload.logo);
+      }
+
+      if (
+        payload.category_service_ids &&
+        payload.category_service_ids.length > 0
+      ) {
+        payload.category_service_ids.forEach((id) => {
+          formData.append("category_service_ids[]", String(id));
+        });
+      }
+
+      console.log("Register Nursery Payload:", {
+        name: payload.nursery_name,
+        email: payload.email,
+        phone: payload.phone,
+        city_id: payload.city_id,
+        logo: payload.logo?.name,
+      });
+
+      const response = await apiClient.post("/v3/register-nursery", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
       throw ApiErrorHandler.handle(error);
     }
   },
@@ -1256,11 +1261,11 @@ export const paymentService = {
     try {
       console.log(
         "Payment service - Making request to /payment/subscribe with plan_id:",
-        planId
+        planId,
       );
       console.log(
         "Payment service - API Base URL:",
-        process.env.NEXT_PUBLIC_API_BASE_URL
+        process.env.NEXT_PUBLIC_API_BASE_URL,
       );
       console.log("Payment service - Request headers:", {
         "Content-Type": "application/json",
@@ -1292,7 +1297,7 @@ export const paymentService = {
     try {
       console.log(
         "Payment service - Making request to /payment/subscribe with enrollment_id:",
-        enrollmentId
+        enrollmentId,
       );
 
       const response = await apiClient.post("/payment/subscribe", {
@@ -1301,7 +1306,7 @@ export const paymentService = {
 
       console.log(
         "Payment service - Parent subscription response:",
-        response.data
+        response.data,
       );
       return response.data;
     } catch (error) {
@@ -1371,16 +1376,16 @@ export const parentService = {
   getChildren: async (): Promise<any[]> => {
     try {
       console.log(
-        "[parentService.getChildren] Calling API endpoint: /parent/children"
+        "[parentService.getChildren] Calling API endpoint: /parent/children",
       );
       const response = await apiClient.get("/parent/children");
       console.log(
         "[parentService.getChildren] Response status:",
-        response.status
+        response.status,
       );
       console.log(
         "[parentService.getChildren] Response data:",
-        JSON.stringify(response.data, null, 2)
+        JSON.stringify(response.data, null, 2),
       );
 
       // Some endpoints return { data: [...] } while others return [] directly
@@ -1389,7 +1394,7 @@ export const parentService = {
         console.log(
           "[parentService.getChildren] Data is array, returning:",
           data.length,
-          "items"
+          "items",
         );
         return data;
       }
@@ -1397,12 +1402,12 @@ export const parentService = {
         console.log(
           "[parentService.getChildren] Data.data is array, returning:",
           data.data.length,
-          "items"
+          "items",
         );
         return data.data;
       }
       console.log(
-        "[parentService.getChildren] No array found, returning empty array"
+        "[parentService.getChildren] No array found, returning empty array",
       );
       return [];
     } catch (error) {
@@ -1469,7 +1474,7 @@ export const parentService = {
 
       const response = await apiClient.post(
         "/register-parent-by-center",
-        payload
+        payload,
       );
 
       console.log("Parent registration response:", response.data);

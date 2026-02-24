@@ -983,6 +983,81 @@ export const centerService = {
     }
   },
 
+  // Legacy Portfolio endpoints
+  legacySavePortfolio: async (payload: PortfolioFormData) => {
+    try {
+      console.log("📤 Sending legacy portfolio data:", payload);
+
+      // Convert to FormData to handle file uploads
+      const formData = new FormData();
+
+      // Helper function to append data recursively
+      const appendFormData = (key: string, value: any) => {
+        if (value === undefined) {
+          return;
+        }
+
+        // Handle image fields specially
+        if (key.includes("image") || key.includes("background")) {
+          if (typeof value === "string" && !key.includes("[")) {
+            console.log(`⏭️  Skipping top-level image URL for ${key}`);
+            return;
+          }
+        }
+
+        if (value instanceof File) {
+          formData.append(key, value);
+        } else if (Array.isArray(value)) {
+          if (value.length === 0) {
+            return;
+          }
+          value.forEach((item, index) => {
+            if (item === null || item === undefined) return;
+
+            const itemKey = `${key}[${index}]`;
+            if (item instanceof File) {
+              formData.append(itemKey, item);
+            } else if (typeof item === "object") {
+              Object.keys(item).forEach((subKey) => {
+                appendFormData(`${itemKey}[${subKey}]`, item[subKey]);
+              });
+            } else {
+              formData.append(itemKey, String(item));
+            }
+          });
+        } else if (typeof value === "object" && !(value instanceof File)) {
+          Object.keys(value).forEach((subKey) => {
+            appendFormData(`${key}[${subKey}]`, value[subKey]);
+          });
+        } else {
+          formData.append(key, value === null ? "null" : String(value));
+        }
+      };
+
+      Object.keys(payload).forEach((key) => {
+        appendFormData(key, (payload as any)[key]);
+      });
+
+      const response = await apiClient.post("/portfolios", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  legacyGetPortfolio: async () => {
+    try {
+      const response = await apiClient.get("/portfolios/show");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
   updateLogo: async (logo: File) => {
     try {
       const formData = new FormData();
@@ -999,91 +1074,229 @@ export const centerService = {
     }
   },
 
-  // Portfolio endpoints
-  savePortfolio: async (payload: PortfolioFormData) => {
+  // New Portfolio endpoints
+  savePortfolio: async (payload: PortfolioFormData, id?: number | string) => {
     try {
-      console.log("📤 Sending portfolio data:", payload);
-
-      // Convert to FormData to handle file uploads
+      console.log("📤 Sending updated portfolio data:", payload);
       const formData = new FormData();
 
-      // Helper function to append data recursively
-      const appendFormData = (key: string, value: any) => {
-        if (value === undefined) {
-          return;
+      // Basic Info (Hero)
+      if (payload.title_of_hero)
+        formData.append("title_of_hero", payload.title_of_hero);
+      if (payload.subtitle_of_hero)
+        formData.append("subtitle_of_hero", payload.subtitle_of_hero);
+      if (payload.description)
+        formData.append("description", payload.description);
+
+      // Social links
+      if (payload.contact_info?.facebook)
+        formData.append(
+          "contact_info[facebook]",
+          payload.contact_info.facebook,
+        );
+      if (payload.contact_info?.instagram)
+        formData.append(
+          "contact_info[instagram]",
+          payload.contact_info.instagram,
+        );
+      if (payload.contact_info?.twitter)
+        formData.append("contact_info[twitter]", payload.contact_info.twitter);
+      if (payload.contact_info?.linkedIn)
+        formData.append(
+          "contact_info[linkedIn]",
+          payload.contact_info.linkedIn,
+        );
+      if (payload.contact_info?.website)
+        formData.append("contact_info[website]", payload.contact_info.website);
+
+      // Activities
+      payload.images_activities?.forEach((img, index) => {
+        if (img instanceof File) {
+          formData.append(`images_activities[${index}]`, img);
         }
-
-        // Handle image fields specially
-        if (key.includes("image") || key.includes("background")) {
-          // Skip string values (URLs) for top-level fields to avoid redundant updates
-          // BUT allow them for indexed/nested fields (e.g., services[0][image])
-          // so the backend knows which existing images to keep in a list.
-          if (typeof value === "string" && !key.includes("[")) {
-            console.log(`⏭️  Skipping top-level image URL for ${key}`);
-            return;
-          }
-        }
-
-        if (value instanceof File) {
-          formData.append(key, value);
-          console.log(`📎 Adding file for ${key}:`, value.name);
-        } else if (Array.isArray(value)) {
-          if (value.length === 0) {
-            return;
-          }
-          value.forEach((item, index) => {
-            if (item === null || item === undefined) return;
-
-            const itemKey = `${key}[${index}]`;
-            if (item instanceof File) {
-              formData.append(itemKey, item);
-              console.log(`📎 Adding file for ${itemKey}:`, item.name);
-            } else if (typeof item === "object") {
-              Object.keys(item).forEach((subKey) => {
-                appendFormData(`${itemKey}[${subKey}]`, item[subKey]);
-              });
-            } else {
-              formData.append(itemKey, String(item));
-            }
-          });
-        } else if (typeof value === "object" && !(value instanceof File)) {
-          Object.keys(value).forEach((subKey) => {
-            appendFormData(`${key}[${subKey}]`, value[subKey]);
-          });
-        } else {
-          // Keep root-level nulls as "null" unless they are part of a deleted item
-          formData.append(key, value === null ? "null" : String(value));
-        }
-      };
-
-      // Append all fields from payload
-      Object.keys(payload).forEach((key) => {
-        appendFormData(key, (payload as any)[key]);
+      });
+      payload.delete_images_activities?.forEach((index, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(index));
       });
 
-      // Log FormData contents
-      console.log("📤 FormData entries:");
-      for (const pair of formData.entries()) {
-        console.log(`  ${pair[0]}:`, pair[1]);
-      }
-
-      const response = await apiClient.post("/portfolios", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // Options (Facilities)
+      payload.admin_option_ids?.forEach((id, index) => {
+        formData.append(`admin_option_ids[${index}]`, String(id));
       });
-      console.log("✅ Portfolio saved successfully:", response.data);
+      payload.delete_center_options?.forEach((id, index) => {
+        formData.append(`delete_center_options[${index}]`, String(id));
+      });
+
+      // Licenses
+      payload.licenses?.forEach((license, index) => {
+        if (license.id)
+          formData.append(`licenses[${index}][id]`, String(license.id));
+        formData.append(`licenses[${index}][number]`, license.number);
+        if (license.document instanceof File) {
+          formData.append(`licenses[${index}][document]`, license.document);
+        }
+      });
+      payload.delete_license_ids?.forEach((id, index) => {
+        formData.append(`delete_license_ids[${index}]`, String(id));
+      });
+
+      const url = id ? `/nursery/portfolios/${id}` : "/nursery/portfolios";
+      const response = await apiClient.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data;
     } catch (error: any) {
-      console.error("❌ Portfolio save failed:", error);
-      console.error("Error response:", error.response?.data);
       throw ApiErrorHandler.handle(error);
     }
   },
 
   getPortfolio: async () => {
     try {
-      const response = await apiClient.get("/portfolios/show");
+      const response = await apiClient.get("/nursery/portfolios/show");
+      return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  // Center-specific Portfolio endpoints
+  saveCenterPortfolio: async (
+    payload: PortfolioFormData,
+    id?: number | string,
+  ) => {
+    try {
+      console.log("📤 Sending center portfolio data:", payload);
+      const formData = new FormData();
+
+      // Basic Info (Hero)
+      if (payload.name) formData.append("name", payload.name);
+      if (payload.title_of_hero)
+        formData.append("title_of_hero", payload.title_of_hero);
+      if (payload.subtitle_of_hero)
+        formData.append("subtitle_of_hero", payload.subtitle_of_hero);
+      if (payload.description)
+        formData.append("description", payload.description);
+
+      // Social links
+      if (payload.contact_info?.facebook)
+        formData.append(
+          "contact_info[facebook]",
+          payload.contact_info.facebook,
+        );
+      if (payload.contact_info?.instagram)
+        formData.append(
+          "contact_info[instagram]",
+          payload.contact_info.instagram,
+        );
+      if (payload.contact_info?.twitter)
+        formData.append("contact_info[twitter]", payload.contact_info.twitter);
+      if (payload.contact_info?.linkedIn)
+        formData.append(
+          "contact_info[linkedIn]",
+          payload.contact_info.linkedIn,
+        );
+      if (payload.contact_info?.website)
+        formData.append("contact_info[website]", payload.contact_info.website);
+
+      // Activities (Success Stories)
+      payload.images_activities?.forEach((activity, index) => {
+        if (activity.id)
+          formData.append(
+            `images_activities[${index}][id]`,
+            String(activity.id),
+          );
+        if (activity.image instanceof File) {
+          formData.append(
+            `images_activities[${index}][image_file]`,
+            activity.image,
+          );
+        }
+        if (activity.kind)
+          formData.append(`images_activities[${index}][kind]`, activity.kind);
+        if (activity.summary)
+          formData.append(
+            `images_activities[${index}][summary]`,
+            activity.summary,
+          );
+      });
+      payload.delete_images_activities?.forEach((id, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(id));
+      });
+
+      // Services
+      payload.services?.forEach((service, index) => {
+        if (service.id)
+          formData.append(`services[${index}][id]`, String(service.id));
+        formData.append(`services[${index}][title]`, service.title);
+        formData.append(`services[${index}][description]`, service.description);
+        formData.append(`services[${index}][price]`, service.price);
+        if (service.image_service instanceof File) {
+          formData.append(
+            `services[${index}][image_service]`,
+            service.image_service,
+          );
+        }
+      });
+      payload.delete_service_ids?.forEach((id, i) => {
+        formData.append(`delete_service_ids[${i}]`, String(id));
+      });
+
+      // Teams
+      payload.teams?.forEach((member, index) => {
+        if (member.id)
+          formData.append(`teams[${index}][id]`, String(member.id));
+        formData.append(`teams[${index}][name]`, member.name);
+        formData.append(`teams[${index}][mission]`, member.mission);
+        if (member.image instanceof File) {
+          formData.append(`teams[${index}][image]`, member.image);
+        }
+      });
+      payload.delete_team_ids?.forEach((id, i) => {
+        formData.append(`delete_team_ids[${i}]`, String(id));
+      });
+
+      // Statistics
+      payload.statistics?.forEach((stat, index) => {
+        if (stat.id)
+          formData.append(`statistics[${index}][id]`, String(stat.id));
+        formData.append(`statistics[${index}][address]`, stat.address);
+        formData.append(`statistics[${index}][value]`, stat.value);
+      });
+
+      // Options (Facilities)
+      payload.admin_option_ids?.forEach((id, index) => {
+        formData.append(`admin_option_ids[${index}]`, String(id));
+      });
+      payload.delete_center_options?.forEach((id, index) => {
+        formData.append(`delete_center_options[${index}]`, String(id));
+      });
+
+      // Licenses
+      payload.licenses?.forEach((license, index) => {
+        if (license.id)
+          formData.append(`licenses[${index}][id]`, String(license.id));
+        formData.append(`licenses[${index}][number]`, license.number);
+        if (license.document instanceof File) {
+          formData.append(`licenses[${index}][document]`, license.document);
+        }
+      });
+      payload.delete_license_ids?.forEach((id, index) => {
+        formData.append(`delete_license_ids[${index}]`, String(id));
+      });
+
+      const url = "/center/portfolios";
+      const response = await apiClient.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getCenterPortfolio: async () => {
+    try {
+      const response = await apiClient.get("/center/portfolios/show");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -1136,6 +1349,15 @@ export const centerService = {
     try {
       const response = await apiClient.get("/attendance-all");
       return response.data;
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  },
+
+  getOptions: async () => {
+    try {
+      const response = await apiClient.get("/options");
+      return response.data.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
     }

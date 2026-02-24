@@ -20,7 +20,7 @@ import {
   enrollmentService,
   parentService as apiParentService,
   paymentService,
-  nurseryService,
+  establishmentService,
 } from "@/services/api";
 import { promoCodeService } from "@/services/dashboardApi";
 import { Input } from "@/components/ui/input";
@@ -259,7 +259,7 @@ const Bookings = () => {
         toastError(
           locale === "ar"
             ? "معلومات الفرع غير متوفرة"
-            : "Branch information not available"
+            : "Branch information not available",
         );
         return;
       }
@@ -269,7 +269,7 @@ const Bookings = () => {
         toastError(
           locale === "ar"
             ? "معلومات الخطة غير متوفرة"
-            : "Plan information not available"
+            : "Plan information not available",
         );
         return;
       }
@@ -287,7 +287,7 @@ const Bookings = () => {
         setCouponDiscount(response.discount);
         setAppliedCoupon(response.promo_code);
         toastSuccess(
-          t("coupon.appliedSuccess") || "Coupon applied successfully"
+          t("coupon.appliedSuccess") || "Coupon applied successfully",
         );
       } catch (error: any) {
         let errorMessage = t("coupon.applyError") || "Failed to apply coupon";
@@ -338,7 +338,7 @@ const Bookings = () => {
     // Fetch pricing plans for the branch
     const { data: apiPlans = [], isLoading: loadingPlans } = useQuery({
       queryKey: ["branch-plans-dialog", branchId],
-      queryFn: () => nurseryService.getBranchPricing(branchId!),
+      queryFn: () => establishmentService.getBranchPricing(branchId!),
       enabled: !!branchId && open,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
@@ -348,12 +348,12 @@ const Bookings = () => {
     const planList =
       apiPlans.length > 0
         ? apiPlans.map((apiPlan: any) => ({
-            id: apiPlan.id,
-            type: apiPlan.enrollment_type,
-            name: apiPlan.title,
-            price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
-            planId: apiPlan.id,
-          }))
+          id: apiPlan.id,
+          type: apiPlan.enrollment_type,
+          name: apiPlan.title,
+          price: `${apiPlan.price_amount} ${locale === "ar" ? "ر.س" : "SAR"}`,
+          planId: apiPlan.id,
+        }))
         : [];
 
     // Find the selected plan based on booking's branch_price_id
@@ -399,7 +399,7 @@ const Bookings = () => {
                     return (
                       <div
                         key={p.id}
-                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-[#4D5EDB] text-white border-[#4D5EDB] shadow border-dashed outline-dashed outline-2 outline-[#4D5EDB]"
+                        className="flex flex-col items-center py-3 px-4 rounded-xl border-2 transition font-bold text-base bg-primary text-white border-primary shadow border-dashed outline-dashed outline-2 outline-primary"
                       >
                         <span className="text-lg font-extrabold mb-1 text-white">
                           {p.price}
@@ -416,7 +416,7 @@ const Bookings = () => {
 
             {/* Details Section - Matching ReservationForm style */}
             <div className="w-full bg-white rounded-xl shadow p-6 mb-4">
-              <h3 className="font-bold text-lg text-[#22336C] mb-4 text-center">
+              <h3 className="font-bold text-lg text-primary mb-4 text-center">
                 {t("actions.showDetails")}
               </h3>
               <div className="space-y-2 text-sm text-gray-700 mb-4">
@@ -460,7 +460,7 @@ const Bookings = () => {
               {/* Coupon Section - Matching ReservationForm style */}
               {(isAcceptedStatus || appliedCoupon) && (
                 <div className="border-t pt-4 mt-4 mb-4">
-                  <label className="text-[#22336C] font-bold text-sm mb-3 flex items-center gap-2">
+                  <label className="text-primary font-bold text-sm mb-3 flex items-center gap-2">
                     <Ticket size={16} />
                     {t("coupon.label") || "كوبون الخصم"}:
                   </label>
@@ -512,13 +512,13 @@ const Bookings = () => {
                               </div>
                               {(isCouponExpired ||
                                 appliedCoupon !== originalCoupon) && (
-                                <button
-                                  onClick={handleRemoveCoupon}
-                                  className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                >
-                                  <X size={18} />
-                                </button>
-                              )}
+                                  <button
+                                    onClick={handleRemoveCoupon}
+                                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                  >
+                                    <X size={18} />
+                                  </button>
+                                )}
                             </div>
                             <div className="flex justify-between items-center text-sm border-t border-purple-100 pt-2 mt-2">
                               <span className="text-purple-800">
@@ -571,7 +571,7 @@ const Bookings = () => {
                             "flex-1 h-10 transition-all",
                             couponError
                               ? "border-red-300 focus-visible:ring-red-200 bg-red-50"
-                              : ""
+                              : "",
                           )}
                         />
                         <Button
@@ -579,7 +579,7 @@ const Bookings = () => {
                           disabled={isApplyingCoupon || !couponCode.trim()}
                           className={cn(
                             "px-4 h-10 min-w-[80px]",
-                            isApplyingCoupon ? "bg-opacity-80" : ""
+                            isApplyingCoupon ? "bg-opacity-80" : "",
                           )}
                         >
                           {isApplyingCoupon ? (
@@ -616,7 +616,7 @@ const Bookings = () => {
               <div className="border-t pt-4 mt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[#22336C] text-base">
+                    <span className="font-bold text-primary text-base">
                       {isAcceptedStatus
                         ? t("confirmReservation.required") || "المطلوب"
                         : t("total")}
@@ -633,9 +633,9 @@ const Bookings = () => {
                         <span className="font-bold">
                           {originalPrice > 0
                             ? `-${(
-                                (discountAmount / originalPrice) *
-                                100
-                              ).toFixed(0)}%`
+                              (discountAmount / originalPrice) *
+                              100
+                            ).toFixed(0)}%`
                             : ""}
                         </span>
                         <span className="font-bold">
@@ -656,14 +656,14 @@ const Bookings = () => {
                     </>
                   )}
                   <div className="flex justify-between items-center pt-2 border-t">
-                    <span className="font-bold text-lg text-[#22336C]">
+                    <span className="font-bold text-lg text-primary">
                       {isAcceptedStatus
                         ? t("confirmReservation.finalAmount") ||
-                          "المبلغ المطلوب"
+                        "المبلغ المطلوب"
                         : t("total")}
                       :
                     </span>
-                    <span className="font-extrabold text-2xl text-[#4D5EDB]">
+                    <span className="font-extrabold text-2xl text-primary">
                       {finalPrice.toFixed(2)} {locale === "ar" ? "ر.س" : "SAR"}
                     </span>
                   </div>
@@ -674,7 +674,7 @@ const Bookings = () => {
             {/* Notes - Only for accepted status */}
             {isAcceptedStatus && onConfirm && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-bold text-[#22336C] mb-2">
+                <h4 className="font-bold text-primary mb-2">
                   {t("confirmReservation.notes") || "ملاحظات"}:
                 </h4>
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
@@ -701,7 +701,7 @@ const Bookings = () => {
               <Button
                 onClick={handleConfirm}
                 disabled={isConfirming}
-                className="w-full bg-gradient-to-r from-[#4D5EDB] to-[#22336C] text-white py-6 text-lg font-bold hover:opacity-90"
+                className="w-full bg-linear-to-r from-primary to-primary text-white py-6 text-lg font-bold hover:opacity-90"
               >
                 {isConfirming ? (
                   <Skeleton className="h-4 w-20" />
@@ -711,32 +711,6 @@ const Bookings = () => {
               </Button>
             </div>
           )}
-
-          {/* Custom Scrollbar Styles */}
-          <style jsx global>{`
-            .custom-scrollbar {
-              scrollbar-width: thin;
-              scrollbar-color: #4d5edb #f7f8fa;
-            }
-            .custom-scrollbar::-webkit-scrollbar {
-              width: 6px;
-              background: #f7f8fa;
-              border-radius: 6px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-              background: #4d5edb;
-              border-radius: 6px;
-              min-height: 40px;
-              transition: background 0.2s;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-              background: #22336c;
-            }
-            .custom-scrollbar::-webkit-scrollbar-track {
-              background: #f7f8fa;
-              border-radius: 6px;
-            }
-          `}</style>
         </DialogContent>
       </Dialog>
     );
@@ -762,7 +736,7 @@ const Bookings = () => {
     console.log("Total enrollments returned:", data.data.length);
     console.log(
       "All enrollment IDs:",
-      data.data.map((e: any) => ({ id: e.id, status: e.status }))
+      data.data.map((e: any) => ({ id: e.id, status: e.status })),
     );
   }
 
@@ -775,9 +749,9 @@ const Bookings = () => {
         const childrenNames =
           booking.children?.length > 0
             ? booking.children
-                .map((child: any) => child.child_name || child.name)
-                .filter(Boolean)
-                .join("، ")
+              .map((child: any) => child.child_name || child.name)
+              .filter(Boolean)
+              .join("، ")
             : "";
 
         // Get program name - prefer enrollment_type_name or price_title, fallback to enrollment_type
@@ -879,9 +853,9 @@ const Bookings = () => {
       ) {
         toastError(
           t("cancelError") +
-            " - " +
-            "This enrollment is in 'waiting for confirmation' status. " +
-            "Please contact support if you need to cancel this enrollment."
+          " - " +
+          "This enrollment is in 'waiting for confirmation' status. " +
+          "Please contact support if you need to cancel this enrollment.",
         );
       } else {
         toastError(errorMessage);
@@ -969,7 +943,7 @@ const Bookings = () => {
       } else {
         console.error("No payment URL in response:", response);
         toastError(
-          "Payment URL not received. Please contact support or try again."
+          "Payment URL not received. Please contact support or try again.",
         );
       }
     } catch (e: any) {
@@ -1062,55 +1036,31 @@ const Bookings = () => {
       {/* Renew Booking Dialog */}
       {renewBooking && (
         <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
-          <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
-            <DialogHeader className="px-6 pt-6 pb-4">
-              <DialogTitle className="text-center w-full">
+          <DialogContent className="w-[95vw] sm:max-w-5xl p-0 overflow-hidden rounded-3xl border-none bg-white max-h-[90vh] flex flex-col">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b">
+              <DialogTitle className="text-center w-full text-xl font-bold text-primary">
                 {t("actions.renew")}
               </DialogTitle>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-4 pt-6">
               <ReservationForm
                 nurseryName={
+                  renewBooking.center_name ||
                   renewBooking.originalData?.center_name ||
-                  renewBooking.className ||
+                  renewBooking.branch_name ||
                   "nursery"
                 }
                 selectedProgram={renewBooking.program || ""}
+                selectedPlan={renewBooking.program || ""}
                 locale={locale as "ar" | "en"}
-                selectedBranch={
-                  renewBooking.center_branch_id || renewBooking.branch_id
-                }
-                isDialogMode={true}
+                selectedBranch={String(
+                  renewBooking.center_branch_id || renewBooking.branch_id,
+                )}
                 onClose={handleRenewDialogClose}
                 preSelectedPlanId={renewBooking.branch_price_id}
                 showOnlySelectedPlan={true}
               />
             </div>
-            {/* Custom Scrollbar Styles */}
-            <style jsx global>{`
-              .custom-scrollbar {
-                scrollbar-width: thin;
-                scrollbar-color: #4d5edb #f7f8fa;
-              }
-              .custom-scrollbar::-webkit-scrollbar {
-                width: 6px;
-                background: #f7f8fa;
-                border-radius: 6px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #4d5edb;
-                border-radius: 6px;
-                min-height: 40px;
-                transition: background 0.2s;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #22336c;
-              }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background: #f7f8fa;
-                border-radius: 6px;
-              }
-            `}</style>
           </DialogContent>
         </Dialog>
       )}
