@@ -2795,6 +2795,175 @@
       }
     }
   },
+  "centerDetails": {
+    "header": {
+      "share": "Share",
+      "chat": "Chat",
+      "sloganFallback": "Your child's future starts here",
+      "description": "We provide the best care and education for your child.",
+      "branches": "Branches"
+    },
+    "about": {
+      "title": "About the Center"
+    },
+    "facilities": {
+      "title": "Center Facilities"
+    },
+    "waitingPage": {
+      "parentTitle": "Something Beautiful is Coming!",
+      "parentSubtitle": "Beautiful things take time because they are made with love and care.",
+      "centerTitle": "We're Preparing Something Special!",
+      "centerSubtitle": "Outstanding profiles need time to be created with precision and expertise.",
+      "adminTitle": "We're Reviewing Carefully!",
+      "adminSubtitle": "We ensure high quality for all profiles displayed on the platform.",
+      "browseNurseries": "Browse Centers",
+      "completeProfile": "Complete Profile",
+      "goToDashboard": "Go to Dashboard",
+      "goToAdminDashboard": "Go to Admin Dashboard"
+    },
+    "goals": {
+      "title": "Our Goals"
+    },
+    "philosophy": {
+      "title": "Our Philosophy"
+    },
+    "methodology": {
+      "title": "Our Methodology"
+    },
+    "stats": {
+      "title": "Center Statistics",
+      "area": "Area (m²)",
+      "classrooms": "Classrooms",
+      "teamMembers": "Team Members"
+    },
+    "team": {
+      "title": "Our Team"
+    },
+    "services": {
+      "title": "Our Services"
+    },
+    "activities": {
+      "title": "Our Activities",
+      "subtitle": "Let your children enjoy, with lots of fields"
+    },
+    "programs": {
+      "title": "Programs",
+      "count": "({count} programs)",
+      "filter": "Filtering",
+      "bookNow": "Book Now",
+      "noResults": "No programs available for this search",
+      "currency": "SAR",
+      "filters": {
+        "branch": "Branch",
+        "programType": "Program Type",
+        "age": "Ages",
+        "allBranches": "All Branches",
+        "allPrograms": "All Programs",
+        "allAges": "All Ages",
+        "reset": "Reset to Default",
+        "apply": "Filter",
+        "types": {
+          "hour": "Hourly",
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly",
+          "year": "Yearly"
+        },
+        "ages_list": {
+          "0_6_months": "0 to 6 Months",
+          "6_12_months": "6 to 12 Months",
+          "1_3_years": "1 to 3 Years",
+          "3_5_years": "3 to 5 Years"
+        }
+      }
+    },
+    "albums": {
+      "title": "Photo Albums",
+      "count": "({count} photos)",
+      "viewAll": "View All"
+    },
+    "sections": {
+      "successStories": "Success Stories",
+      "ourTeam": "Our Team"
+    },
+    "ourNumbers": {
+      "title": "Our Numbers",
+      "certifiedSpecialists": "Certified Specialists",
+      "sessionsProvided": "Sessions Provided",
+      "childrenHelped": "Children Helped",
+      "yearsExperience": "Years of Experience"
+    },
+    "blogs": {
+      "title": "Important Blogs"
+    },
+    "ads": {
+      "title": "Advertising Space",
+      "placeholder": "Stay tuned for great offers and activities"
+    },
+    "ratings": {
+      "title": "Ratings ({count} ratings)",
+      "placeholder": "Contribute to improving the service and be the first to rate",
+      "bookNow": "Book Now"
+    },
+    "suggestedNurseries": {
+      "title": "Suggested Establishments"
+    },
+    "coupons": {
+      "title": "Discount Coupons",
+      "validUntil": "Available until {date}",
+      "copyCode": "Copy Code",
+      "copied": "Code Copied"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "info": "Contact Information",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "workingHours": "Working Hours",
+      "social": "Social Media"
+    },
+    "branches": {
+      "title": "Center Branches",
+      "qassim": "Qassim",
+      "gharnata": "Gharnata",
+      "madina": "Madinah",
+      "makkah": "Makkah",
+      "riyadh": "Riyadh",
+      "cta": "Book Now",
+      "stats": {
+        "area": "Area (m²)",
+        "children": "Number of Children",
+        "teachers": "Number of Teachers",
+        "programs": "Number of Programs"
+      }
+    },
+    "plans": {
+      "title": "Programs",
+      "subtitle": "",
+      "selectBranch": "Select Branch",
+      "selectAge": "Child Age",
+      "selectEnrollmentType": "Program Type",
+      "noPrograms": "No Programs Available",
+      "noProgramsMessage": "Programs will be added soon. Please check back later.",
+      "bookNow": "Book Now",
+      "ageRange": "Age Range",
+      "duration": "Duration",
+      "price": "Price",
+      "units": {
+        "hour": "Hour",
+        "hours": "Hours",
+        "day": "Day",
+        "days": "Days",
+        "week": "Week",
+        "weeks": "Weeks",
+        "month": "Month",
+        "months": "Months",
+        "year": "Year",
+        "years": "Years"
+      }
+    }
+  },
   "chat": {
     "sidebar": {
       "title": "Messages",

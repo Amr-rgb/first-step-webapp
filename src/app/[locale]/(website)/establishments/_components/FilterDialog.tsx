@@ -34,6 +34,7 @@ interface FilterDialogProps {
     ages: string[];
   }) => void;
   onReset: () => void;
+  tNamespace?: string;
 }
 
 const FilterDialog = ({
@@ -43,8 +44,9 @@ const FilterDialog = ({
   selectedFilters,
   onApply,
   onReset,
+  tNamespace = "nurseryDetails",
 }: FilterDialogProps) => {
-  const t = useTranslations("nurseryDetails.programs");
+  const t = useTranslations(`${tNamespace}.programs` as any);
 
   const [localFilters, setLocalFilters] = React.useState(selectedFilters);
 

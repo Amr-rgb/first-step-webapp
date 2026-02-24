@@ -19,15 +19,17 @@ interface ProgramsSectionProps {
   centerId: string;
   nurseryName: string;
   locale: string;
+  tNamespace?: string;
 }
 
 const ProgramsSection = ({
   centerId,
   nurseryName,
   locale,
+  tNamespace = "nurseryDetails",
 }: ProgramsSectionProps) => {
-  const t = useTranslations("nurseryDetails.programs");
-  const tCommon = useTranslations("nurseryDetails.plans"); // Reuse units if needed
+  const t = useTranslations(`${tNamespace}.programs` as any);
+  const tCommon = useTranslations(`${tNamespace}.plans` as any); // Reuse units if needed
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(

@@ -17,6 +17,7 @@ interface EstablishmentHeaderProps {
   logo: string;
   rating?: number;
   centerId: string | number;
+  tNamespace?: string;
 }
 
 const EstablishmentHeader = ({
@@ -25,8 +26,9 @@ const EstablishmentHeader = ({
   logo,
   rating = 4.5,
   centerId,
+  tNamespace = "nurseryDetails",
 }: EstablishmentHeaderProps) => {
-  const t = useTranslations("nurseryDetails.header");
+  const t = useTranslations(`${tNamespace}.header` as any);
   const router = useRouter();
   const isAuthenticated = useIsAuthenticated();
 

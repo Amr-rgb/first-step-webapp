@@ -17,10 +17,11 @@ import { Blog } from "@/types";
 
 interface BlogsSectionProps {
   centerId: string;
+  tNamespace?: string;
 }
 
-const BlogsSection = ({ centerId }: BlogsSectionProps) => {
-  const t = useTranslations("nurseryDetails.blogs");
+const BlogsSection = ({ centerId, tNamespace = "nurseryDetails" }: BlogsSectionProps) => {
+  const t = useTranslations(`${tNamespace}.blogs` as any);
   const locale = useLocale();
   const isRtl = locale === "ar";
 
@@ -63,43 +64,43 @@ const BlogsSection = ({ centerId }: BlogsSectionProps) => {
           <CarouselContent className="-ml-4">
             {isLoading
               ? Array.from({ length: 2 }).map((_, i) => (
+                <CarouselItem
+                  key={i}
+                  className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
+                >
+                  <Skeleton className="h-[340px] w-full rounded-2xl" />
+                </CarouselItem>
+              ))
+              : blogs.map((blogData: any) => {
+                // Map API response to Blog interface
+                const blog: Blog = {
+                  id: blogData.id,
+                  title: blogData.title || "",
+                  description: blogData.description || "",
+                  image:
+                    blogData.blog_image_url ||
+                    blogData.cover_url ||
+                    "/assets/images/placeholder.png",
+                  reading_time: String(blogData.reading_time || "0"),
+                  published_at:
+                    blogData.created_at ||
+                    blogData.updated_at ||
+                    new Date().toISOString(),
+                  created_at:
+                    blogData.created_at ||
+                    blogData.updated_at ||
+                    new Date().toISOString(),
+                };
+
+                return (
                   <CarouselItem
-                    key={i}
+                    key={blog.id}
                     className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
                   >
-                    <Skeleton className="h-[340px] w-full rounded-2xl" />
+                    <BlogCard blog={blog} />
                   </CarouselItem>
-                ))
-              : blogs.map((blogData: any) => {
-                  // Map API response to Blog interface
-                  const blog: Blog = {
-                    id: blogData.id,
-                    title: blogData.title || "",
-                    description: blogData.description || "",
-                    image:
-                      blogData.blog_image_url ||
-                      blogData.cover_url ||
-                      "/assets/images/placeholder.png",
-                    reading_time: String(blogData.reading_time || "0"),
-                    published_at:
-                      blogData.created_at ||
-                      blogData.updated_at ||
-                      new Date().toISOString(),
-                    created_at:
-                      blogData.created_at ||
-                      blogData.updated_at ||
-                      new Date().toISOString(),
-                  };
-
-                  return (
-                    <CarouselItem
-                      key={blog.id}
-                      className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
-                    >
-                      <BlogCard blog={blog} />
-                    </CarouselItem>
-                  );
-                })}
+                );
+              })}
           </CarouselContent>
         </div>
       </Carousel>

@@ -3,7 +3,7 @@
 import React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
-import { nurseryService } from "@/services/api";
+import { establishmentService } from "@/services/api";
 import NurseryCard from "@/components/general/nurseries/NurseryCard";
 import {
   Carousel,
@@ -13,27 +13,29 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { NurseryResponse } from "@/types";
+import { EstablishmentResponse } from "@/types";
 
 interface SuggestedEstablishmentsSectionProps {
   currentCenterId: string;
+  tNamespace?: string;
 }
 
 const SuggestedEstablishmentsSection = ({
   currentCenterId,
+  tNamespace = "nurseryDetails",
 }: SuggestedEstablishmentsSectionProps) => {
-  const t = useTranslations("nurseryDetails.suggestedNurseries");
+  const t = useTranslations(`${tNamespace}.suggestedNurseries` as any);
   const locale = useLocale() as "ar" | "en";
   const isRtl = locale === "ar";
 
-  const { data: nurseries, isLoading } = useQuery({
-    queryKey: ["suggested-nurseries", locale],
-    queryFn: () => nurseryService.getNurseries(locale),
+  const { data: establishments, isLoading } = useQuery({
+    queryKey: ["suggested-establishments", locale],
+    queryFn: () => establishmentService.getEstablishments(locale),
     select: (data: any[]) =>
-      data.filter((n: any) => String(n.id) !== currentCenterId).slice(0, 10),
+      data.filter((e: any) => String(e.id) !== currentCenterId).slice(0, 10),
   });
 
-  if (!isLoading && (!nurseries || nurseries.length === 0)) return null;
+  if (!isLoading && (!establishments || establishments.length === 0)) return null;
 
   return (
     <section id="suggested-nurseries" className="py-0 scroll-mt-20">
@@ -73,12 +75,12 @@ const SuggestedEstablishmentsSection = ({
                   <Skeleton className="h-[400px] w-full rounded-2xl" />
                 </CarouselItem>
               ))
-              : (nurseries || []).map((nursery: NurseryResponse) => (
+              : (establishments || []).map((establishment: any) => (
                 <CarouselItem
-                  key={nursery.id}
+                  key={establishment.id}
                   className="pl-4 basis-full sm:basis-2/3 md:basis-1/2 lg:basis-1/2 transition-all duration-300"
                 >
-                  <NurseryCard nursery={nursery} locale={locale} />
+                  <NurseryCard nursery={establishment} locale={locale} />
                 </CarouselItem>
               ))}
           </CarouselContent>

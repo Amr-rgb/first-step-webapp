@@ -175,8 +175,8 @@ export interface CenterRegisterPayload {
   category_service_ids?: number[];
 }
 
-// Extended interface for nursery API response that includes user_id
-export interface NurseryResponse extends Omit<
+// Extended interface for establishment API response that includes user_id
+export interface EstablishmentResponse extends Omit<
   CenterRegisterPayload,
   "logo" | "license_path" | "commercial_record_path" | "city"
 > {
@@ -184,6 +184,7 @@ export interface NurseryResponse extends Omit<
   user_id: number;
   center_id?: number;
   type?: string; // 'nurseries' | 'centers' | etc.
+  role?: string; // 'nursery' | 'center'
   logo?: string;
   license_path?: string;
   commercial_record_path?: string;
@@ -415,17 +416,17 @@ export interface PricingFormData {
   enrollment_type: string;
   title: string;
   start_age:
-    | number // old structure support
-    | {
-        type: string;
-        age: number;
-      };
+  | number // old structure support
+  | {
+    type: string;
+    age: number;
+  };
   end_age:
-    | number // old structure support
-    | {
-        type: string;
-        age: number;
-      };
+  | number // old structure support
+  | {
+    type: string;
+    age: number;
+  };
   count: number;
   price_amount: number;
 }

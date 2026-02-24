@@ -18,10 +18,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface CouponsSectionProps {
   centerId: string;
   nurseryLogo?: string;
+  tNamespace?: string;
 }
 
-const CouponsSection = ({ centerId, nurseryLogo }: CouponsSectionProps) => {
-  const t = useTranslations("nurseryDetails.coupons");
+const CouponsSection = ({ centerId, nurseryLogo, tNamespace = "nurseryDetails" }: CouponsSectionProps) => {
+  const t = useTranslations(`${tNamespace}.coupons` as any);
   const locale = useLocale();
   const isRtl = locale === "ar";
 
@@ -64,35 +65,35 @@ const CouponsSection = ({ centerId, nurseryLogo }: CouponsSectionProps) => {
           <CarouselContent className="-ml-4">
             {isLoading
               ? Array.from({ length: 2 }).map((_, i) => (
-                  <CarouselItem
-                    key={i}
-                    className="pl-4 basis-full md:basis-1/2 lg:basis-full"
-                  >
-                    <Skeleton className="h-40 w-full rounded-2xl" />
-                  </CarouselItem>
-                ))
+                <CarouselItem
+                  key={i}
+                  className="pl-4 basis-full md:basis-1/2 lg:basis-full"
+                >
+                  <Skeleton className="h-40 w-full rounded-2xl" />
+                </CarouselItem>
+              ))
               : coupons.map((coupon: any) => (
-                  <CarouselItem
-                    key={coupon.id}
-                    className="pl-4 basis-full md:basis-1/2 lg:basis-full"
-                  >
-                    <CouponCard
-                      title={coupon.title || ""}
-                      endDate={coupon.end_date}
-                      percentage={parseInt(coupon.percentage) || 0}
-                      code={coupon.title}
-                      color={coupon.color || "#2B3990"}
-                      viewType="branches"
-                      centers={
-                        coupon.branches?.map((branch: any) => ({
-                          id: branch.id,
-                          name: branch.name,
-                          logo: nurseryLogo || "/assets/logos/logo.svg",
-                        })) || []
-                      }
-                    />
-                  </CarouselItem>
-                ))}
+                <CarouselItem
+                  key={coupon.id}
+                  className="pl-4 basis-full md:basis-1/2 lg:basis-full"
+                >
+                  <CouponCard
+                    title={coupon.title || ""}
+                    endDate={coupon.end_date}
+                    percentage={parseInt(coupon.percentage) || 0}
+                    code={coupon.title}
+                    color={coupon.color || "#2B3990"}
+                    viewType="branches"
+                    centers={
+                      coupon.branches?.map((branch: any) => ({
+                        id: branch.id,
+                        name: branch.name,
+                        logo: nurseryLogo || "/assets/logos/logo.svg",
+                      })) || []
+                    }
+                  />
+                </CarouselItem>
+              ))}
           </CarouselContent>
         </div>
       </Carousel>

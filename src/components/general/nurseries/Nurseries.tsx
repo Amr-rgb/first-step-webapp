@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import SearchBar from "../search/SearchBar";
 import NurseryCard from "./NurseryCard";
-import { NurseryResponse } from "@/types";
+import { EstablishmentResponse } from "@/types";
 import useDebounce from "@/hooks/useDebounce";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const Nurseries = ({
   error,
   cities = [],
 }: {
-  nurseries: NurseryResponse[];
+  nurseries: EstablishmentResponse[];
   query: string;
   filter: string;
   locale: LocaleKey;
@@ -132,7 +132,7 @@ const Nurseries = ({
             onChange={setSearchQuery}
           />
         </div>
-        
+
         {/* Mobile Filter Button */}
         <Button
           onClick={() => setIsMobileFilterOpen(true)}

@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import SectionHeader from "./SectionHeader";
 import { Button } from "@/components/ui/button";
 
-const RatingsSection = () => {
-  const t = useTranslations("nurseryDetails.ratings");
+const RatingsSection = ({ tNamespace = "nurseryDetails" }: { tNamespace?: string }) => {
+  const t = useTranslations(`${tNamespace}.ratings` as any);
 
   return (
     <section id="ratings" className="py-0 scroll-mt-20">

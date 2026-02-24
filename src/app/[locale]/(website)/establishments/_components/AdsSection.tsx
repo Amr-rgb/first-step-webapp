@@ -17,10 +17,11 @@ import SectionHeader from "./SectionHeader";
 
 interface AdsSectionProps {
   centerId: string;
+  tNamespace?: string;
 }
 
-const AdsSection = ({ centerId }: AdsSectionProps) => {
-  const t = useTranslations("nurseryDetails.ads");
+const AdsSection = ({ centerId, tNamespace = "nurseryDetails" }: AdsSectionProps) => {
+  const t = useTranslations(`${tNamespace}.ads` as any);
   const locale = useLocale();
   const isRtl = locale === "ar";
 
