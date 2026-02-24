@@ -58,7 +58,7 @@ export default async function CenterPage({
       <EstablishmentHeader
         name={portfolio.hero_section?.title_of_hero || readableName}
         tagline={portfolio.hero_section?.subtitle_of_hero || ""}
-        logo={portfolio.user?.logo || ""}
+        logo={portfolio.center_logo || portfolio.user?.logo || ""}
         rating={4.5}
         centerId={centerIdStr}
       />

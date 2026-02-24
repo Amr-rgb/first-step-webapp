@@ -56,7 +56,7 @@ export default async function NurseryPage({
       <EstablishmentHeader
         name={portfolio.hero_section?.title_of_hero || readableName}
         tagline={portfolio.hero_section?.subtitle_of_hero || ""}
-        logo={portfolio.user?.logo || ""}
+        logo={portfolio.logo || portfolio.user?.logo || ""}
         rating={4.5}
         centerId={centerIdStr}
       />
