@@ -112,7 +112,7 @@ export default function Header({
     },
     separator1: { type: "separator" as const },
     billingControl:
-      role === "center"
+      role === "center" || role === "nursery"
         ? {
             icon: CreditCard,
             label: t("menu.billing"),
