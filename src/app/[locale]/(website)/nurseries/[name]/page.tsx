@@ -36,8 +36,6 @@ export default async function NurseryPage({
       id,
       locale,
     );
-  } else {
-    portfolioResponse = await nurseryService.getNurseryPortfolio(name, locale);
   }
 
   const portfolio = portfolioResponse?.data as any;

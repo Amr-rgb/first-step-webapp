@@ -744,45 +744,58 @@ export const nurseryService = {
     }
   },
 
-  getNurseryPortfolio: async (
-    nurseryName: string,
+  getNurseryPortfolioById: async (
+    id: number | string,
     locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
-      // First, get all nurseries to find the center_id for the given nursery name
-      const nurseries = await nurseryService.getNurseries(locale);
-      const nursery = nurseries.find((n) => {
-        const dbName = n.nursery_name.toLowerCase().trim();
-        const searchName = nurseryName.toLowerCase().trim();
-        return (
-          dbName === searchName ||
-          dbName.includes(searchName) ||
-          searchName.includes(dbName)
-        );
-      });
+      console.log(`Fetching portfolio for nursery ID: ${id}`);
 
-      if (!nursery || !nursery.id) {
-        return null;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/get-portfilo-nursery/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            lang: locale,
+            "X-Authorization": process.env.X_AUTHORIZATION || "",
+            "X-Authorization-Secret": process.env.X_AUTHORIZATION_SECRET || "",
+          },
+        },
+      );
+
+      if (!res.ok) {
+        console.error(
+          `Portfolio API failed for nursery ID ${id}:`,
+          res.status,
+          res.statusText,
+        );
+        throw {
+          message: "Failed to fetch portfolio data",
+          errors: {},
+          status: res.status,
+        };
       }
 
-      // Use the nursery.id for the portfolio endpoint
-      console.log(`Nursery: ${nursery.nursery_name}, ID: ${nursery.id}`);
+      const data = await res.json();
+      console.log(`Portfolio data received for nursery ID ${id}:`, data);
 
-      return await nurseryService.getNurseryPortfolioById(nursery.id, locale);
+      return {
+        message: "Success",
+        data: data.data || data,
+      };
     } catch (error) {
       console.error("Error fetching nursery portfolio:", error);
       return null;
     }
   },
 
-  getNurseryPortfolioById: async (
+  getCenterPortfolioById: async (
     id: number | string,
     locale: string,
   ): Promise<PortfolioResponse | null> => {
     try {
       console.log(`Fetching portfolio for center ID: ${id}`);
 
-      // Fetch the portfolio data directly using the center ID
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/v2/get-portfilo-center/${id}`,
         {
@@ -811,13 +824,12 @@ export const nurseryService = {
       const data = await res.json();
       console.log(`Portfolio data received for center ID ${id}:`, data);
 
-      // The API returns { "data": { ... } } directly
       return {
         message: "Success",
         data: data.data || data,
       };
     } catch (error) {
-      console.error("Error fetching nursery portfolio:", error);
+      console.error("Error fetching center portfolio:", error);
       return null;
     }
   },
