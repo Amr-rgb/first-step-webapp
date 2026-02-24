@@ -1206,7 +1206,10 @@ export const centerService = {
             String(activity.id),
           );
         if (activity.image instanceof File) {
-          formData.append(`images_activities[${index}][image]`, activity.image);
+          formData.append(
+            `images_activities[${index}][image_file]`,
+            activity.image,
+          );
         }
         if (activity.kind)
           formData.append(`images_activities[${index}][kind]`, activity.kind);
