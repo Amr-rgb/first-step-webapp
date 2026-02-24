@@ -2106,15 +2106,18 @@
       "permissionError": "ليس لديك صلاحية لعرض بيانات المركز",
       "sections": {
         "basicInfo": "المعلومات الأساسية",
-        "plans": "البرامج",
-        "activities": "الأنشطة",
-        "facilities": "المرافق والخدمات",
+        "services": "الخدمات",
+        "activities": "قصص النجاح",
+        "teams": "فريق العمل",
+        "statistics": "الإحصائيات",
         "licenses": "التراخيص",
         "socialMedia": "وسائل التواصل الاجتماعي"
       },
       "basicInfo": {
-        "nurseryLogo": "شعار الحضانة",
+        "nurseryLogo": "شعار المركز",
         "logoHint": "قم بتحميل صورة شعار احترافية. (PNG أو JPG، بحد أقصى 3 ميجابايت)",
+        "centerName": "اسم المركز",
+        "centerNamePlaceholder": "أدخل اسم المركز",
         "nurseryName": "اسم الحضانة",
         "nurseryNamePlaceholder": "مثال: حضانة عالم التعلم",
         "nurserySlogan": "شعار الحضانة",
@@ -2124,11 +2127,52 @@
         "descriptionLimit": "الحد الأقصى 200 حرف"
       },
       "activities": {
-        "title": "ألبومات الصور",
+        "title": "قصص النجاح",
+        "description": "شارك قصص النجاح والتحسن للأطفال في مركزك",
+        "storyImage": "صورة الحالة",
+        "caseType": "نوع الحالة",
+        "caseTypePlaceholder": "مثال: تأخر نطق / توحد",
+        "improvementSummary": "ملخص التحسن",
+        "improvementPlaceholder": "تحدث عن مدى التحسن الذي وصل له الطفل...",
+        "addStory": "إضافة قصة نجاح",
+        "imageHint": "تحميل صورة توضح النشاط أو الحالة",
         "uploadTitle": "تحميل صورة",
         "uploadHint": "اسحب وأفلت صورك هنا، أو حمل من جهازك",
         "formatsNote": "الصيغ المدعومة: JPG, PNG (الحجم الأقصى: 10 ميجابايت)",
         "uploadedTitle": "الصور المحملة ({count})"
+      },
+      "services": {
+        "title": "الخدمات",
+        "description": "أضف الخدمات التي يقدمها المركز مع أسعارها",
+        "serviceName": "اسم الخدمة",
+        "serviceNamePlaceholder": "مثال: جلسة تخاطب",
+        "serviceDescription": "وصف الخدمة",
+        "serviceDescriptionPlaceholder": "تحدث باختصار عن الخدمة...",
+        "serviceImage": "صورة الخدمة",
+        "price": "السعر",
+        "addService": "إضافة خدمة",
+        "imageHint": "تحميل صورة معبرة عن الخدمة"
+      },
+      "teams": {
+        "title": "فريق العمل",
+        "description": "تعريف بالأخصائيين وفريق العمل المتميز",
+        "memberName": "اسم العضو",
+        "memberNamePlaceholder": "أدخل اسم الأخصائي",
+        "memberSpecialization": "التخصص",
+        "memberSpecializationPlaceholder": "مثال: أخصائي تخاطب",
+        "memberImage": "صورة العضو",
+        "addMember": "إضافة عضو",
+        "imageHint": "تحميل صورة شخصية"
+      },
+      "statistics": {
+        "title": "الإحصائيات",
+        "description": "أرقام تعكس إنجازات المركز",
+        "labels": {
+          "YearsofExperience": "سنوات الخبرة",
+          "ChildrenHelped": "طفل تم مساعدته",
+          "SessionsProvided": "جلسة مقدمة",
+          "CertifiedSpecialist": "أخصائي معتمد"
+        }
       },
       "facilities": {
         "title": "اختر المرافق المتاحة في حضانتك"

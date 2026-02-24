@@ -2115,15 +2115,18 @@
       "permissionError": "You do not have permission to view center data",
       "sections": {
         "basicInfo": "Basic Information",
-        "plans": "Plans",
-        "activities": "Activities",
-        "facilities": "Facilities",
+        "services": "Services",
+        "activities": "Success Stories",
+        "teams": "Work Team",
+        "statistics": "Statistics",
         "licenses": "Licenses",
         "socialMedia": "Social Media"
       },
       "basicInfo": {
-        "nurseryLogo": "Nursery Logo",
+        "nurseryLogo": "Center Logo",
         "logoHint": "Upload a clear logo image (PNG or JPG, max 3MB)",
+        "centerName": "Center Name",
+        "centerNamePlaceholder": "Enter center name",
         "nurseryName": "Nursery Name",
         "nurseryNamePlaceholder": "e.g., World of Learning Nursery",
         "nurserySlogan": "Nursery Slogan",
@@ -2133,11 +2136,52 @@
         "descriptionLimit": "Maximum 200 characters"
       },
       "activities": {
-        "title": "Photo Albums",
+        "title": "Success Stories",
+        "description": "Share success and improvement stories for children at your center",
+        "storyImage": "Case Image",
+        "caseType": "Case Type",
+        "caseTypePlaceholder": "e.g., Speech Delay / Autism",
+        "improvementSummary": "Improvement Summary",
+        "improvementPlaceholder": "Talk about the level of improvement the child has reached...",
+        "addStory": "Add Success Story",
+        "imageHint": "Upload a photo illustrating the activity or case",
         "uploadTitle": "Upload Photo",
         "uploadHint": "Drag and drop your photos here, or upload from your device",
         "formatsNote": "Supported formats: JPG, PNG (Max size: 10MB)",
         "uploadedTitle": "Uploaded Photos ({count})"
+      },
+      "services": {
+        "title": "Services",
+        "description": "Add services provided by the center with their prices",
+        "serviceName": "Service Name",
+        "serviceNamePlaceholder": "e.g., Speech Session",
+        "serviceDescription": "Service Description",
+        "serviceDescriptionPlaceholder": "Briefly describe the service...",
+        "serviceImage": "Service Image",
+        "price": "Price",
+        "addService": "Add Service",
+        "imageHint": "Upload an image representing the service"
+      },
+      "teams": {
+        "title": "Work Team",
+        "description": "Definition of specialists and the distinguished work team",
+        "memberName": "Member Name",
+        "memberNamePlaceholder": "Enter specialist's name",
+        "memberSpecialization": "Specialization",
+        "memberSpecializationPlaceholder": "e.g., Speech Specialist",
+        "memberImage": "Member Photo",
+        "addMember": "Add Member",
+        "imageHint": "Upload a profile photo"
+      },
+      "statistics": {
+        "title": "Statistics",
+        "description": "Numbers reflecting the center's achievements",
+        "labels": {
+          "YearsofExperience": "Years of Experience",
+          "ChildrenHelped": "Children Helped",
+          "SessionsProvided": "Sessions Provided",
+          "CertifiedSpecialist": "Certified Specialist"
+        }
       },
       "facilities": {
         "title": "Choose the facilities available in your nursery"

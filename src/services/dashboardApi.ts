@@ -1169,6 +1169,7 @@ export const centerService = {
       const formData = new FormData();
 
       // Basic Info (Hero)
+      if (payload.name) formData.append("name", payload.name);
       if (payload.title_of_hero)
         formData.append("title_of_hero", payload.title_of_hero);
       if (payload.subtitle_of_hero)
@@ -1197,14 +1198,66 @@ export const centerService = {
       if (payload.contact_info?.website)
         formData.append("contact_info[website]", payload.contact_info.website);
 
-      // Activities
-      payload.images_activities?.forEach((img, index) => {
-        if (img instanceof File) {
-          formData.append(`images_activities[${index}]`, img);
+      // Activities (Success Stories)
+      payload.images_activities?.forEach((activity, index) => {
+        if (activity.id)
+          formData.append(
+            `images_activities[${index}][id]`,
+            String(activity.id),
+          );
+        if (activity.image instanceof File) {
+          formData.append(`images_activities[${index}][image]`, activity.image);
+        }
+        if (activity.kind)
+          formData.append(`images_activities[${index}][kind]`, activity.kind);
+        if (activity.summary)
+          formData.append(
+            `images_activities[${index}][summary]`,
+            activity.summary,
+          );
+      });
+      payload.delete_images_activities?.forEach((id, i) => {
+        formData.append(`delete_images_activities[${i}]`, String(id));
+      });
+
+      // Services
+      payload.services?.forEach((service, index) => {
+        if (service.id)
+          formData.append(`services[${index}][id]`, String(service.id));
+        formData.append(`services[${index}][title]`, service.title);
+        formData.append(`services[${index}][description]`, service.description);
+        formData.append(`services[${index}][price]`, service.price);
+        if (service.image_service instanceof File) {
+          formData.append(
+            `services[${index}][image_service]`,
+            service.image_service,
+          );
         }
       });
-      payload.delete_images_activities?.forEach((index, i) => {
-        formData.append(`delete_images_activities[${i}]`, String(index));
+      payload.delete_service_ids?.forEach((id, i) => {
+        formData.append(`delete_service_ids[${i}]`, String(id));
+      });
+
+      // Teams
+      payload.teams?.forEach((member, index) => {
+        if (member.id)
+          formData.append(`teams[${index}][id]`, String(member.id));
+        formData.append(`teams[${index}][name]`, member.name);
+        formData.append(`teams[${index}][mission]`, member.mission);
+        if (member.image instanceof File) {
+          formData.append(`teams[${index}][image]`, member.image);
+        }
+      });
+      payload.delete_team_ids?.forEach((id, i) => {
+        formData.append(`delete_team_ids[${i}]`, String(id));
+      });
+
+      // Statistics
+      payload.statistics?.forEach((stat, index) => {
+        if (stat.id)
+          formData.append(`statistics[${index}][id]`, String(stat.id));
+        formData.append(`statistics[${index}][address]`, stat.address);
+        formData.append(`statistics[${index}][value]`, stat.value);
       });
 
       // Options (Facilities)
