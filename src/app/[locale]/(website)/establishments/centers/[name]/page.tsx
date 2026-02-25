@@ -137,7 +137,7 @@ export default async function CenterPage({
 
             {/* Success Stories Section */}
             {portfolio.images_activities &&
-              portfolio.images_activities.length > 0 && (
+              portfolio.images_activities.some((story: any) => story.image) && (
                 <SuccessStoriesSection
                   stories={portfolio.images_activities || []}
                 />
