@@ -41,10 +41,10 @@ export default async function EstablishmentsPage({
     typeof searchParameters.filter === "string" ? searchParameters.filter : "";
 
   // Extract filters from searchParams
-  const city_ids = Array.isArray(searchParameters.city_id)
-    ? (searchParameters.city_id as string[])
-    : searchParameters.city_id
-      ? [searchParameters.city_id as string]
+  const city_ids = Array.isArray(searchParameters["city_ids[]"])
+    ? (searchParameters["city_ids[]"] as string[])
+    : searchParameters["city_ids[]"]
+      ? [searchParameters["city_ids[]"] as string]
       : [];
 
   const category_service_ids = Array.isArray(
@@ -64,7 +64,7 @@ export default async function EstablishmentsPage({
     // Construct params for the API call
     const apiParams: { key: string; value: string }[] = [];
     if (query) apiParams.push({ key: "nursery_name", value: query });
-    city_ids.forEach((id) => apiParams.push({ key: "city_id", value: id }));
+    city_ids.forEach((id) => apiParams.push({ key: "city_ids[]", value: id }));
     category_service_ids.forEach((id) =>
       apiParams.push({ key: "category_service_ids[]", value: id }),
     );

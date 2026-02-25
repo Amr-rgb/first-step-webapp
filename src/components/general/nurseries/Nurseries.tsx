@@ -61,7 +61,7 @@ const Nurseries = ({
 
     return {
       categories: searchParams.getAll("category_service_ids[]"),
-      cities: searchParams.getAll("city_id"),
+      cities: searchParams.getAll("city_ids[]"),
       ages: searchParams.getAll("ages"),
       ratings: searchParams.getAll("ratings"),
     };
@@ -80,7 +80,7 @@ const Nurseries = ({
     const params = new URLSearchParams();
     if (debouncedQuery) params.set("query", debouncedQuery);
 
-    filters.cities.forEach((id) => params.append("city_id", id));
+    filters.cities.forEach((id) => params.append("city_ids[]", id));
     filters.categories.forEach((id) =>
       params.append("category_service_ids[]", id),
     );
