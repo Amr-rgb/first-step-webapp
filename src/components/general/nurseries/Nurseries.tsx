@@ -67,7 +67,7 @@ const Nurseries = ({
     };
   });
 
-  const debouncedQuery = useDebounce(searchQuery, 1000);
+  const debouncedQuery = useDebounce(searchQuery, 500);
 
   const totalActiveFilters =
     filters.categories.length +
@@ -104,9 +104,17 @@ const Nurseries = ({
     router.refresh();
   };
 
-  // Client-side filtering for ages and ratings (since server doesn't handle them yet)
+  // Client-side filtering as a fallback and for responsive search
   const filteredNurseries = useMemo(() => {
     return nurseries.filter((nursery) => {
+      // Search query filter
+      if (debouncedQuery) {
+        const matchesQuery = nursery.nursery_name
+          .toLocaleLowerCase()
+          .includes(debouncedQuery.toLocaleLowerCase());
+        if (!matchesQuery) return false;
+      }
+
       // Age filter
       if (filters.ages.length > 0 && nursery.accepted_ages) {
         const matchesAge = filters.ages.some((ageFilter) => {
@@ -132,7 +140,7 @@ const Nurseries = ({
 
       return true;
     });
-  }, [nurseries, filters.ages, filters.ratings]);
+  }, [nurseries, debouncedQuery, filters.ages, filters.ratings]);
 
   return (
     <section className="container mx-auto px-4">
