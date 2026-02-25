@@ -111,7 +111,7 @@ export default async function NurseryPage({
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Main Info Column: About & Facilities */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-10 lg:gap-10 order-1">
+          <div className="lg:col-span-7 flex flex-col gap-10 lg:gap-10 order-1">
             {/* About Section */}
             <AboutSection
               title={t("about.title")}
@@ -137,7 +137,7 @@ export default async function NurseryPage({
           </div>
 
           {/* Sticky Sidebar Column: Programs */}
-          <div className="lg:col-span-5 xl:col-span-4 order-2 flex flex-col gap-10">
+          <div className="lg:col-span-5 order-2 flex flex-col gap-10">
             <ProgramsSection
               centerId={centerIdStr}
               nurseryName={name}
