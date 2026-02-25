@@ -114,11 +114,14 @@ export default async function CenterPage({
           {/* Right Column (Main): About → Services → Plans → Success Stories → Advertisement */}
           <div className="lg:col-span-7  flex flex-col gap-10 order-1">
             {/* About Section */}
-            {/* <AboutSection
-              title={t("about.title")}
-              subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
-              description={portfolio.hero_section?.description || ""}
-            /> */}
+            {/* {(portfolio.hero_section?.subtitle_of_hero ||
+              portfolio.hero_section?.description) && (
+              <AboutSection
+                title={t("about.title")}
+                subtitle={portfolio.hero_section?.subtitle_of_hero || ""}
+                description={portfolio.hero_section?.description || ""}
+              />
+            )} */}
 
             {/* Services Section */}
             <ServicesSection
