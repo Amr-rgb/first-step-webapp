@@ -136,9 +136,12 @@ export default async function CenterPage({
             />
 
             {/* Success Stories Section */}
-            <SuccessStoriesSection
-              stories={portfolio.images_activities || []}
-            />
+            {portfolio.images_activities &&
+              portfolio.images_activities.length > 0 && (
+                <SuccessStoriesSection
+                  stories={portfolio.images_activities || []}
+                />
+              )}
 
             {/* Advertisement Section */}
             <section id="advertisement" className="py-0 scroll-mt-20">
@@ -150,7 +153,7 @@ export default async function CenterPage({
               </div>
 
               <div
-                className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 p-4 flex items-center justify-center"
+                className="relative w-full overflow-hidden rounded-2xl bg-linear-to-br from-blue-50 via-purple-50 to-cyan-50 p-4 flex items-center justify-center"
                 style={{
                   height: "280px",
                 }}

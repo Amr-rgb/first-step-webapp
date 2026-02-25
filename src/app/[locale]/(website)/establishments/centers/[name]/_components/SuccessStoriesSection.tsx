@@ -15,7 +15,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import SectionHeader from "../../../_components/SectionHeader";
 
 interface Story {
   id: number;
@@ -100,7 +99,7 @@ const SuccessStoriesSection = ({
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   {/* Gradient overlay for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
 
                   {/* Text Caption */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 z-10">

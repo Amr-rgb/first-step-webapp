@@ -130,7 +130,10 @@ export default async function NurseryPage({
             <AdsSection centerId={centerIdStr} />
 
             {/* Albums Section */}
-            <AlbumsSection images={portfolio.images_activities || []} />
+            {portfolio.images_activities &&
+              portfolio.images_activities.length > 0 && (
+                <AlbumsSection images={portfolio.images_activities || []} />
+              )}
           </div>
 
           {/* Sticky Sidebar Column: Programs */}
