@@ -1,66 +1,144 @@
 "use client";
 
 import Image from "next/image";
-import { SectionHeader } from "../../../_components";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Service {
-    title: string;
-    description: string;
-    price: string;
-    image_service: string;
+  title: string;
+  description: string;
+  price: string;
+  image_service: string;
 }
 
 interface ServicesSectionProps {
-    title: string;
-    services: Service[];
-    locale: string;
+  title: string;
+  services: Service[];
+  locale: string;
 }
 
 const ServicesSection = ({
-    title,
-    services,
-    locale,
+  title,
+  services,
+  locale: propLocale,
 }: ServicesSectionProps) => {
-    if (!services || services.length === 0) return null;
+  const t = useTranslations("centerDetails.services");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
 
-    return (
-        <section id="services" className="py-0 scroll-mt-20">
-            <SectionHeader title={title} />
-            <div className="bg-white-out p-4 rounded-2xl flex flex-wrap items-center justify-center gap-x-4 gap-y-6">
-                {services.map((service, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-xl px-4 py-2 flex flex-col gap-2 min-w-[180px] grow"
-                    >
-                        <div className="relative w-12 h-12 md:w-15 md:h-15">
-                            <Image
-                                src={service.image_service.startsWith('http') 
-                                    ? service.image_service 
-                                    : `https://development.firststep-app.com/storage/${service.image_service}`
-                                }
-                                alt={service.title}
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <h4 className="heading-4 font-bold text-primary leading-tight">
-                            {service.title}
-                        </h4>
+  if (!services || services.length === 0) return null;
+
+  return (
+    <section id="services" className="py-0 scroll-mt-20">
+      <Carousel
+        opts={{
+          align: "start",
+          direction: isRtl ? "rtl" : "ltr",
+        }}
+        className="w-full"
+      >
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-8 bg-primary rounded-full" />
+            <h2 className="heading-4 font-bold text-primary">
+              {title}{" "}
+              <span className="text-gray-400 font-medium">
+                {t("count", { count: services.length })}
+              </span>
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <CarouselPrevious
+              useChevron
+              className="static translate-y-0 translate-x-0 w-6 h-6 border-2 border-secondary-mint-green! text-secondary-mint-green shadow-none disabled:border-light-gray! disabled:text-light-gray"
+            />
+            <CarouselNext
+              useChevron
+              className="static translate-y-0 translate-x-0 w-6 h-6 border-2 border-secondary-mint-green! text-secondary-mint-green shadow-none disabled:border-light-gray! disabled:text-light-gray"
+            />
+          </div>
+        </div>
+
+        <div className="bg-white-out p-2 md:p-4 rounded-2xl">
+          <CarouselContent className="mr-0">
+            {services.map((service, index) => {
+              const imageUrl = service.image_service.startsWith("http")
+                ? service.image_service
+                : `https://development.firststep-app.com/storage/${service.image_service}`;
+
+              return (
+                <CarouselItem key={index} className="pr-0 basis-full">
+                  <div className="flex flex-col-reverse md:flex-row items-stretch gap-8 md:gap-[60px]">
+                    {/* Right Side: Content */}
+                    <div className="flex-1 flex flex-col py-5">
+                      <div className="space-y-4">
+                        <h3
+                          className={cn(
+                            "heading-4 font-medium text-primary",
+                            isRtl ? "text-right" : "text-left",
+                          )}
+                        >
+                          {service.title}
+                        </h3>
                         {service.description && (
-                            <p className="text-xs text-gray-500 line-clamp-2">
-                                {service.description}
-                            </p>
+                          <p
+                            className={cn(
+                              "text-gray leading-relaxed",
+                              isRtl ? "text-right" : "text-left",
+                            )}
+                          >
+                            {service.description}
+                          </p>
                         )}
+
                         {service.price && (
-                            <p className="text-sm font-semibold text-secondary-mint-green">
-                                {service.price} {locale === "ar" ? "ر.س" : "SAR"}
-                            </p>
+                          <div className={cn("flex items-center gap-3 pt-2")}>
+                            <span className="text-xl font-bold text-primary">
+                              {service.price}
+                            </span>
+                            <span className="sar text-primary text-3xl">$</span>
+                          </div>
                         )}
+                      </div>
+
+                      <div className="mt-auto pt-8">
+                        <Button
+                          className="min-w-full md:w-auto"
+                          size="long"
+                          variant="default"
+                        >
+                          {t("subscribe")}
+                        </Button>
+                      </div>
                     </div>
-                ))}
-            </div>
-        </section>
-    );
+
+                    {/* Left Side: Image */}
+                    <div className="relative w-full md:w-[45%] aspect-square md:aspect-270/320 shrink-0">
+                      <Image
+                        src={imageUrl}
+                        alt={service.title}
+                        fill
+                        className="object-cover rounded-2xl shadow-sm"
+                      />
+                    </div>
+                  </div>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+        </div>
+      </Carousel>
+    </section>
+  );
 };
 
 export default ServicesSection;

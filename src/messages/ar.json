@@ -2882,7 +2882,9 @@
       "title": "فريقنا"
     },
     "services": {
-      "title": "خدماتنا"
+      "title": "خدماتنا",
+      "count": "({count} خدمة)",
+      "subscribe": "اشترك في الخدمة"
     },
     "activities": {
       "title": "نشاطاتنا",
