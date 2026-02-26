@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import SectionHeader from "../../../_components/SectionHeader";
 
 interface Service {
   title: string;
@@ -45,28 +46,11 @@ const ServicesSection = ({
         }}
         className="w-full"
       >
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-primary rounded-full" />
-            <h2 className="heading-4 font-bold text-primary">
-              {title}{" "}
-              <span className="text-gray-400 font-medium">
-                {t("count", { count: services.length })}
-              </span>
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <CarouselPrevious
-              useChevron
-              className="static translate-y-0 translate-x-0 w-6 h-6 border-2 border-secondary-mint-green! text-secondary-mint-green shadow-none disabled:border-light-gray! disabled:text-light-gray"
-            />
-            <CarouselNext
-              useChevron
-              className="static translate-y-0 translate-x-0 w-6 h-6 border-2 border-secondary-mint-green! text-secondary-mint-green shadow-none disabled:border-light-gray! disabled:text-light-gray"
-            />
-          </div>
-        </div>
+        <SectionHeader
+          title={title}
+          countText={t("count", { count: services.length })}
+          showNavigation={true}
+        />
 
         <div className="bg-white-out p-2 md:p-4 rounded-2xl">
           <CarouselContent className="mr-0">

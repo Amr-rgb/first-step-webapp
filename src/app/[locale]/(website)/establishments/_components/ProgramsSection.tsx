@@ -15,6 +15,7 @@ import ReservationDialog from "./ReservationDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboardIcons } from "@/components/general/icons";
 import { cn } from "@/lib/utils";
+import SectionHeader from "./SectionHeader";
 
 interface ProgramsSectionProps {
   centerId: string;
@@ -157,24 +158,17 @@ const ProgramsSection = ({
 
   return (
     <section id="programs" className="py-0 scroll-mt-20">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-primary rounded-full" />
-          <h2 className="heading-4 font-bold text-primary">
-            {t("title")}{" "}
-            <span className="text-gray-400 font-medium">
-              {t("count", { count: filteredPrograms.length })}
-            </span>
-          </h2>
-        </div>
-
+      <SectionHeader
+        title={t("title")}
+        countText={t("count", { count: filteredPrograms.length })}
+      >
         <button
           className="cursor-pointer text-primary"
           onClick={() => setIsFilterOpen(true)}
         >
           <dashboardIcons.multiFilter />
         </button>
-      </div>
+      </SectionHeader>
 
       <div className="bg-white-out rounded-2xl p-4 flex flex-col gap-6">
         <div className="max-h-[500px] overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-4">
