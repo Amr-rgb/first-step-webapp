@@ -2740,6 +2740,8 @@
       "filter": "Filtering",
       "bookNow": "Book Now",
       "noResults": "No programs available for this search",
+      "noResultsDescription": "We couldn't find any programs matching your current filters. Try adjusting your preferences.",
+      "resetFilters": "Reset Filters",
       "currency": "SAR",
       "filters": {
         "branch": "Branch",
@@ -2900,6 +2902,8 @@
       "filter": "Filtering",
       "bookNow": "Book Now",
       "noResults": "No programs available for this search",
+      "noResultsDescription": "We couldn't find any programs matching your current filters. Try adjusting your preferences.",
+      "resetFilters": "Reset Filters",
       "currency": "SAR",
       "filters": {
         "branch": "Branch",
