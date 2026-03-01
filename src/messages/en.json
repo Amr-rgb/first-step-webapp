@@ -295,6 +295,15 @@
           "Upload educational content"
         ],
         "soon": "Soon"
+      },
+      "provider": {
+        "title": "Individual Service Provider",
+        "features": [
+          "Showcase your services and prices",
+          "Reviews and feedback for your services",
+          "Quick access to centers and nurseries"
+        ],
+        "soon": "Soon"
       }
     },
     "buttons": {
