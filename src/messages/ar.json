@@ -2113,7 +2113,9 @@
         "teams": "فريق العمل",
         "statistics": "الإحصائيات",
         "licenses": "التراخيص",
-        "socialMedia": "وسائل التواصل الاجتماعي"
+        "socialMedia": "وسائل التواصل الاجتماعي",
+        "plans": "البرامج",
+        "facilites": "المرافق"
       },
       "basicInfo": {
         "nurseryLogo": "شعار المركز",
@@ -2724,7 +2726,9 @@
       "title": "فريقنا"
     },
     "services": {
-      "title": "خدماتنا"
+      "title": "خدماتنا",
+      "count": "({count} خدمات)",
+      "subscribe": "اشترك في الخدمة"
     },
     "activities": {
       "title": "نشاطاتنا",

@@ -1119,6 +1119,24 @@ export const centerService = {
         formData.append(`delete_images_activities[${i}]`, String(index));
       });
 
+      // Services
+      payload.services?.forEach((service, index) => {
+        if (service.id)
+          formData.append(`services[${index}][id]`, String(service.id));
+        formData.append(`services[${index}][title]`, service.title);
+        formData.append(`services[${index}][description]`, service.description);
+        formData.append(`services[${index}][price]`, service.price);
+        if (service.image_service instanceof File) {
+          formData.append(
+            `services[${index}][image_service]`,
+            service.image_service,
+          );
+        }
+      });
+      payload.delete_service_ids?.forEach((id, index) => {
+        formData.append(`delete_service_ids[${index}]`, String(id));
+      });
+
       // Options (Facilities)
       payload.admin_option_ids?.forEach((id, index) => {
         formData.append(`admin_option_ids[${index}]`, String(id));

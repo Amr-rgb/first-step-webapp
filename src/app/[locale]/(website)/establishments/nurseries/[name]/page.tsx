@@ -10,6 +10,7 @@ import {
 } from "../../_components";
 import FacilitiesSection from "./_components/FacilitiesSection";
 import AlbumsSection from "./_components/AlbumsSection";
+import ServicesSection from "./_components/ServicesSection";
 import ProfileWaitingPage from "@/components/general/nurseries/ProfileWaitingPage";
 import { createSlug, slugToReadableName } from "@/lib/utils";
 import { establishmentService } from "@/services/api";
@@ -126,6 +127,12 @@ export default async function NurseryPage({
             <FacilitiesSection
               title={t("facilities.title")}
               facilities={portfolio.admin_options || []}
+              locale={locale}
+            />
+
+            <ServicesSection
+              title={t("services.title")}
+              services={portfolio.services || []}
               locale={locale}
             />
 
