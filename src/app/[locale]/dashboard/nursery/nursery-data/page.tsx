@@ -268,7 +268,7 @@ export default function CenterProfilePage() {
     },
     {
       id: "activities",
-      title: t("sections.activities"),
+      title: t("sections.nurseryActivities"),
     },
     {
       id: "licenses",
