@@ -1,0 +1,31 @@
+[10:31:53.813] [INFO] storybook v10.2.13
+[10:31:54.576] [ERROR] [38;2;241;97;97mSB_CORE-SERVER_0007 (MainFileEvaluationError): Storybook couldn't evaluate your [33m.storybook\main.ts[39m file.
+
+Original error:
+[37mError: spawn EPERM
+    at ChildProcess.spawn (node:internal/child_process:420:11)
+    at Object.spawn (node:child_process:753:9)
+    at ensureServiceIsRunning (\node_modules\esbuild\lib\main.js:1978:29)
+    at transform (\node_modules\esbuild\lib\main.js:1878:37)
+    at load (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/bin/loader.js:77:113)
+    at async nextLoad (node:internal/modules/esm/hooks:748:22)
+    at async Hooks.load (node:internal/modules/esm/hooks:385:20)
+    at async MessagePort.handleMessage (node:internal/modules/esm/worker:199:18)[39m[39m
+    at loadMainConfig (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/_node-chunks/chunk-CUCNHZNT.js:11709:11)
+    at async buildDevStandalone (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/core-server/index.js:7552:16)
+    at async withTelemetry (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/_node-chunks/chunk-WGZQUMPK.js:218:12)
+    at async dev (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/bin/core.js:2734:3)
+    at async _Command.<anonymous> (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/bin/core.js:2803:92)
+[10:31:54.598] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[10:31:54.611] [WARN]   Failed to load preset: "E:/amr/qader/first-step/first-step-webapp/.storybook/main.ts"
+[10:31:54.612] [ERROR] [38;2;241;97;97mError: spawn EPERM[39m
+    at ChildProcess.spawn (node:internal/child_process:420:11)
+    at Object.spawn (node:child_process:753:9)
+    at ensureServiceIsRunning (.\node_modules\esbuild\lib\main.js:1978:29)
+    at transform (.\node_modules\esbuild\lib\main.js:1878:37)
+    at load (file:///E:/amr/qader/first-step/first-step-webapp/node_modules/storybook/dist/bin/loader.js:77:113)
+    at async nextLoad (node:internal/modules/esm/hooks:748:22)
+    at async Hooks.load (node:internal/modules/esm/hooks:385:20)
+    at async MessagePort.handleMessage (node:internal/modules/esm/worker:199:18)
+[10:31:54.620] [INFO] Storybook collects completely anonymous usage telemetry. We use it to shape Storybook's roadmap and prioritize features. You can learn more, including how to opt out, at https://storybook.js.org/telemetry
