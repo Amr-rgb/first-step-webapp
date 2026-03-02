@@ -20,25 +20,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Storybook
-
-This project includes Storybook for isolated UI and feature-view review.
-
-```bash
-npm run storybook
-npm run build-storybook
-```
-
-Guide:
-
-- [Storybook Guide](/E:/amr/qader/first-step/first-step-webapp/docs/STORYBOOK.md)
-
-Contribution rule:
-
-- Add stories for reusable, prop-driven components that have multiple meaningful visual states.
-- Do not add stories for route pages or heavy container components that mainly handle fetching, auth, routing, or mutations.
-- If a feature component is too coupled to runtime logic, extract a view component first and story that view.
-
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

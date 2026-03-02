@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "analyze": "ANALYZE=true next build",
     "clean": "rm -rf .next .turbo || rd /s /q .next .turbo 2>nul",
     "clean:cache": "rm -rf .next || rd /s /q .next 2>nul",
@@ -84,15 +82,12 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.0.0",
-    "@storybook/addon-a11y": "^10.2.13",
-    "@storybook/nextjs": "^10.2.13",
     "@tailwindcss/postcss": "^4",
     "@types/google.maps": "^3.58.1",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "storybook": "^10.2.13",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
