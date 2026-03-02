@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { PortfolioFormData } from "@/types";
 import { Upload, Trash2 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toastError } from "@/lib/toast";
@@ -22,37 +22,6 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
   const t = useTranslations("dashboard.profileEditor.activities");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Track original server-side IDs so we can mark them for deletion
-  const initialIdsRef = useRef<number[]>([]);
-  const isInitializedRef = useRef(false);
-  const lastServerCountRef = useRef(0);
-
-  useEffect(() => {
-    if (!data.images_activities) return;
-
-    // Server images are items that have a numeric id (they came from the API)
-    const serverItems = data.images_activities.filter(
-      (item): item is ActivityItem & { id: number } =>
-        typeof item.id === "number",
-    );
-
-    // Reset tracking when the server count changes (after a save/delete)
-    if (
-      serverItems.length !== lastServerCountRef.current &&
-      isInitializedRef.current
-    ) {
-      isInitializedRef.current = false;
-      initialIdsRef.current = [];
-    }
-
-    // Capture initial server IDs only once on mount (or after reset)
-    if (!isInitializedRef.current && serverItems.length > 0) {
-      initialIdsRef.current = serverItems.map((item) => item.id);
-      lastServerCountRef.current = serverItems.length;
-      isInitializedRef.current = true;
-    }
-  }, [data.images_activities]);
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -87,11 +56,16 @@ export const ActivitiesSection = ({ data, onChange, errors = {} }: Props) => {
       images_activities: updatedImages,
     };
 
-    // If the removed item had a server-side ID, track it for deletion
-    if (typeof itemToRemove.id === "number") {
+    const deleteKey =
+      typeof itemToRemove.server_index === "number"
+        ? itemToRemove.server_index
+        : typeof itemToRemove.id === "number"
+          ? itemToRemove.id
+          : null;
+
+    if (deleteKey !== null) {
       updates.delete_images_activities = [
-        ...(data.delete_images_activities || []),
-        itemToRemove.id,
+        ...new Set([...(data.delete_images_activities || []), deleteKey]),
       ];
     }
 

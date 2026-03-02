@@ -425,6 +425,7 @@ export interface PortfolioFormData {
   // Activities (Success Stories)
   images_activities?: {
     id?: number;
+    server_index?: number;
     image?: File | string;
     summary?: string;
     kind?: string;

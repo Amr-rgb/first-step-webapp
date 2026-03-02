@@ -1110,9 +1110,12 @@ export const centerService = {
         formData.append("contact_info[website]", payload.contact_info.website);
 
       // Activities
-      payload.images_activities?.forEach((img, index) => {
-        if (img instanceof File) {
-          formData.append(`images_activities[${index}]`, img);
+      payload.images_activities?.forEach((activity, index) => {
+        const imageFile =
+          activity instanceof File ? activity : activity.image instanceof File ? activity.image : null;
+
+        if (imageFile) {
+          formData.append(`images_activities[${index}]`, imageFile);
         }
       });
       payload.delete_images_activities?.forEach((index, i) => {

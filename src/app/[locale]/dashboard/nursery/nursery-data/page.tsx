@@ -75,6 +75,19 @@ export default function CenterProfilePage() {
   useEffect(() => {
     const p = initialData?.portofilo || initialData?.data;
     if (p) {
+      const normalizedActivities = (p.images_activities || []).map(
+        (item: any, index: number) =>
+          typeof item === "string"
+            ? { image: item, server_index: index }
+            : {
+                ...item,
+                server_index:
+                  typeof item.server_index === "number"
+                    ? item.server_index
+                    : index,
+              },
+      );
+
       setFormData({
         title_of_hero: p.hero_section?.title_of_hero || p.title_of_hero || "",
         subtitle_of_hero:
@@ -87,7 +100,7 @@ export default function CenterProfilePage() {
           linkedIn: p.contact_info?.linkedIn || p.linkedin || "",
           website: p.contact_info?.website || p.website || "",
         },
-        images_activities: p.images_activities || [],
+        images_activities: normalizedActivities,
         delete_images_activities: [],
         services: p.services || [],
         delete_service_ids: [],
