@@ -27,7 +27,11 @@ import { useTranslations } from "next-intl";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { z } from "zod";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
+import {
+  ListSkeleton,
+  SelectFieldSkeleton,
+} from "@/components/loading/LoadingSkeletons";
 
 // Zod schema for plan validation
 // Helper to normalize age for compatibility
@@ -274,7 +278,7 @@ export const PlansSection = () => {
   };
 
   if (branchesLoading) {
-    return <div className="text-center py-4">{t("loading")}</div>;
+    return <SelectFieldSkeleton />;
   }
 
   return (
@@ -316,17 +320,7 @@ export const PlansSection = () => {
               </div>
 
               {isPricingLoading ? (
-                <div className="space-y-3 py-8">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <Skeleton className="h-12 w-12 rounded-md" />
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-24" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ListSkeleton count={3} itemClassName="border-0 p-0" />
               ) : branchPricing.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t("noPlansYet")}
@@ -365,7 +359,7 @@ export const PlansSection = () => {
                             disabled={deletePricingMutation.isPending}
                           >
                             {deletePricingMutation.isPending ? (
-                              <div className="h-4 w-4 bg-white/20 rounded animate-pulse" />
+                              <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <Trash2 className="w-5 h-5" />
                             )}
@@ -619,7 +613,7 @@ export const PlansSection = () => {
               >
                 {savePricingMutation.isPending ? (
                   <>
-                    <div className="h-4 w-4 bg-white/20 rounded animate-pulse" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     {t("saving")}
                   </>
                 ) : (

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { createSignInSchema, SignInFormData } from "@/lib/schemas";
 import { initializeGoogleAuth, triggerGoogleSignIn } from "@/lib/google-auth";
 
@@ -157,11 +157,11 @@ const SignInForm = ({
           <Button
             size={"long"}
             type="submit"
-            className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs !w-full !max-w-full"
+            className="h-9! px-6! py-6! rounded-md! text-base shadow-xs w-full! max-w-full!"
             disabled={isLoading || form.formState.isSubmitting}
           >
             {(isLoading || form.formState.isSubmitting) && (
-              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
+              <Loader2 className="h-4 w-4 mr-2.5 animate-spin" />
             )}
             {tBtns("sign-in")}
           </Button>
@@ -169,14 +169,14 @@ const SignInForm = ({
             variant={"outline"}
             size={"long"}
             type="button"
-            className="!h-9 !px-6 !py-6 !rounded-md text-base shadow-xs text-mid-gray !border-light-gray !w-full !max-w-full"
+            className="h-9! px-6! py-6! rounded-md! text-base shadow-xs text-mid-gray border-light-gray! w-full! max-w-full!"
             disabled={
               isLoading || form.formState.isSubmitting || isGoogleLoading
             }
             onClick={handleGoogleSignIn}
           >
             {isGoogleLoading && (
-              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
+              <Loader2 className="h-4 w-4 mr-2.5 animate-spin" />
             )}
             <span>{tBtns("sign-in-google")}</span>
             <Image

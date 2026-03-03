@@ -6,6 +6,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
+  ListSkeleton,
+  SelectFieldSkeleton,
+} from "@/components/loading/LoadingSkeletons";
+import {
   ChevronLeft,
   Search,
   LoaderCircle,
@@ -295,9 +299,7 @@ export default function EnrollmentModal({
               </div>
 
               {isLoading ? (
-                <div className="flex justify-center py-8">
-                  <LoaderCircle className="w-8 h-8 animate-spin text-secondary-mint-green" />
-                </div>
+                <ListSkeleton count={5} />
               ) : (
                 <div className="space-y-3">
                   {filteredCenters.map((center: EstablishmentResponse) => (
@@ -442,9 +444,7 @@ export default function EnrollmentModal({
                   {t("enrollment.selectBranch")}
                 </label>
                 {branchesLoading ? (
-                  <div className="flex justify-center py-4">
-                    <LoaderCircle className="w-6 h-6 animate-spin text-secondary-mint-green" />
-                  </div>
+                  <SelectFieldSkeleton className="space-y-0" />
                 ) : (
                   <select
                     value={selectedBranch}
@@ -468,9 +468,7 @@ export default function EnrollmentModal({
                   {t("enrollment.selectProgram")}
                 </label>
                 {plansLoading ? (
-                  <div className="flex justify-center py-4">
-                    <LoaderCircle className="w-6 h-6 animate-spin text-secondary-mint-green" />
-                  </div>
+                  <SelectFieldSkeleton className="space-y-0" />
                 ) : (
                   <select
                     value={selectedPlan}

@@ -176,9 +176,9 @@ const ProgramsSection = ({
             Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white px-4 py-4 rounded-2xl flex items-center justify-between gap-8 animate-pulse"
+                className="bg-white px-2 py-4 rounded-2xl flex items-center justify-between gap-8"
               >
-                <Skeleton className="h-6 flex-1" />
+                <Skeleton className="h-7 flex-1 max-w-[40%]" />
                 <div className="flex-1 flex items-center justify-between gap-4">
                   <Skeleton className="h-5 w-24" />
                   <div className="flex flex-col items-center gap-2">

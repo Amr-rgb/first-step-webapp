@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ReservationStatusBadge } from "@/components/shared/ReservationStatusBadge";
 import { useTranslations } from "next-intl";
+import { Loader2 } from "lucide-react";
 
 interface BookingCardProps {
   booking: any;
@@ -259,7 +259,7 @@ export default function BookingCard({
               >
                 {(action.action === "cancel" && cancellingId === booking.id) ||
                 (action.action === "renew" && renewingId === booking.id) ? (
-                  <LoadingSpinner size="sm" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   action.label
                 )}

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   createParentSchema,
   type JustSignUpParentFormData,
@@ -253,7 +253,7 @@ export default function ParentSignUp({
             disabled={loading.addChild || loading.createAccount}
           >
             {loading.addChild && (
-              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
+              <Loader2 className="h-4 w-4 mr-2.5 animate-spin" />
             )}
             Add Child
           </Button>
@@ -267,7 +267,7 @@ export default function ParentSignUp({
             onClick={handleSubmit(onCreateAccount)}
           >
             {loading.createAccount && (
-              <div className="h-4 w-4 bg-white/20 rounded animate-pulse mr-2.5" />
+              <Loader2 className="h-4 w-4 mr-2.5 animate-spin" />
             )}
             Create Account
           </Button>

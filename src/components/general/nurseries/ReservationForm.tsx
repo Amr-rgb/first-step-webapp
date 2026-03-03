@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { UserPlus, X, Ticket } from "lucide-react";
+import { Loader2, UserPlus, X, Ticket } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,9 @@ import {
 import { enrollmentService } from "@/services/api";
 import { useAuthUser, useAuthStore } from "@/store/authStore";
 import { toastSuccess, toastError } from "@/lib/toast";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { cn } from "@/lib/utils";
 import ProgramCard from "@/app/[locale]/(website)/establishments/_components/ProgramCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // --- Types & Interfaces ---
 
@@ -145,8 +145,8 @@ const PlanSelection = ({
   const t = useTranslations("reservationForm.labels");
   const visiblePlans = showOnlySelected
     ? plans.filter(
-      (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
-    )
+        (p) => p.id === selectedPlanId || p.planId === selectedPlanId,
+      )
     : plans;
 
   if (showOnlySelected && visiblePlans.length > 0) {
@@ -172,8 +172,8 @@ const PlanSelection = ({
           ? "justify-center items-center"
           : "overflow-x-auto pb-2 custom-scrollbar justify-start",
         plans.length <= 4 &&
-        !showOnlySelected &&
-        "flex-row justify-center items-center",
+          !showOnlySelected &&
+          "flex-row justify-center items-center",
       )}
       style={{
         maxWidth: showOnlySelected || plans.length > 4 ? "100%" : "48rem",
@@ -277,14 +277,14 @@ const ChildSelection = ({
           Array.from({ length: 4 }).map((_, idx) => (
             <motion.div
               key={idx}
-              className="rounded-lg bg-gray-200 animate-pulse min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-center shrink-0"
+              className="rounded-lg border-2 border-gray-200 bg-white min-w-[110px] w-24 h-32 md:min-w-[120px] md:w-28 md:h-36 flex flex-col items-center justify-start shrink-0 p-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
             >
-              <div className="w-16 h-16 bg-gray-300 rounded-full mb-4" />
-              <div className="w-16 h-4 bg-gray-300 rounded mb-2" />
-              <div className="w-8 h-3 bg-gray-300 rounded" />
+              <Skeleton className="w-16 h-16 rounded-full mt-2 mb-3" />
+              <Skeleton className="w-16 h-4 rounded mb-2" />
+              <Skeleton className="w-10 h-3 rounded" />
             </motion.div>
           ))}
 
@@ -471,8 +471,8 @@ const BookingSummary = ({
           <span className="text-mid-gray font-medium" dir="ltr">
             {date
               ? format(new Date(date), "EEEE yyyy/MM/dd", {
-                locale: locale === "ar" ? ar : undefined,
-              })
+                  locale: locale === "ar" ? ar : undefined,
+                })
               : "-"}
             {showTime && ` ${fromTime}`}
           </span>
@@ -529,7 +529,7 @@ const BookingSummary = ({
                   }
                 >
                   {couponProps.isApplying ? (
-                    <LoadingSpinner size="sm" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     tLabels("tryCoupon")
                   )}
@@ -1129,7 +1129,14 @@ const ReservationForm = ({
             isSubmitting || !bookingDate || selectedChildren.length === 0
           }
         >
-          {isSubmitting ? t("labels.submitting") : t("labels.confirmBooking")}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              {t("labels.submitting")}
+            </>
+          ) : (
+            t("labels.confirmBooking")
+          )}
         </Button>
       </div>
     </>

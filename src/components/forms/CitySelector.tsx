@@ -20,6 +20,8 @@ import {
 import { useCities } from "@/hooks/useCities";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import { SelectOptionsSkeleton } from "@/components/loading/LoadingSkeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface CityOption {
   id: string;
@@ -37,7 +39,6 @@ export interface CitySelectorViewProps {
   hasError?: boolean;
   onRetry?: () => void;
   searchPlaceholder: string;
-  loadingText: string;
   errorText: string;
   emptyText: string;
 }
@@ -61,7 +62,6 @@ export function CitySelectorView({
   hasError = false,
   onRetry,
   searchPlaceholder,
-  loadingText,
   errorText,
   emptyText,
 }: CitySelectorViewProps) {
@@ -69,6 +69,7 @@ export function CitySelectorView({
 
   const selectedCity = cities.find((city) => city.id === value);
   const defaultPlaceholder = placeholder;
+  const showTriggerLoading = isLoading && !selectedCity;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -86,8 +87,17 @@ export function CitySelectorView({
           )}
           disabled={disabled}
         >
-          {selectedCity ? selectedCity.label : defaultPlaceholder}
-          <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+          {showTriggerLoading ? (
+            <div className="flex flex-1 items-center justify-between gap-3">
+              <Skeleton className="h-4 w-28 rounded-sm" />
+              <Skeleton className="h-4 w-4 rounded-sm shrink-0" />
+            </div>
+          ) : (
+            <>
+              {selectedCity ? selectedCity.label : defaultPlaceholder}
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+            </>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -98,10 +108,9 @@ export function CitySelectorView({
         <Command>
           <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList>
+            {isLoading && <SelectOptionsSkeleton />}
             <CommandEmpty>
-              {isLoading ? (
-                <div className="py-6 text-center text-sm">{loadingText}</div>
-              ) : hasError ? (
+              {hasError ? (
                 <div className="py-6 text-center">
                   <p className="text-sm text-destructive mb-3">{errorText}</p>
                   <Button
@@ -114,7 +123,9 @@ export function CitySelectorView({
                   </Button>
                 </div>
               ) : (
-                <div className="py-6 text-center text-sm">{emptyText}</div>
+                !isLoading && (
+                  <div className="py-6 text-center text-sm">{emptyText}</div>
+                )
               )}
             </CommandEmpty>
             <CommandGroup>
@@ -174,7 +185,6 @@ export function CitySelector({
       searchPlaceholder={
         locale === "ar" ? "البحث عن مدينة..." : "Search city..."
       }
-      loadingText={locale === "ar" ? "جاري التحميل..." : "Loading..."}
       errorText={
         locale === "ar" ? "حدث خطأ في تحميل المدن" : "Error loading cities"
       }
