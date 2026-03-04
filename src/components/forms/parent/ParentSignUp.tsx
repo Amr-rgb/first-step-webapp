@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
@@ -93,14 +93,7 @@ export default function ParentSignUp({
                 <FormControl>
                   <PhoneInput
                     {...field}
-                    value={field.value?.replace(/^\+966/, "")}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      const local = e.target.value
-                        .replace(/^\+?966|^00966|^966/, "")
-                        .replace(/^0+/, "");
-                      field.onChange(`+966${local}`);
-                    }}
-                    locale={locale}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />

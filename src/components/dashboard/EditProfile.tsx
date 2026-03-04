@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLocale, useTranslations } from "next-intl";
@@ -234,14 +234,7 @@ export default function EditProfile({
                         render={({ field: controllerField }) => (
                           <PhoneInput
                             {...controllerField}
-                            value={controllerField.value?.replace(/^\+966/, "")}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              const local = e.target.value
-                                .replace(/^\+?966|^00966|^966/, "")
-                                .replace(/^0+/, "");
-                              controllerField.onChange(`+966${local}`);
-                            }}
-                            locale={locale}
+                            onChange={controllerField.onChange}
                           />
                         )}
                       />

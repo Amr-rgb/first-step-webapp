@@ -82,6 +82,30 @@ export const apiClient = axios.create({
   },
 });
 
+const toSaudiLocalPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+
+  if (!digits) return "";
+
+  if (digits.startsWith("00966")) {
+    return `0${digits.slice(5, 14)}`;
+  }
+
+  if (digits.startsWith("966")) {
+    return `0${digits.slice(3, 12)}`;
+  }
+
+  if (digits.startsWith("5")) {
+    return `0${digits.slice(0, 9)}`;
+  }
+
+  if (digits.startsWith("05")) {
+    return digits.slice(0, 10);
+  }
+
+  return digits;
+};
+
 // Optional: Add interceptors (useful later for auth tokens, error handling)
 apiClient.interceptors.request.use(
   (config) => {
@@ -1061,7 +1085,7 @@ export const authService = {
       formData.append("name", payload.nursery_name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
-      formData.append("phone", payload.phone);
+      formData.append("phone", toSaudiLocalPhone(payload.phone));
       formData.append("city_id", payload.city_id);
 
       if (payload.logo) {
@@ -1080,7 +1104,7 @@ export const authService = {
       console.log("Register Center Payload:", {
         name: payload.nursery_name,
         email: payload.email,
-        phone: payload.phone,
+        phone: toSaudiLocalPhone(payload.phone),
         city_id: payload.city_id,
         logo: payload.logo?.name,
       });
@@ -1112,7 +1136,7 @@ export const authService = {
       formData.append("name", payload.nursery_name);
       formData.append("email", payload.email);
       formData.append("password", payload.password);
-      formData.append("phone", payload.phone);
+      formData.append("phone", toSaudiLocalPhone(payload.phone));
       formData.append("city_id", payload.city_id);
 
       if (payload.logo) {
@@ -1131,7 +1155,7 @@ export const authService = {
       console.log("Register Nursery Payload:", {
         name: payload.nursery_name,
         email: payload.email,
-        phone: payload.phone,
+        phone: toSaudiLocalPhone(payload.phone),
         city_id: payload.city_id,
         logo: payload.logo?.name,
       });

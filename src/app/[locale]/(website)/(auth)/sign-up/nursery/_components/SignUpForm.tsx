@@ -15,6 +15,7 @@ import { createNurserySchema, NurseryFormData } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PhoneInput from "@/components/forms/PhoneInput";
 import { authService } from "@/services/api";
 import { CategoryService } from "@/types";
 import { Check, Loader2 } from "lucide-react";
@@ -52,6 +53,7 @@ export function SignUpForm({
     mode: "onBlur",
     reValidateMode: "onChange",
   });
+  const phoneField = methods.register("phone");
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -210,9 +212,18 @@ export function SignUpForm({
                     {isAr ? "رقم الهاتف" : "Phone Number"}{" "}
                     <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    {...methods.register("phone")}
-                    placeholder="05xxxxxxxx"
+                  <PhoneInput
+                    name={phoneField.name}
+                    ref={phoneField.ref}
+                    onBlur={phoneField.onBlur}
+                    value={methods.watch("phone")}
+                    onChange={(value) => {
+                      methods.setValue("phone", value, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    placeholder="5xxxxxxxx"
                     className="h-12"
                   />
                   {!!methods.formState.errors.phone && (
