@@ -99,7 +99,7 @@ export default function CenterDashboardTeam() {
               </Button>
             </div>
 
-            <Team members={teamData} />
+            <Team members={teamData} branchId={branch.id} />
           </div>
         );
       })}
