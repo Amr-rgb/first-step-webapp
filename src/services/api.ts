@@ -737,6 +737,7 @@ export const establishmentService = {
               nursery.name,
             logo: nursery.nursery?.logo || nursery.logo,
             city: nursery.nursery?.city || nursery.city,
+            neighborhood: nursery.neighborhood,
             // Ensure ID is number
             id: Number(nursery.id),
             user_id: nursery.id,
@@ -754,6 +755,7 @@ export const establishmentService = {
               center.center?.nursery_name || center.nursery_name || center.name,
             logo: center.center?.logo || center.logo,
             city: center.center?.city || center.city,
+            neighborhood: center.neighborhood,
             id: Number(center.id),
             user_id: center.id,
             role: center.role || "center",

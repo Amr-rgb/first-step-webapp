@@ -196,7 +196,7 @@ export interface EstablishmentResponse extends Omit<
     nursery_name_branch: string;
   }>;
   city: string | { name: { ar: string; en: string } };
-  neighborhood?: string | { ar: string; en: string } | null;
+  neighborhood?: string | null;
   address?: string;
   nursery?: {
     center_id: number;
