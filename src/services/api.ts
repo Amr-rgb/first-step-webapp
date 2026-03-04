@@ -1345,6 +1345,7 @@ export const enrollmentService = {
     branch_price_id: number | string;
     parent_phone: string;
     children: Array<number | string>;
+    admin_options?: Array<number | string>;
     day_string?: string; // for 'hour'
     starting_time?: string; // for 'hour'
     starting_date?: string; // for day/week/month/year

@@ -16,12 +16,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { dashboardIcons } from "@/components/general/icons";
 import { cn } from "@/lib/utils";
 import SectionHeader from "./SectionHeader";
+import { AdminOption } from "@/types";
 
 interface ProgramsSectionProps {
   centerId: string;
   nurseryName: string;
   locale: string;
   tNamespace?: string;
+  adminOptions?: AdminOption[];
 }
 
 const ProgramsSection = ({
@@ -29,6 +31,7 @@ const ProgramsSection = ({
   nurseryName,
   locale,
   tNamespace = "nurseryDetails",
+  adminOptions = [],
 }: ProgramsSectionProps) => {
   const t = useTranslations(`${tNamespace}.programs` as any);
   const tCommon = useTranslations(`${tNamespace}.plans` as any);
@@ -285,6 +288,7 @@ const ProgramsSection = ({
         selectedBranch={reservationBranch}
         selectedPlanId={reservationPlanId}
         locale={locale as "ar" | "en"}
+        adminOptions={adminOptions}
       />
     </section>
   );

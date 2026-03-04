@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Loader2, UserPlus, X, Ticket } from "lucide-react";
+import { Loader2, UserPlus, X, Ticket, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { toastSuccess, toastError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import ProgramCard from "@/app/[locale]/(website)/establishments/_components/ProgramCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminOption } from "@/types";
 
 // --- Types & Interfaces ---
 
@@ -37,6 +38,7 @@ interface ReservationFormProps {
   onClose?: () => void;
   preSelectedPlanId?: number | string;
   showOnlySelectedPlan?: boolean;
+  adminOptions?: AdminOption[];
 }
 
 type PlanType = "monthly" | "weekly" | "daily" | "hourly";
@@ -592,6 +594,82 @@ const BookingSummary = ({
   );
 };
 
+const FacilitiesSelection = ({
+  locale,
+  options,
+  selectedIds,
+  onToggle,
+}: {
+  locale: "ar" | "en";
+  options: AdminOption[];
+  selectedIds: number[];
+  onToggle: (id: number) => void;
+}) => {
+  if (options.length === 0) return null;
+
+  const title =
+    locale === "ar"
+      ? "اختر المرافق المسموح بها لطفلك"
+      : "Choose the facilities available to your child";
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 60 }}
+      className="py-6"
+    >
+      <h3 className="mb-6 text-base font-bold text-primary">{title}</h3>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(100px,max-content))] justify-between gap-x-6 gap-y-1">
+        {options.map((option) => {
+          const isSelected = selectedIds.includes(option.id);
+          const title =
+            typeof option.title === "string"
+              ? option.title
+              : option.title[locale] || option.title.ar;
+
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onToggle(option.id)}
+              className={cn(
+                "flex w-full min-w-0 items-center justify-start gap-2 text-start transition",
+                "cursor-pointer focus:outline-none focus:ring-2 focus:ring-secondary-mint-green/40",
+              )}
+            >
+              <div
+                className={cn(
+                  "min-w-4 h-4 rounded-full border transition-colors flex items-center justify-center",
+                  isSelected
+                    ? "bg-secondary-mint-green border-secondary-mint-green text-white"
+                    : "border-gray-300 bg-white",
+                )}
+              >
+                {isSelected && <Check className="w-2.5 h-2.5 stroke-3" />}
+              </div>
+
+              <div className="relative h-5 w-5 shrink-0">
+                <Image
+                  src={option.image}
+                  alt={title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+
+              <span className="min-w-0 whitespace-nowrap text-sm font-medium text-mid-gray">
+                {title}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </motion.section>
+  );
+};
+
 // --- Main Component ---
 
 const ReservationForm = ({
@@ -603,6 +681,7 @@ const ReservationForm = ({
   onClose,
   preSelectedPlanId,
   showOnlySelectedPlan = false,
+  adminOptions = [],
 }: ReservationFormProps) => {
   const t = useTranslations("reservationForm");
   const router = useRouter();
@@ -617,6 +696,9 @@ const ReservationForm = ({
   const [toTime, setToTime] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [selectedAdminOptions, setSelectedAdminOptions] = useState<number[]>(
+    adminOptions.map((option) => option.id),
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -832,6 +914,10 @@ const ReservationForm = ({
     }
   }, [submitSuccess]);
 
+  useEffect(() => {
+    setSelectedAdminOptions(adminOptions.map((option) => option.id));
+  }, [adminOptions]);
+
   // -- Handlers --
 
   const handleApplyCoupon = async () => {
@@ -902,6 +988,15 @@ const ReservationForm = ({
     setCouponError(null);
   };
 
+  const handleToggleAdminOption = (optionId: number) => {
+    const isSelected = selectedAdminOptions.includes(optionId);
+    setSelectedAdminOptions(
+      isSelected
+        ? selectedAdminOptions.filter((id) => id !== optionId)
+        : [...selectedAdminOptions, optionId],
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -936,6 +1031,7 @@ const ReservationForm = ({
         branch_price_id: Number(planId),
         parent_phone: phone,
         children: selectedChildren.map((id) => Number(id)),
+        admin_options: selectedAdminOptions,
       };
 
       if (promoDetails && promoDetails.promo_code) {
@@ -1085,6 +1181,13 @@ const ReservationForm = ({
               }
               locale={locale}
               router={router}
+            />
+
+            <FacilitiesSelection
+              locale={locale}
+              options={adminOptions}
+              selectedIds={selectedAdminOptions}
+              onToggle={handleToggleAdminOption}
             />
           </div>
 
