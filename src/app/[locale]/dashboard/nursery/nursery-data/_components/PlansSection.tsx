@@ -176,6 +176,23 @@ export const PlansSection = () => {
     }
   }, [branches, selectedBranchId]);
 
+  const getCountLabel = () => {
+    switch (formData.enrollment_type) {
+      case "hour":
+        return t("numberOfHours");
+      case "day":
+        return t("numberOfDays");
+      case "week":
+        return t("numberOfWeeks");
+      case "month":
+        return t("numberOfMonths");
+      case "year":
+        return t("numberOfYears");
+      default:
+        return t("count");
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       enrollment_type: "",
@@ -555,7 +572,7 @@ export const PlansSection = () => {
             {/* Count & Price */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-3">
-                <Label>{t("count")}</Label>
+                <Label>{getCountLabel()}</Label>
                 <Input
                   type="number"
                   min="1"
