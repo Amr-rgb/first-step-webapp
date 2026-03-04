@@ -28,22 +28,11 @@ export const FacilitiesSection = ({ data, onChange, errors = {} }: Props) => {
     const currentIds = data.admin_option_ids || [];
     const isSelected = currentIds.includes(optionId);
 
-    if (isSelected) {
-      onChange({
-        admin_option_ids: currentIds.filter((id) => id !== optionId),
-        delete_center_options: [
-          ...(data.delete_center_options || []),
-          optionId,
-        ],
-      });
-    } else {
-      onChange({
-        admin_option_ids: [...currentIds, optionId],
-        delete_center_options: (data.delete_center_options || []).filter(
-          (id) => id !== optionId,
-        ),
-      });
-    }
+    onChange({
+      admin_option_ids: isSelected
+        ? currentIds.filter((id) => id !== optionId)
+        : [...currentIds, optionId],
+    });
   };
 
   if (isLoading) {

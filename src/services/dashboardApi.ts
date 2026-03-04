@@ -1141,12 +1141,15 @@ export const centerService = {
       });
 
       // Options (Facilities)
-      payload.admin_option_ids?.forEach((id, index) => {
-        formData.append(`admin_option_ids[${index}]`, String(id));
-      });
-      payload.delete_center_options?.forEach((id, index) => {
-        formData.append(`delete_center_options[${index}]`, String(id));
-      });
+      if (payload.admin_option_ids) {
+        if (payload.admin_option_ids.length === 0) {
+          formData.append("admin_option_ids", "");
+        } else {
+          payload.admin_option_ids.forEach((id, index) => {
+            formData.append(`admin_option_ids[${index}]`, String(id));
+          });
+        }
+      }
 
       // Licenses
       payload.licenses?.forEach((license, index) => {
@@ -1285,12 +1288,15 @@ export const centerService = {
       });
 
       // Options (Facilities)
-      payload.admin_option_ids?.forEach((id, index) => {
-        formData.append(`admin_option_ids[${index}]`, String(id));
-      });
-      payload.delete_center_options?.forEach((id, index) => {
-        formData.append(`delete_center_options[${index}]`, String(id));
-      });
+      if (payload.admin_option_ids) {
+        if (payload.admin_option_ids.length === 0) {
+          formData.append("admin_option_ids", "");
+        } else {
+          payload.admin_option_ids.forEach((id, index) => {
+            formData.append(`admin_option_ids[${index}]`, String(id));
+          });
+        }
+      }
 
       // Licenses
       payload.licenses?.forEach((license, index) => {

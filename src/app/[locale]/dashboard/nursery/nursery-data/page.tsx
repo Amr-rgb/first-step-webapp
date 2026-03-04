@@ -48,7 +48,6 @@ export default function CenterProfilePage() {
     services: [],
     delete_service_ids: [],
     admin_option_ids: [],
-    delete_center_options: [],
     licenses: [],
     delete_license_ids: [],
     contact_info: {
@@ -217,9 +216,6 @@ export default function CenterProfilePage() {
     if (formData.delete_license_ids?.length) {
       dirtyData.delete_license_ids = formData.delete_license_ids;
     }
-    if (formData.delete_center_options?.length) {
-      dirtyData.delete_center_options = formData.delete_center_options;
-    }
     if (formData.delete_images_activities?.length) {
       dirtyData.delete_images_activities = formData.delete_images_activities;
     }
@@ -231,7 +227,6 @@ export default function CenterProfilePage() {
     if (
       Object.keys(dirtyData).length === 0 &&
       !formData.delete_license_ids?.length &&
-      !formData.delete_center_options?.length &&
       !formData.delete_images_activities?.length &&
       !formData.delete_service_ids?.length
     ) {

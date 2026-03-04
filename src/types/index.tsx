@@ -460,7 +460,6 @@ export interface PortfolioFormData {
 
   // Facilities / Options
   admin_option_ids?: number[];
-  delete_center_options?: number[];
 
   // Licenses
   licenses?: {
