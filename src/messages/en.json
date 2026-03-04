@@ -2245,6 +2245,7 @@
         "startAge": "From age..",
         "endAge": "To age..",
         "count": "Count",
+        "numberOfSessions": "Number of sessions",
         "branches": "Branches",
         "selectBranchesPlaceholder": "Select branches...",
         "cancel": "Cancel",

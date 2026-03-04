@@ -60,7 +60,6 @@ const createPlanSchema = (t: any, isEditing: boolean) =>
         type: z.string(),
         age: z.number().min(0, t("endAgeInvalid")),
       }),
-      enrollment_type: z.string().min(1, t("enrollmentTypeRequired")),
       count: z.number().min(1, t("countMustBePositive")),
       price_amount: z
         .number({
@@ -90,10 +89,15 @@ const createPlanSchema = (t: any, isEditing: boolean) =>
       },
     );
 
-type FormDataState = Omit<PricingFormData, "start_age" | "end_age"> & {
+type FormDataState = Omit<
+  PricingFormData,
+  "start_age" | "end_age" | "enrollment_type"
+> & {
   start_age: { type: string; age: number };
   end_age: { type: string; age: number };
 };
+
+type PricingPayload = Omit<PricingFormData, "enrollment_type">;
 
 export const PlansSection = () => {
   const t = useTranslations("dashboard.profileEditor.plans");
@@ -106,7 +110,6 @@ export const PlansSection = () => {
   const [editingPlan, setEditingPlan] = useState<PricingFormData | null>(null);
 
   const [formData, setFormData] = useState<FormDataState>({
-    enrollment_type: "",
     title: "",
     start_age: { type: "month", age: 0 },
     end_age: { type: "year", age: 0 },
@@ -118,7 +121,6 @@ export const PlansSection = () => {
     title?: string;
     start_age?: string;
     end_age?: string;
-    enrollment_type?: string;
     count?: string;
     price_amount?: string;
     branches?: string;
@@ -178,7 +180,6 @@ export const PlansSection = () => {
 
   const resetForm = () => {
     setFormData({
-      enrollment_type: "",
       title: "",
       start_age: { type: "month", age: 0 },
       end_age: { type: "year", age: 0 },
@@ -203,9 +204,11 @@ export const PlansSection = () => {
   const handleEditPlan = (plan: PricingFormData) => {
     setEditingPlan(plan);
     setFormData({
-      ...plan,
+      id: plan.id,
+      title: plan.title,
       start_age: normalizeAge(plan.start_age),
       end_age: normalizeAge(plan.end_age),
+      count: Number(plan.count),
       price_amount: Number(plan.price_amount),
     });
     setIsDialogOpen(true);
@@ -244,24 +247,27 @@ export const PlansSection = () => {
       return;
     }
 
+    const buildPricingPayload = (
+      plan: PricingFormData | FormDataState,
+    ): PricingPayload => ({
+      id: plan.id,
+      title: plan.title,
+      start_age: normalizeAge(plan.start_age),
+      end_age: normalizeAge(plan.end_age),
+      count: Number(plan.count),
+      price_amount: Number(plan.price_amount),
+    });
+
     const branchesToUpdate = (
       editingPlan ? [selectedBranchId] : selectedBranchIds
     ).map((branchId) => {
-      const updatedPricing = editingPlan
+      const updatedPricing: PricingPayload[] = editingPlan
         ? branchPricing.map((p: PricingFormData) =>
             p.id === editingPlan.id
-              ? {
-                  ...formData,
-                  price_amount: Number(formData.price_amount),
-                }
-              : {
-                  ...p,
-                  start_age: normalizeAge(p.start_age),
-                  end_age: normalizeAge(p.end_age),
-                  price_amount: Number(p.price_amount),
-                },
+              ? buildPricingPayload(formData)
+              : buildPricingPayload(p),
           )
-        : [formData];
+        : [buildPricingPayload(formData)];
 
       return {
         branch_id: Number(branchId),
@@ -269,7 +275,7 @@ export const PlansSection = () => {
       };
     });
 
-    savePricingMutation.mutate(branchesToUpdate);
+    savePricingMutation.mutate(branchesToUpdate as BranchPricingData[]);
   };
 
   const handleDeletePlan = (planId: number) => {
@@ -520,42 +526,10 @@ export const PlansSection = () => {
               </div>
             </div>
 
-            {/* Enrollment Type */}
-            <div className="space-y-3">
-              <Label>{t("enrollmentType")}</Label>
-              <Select
-                value={formData.enrollment_type}
-                onValueChange={(value) => {
-                  setFormData({ ...formData, enrollment_type: value });
-                  clearFieldError("enrollment_type");
-                }}
-              >
-                <SelectTrigger
-                  className={
-                    formErrors.enrollment_type ? "border-destructive" : ""
-                  }
-                >
-                  <SelectValue placeholder={t("selectEnrollmentType")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="year">{t("year")}</SelectItem>
-                  <SelectItem value="month">{t("month")}</SelectItem>
-                  <SelectItem value="week">{t("week")}</SelectItem>
-                  <SelectItem value="day">{t("day")}</SelectItem>
-                  <SelectItem value="hour">{t("hour")}</SelectItem>
-                </SelectContent>
-              </Select>
-              {formErrors.enrollment_type && (
-                <p className="text-sm text-destructive mt-1">
-                  {formErrors.enrollment_type}
-                </p>
-              )}
-            </div>
-
             {/* Count & Price */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-3">
-                <Label>{t("count")}</Label>
+                <Label>{t("numberOfSessions")}</Label>
                 <Input
                   type="number"
                   min="1"

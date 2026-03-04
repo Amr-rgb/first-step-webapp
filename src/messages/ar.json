@@ -2236,6 +2236,7 @@
         "startAge": "من عمر",
         "endAge": "إلى عمر",
         "count": "العدد",
+        "numberOfSessions": "عدد الجلسات",
         "branches": "الفروع",
         "selectBranchesPlaceholder": "اختر الفروع...",
         "cancel": "إلغاء",
