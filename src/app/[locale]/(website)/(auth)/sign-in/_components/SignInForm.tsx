@@ -64,6 +64,9 @@ const SignInForm = ({
       await triggerGoogleSignIn();
       // The loading state will be maintained until redirect
     } catch (error) {
+      // Error toast is handled in google-auth helper.
+    } finally {
+      // On failure, always release button loading state.
       setIsGoogleLoading(false);
     }
   };
