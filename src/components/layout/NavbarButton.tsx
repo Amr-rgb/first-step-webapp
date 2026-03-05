@@ -47,7 +47,9 @@ const NavbarButton = () => {
             >
               {t("buttons.sign-in")}
             </Button>
-          ) : (
+          ) : null}
+
+          {isSignInPage ? (
             <Button
               asChild
               size={"sm"}
@@ -56,12 +58,22 @@ const NavbarButton = () => {
             >
               <Link href="/sign-up">{t("buttons.sign-up")}</Link>
             </Button>
-          )}
+          ) : null}
 
           {!isSignUpPage && !isSignInPage && (
-            <Button asChild size={"sm"} className="font-semibold px-6">
-              <Link href="/sign-up">{t("buttons.sign-up")}</Link>
-            </Button>
+            <>
+              <Button
+                asChild
+                size={"sm"}
+                variant="outline"
+                className="font-semibold px-6"
+              >
+                <Link href="/sign-in">{t("buttons.sign-in")}</Link>
+              </Button>
+              <Button asChild size={"sm"} className="font-semibold px-6">
+                <Link href="/sign-up">{t("buttons.sign-up")}</Link>
+              </Button>
+            </>
           )}
         </>
       ) : (
