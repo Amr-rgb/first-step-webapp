@@ -487,7 +487,7 @@ export const parentService = {
 
   getChildrenCount: async () => {
     try {
-      const response = await apiClient.get("/parent/children/count");
+      const response = await apiClient.get("/parent/count");
       return response.data;
     } catch (error) {
       throw ApiErrorHandler.handle(error);
